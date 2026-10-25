@@ -13,8 +13,8 @@ Platform web transparansi keputusan publik: warga melapor masalah kota, melacak 
 ## Cara menjalankan
 
 ```bash
-git clone https://github.com/<akun-ketua>/suarakyat.git
-cd suarakyat
+git clone https://github.com/GedeAnanda/suarakyatt.git
+cd suarakyatt
 npm install
 cp .env.example .env.local   # isi nilainya; minta ke ketua tim
 npm run dev
@@ -24,7 +24,7 @@ Buka `http://localhost:3000`.
 
 Untuk menyiapkan database dari nol:
 
-1. Jalankan file di `supabase/migrations/` berurutan (`0001` sampai `0005`) lewat SQL editor Supabase atau `supabase db push`.
+1. Jalankan semua file di `supabase/migrations/` berurutan menurut nomornya lewat SQL editor Supabase atau `supabase db push`.
 2. Jalankan skrip data dan seed sesuai `scripts/README.md`.
 
 Tes modul skor: `npm test`.
@@ -36,8 +36,10 @@ Tes modul skor: `npm test`.
 - [x] Repo dan struktur proyek
 - [x] Skema database awal (`0001_schema.sql`)
 - [x] Kontrak data bersama (`lib/types.ts`) dan data contoh untuk frontend
-- [ ] Deploy pertama ke Vercel
-- [ ] Auth, RLS, dan akun demo
+- [x] Deploy pertama ke Vercel: https://suarakyatt.vercel.app
+- [x] RLS dan view publik (`0002`), RPC laporan dan reset demo (`0003`), data instansi dan kategori (`0006`)
+- [x] Auth: login, daftar, verifikasi email, akun demo warga dan admin
+- [ ] Halaman masuk/daftar (UI)
 - [ ] Landing page
 - [ ] Peta publik dengan data seed
 - [ ] Form laporan dan halaman lacak
