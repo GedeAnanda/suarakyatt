@@ -7,27 +7,35 @@ import { updateSession } from '@/lib/supabase/proxy';
 const RUTE_PERLU_LOGIN = ['/lapor', '/admin'];
 
 /** Dicocokkan per segmen supaya /laporan/[kode] (publik) tidak ikut terkunci oleh /lapor. */
-function perluLogin(pathname: string): boolean {
-  return RUTE_PERLU_LOGIN.some((rute) => pathname === rute || pathname.startsWith(`${rute}/`));
+function cocokRute(pathname: string, rute: string): boolean {
+  return pathname === rute || pathname.startsWith(`${rute}/`);
+}
+
+/** Redirect sambil membawa cookie sesi yang baru diperbarui (atau dihapus). */
+function alihkan(request: NextRequest, response: NextResponse, pathname: string, lanjut?: string) {
+  const url = request.nextUrl.clone();
+  url.pathname = pathname;
+  url.search = '';
+  if (lanjut) url.searchParams.set('lanjut', lanjut);
+  const redirect = NextResponse.redirect(url);
+  response.cookies.getAll().forEach((cookie) => redirect.cookies.set(cookie));
+  return redirect;
 }
 
 export async function proxy(request: NextRequest) {
-  const { response, claims } = await updateSession(request);
+  const { response, claims, supabase } = await updateSession(request);
   const { pathname } = request.nextUrl;
 
-  if (!claims && perluLogin(pathname)) {
-    const url = request.nextUrl.clone();
-    url.pathname = '/masuk';
-    url.search = '';
-    url.searchParams.set('lanjut', pathname);
-    const redirect = NextResponse.redirect(url);
-    // Bawa cookie sesi yang baru diperbarui (atau dihapus) ke respons redirect.
-    response.cookies.getAll().forEach((cookie) => redirect.cookies.set(cookie));
-    return redirect;
+  if (!claims && RUTE_PERLU_LOGIN.some((rute) => cocokRute(pathname, rute))) {
+    return alihkan(request, response, '/masuk', pathname);
   }
 
-  // TODO(B): arahkan non-admin yang membuka /admin/* ke Beranda (SDD 9.1).
-  // Butuh profiles.role milik auth.uid(), jadi tunggu fungsi is_admin() dan RLS di 0002_views_rls.sql.
+  // Non-admin yang membuka /admin/* diarahkan ke Beranda. is_admin() ada di 0002_views_rls.sql.
+  if (claims && supabase && cocokRute(pathname, '/admin')) {
+    const { data: admin } = await supabase.rpc('is_admin');
+    if (admin !== true) return alihkan(request, response, '/');
+  }
+
   return response;
 }
 

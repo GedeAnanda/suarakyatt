@@ -20,6 +20,14 @@ export const PESAN_ERROR: Record<string, string> = {
   BOBOT_TIDAK_VALID: 'Bobot harus 0–1 dan tidak boleh semuanya nol.',
   ALASAN_TERLALU_PENDEK: 'Alasan minimal 10 karakter.',
   DEMO_TERBATAS: 'Akun demo hanya bisa mengubah laporan simulasi.',
+
+  // Auth dan unggah foto (lib/supabase/aksi-auth.ts, lib/supabase/unggah.ts)
+  KREDENSIAL_SALAH: 'Email atau password salah.',
+  EMAIL_BELUM_VERIFIKASI: 'Email belum diverifikasi. Buka tautan di email Anda dulu.',
+  PASSWORD_LEMAH: 'Password minimal 8 karakter.',
+  BATAS_EMAIL: 'Terlalu banyak permintaan email. Coba lagi beberapa menit lagi.',
+  EMAIL_TIDAK_TERKIRIM: 'Email verifikasi belum bisa dikirim. Untuk mencoba, pakai tombol akun demo.',
+  UNGGAH_GAGAL: 'Foto gagal diunggah. Coba lagi.',
 };
 
 const PESAN_UMUM = 'Terjadi kesalahan. Coba lagi sebentar lagi.';
