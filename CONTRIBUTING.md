@@ -4,10 +4,19 @@ Ringkasan dari SDD v1.0 bagian 3. Baca sekali, lalu ikuti setiap hari.
 
 ## Branch dan pull request
 
-- `main` = produksi. Jangan push langsung ke `main`.
-- Satu fitur, satu branch: `feat/<peran>-<fitur>`, misalnya `feat/a-landing`, `feat/b-auth`, `feat/c-rapor`.
+- `main` = produksi (https://suarakyatt.vercel.app, yang dilihat juri). `dev` = tempat semua fitur digabung dulu. Jangan push langsung ke `main` maupun `dev`.
+- Satu fitur, satu branch, selalu dibuat dari `dev` terbaru: `feat/<peran>-<fitur>`, misalnya `feat/a-landing`, `feat/b-auth`, `feat/c-rapor`.
 - Perbaikan: `fix/<topik>`.
+- PR fitur selalu ke **`dev`**. `dev` di-merge ke `main` oleh ketua setelah dicek stabil (misalnya sebelum First Draft).
 - Setiap PR dicek minimal **satu anggota lain** sebelum di-merge.
+
+```bash
+git checkout dev && git pull           # mulai dari dev terbaru
+git checkout -b feat/a-rapor           # branch fitur
+# ...ngoding, commit...
+git push -u origin feat/a-rapor        # lalu buka PR ke dev di GitHub
+git pull origin dev                    # jika branch sudah lama, ambil perubahan dev terbaru
+```
 - Vercel otomatis membuat link preview untuk setiap PR. Cek tampilannya di ponsel sebelum minta review.
 
 ## Commit
