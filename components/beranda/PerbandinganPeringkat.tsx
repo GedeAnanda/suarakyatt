@@ -71,7 +71,7 @@ export default function PerbandinganPeringkat({
             Bobot resmi
             <span className="block text-kecil text-lembut">Peringkat {jelas.peringkat} dari {jelas.total}</span>
           </figcaption>
-          <p aria-hidden="true" className="angka mt-2 text-[62vw] leading-[0.8] font-medium tracking-[-0.06em] sm:text-[clamp(11rem,34vw,32rem)]">
+          <p aria-hidden="true" className="text-tinta angka mt-2 text-[62vw] leading-[0.8] font-medium tracking-[-0.06em] sm:text-[clamp(11rem,34vw,32rem)]">
             {jelas.peringkat}
           </p>
         </figure>

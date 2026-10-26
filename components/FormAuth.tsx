@@ -25,21 +25,36 @@ function Isian({
   minLength?: number;
 }) {
   const id = `isian-${name}`;
+  const [lihat, setLihat] = useState(false);
+  const sandi = type === 'password';
   return (
     <div className="grid gap-1.5">
       <label htmlFor={id} className="text-badan font-medium">
-        {label}
+        {label} <span className="text-tinta" aria-hidden="true">*</span>
       </label>
-      <input
-        id={id}
-        name={name}
-        type={type}
-        autoComplete={autoComplete}
-        required
-        minLength={minLength}
-        aria-describedby={petunjuk ? `${id}-petunjuk` : undefined}
-        className="h-12 bg-terang px-4 text-badan focus:outline-3 focus:outline-tinta"
-      />
+      <div className="flex">
+        <input
+          id={id}
+          name={name}
+          type={sandi && lihat ? 'text' : type}
+          autoComplete={autoComplete}
+          required
+          minLength={minLength}
+          aria-describedby={petunjuk ? `${id}-petunjuk` : undefined}
+          className="h-12 min-w-0 flex-1 bg-terang px-4 text-badan focus:outline-3 focus:outline-tinta"
+        />
+        {sandi && (
+          <button
+            type="button"
+            onClick={() => setLihat((x) => !x)}
+            aria-pressed={lihat}
+            aria-controls={id}
+            className="h-12 shrink-0 border-b-2 border-garis bg-lapis px-4 text-kecil font-medium hover:bg-lapis-2"
+          >
+            {lihat ? 'Sembunyikan' : 'Tampilkan'}
+          </button>
+        )}
+      </div>
       {petunjuk && (
         <p id={`${id}-petunjuk`} className="text-kecil text-lembut">
           {petunjuk}

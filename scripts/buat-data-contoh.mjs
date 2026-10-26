@@ -183,7 +183,10 @@ for (let n = 0; n < JUMLAH; n++) {
   // Respons: tepat waktu sesuai profil; sebagian lewat batas atau belum disentuh.
   const tepatRespons = acak() < p.respons;
   // Tahap tempat laporan macet: 0 = belum direspons, 1 = diverifikasi, 2 = diproses.
-  const macetDi = acak() < p.macet ? Math.floor(acak() * 3) : 3;
+  // Laporan yang sangat tua biasanya akhirnya ditangani juga, jadi "macet" hanya untuk umur < 45 hari.
+  const kocokMacet = acak();
+  const tahapMacet = Math.floor(acak() * 3);
+  const macetDi = kocokMacet < p.macet && umurJam < 45 * 24 ? tahapMacet : 3;
   const jedaRespons = tepatRespons ? antara(0.5, k.respons * 0.9) : k.respons * antara(1.1, 3);
   if (macetDi > 0 && dibuat + jedaRespons * JAM < JANGKAR) {
     respondedAt = dibuat + jedaRespons * JAM;
@@ -203,8 +206,9 @@ for (let n = 0; n < JUMLAH; n++) {
         tl.push({ kode, status_baru: 'diproses', alasan_tolak: null, catatan: 'Petugas sudah di lokasi.', bukti_url: null, pelaku: admin, created_at: iso(mulai) });
         const tepatSelesai = acak() < p.selesai;
         const jamSelesai = tepatSelesai ? antara(k.selesai * 0.3, k.selesai * 0.95) : k.selesai * antara(1.1, 2.6);
-        const selesai = dibuat + jamSelesai * JAM;
-        if (macetDi > 2 && selesai < JANGKAR && selesai > mulai) {
+        // Penyelesaian tidak mungkin sebelum petugas mulai bekerja: minimal 6 jam setelah diproses.
+        const selesai = Math.max(dibuat + jamSelesai * JAM, mulai + 6 * JAM);
+        if (macetDi > 2 && selesai < JANGKAR) {
           status = 'selesai';
           resolvedAt = selesai;
           tl.push({ kode, status_baru: 'selesai', alasan_tolak: null, catatan: CATATAN_SELESAI[k.id], bukti_url: null, pelaku: admin, created_at: iso(selesai) });

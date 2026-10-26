@@ -15,7 +15,7 @@ export default function KartuRapor({ i, kategoriId }: { i: RaporInstansi; katego
   const nama = i.nama.replace(' (simulasi)', '');
 
   return (
-    <article aria-labelledby={`rapor-${i.id}`} className="flex flex-col bg-lapis">
+    <article id={`instansi-${i.id}`} aria-labelledby={`rapor-${i.id}`} className="flex scroll-mt-6 flex-col bg-lapis">
       {i.peringatan_penolakan && (
         <div className="di-medan flex gap-3 bg-medan px-5 py-3 text-badan text-medan-tinta sm:px-6">
           <Ikon nama="peringatan" className="mt-1 size-5" />
@@ -32,7 +32,7 @@ export default function KartuRapor({ i, kategoriId }: { i: RaporInstansi; katego
       <div className="grid flex-1 gap-6 p-5 sm:grid-cols-[auto_1fr] sm:gap-8 sm:p-6">
         <div className="flex items-end gap-4 sm:block">
           <p
-            className={`text-[clamp(6rem,4rem+8vw,10rem)] leading-[0.78] font-semibold tracking-[-0.06em] ${kurang ? 'text-lembut' : ''}`}
+            className={`text-[clamp(6rem,4rem+8vw,10rem)] leading-[0.78] font-semibold tracking-[-0.06em] ${kurang ? 'text-lembut' : 'text-tinta'}`}
             aria-label={kurang ? 'Data belum cukup' : `Huruf ${i.huruf}${tertahan ? `, ditahan dari ${i.huruf_asli}` : ''}`}
           >
             {kurang ? '–' : i.huruf}
@@ -46,28 +46,27 @@ export default function KartuRapor({ i, kategoriId }: { i: RaporInstansi; katego
           <h2 id={`rapor-${i.id}`} className="text-lead font-medium tracking-tight">
             {nama} <span className="text-kecil font-normal text-lembut">(simulasi)</span>
           </h2>
-          <p className="angka mt-1 text-judul font-medium tracking-[-0.04em]">
+          <p className="text-tinta angka mt-1 text-judul font-medium tracking-[-0.04em]">
             {desimal(i.nilai)}
             <span className="text-badan tracking-normal text-lembut"> / 100</span>
           </p>
 
           <dl className="mt-5 grid gap-3">
             {KOMPONEN.map((k) => (
-              <div key={k} className="grid grid-cols-[1.75rem_1fr_3rem] items-center gap-x-3">
-                <dt className="text-badan font-semibold">
+              <div key={k} className="grid grid-cols-[1fr_auto] items-baseline gap-x-3 gap-y-1">
+                <dt className="text-kecil">
                   <Istilah
                     id={`istilah-${i.id}-${k}`}
                     judul={`${k} · ${INFO_KOMPONEN[k].nama} (bobot ${Math.round(INFO_KOMPONEN[k].bobot * 100)}%)`}
                     definisi={INFO_KOMPONEN[k].rumus}
                   >
-                    {k}
+                    <span className="font-semibold">{k}</span> · {INFO_KOMPONEN[k].nama}
                   </Istilah>
-                  <span className="sr-only">, {INFO_KOMPONEN[k].nama}</span>
                 </dt>
-                <dd aria-hidden="true" className="relative h-3 bg-lapis-2">
-                  <span className="absolute inset-y-0 left-0 bg-tinta" style={{ width: `${i[k] * 100}%` }} />
+                <dd className="angka text-right text-badan font-medium">{desimal(i[k], 2)}</dd>
+                <dd aria-hidden="true" className="relative col-span-2 h-2.5 overflow-hidden bg-lapis-2">
+                  <span className="batang absolute inset-y-0 left-0 bg-tinta" style={{ width: `${i[k] * 100}%` }} />
                 </dd>
-                <dd className="angka text-right text-badan">{desimal(i[k], 2)}</dd>
               </div>
             ))}
           </dl>

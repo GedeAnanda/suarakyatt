@@ -10,6 +10,7 @@ import BadgeStatus, { WARNA_TITIK } from '@/components/BadgeStatus';
 import IndikatorSLA from '@/components/IndikatorSLA';
 import { FormRating, TombolBatalkan, TombolDukung } from '@/components/laporan/AksiLaporan';
 import Galeri from '@/components/laporan/Galeri';
+import SalinKode from '@/components/laporan/SalinKode';
 import PanelKenapaBelum from '@/components/laporan/PanelKenapaBelum';
 import Timeline from '@/components/laporan/Timeline';
 import TitikTunggal from '@/components/peta/TitikTunggal';
@@ -80,6 +81,9 @@ async function Isi({ params, searchParams }: Pick<PageProps<'/laporan/[kode]'>, 
             {(l.is_simulated || sumber === 'contoh') && <LabelSumber sumber={sumber} />}
           </div>
           <h1 className="angka mt-5 text-[clamp(3rem,1.6rem+6vw,7rem)] leading-[0.9] font-semibold tracking-[-0.05em]">{l.kode}</h1>
+          <div className="mt-4">
+            <SalinKode kode={l.kode} />
+          </div>
           <p className="mt-5 text-pernyataan tracking-[-0.02em]">
             {l.kategori} di {l.kecamatan}, {l.kota}
           </p>

@@ -1,12 +1,13 @@
 // components/prioritas/Simulator.tsx — Dashboard Prioritas + simulator bobot publik (FR-F2–F4, PRD 9), pemilik: A
 // Semua skor dihitung di browser dengan lib/scoring dari hasil priority_factors, jadi slider
 // langsung mengubah peringkat tanpa ke server dan tanpa menyimpan apa pun (SDD 2.1, 8.3).
+// Bobot simulasi ikut tersimpan di URL (?bobot=30,20,5,20,15,10) supaya skenarionya bisa dibagikan.
 // Perencana bisa menyimpan bobot sebagai bobot resmi, wajib dengan alasan (R10 save_weights).
 
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useMemo, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { pesanError } from '@/lib/errors';
 import { DEFINISI_FAKTOR, KATEGORI, NAMA_FAKTOR } from '@/lib/konten';
 import {
@@ -23,6 +24,7 @@ import {
 import { createClient } from '@/lib/supabase/client';
 import type { Bobot, Faktor, FaktorIsu } from '@/lib/types';
 import PetaKecamatan, { KeteranganKelas } from '../PetaKecamatan';
+import { umumkan } from '../Pengumuman';
 import Ikon from '../ui/Ikon';
 import { Tombol } from '../ui/Tombol';
 import BarKontribusi, { BarTumpuk, KeteranganFaktor, WARNA_FAKTOR } from './BarKontribusi';
@@ -33,6 +35,14 @@ const keSlider = (b: Bobot): Slider => Object.fromEntries(FAKTOR.map((f) => [f, 
 const sama = (a: Bobot, b: Bobot) => FAKTOR.every((f) => Math.abs(a[f] - b[f]) < 0.0005);
 const persenBobot = (x: number) => `${Math.round(x * 100)}%`;
 const JUMLAH_AWAL = 15;
+
+/** "30,20,5,20,15,10" → slider; null kalau bentuknya tidak sah atau semuanya nol. */
+function dariUrl(nilai: string | null): Slider | null {
+  const angka = nilai?.split(',').map(Number);
+  if (!angka || angka.length !== FAKTOR.length || angka.some((x) => !Number.isFinite(x) || x < 0 || x > 100)) return null;
+  if (angka.every((x) => x === 0)) return null;
+  return Object.fromEntries(FAKTOR.map((f, i) => [f, Math.round(angka[i])])) as Slider;
+}
 
 function TandaGeser({ n }: { n: number | undefined }) {
   if (n === undefined || n === 0) return <span className="text-kecil text-lembut">tetap</span>;
@@ -56,10 +66,14 @@ export default function Simulator({
 }) {
   const router = useRouter();
   const params = useSearchParams();
-  const [slider, setSlider] = useState<Slider>(() => keSlider(bobotResmi));
+  const [slider, setSlider] = useState<Slider>(() => dariUrl(params.get('bobot')) ?? keSlider(bobotResmi));
   const [kategori, setKategori] = useState<number | null>(null);
   const [pilihId, setPilihId] = useState<string | null>(() => params.get('isu'));
   const [semua, setSemua] = useState(false);
+  const [sliderTerbuka, setSliderTerbuka] = useState(() => dariUrl(params.get('bobot')) !== null);
+  const panelIsu = useRef<HTMLElement>(null);
+  const daftar = useRef<HTMLOListElement>(null);
+  const posisiLama = useRef(new Map<string, number>());
 
   const totalSlider = FAKTOR.reduce((s, f) => s + slider[f], 0);
   const bobot = useMemo(() => (totalSlider > 0 ? normalisasiBobot(slider) : bobotResmi), [slider, totalSlider, bobotResmi]);
@@ -71,19 +85,74 @@ export default function Simulator({
   const selisih = useMemo(() => selisihPeringkat(resmi, simulasi), [resmi, simulasi]);
   const konsekuensi = disimulasikan ? kalimatKonsekuensi(resmi, simulasi) : null;
 
-  const skorKecamatan = useMemo(() => {
-    const hasil: Record<string, number> = {};
-    for (const s of simulasi) hasil[s.kode_wilayah] = Math.max(hasil[s.kode_wilayah] ?? 0, s.skor);
-    return hasil;
+  const { skorKecamatan, keteranganKecamatan } = useMemo(() => {
+    const skor: Record<string, number> = {};
+    const ket: Record<string, string> = {};
+    for (const s of simulasi) {
+      if (skor[s.kode_wilayah] === undefined) {
+        skor[s.kode_wilayah] = s.skor;
+        ket[s.kode_wilayah] = `Teratas: ${s.kategori.toLowerCase()}, peringkat ${s.peringkat}`;
+      }
+    }
+    return { skorKecamatan: skor, keteranganKecamatan: ket };
   }, [simulasi]);
 
   const terpilih = simulasi.find((s) => s.id === pilihId) ?? simulasi[0];
   const tampil = semua ? simulasi : simulasi.slice(0, JUMLAH_AWAL);
   const presetAktif = (Object.keys(PRESET) as NamaPreset[]).find((p) => sama(bobot, normalisasiBobot(PRESET[p])));
 
+  // Simpan bobot di URL tanpa menambah riwayat browser, supaya tautannya bisa dibagikan.
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    if (disimulasikan) url.searchParams.set('bobot', FAKTOR.map((f) => slider[f]).join(','));
+    else url.searchParams.delete('bobot');
+    if (url.href !== window.location.href) window.history.replaceState(null, '', url);
+  }, [slider, disimulasikan]);
+
+  // FLIP: setiap baris meluncur dari posisi lamanya ke posisi barunya, jadi perubahan peringkat terlihat.
+  useLayoutEffect(() => {
+    const ol = daftar.current;
+    if (!ol) return;
+    const gerak = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const baru = new Map<string, number>();
+    ol.querySelectorAll<HTMLElement>('[data-isu]').forEach((el) => {
+      const id = el.dataset.isu!;
+      baru.set(id, el.offsetTop);
+      const lama = posisiLama.current.get(id);
+      if (gerak && lama !== undefined && Math.abs(lama - el.offsetTop) > 2) {
+        el.animate([{ transform: `translateY(${lama - el.offsetTop}px)` }, { transform: 'translateY(0)' }], {
+          duration: 520,
+          easing: 'cubic-bezier(0.34, 1.36, 0.64, 1)',
+        });
+      }
+    });
+    posisiLama.current = baru;
+  });
+
+  function pilihIsu(id: string) {
+    setPilihId(id);
+    // Di layar sempit panel rincian ada jauh di atas daftar: bawa ke sana.
+    const panel = panelIsu.current;
+    if (panel) {
+      const r = panel.getBoundingClientRect();
+      if (r.bottom < 0 || r.top > window.innerHeight * 0.6) {
+        panel.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+      }
+    }
+  }
+
   function pilihKecamatan(kode: string) {
     const teratas = simulasi.find((s) => s.kode_wilayah === kode);
     if (teratas) setPilihId(teratas.id);
+  }
+
+  async function salinTautan() {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      umumkan('Tautan simulasi disalin. Siapa pun yang membukanya melihat bobot yang sama.');
+    } catch {
+      umumkan('Salin tautan dari bilah alamat browser.');
+    }
   }
 
   return (
@@ -95,12 +164,15 @@ export default function Simulator({
             <h2 id="judul-bobot" className="text-lead font-medium tracking-tight">
               Bobot faktor
             </h2>
-            <span className={`text-kecil font-medium ${disimulasikan ? 'bg-tinta px-2 py-0.5 text-kertas' : 'text-lembut'}`}>
+            <span
+              aria-live="polite"
+              className={`text-kecil font-medium transition-colors ${disimulasikan ? 'bg-tinta px-2 py-0.5 text-kertas' : 'text-lembut'}`}
+            >
               {disimulasikan ? 'Mode simulasi' : 'Bobot resmi'}
             </span>
           </div>
           <p className="mt-2 text-kecil text-lembut">
-            Geser untuk menguji urutan lain. Bobot dinormalisasi otomatis supaya totalnya 100%. Tidak ada yang tersimpan.
+            Pilih preset atau geser sendiri. Bobot dinormalisasi supaya totalnya 100%. Bobot resmi tidak berubah.
           </p>
 
           <div className="mt-4 flex flex-wrap gap-2" role="group" aria-label="Preset bobot">
@@ -110,45 +182,57 @@ export default function Simulator({
                 type="button"
                 aria-pressed={presetAktif === p}
                 onClick={() => setSlider(keSlider(PRESET[p]))}
-                className="min-h-10 bg-terang px-3 py-1.5 text-kecil hover:bg-kertas active:translate-y-px aria-pressed:bg-tinta aria-pressed:text-kertas"
+                className="min-h-11 bg-terang px-3 py-1.5 text-kecil transition-colors hover:bg-kertas active:translate-y-px aria-pressed:bg-tinta aria-pressed:text-kertas"
               >
                 {LABEL_PRESET[p]}
               </button>
             ))}
           </div>
 
-          <ul className="mt-5 grid gap-3">
-            {FAKTOR.map((f) => (
-              <li key={f}>
-                <div className="flex items-baseline justify-between gap-3">
-                  <label htmlFor={`bobot-${f}`} className="flex items-center gap-2 text-badan font-medium">
-                    <span aria-hidden="true" className="size-3" style={{ background: WARNA_FAKTOR[f] }} />
-                    {NAMA_FAKTOR[f]}
-                  </label>
-                  <span className="angka text-badan">
-                    <span className="font-semibold">{persenBobot(bobot[f])}</span>
-                    {Math.abs(bobot[f] - bobotResmi[f]) >= 0.005 && (
-                      <span className="text-kecil text-lembut"> resmi {persenBobot(bobotResmi[f])}</span>
-                    )}
-                  </span>
-                </div>
-                <input
-                  id={`bobot-${f}`}
-                  type="range"
-                  min={0}
-                  max={100}
-                  step={1}
-                  value={slider[f]}
-                  onChange={(e) => setSlider((s) => ({ ...s, [f]: Number(e.target.value) }))}
-                  aria-describedby={`definisi-${f}`}
-                  aria-valuetext={`${persenBobot(bobot[f])} setelah dinormalisasi`}
-                  className="slider w-full"
-                />
-                <p id={`definisi-${f}`} className="sr-only">
-                  {DEFINISI_FAKTOR[f]}
-                </p>
-              </li>
-            ))}
+          <button
+            type="button"
+            aria-expanded={sliderTerbuka}
+            aria-controls="daftar-slider"
+            onClick={() => setSliderTerbuka((b) => !b)}
+            className="mt-4 flex min-h-11 w-full items-center justify-between gap-2 border-b-2 border-lapis-2 text-badan font-medium lg:hidden"
+          >
+            Atur keenam bobot sendiri
+            <Ikon nama={sliderTerbuka ? 'naik' : 'turun'} className="size-5" />
+          </button>
+
+          <ul id="daftar-slider" className={`mt-5 gap-3 lg:grid ${sliderTerbuka ? 'grid' : 'hidden'}`}>
+            {FAKTOR.map((f) => {
+              const berubah = Math.abs(bobot[f] - bobotResmi[f]) >= 0.005;
+              return (
+                <li key={f}>
+                  <div className="flex items-baseline justify-between gap-3">
+                    <label htmlFor={`bobot-${f}`} className="flex items-center gap-2 text-badan font-medium">
+                      <span aria-hidden="true" className="size-3" style={{ background: WARNA_FAKTOR[f] }} />
+                      {NAMA_FAKTOR[f]}
+                    </label>
+                    <span className="angka text-badan">
+                      <span className={`font-semibold ${berubah ? 'text-tinta' : ''}`}>{persenBobot(bobot[f])}</span>
+                      {berubah && <span className="text-kecil text-lembut"> resmi {persenBobot(bobotResmi[f])}</span>}
+                    </span>
+                  </div>
+                  <input
+                    id={`bobot-${f}`}
+                    type="range"
+                    min={0}
+                    max={100}
+                    step={1}
+                    value={slider[f]}
+                    onChange={(e) => setSlider((s) => ({ ...s, [f]: Number(e.target.value) }))}
+                    aria-describedby={`definisi-${f}`}
+                    aria-valuetext={`${persenBobot(bobot[f])} setelah dinormalisasi`}
+                    className="slider w-full"
+                  />
+                  <p id={`definisi-${f}`} className="sr-only">
+                    {DEFINISI_FAKTOR[f]}
+                  </p>
+                </li>
+              );
+            })}
           </ul>
 
           {totalSlider === 0 && (
@@ -157,10 +241,16 @@ export default function Simulator({
             </p>
           )}
 
-          <div className="mt-5 flex flex-wrap items-center gap-3">
-            <Tombol varian="kedua" onClick={() => setSlider(keSlider(bobotResmi))} disabled={!disimulasikan && totalSlider > 0}>
+          <div className="mt-5 flex flex-wrap items-center gap-2">
+            <Tombol varian="kedua" className="bg-terang" onClick={() => setSlider(keSlider(bobotResmi))} disabled={!disimulasikan && totalSlider > 0}>
               Kembali ke bobot resmi
             </Tombol>
+            {disimulasikan && (
+              <Tombol varian="kedua" className="bg-terang" onClick={salinTautan}>
+                <Ikon nama="tautan" className="size-4" />
+                Salin tautan simulasi
+              </Tombol>
+            )}
           </div>
 
           {perencana && <SimpanBobot bobot={bobot} aktif={disimulasikan} onTersimpan={() => router.refresh()} />}
@@ -180,15 +270,15 @@ export default function Simulator({
                   setKategori(k.id);
                   setPilihId(null);
                 }}
-                className="min-h-10 bg-lapis px-3 py-1.5 text-kecil hover:bg-lapis-2 active:translate-y-px aria-pressed:bg-tinta aria-pressed:text-kertas"
+                className="min-h-11 bg-lapis px-3 py-1.5 text-kecil transition-colors hover:bg-lapis-2 active:translate-y-px aria-pressed:bg-tinta aria-pressed:text-kertas"
               >
                 {k.nama}
               </button>
             ))}
           </div>
-          <p className="min-h-[1.55em] text-pernyataan tracking-[-0.02em]" aria-live="polite">
+          <p className={`min-h-[1.55em] text-pernyataan tracking-[-0.02em] ${disimulasikan ? 'text-tinta' : ''}`} aria-live="polite">
             {konsekuensi ??
-              `${simulasi.length} isu wilayah dinilai${kategori ? ` untuk kategori ${KATEGORI[kategori - 1].nama.toLowerCase()}` : ''}. Geser bobot untuk melihat apa yang berubah.`}
+              `${simulasi.length} isu wilayah dinilai${kategori ? ` untuk kategori ${KATEGORI[kategori - 1].nama.toLowerCase()}` : ''}. Geser bobot dan lihat urutannya bergeser.`}
           </p>
         </div>
 
@@ -197,17 +287,19 @@ export default function Simulator({
           <figure>
             <PetaKecamatan
               skor={skorKecamatan}
+              keterangan={keteranganKecamatan}
               sorot={terpilih?.kode_wilayah}
               onPilih={pilihKecamatan}
-              judul="Peta choropleth kecamatan DKI Jakarta menurut skor prioritas tertinggi; klik kecamatan untuk memilih isunya"
+              judul="Peta choropleth kecamatan DKI Jakarta menurut skor prioritas tertinggi. Pilih kecamatan untuk melihat isu teratasnya; daftar peringkat di bawah berisi data yang sama."
             />
-            <figcaption className="mt-3">
+            <figcaption className="mt-3 grid gap-3">
               <KeteranganKelas />
+              <p className="text-kecil text-lembut">Arahkan kursor atau Tab ke kecamatan untuk melihat skornya; klik untuk memilih.</p>
             </figcaption>
           </figure>
 
           {terpilih && (
-            <section aria-labelledby="judul-isu" className="bg-terang p-5 sm:p-6">
+            <section ref={panelIsu} aria-labelledby="judul-isu" aria-live="polite" className="scroll-mt-4 bg-terang p-5 sm:p-6">
               <p className="text-kecil text-lembut">
                 Peringkat {terpilih.peringkat} dari {simulasi.length}
                 {disimulasikan && (
@@ -239,16 +331,16 @@ export default function Simulator({
             </h2>
             <KeteranganFaktor />
           </div>
-          <ol className="mt-4 grid gap-1">
+          <ol ref={daftar} className="relative mt-4 grid gap-1">
             {tampil.map((s) => (
-              <li key={s.id}>
+              <li key={s.id} data-isu={s.id} className="relative will-change-transform">
                 <button
                   type="button"
                   aria-pressed={s.id === terpilih?.id}
-                  onClick={() => setPilihId(s.id)}
-                  className="grid w-full grid-cols-[2.5rem_1fr_auto] items-center gap-x-3 gap-y-2 bg-lapis px-3 py-3 text-left transition-colors hover:bg-lapis-2 aria-pressed:bg-terang sm:grid-cols-[2.75rem_3rem_1fr_minmax(8rem,14rem)_3.5rem] sm:px-4"
+                  onClick={() => pilihIsu(s.id)}
+                  className="grid w-full grid-cols-[2.5rem_1fr_auto] items-center gap-x-3 gap-y-2 bg-lapis px-3 py-3 text-left transition-colors hover:bg-lapis-2 aria-pressed:bg-terang aria-pressed:shadow-[inset_4px_0_0_var(--color-tinta)] sm:grid-cols-[2.75rem_3rem_1fr_minmax(8rem,14rem)_3.5rem] sm:px-4"
                 >
-                  <span className="angka text-lead font-semibold tracking-tight">{s.peringkat}</span>
+                  <span className="angka text-lead font-semibold tracking-tight text-tinta">{s.peringkat}</span>
                   <span className="hidden sm:block">{disimulasikan && <TandaGeser n={selisih[s.id]} />}</span>
                   <span className="min-w-0">
                     <span className="block truncate text-badan font-medium">
@@ -288,22 +380,23 @@ export default function Simulator({
 
 function SimpanBobot({ bobot, aktif, onTersimpan }: { bobot: Bobot; aktif: boolean; onTersimpan: () => void }) {
   const [alasan, setAlasan] = useState('');
-  const [status, setStatus] = useState<{ jenis: 'galat' | 'ok'; teks: string } | null>(null);
+  const [galat, setGalat] = useState<string | null>(null);
   const [memuat, setMemuat] = useState(false);
+  const pendek = alasan.trim().length < 10;
 
   async function simpan(e: React.FormEvent) {
     e.preventDefault();
     setMemuat(true);
-    setStatus(null);
+    setGalat(null);
     const bulat = Object.fromEntries(FAKTOR.map((f) => [f, Math.round(bobot[f] * 1000) / 1000]));
     const { error } = await createClient().rpc('save_weights', { p_bobot: bulat, p_alasan: alasan });
     setMemuat(false);
     if (error) {
-      setStatus({ jenis: 'galat', teks: pesanError(error) });
+      setGalat(pesanError(error));
       return;
     }
     setAlasan('');
-    setStatus({ jenis: 'ok', teks: 'Bobot resmi tersimpan dan tercatat di riwayat keputusan.' });
+    umumkan('Bobot resmi tersimpan dan tercatat di riwayat keputusan.');
     onTersimpan();
   }
 
@@ -313,7 +406,8 @@ function SimpanBobot({ bobot, aktif, onTersimpan }: { bobot: Bobot; aktif: boole
         <Ikon nama="kunci" className="size-4" /> Mode Perencana
       </p>
       <label htmlFor="alasan-bobot" className="text-kecil">
-        Alasan perubahan (wajib, tampil publik di riwayat keputusan)
+        Alasan perubahan <span className="text-tinta">*</span>
+        <span className="block text-lembut">Wajib, minimal 10 karakter, tampil publik di riwayat keputusan.</span>
       </label>
       <textarea
         id="alasan-bobot"
@@ -322,15 +416,17 @@ function SimpanBobot({ bobot, aktif, onTersimpan }: { bobot: Bobot; aktif: boole
         minLength={10}
         required
         rows={3}
+        aria-invalid={galat ? true : undefined}
+        aria-describedby={galat ? 'galat-bobot' : undefined}
         className="w-full bg-terang p-3 text-badan focus:outline-3 focus:outline-tinta"
       />
-      <Tombol type="submit" disabled={!aktif || alasan.trim().length < 10 || memuat}>
+      <Tombol type="submit" disabled={!aktif || pendek || memuat}>
         {memuat ? 'Menyimpan…' : 'Simpan sebagai bobot resmi'}
       </Tombol>
-      {!aktif && <p className="text-kecil text-lembut">Ubah slider dulu; bobot sekarang sama dengan bobot resmi.</p>}
-      {status && (
-        <p role={status.jenis === 'galat' ? 'alert' : 'status'} className="text-kecil font-medium">
-          {status.teks}
+      {!aktif && <p className="text-kecil text-lembut">Ubah bobot dulu; bobot sekarang sama dengan bobot resmi.</p>}
+      {galat && (
+        <p id="galat-bobot" role="alert" className="text-kecil font-medium text-tinta">
+          {galat}
         </p>
       )}
     </form>

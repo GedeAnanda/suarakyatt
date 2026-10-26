@@ -53,7 +53,7 @@ export default function IndikatorSLA({
     >
       <span
         className={`inline-flex items-center gap-1.5 font-medium whitespace-nowrap ${
-          sla.terlambat ? 'bg-tinta px-2 py-0.5 text-kertas' : 'text-tinta'
+          sla.terlambat ? 'bg-tinta px-2 py-0.5 text-kertas' : 'text-teks'
         } ${ringkas ? 'text-kecil' : 'text-badan'}`}
       >
         <Ikon nama={sla.terlambat ? 'peringatan' : 'jam'} className={ringkas ? 'size-3.5' : 'size-4'} />

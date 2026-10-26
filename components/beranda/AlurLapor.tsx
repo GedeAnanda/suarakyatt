@@ -20,7 +20,7 @@ function BarisRapor({ i }: { i: RaporInstansi }) {
   const tertahan = i.huruf !== i.huruf_asli;
   return (
     <div className="flex items-start gap-5 bg-terang p-4 sm:p-5">
-      <span className="w-[1.1ch] text-[3.5rem] leading-[0.9] font-semibold tracking-[-0.04em]">{i.huruf ?? '–'}</span>
+      <span className="text-tinta w-[1.1ch] text-[3.5rem] leading-[0.9] font-semibold tracking-[-0.04em]">{i.huruf ?? '–'}</span>
       <div className="grid flex-1 gap-1">
         <span className="font-medium">{i.nama}</span>
         <span className="text-kecil text-lembut">
@@ -57,7 +57,7 @@ export default function AlurLapor({ rapor, kodeContoh }: { rapor: RaporInstansi[
         </div>
         <div data-ui className="grid gap-2 bg-lapis p-5 sm:ml-14">
           <p className="text-kecil text-lembut">Yang kembali ke pelapor</p>
-          <p className="angka text-judul font-semibold tracking-[-0.03em]">{kodeContoh}</p>
+          <p className="text-tinta angka text-judul font-semibold tracking-[-0.03em]">{kodeContoh}</p>
           <div className="flex flex-wrap items-center gap-3">
             <BadgeStatus status="menunggu" />
             <span className="text-kecil">Sisa 24 jam menuju batas waktu respons</span>

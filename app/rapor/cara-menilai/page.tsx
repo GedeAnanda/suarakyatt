@@ -49,13 +49,13 @@ export default function CaraMenilaiPage() {
         <h2 id="judul-rumus" className="sr-only">
           Rumus
         </h2>
-        <p className="angka text-[clamp(1.75rem,1rem+3.4vw,4rem)] leading-tight font-medium tracking-[-0.04em]">
+        <p className="text-tinta angka text-[clamp(1.75rem,1rem+3.4vw,4rem)] leading-tight font-medium tracking-[-0.04em]">
           Nilai = 100 × (0,3 R + 0,3 S + 0,2 P + 0,2 K)
         </p>
         <dl className="mt-10 grid gap-x-10 gap-y-8 md:grid-cols-2">
           {KOMPONEN.map((k) => (
             <div key={k} className="grid grid-cols-[3rem_1fr] gap-x-4">
-              <dt className="text-judul leading-none font-semibold">{k}</dt>
+              <dt className="text-tinta text-judul leading-none font-semibold">{k}</dt>
               <dd>
                 <p className="text-badan font-semibold">
                   {INFO_KOMPONEN[k].nama} · bobot {Math.round(INFO_KOMPONEN[k].bobot * 100)}%
@@ -79,7 +79,7 @@ export default function CaraMenilaiPage() {
         <ul className="grid grid-cols-5 gap-2 lg:col-span-8">
           {HURUF.map((h) => (
             <li key={h.h} className="bg-lapis p-4">
-              <p className="text-[clamp(3rem,2rem+4vw,6rem)] leading-none font-semibold tracking-[-0.05em]">{h.h}</p>
+              <p className="text-tinta text-[clamp(3rem,2rem+4vw,6rem)] leading-none font-semibold tracking-[-0.05em]">{h.h}</p>
               <p className="mt-2 text-kecil">{h.rentang}</p>
             </li>
           ))}
@@ -98,10 +98,10 @@ export default function CaraMenilaiPage() {
         <ol className="mt-10 grid gap-2">
           {CONTOH.map((c) => (
             <li key={c.k} className="grid gap-3 bg-lapis p-5 sm:grid-cols-[3rem_1fr_9rem_5rem] sm:items-baseline sm:gap-6">
-              <span className="text-judul leading-none font-semibold">{c.k}</span>
+              <span className="text-tinta text-judul leading-none font-semibold">{c.k}</span>
               <span className="text-badan">{c.kejadian}</span>
               <span className="angka text-badan text-lembut sm:text-right">{c.hitung}</span>
-              <span className="angka text-lead font-semibold sm:text-right">{desimal(c.nilai, 2)}</span>
+              <span className="text-tinta angka text-lead font-semibold sm:text-right">{desimal(c.nilai, 2)}</span>
             </li>
           ))}
         </ol>

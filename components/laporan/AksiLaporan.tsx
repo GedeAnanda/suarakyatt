@@ -9,6 +9,7 @@ import { useState } from 'react';
 import { pesanError } from '@/lib/errors';
 import { createClient } from '@/lib/supabase/client';
 import type { StatusLaporan } from '@/lib/types';
+import { umumkan } from '../Pengumuman';
 import Ikon from '../ui/Ikon';
 import { kelasTombol, Tombol } from '../ui/Tombol';
 
@@ -43,13 +44,14 @@ export function TombolDukung({
     const hasil = data as { upvoted: boolean; jumlah_upvote: number };
     setDidukung(hasil.upvoted);
     setJumlah(hasil.jumlah_upvote);
+    umumkan(hasil.upvoted ? 'Dukungan Anda tercatat.' : 'Dukungan dibatalkan.');
     router.refresh();
   }
 
   return (
     <div className="grid gap-2">
       <div className="flex flex-wrap items-center gap-4">
-        <p className="angka text-judul leading-none font-medium tracking-[-0.04em]">
+        <p className="text-tinta angka text-judul leading-none font-medium tracking-[-0.04em]">
           {jumlah}
           <span className="ml-2 text-badan tracking-normal text-lembut">warga mendukung</span>
         </p>
@@ -141,6 +143,7 @@ export function FormRating({ kode }: { kode: string }) {
     setMemuat(false);
     if (error) return setGalat(pesanError(error));
     setTerkirim(true);
+    umumkan('Rating terkirim.');
     router.refresh();
   }
 

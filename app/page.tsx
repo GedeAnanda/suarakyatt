@@ -136,10 +136,10 @@ function AngkaMusrenbang() {
         <dl className="grid gap-5 lg:col-span-6 lg:col-start-7">
           {BARIS.map((b) => (
             <div key={b.label} className="grid grid-cols-[52%_1fr] items-baseline sm:grid-cols-[minmax(0,5fr)_minmax(0,1.2fr)_minmax(0,6fr)]">
-              <dd className="angka text-right text-[clamp(3.25rem,1rem+5.4vw,6rem)] leading-none font-medium tracking-[-0.05em]">
+              <dd className="text-tinta angka text-right text-[clamp(3.25rem,1rem+5.4vw,6rem)] leading-none font-medium tracking-[-0.05em]">
                 {b.utuh}
               </dd>
-              <dd className="angka text-[clamp(3.25rem,1rem+5.4vw,6rem)] leading-none font-medium tracking-[-0.05em]">
+              <dd className="text-tinta angka text-[clamp(3.25rem,1rem+5.4vw,6rem)] leading-none font-medium tracking-[-0.05em]">
                 {b.desimal}
               </dd>
               <dt className="col-span-2 mt-1 text-kecil sm:col-span-1 sm:mt-0 sm:pl-4 sm:text-badan">{b.label}</dt>
@@ -236,7 +236,7 @@ export default function BerandaPage() {
           <h2 id="judul-lacak" className="sr-only">
             Lacak laporan
           </h2>
-          <form action="/lacak" method="get" className="text-[clamp(2.25rem,1rem+5.4vw,6rem)] leading-[1.1] font-medium tracking-[-0.04em]">
+          <form action="/lacak" method="get" className="text-tinta text-[clamp(2.25rem,1rem+5.4vw,6rem)] leading-[1.1] font-medium tracking-[-0.04em]">
             <label htmlFor="kode-kalimat">Lacak laporan </label>
             <input
               id="kode-kalimat"

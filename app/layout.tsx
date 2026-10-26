@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Plus_Jakarta_Sans } from 'next/font/google';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
+import Pengumuman from '@/components/Pengumuman';
 import './globals.css';
 
 // Plus Jakarta Sans: huruf yang dibuat untuk identitas kota Jakarta (PRD 11).
@@ -18,7 +19,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#e2e2e2',
+  themeColor: '#ececeb',
 };
 
 export default function RootLayout({ children }: LayoutProps<'/'>) {
@@ -36,6 +37,7 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
           {children}
         </main>
         <Footer />
+        <Pengumuman />
       </body>
     </html>
   );

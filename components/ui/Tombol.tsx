@@ -39,4 +39,4 @@ export function TautanTombol({
 
 /** Tautan teks biasa: garis bawah tebal yang menipis saat disorot. */
 export const kelasTautan =
-  'underline decoration-2 underline-offset-4 decoration-current/40 hover:decoration-current transition-[text-decoration-color]';
+  'text-tinta [.di-medan_&]:text-medan-tinta underline decoration-2 underline-offset-4 decoration-current/40 hover:decoration-current transition-[text-decoration-color]';

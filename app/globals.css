@@ -2,22 +2,26 @@
 
 /*
  * Sistem desain suaRAkyat (pemilik: A)
- * Kertas abu-abu dan tinta merah tua: satu tanah, satu tinta, satu medan.
- * Sudut selalu persegi, tanpa bayangan dan gradasi; permukaan dibedakan lewat selisih nada.
+ * Kertas abu-abu terang, teks badan gelap, merah tua untuk judul, angka utama, aksi, dan peringatan.
+ * Merah tidak dipakai untuk teks biasa supaya tetap berarti "penting" atau "terlambat".
+ * Sudut selalu persegi, tanpa gradasi; permukaan dibedakan lewat selisih nada.
+ * Kontras: teks badan 14,8:1, teks lembut ≥ 5,3:1 di semua permukaan (WCAG AA, sebagian besar AAA).
  * Warna status dan peta selalu didampingi teks atau ikon (PRD 11).
  */
 
 @theme {
-  --color-kertas: #e2e2e2;
-  --color-lapis: #d5d4d4;
-  --color-lapis-2: #c9c7c7;
-  --color-terang: #efeeee;
+  --color-kertas: #ececeb;
+  --color-lapis: #e0dfde;
+  --color-lapis-2: #d2d0cf;
+  --color-terang: #f7f7f6;
+  --color-teks: #2a1316;
   --color-tinta: #7d0c14;
   --color-tinta-tua: #5c0710;
-  --color-lembut: #74464a;
+  --color-lembut: #5c4a4c;
+  --color-garis: #8c7c7e; /* batas isian form: 3,6:1 terhadap kertas (WCAG 1.4.11) */
   --color-medan: #7d0c14;
-  --color-medan-tinta: #e9e4e4;
-  --color-medan-lembut: #d6b3b6;
+  --color-medan-tinta: #f4eeee;
+  --color-medan-lembut: #e3c6c8;
 
   /* Status laporan: pasangan teks/latar dengan kontras AA. */
   --color-st-menunggu: #6a4700;
@@ -28,10 +32,10 @@
   --color-st-diproses-bg: #bfd8d4;
   --color-st-selesai: #22521e;
   --color-st-selesai-bg: #c8dbc1;
-  --color-st-ditolak: #efeeee;
+  --color-st-ditolak: #f7f7f6;
   --color-st-ditolak-bg: #3b3536;
   --color-st-dibatalkan: #4d4848;
-  --color-st-dibatalkan-bg: #c9c7c7;
+  --color-st-dibatalkan-bg: #d2d0cf;
 
   /* Lima kelas tetap choropleth (SDD 9.1): 0–20, 20–40, 40–60, 60–80, 80–100. */
   --color-k1: #e9d3d4;
@@ -43,8 +47,8 @@
   --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
 
   /* Lima langkah ukuran; tidak ada yang lain. */
-  --text-kecil: clamp(0.8125rem, 0.79rem + 0.1vw, 0.875rem);
-  --text-kecil--line-height: 1.45;
+  --text-kecil: clamp(0.875rem, 0.85rem + 0.1vw, 0.9375rem);
+  --text-kecil--line-height: 1.5;
   --text-badan: clamp(1rem, 0.96rem + 0.2vw, 1.125rem);
   --text-badan--line-height: 1.55;
   --text-lead: clamp(1.25rem, 1.1rem + 0.7vw, 1.625rem);
@@ -57,6 +61,7 @@
   --text-raksasa--line-height: 0.86;
 
   --ease-keluar: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-pegas: cubic-bezier(0.34, 1.36, 0.64, 1);
 }
 
 :root {
@@ -71,7 +76,7 @@ html {
 
 body {
   background: var(--color-kertas);
-  color: var(--color-tinta);
+  color: var(--color-teks);
   font-family: var(--font-sans);
   font-size: var(--text-badan);
   line-height: 1.55;
@@ -85,6 +90,49 @@ h3 {
   font-weight: 500;
   letter-spacing: -0.035em;
   text-wrap: balance;
+}
+
+h1,
+h2 {
+  color: var(--color-tinta);
+}
+
+.di-medan h1,
+.di-medan h2 {
+  color: inherit;
+}
+
+/* Tailwind 4 tidak lagi memberi kursor tangan pada tombol; semua yang bisa diklik harus terlihat bisa diklik. */
+button:not(:disabled),
+[role="button"],
+[role="tab"],
+summary,
+label:has(> input[type="radio"]),
+label:has(> input[type="checkbox"]),
+label:has(> input[type="file"]),
+select {
+  cursor: pointer;
+}
+
+a,
+button,
+summary,
+input,
+label {
+  touch-action: manipulation;
+}
+
+/* Isian form: batas bawah tegas supaya kotaknya terlihat sebagai isian (kontras non-teks 3:1). */
+input:not([type="range"], [type="radio"], [type="checkbox"], [type="file"], [type="hidden"]),
+textarea,
+select {
+  border-bottom: 2px solid var(--color-garis);
+}
+
+input[aria-invalid="true"],
+textarea[aria-invalid="true"] {
+  border-bottom-color: var(--color-tinta);
+  background-color: color-mix(in srgb, var(--color-tinta) 6%, var(--color-terang));
 }
 
 p {
@@ -150,6 +198,21 @@ p {
   to { transform: scale(1); }
 }
 
+/* Bar komponen rapor tumbuh dari kiri saat masuk layar. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .batang {
+      transform-origin: left;
+      animation: batang linear both;
+      animation-timeline: view();
+      animation-range: entry 20% cover 35%;
+    }
+  }
+}
+@keyframes batang {
+  from { transform: scaleX(0); }
+}
+
 @keyframes muncul {
   from { opacity: 0; transform: translateY(28px); }
   to { opacity: 1; transform: translateY(0); }
@@ -169,6 +232,41 @@ p {
   .ganti {
     animation: timbul 450ms var(--ease-keluar) both;
   }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .toast {
+    animation: toast-masuk 320ms var(--ease-pegas) both;
+  }
+  .lipat {
+    transition: grid-template-rows 380ms var(--ease-keluar);
+  }
+  .kilat {
+    animation: kilat 900ms ease-out;
+  }
+}
+
+@keyframes toast-masuk {
+  from { opacity: 0; transform: translateY(16px) scale(0.97); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Baris yang peringkatnya baru berubah menyala sebentar. */
+@keyframes kilat {
+  from { background-color: color-mix(in srgb, var(--color-st-menunggu-bg) 90%, transparent); }
+}
+
+/* Panel lipat: tinggi dianimasikan lewat grid-template-rows, isi tetap di DOM. */
+.lipat {
+  display: grid;
+  grid-template-rows: 0fr;
+}
+.lipat[data-buka="true"] {
+  grid-template-rows: 1fr;
+}
+.lipat > * {
+  overflow: hidden;
+  min-height: 0;
 }
 
 @keyframes baris-naik {
@@ -245,9 +343,10 @@ input[type="range"].slider::-moz-range-thumb {
 .peta .leaflet-bar a {
   background: var(--color-terang);
   color: var(--color-tinta);
-  width: 2.25rem;
-  height: 2.25rem;
-  line-height: 2.25rem;
+  width: 2.75rem;
+  height: 2.75rem;
+  line-height: 2.75rem;
+  font-size: 1.25rem;
 }
 .peta .leaflet-bar a:hover {
   background: var(--color-lapis);

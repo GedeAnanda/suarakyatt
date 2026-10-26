@@ -54,6 +54,24 @@ const JALUR: Record<string, ReactNode> = {
   bintang: <path d="m12 3 2.7 5.6 6.1.8-4.5 4.2 1.1 6.1L12 16.8l-5.4 2.9 1.1-6.1-4.5-4.2 6.1-.8Z" />,
   unggah: <path d="M12 16V4M7 9l5-5 5 5M4 20h16" />,
   centang: <path d="m5 12.5 4.5 4.5L19 7.5" />,
+  tautan: (
+    <>
+      <path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7L11.5 6.8" />
+      <path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1.5-1.5" />
+    </>
+  ),
+  salin: (
+    <>
+      <rect x="8" y="8" width="12" height="12" />
+      <path d="M16 8V4H4v12h4" />
+    </>
+  ),
+  bagikan: (
+    <>
+      <path d="M12 3v12M7 8l5-5 5 5" />
+      <path d="M5 13v8h14v-8" />
+    </>
+  ),
 };
 
 export type NamaIkon = keyof typeof JALUR;

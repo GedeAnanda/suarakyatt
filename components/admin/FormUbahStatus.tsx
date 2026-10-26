@@ -14,6 +14,7 @@ import { createClient } from '@/lib/supabase/client';
 import { unggahFoto } from '@/lib/supabase/unggah';
 import type { AlasanTolak, StatusLaporan } from '@/lib/types';
 import { IkonStatus, LABEL_STATUS } from '../BadgeStatus';
+import { umumkan } from '../Pengumuman';
 import Ikon from '../ui/Ikon';
 import { Tombol } from '../ui/Tombol';
 
@@ -96,6 +97,7 @@ export default function FormUbahStatus({ kode, status, aktif }: { kode: string; 
       });
       if (error) throw error;
       setBerhasil(`Status ${kode} sekarang ${LABEL_STATUS[baru]}. Perubahan ini tampil di riwayat publik.`);
+      umumkan(`Status ${kode} diubah menjadi ${LABEL_STATUS[baru]}.`);
       router.refresh();
     } catch (err) {
       setGalat(pesanError(err));

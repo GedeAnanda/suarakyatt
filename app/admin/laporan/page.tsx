@@ -38,7 +38,7 @@ async function Isi() {
         {angka.map((a) => (
           <div key={a.label} className="flex flex-col-reverse">
             <dt className="text-kecil text-lembut">{a.label}</dt>
-            <dd className="angka text-judul font-medium tracking-[-0.04em]">{a.nilai}</dd>
+            <dd className="text-tinta angka text-judul font-medium tracking-[-0.04em]">{a.nilai}</dd>
           </div>
         ))}
       </dl>

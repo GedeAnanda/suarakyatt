@@ -9,7 +9,7 @@ import { useMemo, useState } from 'react';
 import type { TitikLaporan } from '@/lib/data/laporan';
 import { KATEGORI } from '@/lib/konten';
 import type { StatusLaporan } from '@/lib/types';
-import { IkonStatus, LABEL_STATUS } from '../BadgeStatus';
+import { IkonStatus, LABEL_STATUS, WARNA_TITIK } from '../BadgeStatus';
 import KartuLaporan from '../KartuLaporan';
 import { Tombol } from '../ui/Tombol';
 
@@ -84,7 +84,7 @@ export default function PetaLaporan({
                 type="button"
                 aria-pressed={kategori.includes(k.id)}
                 onClick={() => ubahKategori(k.id)}
-                className="min-h-10 bg-lapis px-3 py-1.5 text-kecil hover:bg-lapis-2 active:translate-y-px aria-pressed:bg-tinta aria-pressed:text-kertas"
+                className="min-h-11 bg-lapis px-3 py-1.5 text-kecil hover:bg-lapis-2 active:translate-y-px aria-pressed:bg-tinta aria-pressed:text-kertas"
               >
                 {k.nama}
               </button>
@@ -100,7 +100,7 @@ export default function PetaLaporan({
                 type="button"
                 aria-pressed={status.includes(s)}
                 onClick={() => ubahStatus(s)}
-                className="flex min-h-10 items-center gap-1.5 bg-lapis px-3 py-1.5 text-kecil hover:bg-lapis-2 active:translate-y-px aria-pressed:bg-tinta aria-pressed:text-kertas"
+                className="flex min-h-11 items-center gap-1.5 bg-lapis px-3 py-1.5 text-kecil hover:bg-lapis-2 active:translate-y-px aria-pressed:bg-tinta aria-pressed:text-kertas"
               >
                 <IkonStatus status={s} className="size-3.5" />
                 {LABEL_STATUS[s]}
@@ -115,10 +115,23 @@ export default function PetaLaporan({
         <div className="peta isolate overflow-hidden bg-lapis">
           <KlasterLaporan laporan={tersaring} className="h-[min(72svh,44rem)] min-h-96" />
         </div>
-        <p className="mt-3 text-kecil text-lembut" aria-live="polite">
-          {tersaring.length} laporan tampil. Angka di kotak adalah jumlah laporan yang berdekatan; perbesar peta untuk
-          memisahkannya. Laporan yang ditolak tetap tampil bersama alasannya.
-        </p>
+        <div className="mt-3 flex flex-wrap items-start justify-between gap-x-8 gap-y-3">
+          <ul aria-label="Arti warna titik" className="flex flex-wrap gap-x-4 gap-y-1.5 text-kecil">
+            {STATUS_PUBLIK.map((s) => (
+              <li key={s} className="flex items-center gap-1.5">
+                <span aria-hidden="true" className="size-3 outline-2 outline-terang" style={{ background: WARNA_TITIK[s] }} />
+                {LABEL_STATUS[s]}
+              </li>
+            ))}
+            <li className="flex items-center gap-1.5">
+              <span aria-hidden="true" className="size-3.5 bg-tinta" />
+              Kotak berangka: kumpulan laporan berdekatan
+            </li>
+          </ul>
+          <p className="text-kecil text-lembut" aria-live="polite">
+            {tersaring.length} laporan tampil. Klik kotak untuk memperbesar; klik titik untuk membuka ringkasannya.
+          </p>
+        </div>
       </div>
 
       <section aria-labelledby="judul-daftar">

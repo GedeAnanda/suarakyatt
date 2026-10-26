@@ -3,29 +3,15 @@
 // Di bawah 1280 px semuanya pindah ke menu supaya bar tidak pernah terlipat.
 
 import Link from 'next/link';
-import { Suspense, type ReactNode } from 'react';
+import { Suspense } from 'react';
 import { ambilSesi } from '@/lib/data/sesi';
 import { keluar } from '@/lib/supabase/aksi-auth';
 import CariKode from './CariKode';
 import { MenuPonsel, MenuPonselStatis, TautanNav, TautanNavStatis } from './NavUtama';
+import Turun from './Turun';
 import Ikon from './ui/Ikon';
 import { kelasTombol } from './ui/Tombol';
 import Wordmark from './Wordmark';
-
-/** Panel tarik-turun tanpa JavaScript: <details> dengan panel yang menempel di kanan. */
-function Turun({ label, children }: { label: ReactNode; children: ReactNode }) {
-  return (
-    <details className="group relative">
-      <summary className="flex h-11 cursor-pointer list-none items-center gap-2 px-3 text-badan hover:bg-lapis group-open:bg-lapis [&::-webkit-details-marker]:hidden">
-        {label}
-        <Ikon nama="turun" className="size-4 transition-transform group-open:rotate-180" />
-      </summary>
-      <div className="absolute top-full right-0 z-10 mt-1 w-80 bg-kertas p-4 shadow-[0_18px_40px_rgb(60_10_14/0.18)]">
-        {children}
-      </div>
-    </details>
-  );
-}
 
 const peranTeks = (s: NonNullable<Awaited<ReturnType<typeof ambilSesi>>>) =>
   `${s.perencana ? 'Perencana' : s.peran === 'admin' ? 'Admin instansi' : 'Warga'}${s.demo ? ' · akun demo' : ''}`;

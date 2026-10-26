@@ -8,7 +8,7 @@ import { kelasTautan } from './ui/Tombol';
 
 export default function BannerSimulasi({ sumber, className = '' }: { sumber?: Sumber; className?: string }) {
   return (
-    <aside role="note" className={`flex gap-3 bg-lapis px-4 py-3 text-kecil text-tinta sm:items-center ${className}`}>
+    <aside role="note" className={`flex gap-3 bg-lapis px-4 py-3 text-kecil text-teks sm:items-center ${className}`}>
       <Ikon nama="info" className="mt-0.5 size-4 sm:mt-0" />
       <p>
         <strong className="font-semibold">Data simulasi.</strong> Laporan, instansi, dan angka kinerja di halaman ini

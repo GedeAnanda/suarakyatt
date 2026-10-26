@@ -81,6 +81,24 @@ export default function PrioritasPage() {
         </p>
       </div>
 
+      <ol aria-label="Cara membaca dashboard ini" className="mt-10 grid gap-px bg-lapis-2 sm:grid-cols-3">
+        {[
+          { judul: 'Pilih isu', isi: 'Klik kecamatan di peta atau baris di daftar peringkat.' },
+          { judul: 'Baca alasannya', isi: 'Lihat faktor yang mendorong skornya naik dan yang menahannya.' },
+          { judul: 'Uji bobot lain', isi: 'Pilih preset atau geser bobot; urutan bergeser dan tandanya ↑↓ muncul.' },
+        ].map((l, i) => (
+          <li key={l.judul} className="flex gap-4 bg-kertas p-4 sm:p-5">
+            <span aria-hidden="true" className="angka flex size-9 shrink-0 items-center justify-center bg-tinta text-badan font-semibold text-kertas">
+              {i + 1}
+            </span>
+            <p className="text-kecil">
+              <strong className="block text-badan font-semibold">{l.judul}</strong>
+              {l.isi}
+            </p>
+          </li>
+        ))}
+      </ol>
+
       <div className="mt-10">
         <Suspense fallback={<Kerangka />}>
           <Isi />
