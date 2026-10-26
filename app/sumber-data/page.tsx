@@ -91,7 +91,28 @@ export default function SumberDataPage() {
         <h2 id="judul-terbuka" className="text-lead font-medium tracking-tight">
           Data terbuka
         </h2>
-        <div className="kartu mt-5 overflow-x-auto">
+        <ul className="mt-5 grid gap-3 sm:hidden">
+          {DATA_TERBUKA.map((d) => (
+            <li key={d.nama} className="kartu grid gap-2 p-4">
+              <div className="flex items-start justify-between gap-3">
+                <p className="font-semibold">{d.nama}</p>
+                <span className={`shrink-0 rounded-full px-2.5 py-0.5 text-kecil font-semibold ${warnaStatus[d.status]}`}>{d.status}</span>
+              </div>
+              <p className="text-kecil text-lembut">{d.dipakai}</p>
+              <p className="text-kecil">
+                {d.url ? (
+                  <a href={d.url} target="_blank" rel="noreferrer" className="underline underline-offset-4">
+                    {d.sumber}
+                  </a>
+                ) : (
+                  d.sumber
+                )}{' '}
+                · <span className="font-medium">{d.lisensi}</span>
+              </p>
+            </li>
+          ))}
+        </ul>
+        <div className="kartu relative mt-5 hidden overflow-x-auto sm:block">
           <table className="w-full min-w-[56rem] text-left text-badan">
             <thead className="bg-terang text-kecil">
               <tr>
@@ -118,7 +139,7 @@ export default function SumberDataPage() {
                   </td>
                   <td className="p-4 text-kecil whitespace-nowrap">{d.lisensi}</td>
                   <td className="p-4">
-                    <span className={`px-2 py-0.5 text-kecil font-medium whitespace-nowrap ${warnaStatus[d.status]}`}>{d.status}</span>
+                    <span className={`rounded-full px-2.5 py-0.5 text-kecil font-semibold whitespace-nowrap ${warnaStatus[d.status]}`}>{d.status}</span>
                   </td>
                 </tr>
               ))}
@@ -150,7 +171,28 @@ export default function SumberDataPage() {
             </p>
           </div>
         </div>
-        <div className="kartu mt-10 overflow-x-auto">
+        <ul className="mt-10 grid gap-3 sm:hidden">
+          {PROFIL.map((p) => (
+            <li key={p.instansi} className="kartu p-4">
+              <p className="font-semibold">{p.instansi} (simulasi)</p>
+              <p className="text-kecil text-lembut">{p.peran}</p>
+              <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2 text-kecil">
+                {[
+                  ['Peluang ditolak', p.tolak],
+                  ['Respons tepat waktu', p.respons],
+                  ['Selesai tepat waktu', p.selesai],
+                  ['Rating rata-rata', p.rating],
+                ].map(([label, nilai]) => (
+                  <div key={label}>
+                    <dt className="text-lembut">{label}</dt>
+                    <dd className="angka text-badan font-semibold">{nilai}</dd>
+                  </div>
+                ))}
+              </dl>
+            </li>
+          ))}
+        </ul>
+        <div className="kartu relative mt-10 hidden overflow-x-auto sm:block">
           <table className="w-full min-w-[48rem] text-left text-badan">
             <thead className="bg-terang text-kecil">
               <tr>
@@ -181,7 +223,23 @@ export default function SumberDataPage() {
         <p className="mt-2 max-w-[70ch] text-badan">
           Dihitung dalam jam kalender agar sederhana. Angkanya ilustrasi dan dinyatakan terbuka di sini.
         </p>
-        <div className="kartu mt-5 overflow-x-auto">
+        <ul className="mt-5 grid gap-3 sm:hidden">
+          {KATEGORI.map((k) => (
+            <li key={k.id} className="kartu flex items-start justify-between gap-4 p-4">
+              <div>
+                <p className="font-semibold">{k.nama}</p>
+                <p className="text-kecil text-lembut">
+                  {k.instansi} · urgensi {k.urgensi.toLowerCase()}
+                </p>
+              </div>
+              <p className="angka shrink-0 text-right text-kecil">
+                <span className="block">respons {k.respons} jam</span>
+                <span className="block">selesai {k.selesai / 24} hari</span>
+              </p>
+            </li>
+          ))}
+        </ul>
+        <div className="kartu relative mt-5 hidden overflow-x-auto sm:block">
           <table className="w-full min-w-[40rem] text-left text-badan">
             <thead className="bg-terang text-kecil">
               <tr>

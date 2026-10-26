@@ -91,7 +91,7 @@ export default function TabelLaporanAdmin({ laporan, sekarang }: { laporan: Lapo
         </label>
       </div>
 
-      <div className="kartu mt-4 overflow-x-auto">
+      <div className="kartu mt-4 relative overflow-x-auto">
         <table className="w-full min-w-[52rem] text-left text-badan">
           <caption className="sr-only">Laporan instansi, terlambat paling atas</caption>
           <thead className="bg-terang text-kecil">

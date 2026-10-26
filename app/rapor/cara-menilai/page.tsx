@@ -131,7 +131,7 @@ export default function CaraMenilaiPage() {
             .
           </p>
         </div>
-        <div className="kartu overflow-x-auto lg:col-span-7">
+        <div className="kartu relative overflow-x-auto lg:col-span-7">
           <table className="w-full min-w-[30rem] text-left text-badan">
             <caption className="mb-3 text-left text-kecil text-lembut">
               Dua dinas yang sama-sama menerima 100 laporan

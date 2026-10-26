@@ -116,7 +116,7 @@ export default function KartuRapor({ i, kategoriId }: { i: RaporInstansi; katego
         <summary className="cursor-pointer list-none text-kecil font-medium marker:hidden">
           <span className="underline decoration-2 underline-offset-4 group-open:no-underline">Rincian per kategori</span>
         </summary>
-        <div className="mt-3 overflow-x-auto">
+        <div className="mt-3 relative overflow-x-auto">
           <table className="w-full min-w-[26rem] text-left text-kecil">
             <thead className="text-lembut">
               <tr>
