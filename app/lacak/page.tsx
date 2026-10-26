@@ -4,6 +4,7 @@
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { Suspense } from 'react';
+import Link from 'next/link';
 import CariKode from '@/components/CariKode';
 import { normalisasiKode } from '@/lib/format';
 
@@ -39,6 +40,7 @@ export default function LacakPage({ searchParams }: PageProps<'/lacak'>) {
       <Suspense fallback={<CariKode id="kode-lacak" besar className="mt-8 max-w-xl" />}>
         <Isi searchParams={searchParams} />
       </Suspense>
+      <p className="mt-6 text-badan text-lembut">Belum punya kode? <Link href="/contoh" className="font-medium text-tinta underline underline-offset-4">Buka laporan contoh</Link> untuk mencoba alurnya.</p>
     </div>
   );
 }

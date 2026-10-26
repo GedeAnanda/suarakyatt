@@ -79,7 +79,7 @@ export default function RaporPage() {
             Nilai tiap instansi dalam merespons dan menyelesaikan laporan warga. Laporan yang diabaikan ikut dihitung, dan
             huruf selalu tampil bersama tingkat penolakannya: nilai bagus hasil membuang laporan langsung terlihat.
           </p>
-          <p className="text-tinta mt-4 angka text-lead font-medium tracking-tight">Nilai = 100 × (0,3 R + 0,3 S + 0,2 P + 0,2 K)</p>
+
           <p className="mt-3 text-badan">
             <Link href="/rapor/cara-menilai" className={kelasTautan}>
               Cara menilai, lengkap dengan contoh hitungan
@@ -88,7 +88,7 @@ export default function RaporPage() {
         </div>
       </div>
 
-      <div className="mt-12">
+      <div className="mt-6">
         <Suspense
           fallback={
             <div aria-hidden="true" className="grid gap-6 lg:grid-cols-2">

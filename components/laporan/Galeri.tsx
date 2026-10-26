@@ -20,16 +20,18 @@ export default function Galeri({ laporan }: { laporan: Pick<LaporanPublik, 'foto
   }
   const selesai = laporan.status === 'selesai';
   const [utama, ...lain] = laporan.foto;
+  const ilustrasi = utama?.startsWith('/demo/');
+  const buktiIlustrasi = laporan.foto_bukti?.startsWith('/demo/');
 
   return (
     <div className={`grid gap-3 ${selesai ? 'sm:grid-cols-2' : ''}`}>
       <figure>
         {utama ? (
-          <Image src={utama} alt="Foto dari pelapor" width={960} height={720} className="aspect-4/3 w-full rounded-(--radius-kartu) bg-lapis object-cover" />
+          <Image src={utama} alt={ilustrasi ? "Lampiran ilustrasi simulasi, bukan foto lapangan" : "Foto dari pelapor"} width={960} height={720} className="aspect-4/3 w-full rounded-(--radius-kartu) bg-lapis object-cover" />
         ) : (
           <Kosong teks={laporan.is_simulated ? 'Laporan simulasi ini tidak punya foto.' : 'Foto tidak tersedia.'} />
         )}
-        <figcaption className="mt-2 text-kecil text-lembut">{selesai ? 'Sebelum · foto dari pelapor' : 'Foto dari pelapor'}</figcaption>
+        <figcaption className="mt-2 text-kecil text-lembut">{ilustrasi ? 'Lampiran simulasi · bukan foto lapangan' : selesai ? 'Sebelum · foto dari pelapor' : 'Foto dari pelapor'}</figcaption>
         {lain.length > 0 && (
           <div className="mt-3 grid grid-cols-2 gap-3">
             {lain.map((src, i) => (
@@ -41,11 +43,11 @@ export default function Galeri({ laporan }: { laporan: Pick<LaporanPublik, 'foto
       {selesai && (
         <figure>
           {laporan.foto_bukti ? (
-            <Image src={laporan.foto_bukti} alt="Foto bukti penyelesaian dari dinas" width={960} height={720} className="aspect-4/3 w-full rounded-(--radius-kartu) bg-lapis object-cover" />
+            <Image src={laporan.foto_bukti} alt={buktiIlustrasi ? "Lampiran contoh, bukan bukti penyelesaian" : "Foto bukti penyelesaian dari dinas"} width={960} height={720} className="aspect-4/3 w-full rounded-(--radius-kartu) bg-lapis object-cover" />
           ) : (
             <Kosong teks={laporan.is_simulated ? 'Laporan simulasi ini tidak punya foto bukti.' : 'Foto bukti tidak tersedia.'} />
           )}
-          <figcaption className="mt-2 text-kecil text-lembut">Sesudah · foto bukti dari dinas</figcaption>
+          <figcaption className="mt-2 text-kecil text-lembut">{buktiIlustrasi ? 'Contoh lampiran penyelesaian · bukan bukti lapangan' : 'Sesudah · foto bukti dari dinas'}</figcaption>
         </figure>
       )}
     </div>

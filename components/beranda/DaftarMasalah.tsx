@@ -48,7 +48,7 @@ export default function DaftarMasalah() {
       </ul>
 
       <figure className="lg:col-span-5">
-        <div className="relative aspect-4/5 overflow-hidden rounded-(--radius-kartu) bg-lapis shadow-(--shadow-kartu)">
+        <div className="relative aspect-4/5 overflow-hidden rounded-(--radius-kartu) bg-lapis">
           {FOTO_KATEGORI.map((f, i) => (
             <Image
               key={f.src}
@@ -64,7 +64,7 @@ export default function DaftarMasalah() {
           ))}
         </div>
         <figcaption className="mt-3 text-kecil text-lembut">
-          {KATEGORI[pilih].nama}: foto &ldquo;{foto.judul}&rdquo; oleh {foto.pembuat},{' '}
+          Foto konteks kota, bukan bukti laporan: &ldquo;{foto.judul}&rdquo; oleh {foto.pembuat},{' '}
           <a href={foto.url} target="_blank" rel="noreferrer" className="underline">
             {foto.lisensi}
           </a>
