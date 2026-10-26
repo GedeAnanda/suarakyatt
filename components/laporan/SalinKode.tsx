@@ -34,7 +34,7 @@ export default function SalinKode({ kode }: { kode: string }) {
   }
 
   const kelas =
-    'inline-flex min-h-11 items-center gap-2 bg-lapis px-4 text-kecil font-medium transition-colors hover:bg-lapis-2 active:translate-y-px';
+    'inline-flex min-h-11 items-center gap-2 rounded-full bg-permukaan px-4 text-kecil font-semibold ring-1 ring-batas ring-inset transition-colors hover:bg-terang active:scale-[0.98]';
   return (
     <div className="flex flex-wrap gap-2">
       <button type="button" onClick={salin} className={kelas}>

@@ -36,12 +36,12 @@ async function Isi() {
       </div>
       <BannerSimulasi sumber={sumber} className="mt-4" />
       <nav aria-label="Ringkasan rapor" className="mt-10">
-        <ul className="grid grid-cols-2 gap-px bg-lapis-2 sm:grid-cols-4">
+        <ul className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           {urut.map((i) => (
             <li key={i.id}>
               <a
                 href={`#instansi-${i.id}`}
-                className="flex h-full items-center gap-3 bg-kertas p-3 transition-colors hover:bg-lapis sm:p-4"
+                className="kartu kartu-klik flex h-full items-center gap-3 p-3 sm:p-4"
               >
                 <span
                   className={`text-[2.75rem] leading-none font-semibold tracking-[-0.05em] ${i.huruf ? 'text-tinta' : 'text-lembut'}`}

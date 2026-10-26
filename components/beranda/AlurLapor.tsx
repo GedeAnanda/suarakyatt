@@ -1,37 +1,68 @@
 // components/beranda/AlurLapor.tsx — dari mana datanya: lapor, dinas menjawab, warga menilai (pemilik: A)
-// Setiap langkah: kalimat, lalu yang diisi (potongan form), lalu yang kembali (potongan hasil).
-// Potongan memakai komponen asli aplikasi supaya tampilannya sama persis dengan halaman sebenarnya.
+// Tiga kartu sejajar, masing-masing dengan potongan antarmuka asli aplikasi (badge, timeline, rapor),
+// supaya pengunjung langsung melihat seperti apa layarnya.
 
+import type { ReactNode } from 'react';
+import { desimal, persen } from '@/lib/format';
+import type { RaporInstansi } from '@/lib/types';
 import BadgeStatus from '../BadgeStatus';
 import Ikon from '../ui/Ikon';
-import type { RaporInstansi } from '@/lib/types';
-import { desimal, persen } from '@/lib/format';
 
-function Isian({ label, children }: { label: string; children: React.ReactNode }) {
+function Langkah({
+  nomor,
+  judul,
+  isi,
+  children,
+  terakhir = false,
+}: {
+  nomor: number;
+  judul: string;
+  isi: string;
+  children: ReactNode;
+  terakhir?: boolean;
+}) {
   return (
-    <div className="grid gap-1 sm:grid-cols-[8rem_1fr] sm:gap-4">
-      <span className="text-kecil text-lembut">{label}</span>
-      <span className="text-badan">{children}</span>
-    </div>
+    <li className="relative flex">
+      <article className="kartu flex flex-1 flex-col p-5 sm:p-6">
+        <div className="flex items-center gap-3">
+          <span className="angka flex size-9 shrink-0 items-center justify-center rounded-full bg-tinta text-badan font-semibold text-white">
+            {nomor}
+          </span>
+          <h3 className="text-lead leading-tight font-semibold tracking-tight">{judul}</h3>
+        </div>
+        <p className="mt-3 text-badan text-lembut">{isi}</p>
+        <div className="mt-6 flex-1">{children}</div>
+      </article>
+      {!terakhir && (
+        <span
+          aria-hidden="true"
+          className="absolute top-1/2 -right-5 z-10 hidden size-8 -translate-y-1/2 items-center justify-center rounded-full border border-batas bg-permukaan text-tinta shadow-(--shadow-kartu) lg:flex"
+        >
+          <Ikon nama="naik" className="size-4 rotate-90" />
+        </span>
+      )}
+    </li>
   );
 }
 
 function BarisRapor({ i }: { i: RaporInstansi }) {
   const tertahan = i.huruf !== i.huruf_asli;
   return (
-    <div className="flex items-start gap-5 bg-terang p-4 sm:p-5">
-      <span className="text-tinta w-[1.1ch] text-[3.5rem] leading-[0.9] font-semibold tracking-[-0.04em]">{i.huruf ?? '–'}</span>
-      <div className="grid flex-1 gap-1">
-        <span className="font-medium">{i.nama}</span>
-        <span className="text-kecil text-lembut">
+    <div className="panel flex items-center gap-4 p-3">
+      <span className="flex size-12 shrink-0 items-center justify-center rounded-(--radius-kontrol) bg-permukaan text-[1.75rem] leading-none font-bold text-tinta shadow-(--shadow-kartu)">
+        {i.huruf ?? '–'}
+      </span>
+      <div className="min-w-0 text-kecil leading-snug">
+        <p className="truncate font-semibold">{i.nama.replace(' (simulasi)', '')}</p>
+        <p className="text-lembut">
           Nilai <span className="angka">{desimal(i.nilai)}</span>
-          {tertahan && `, angka setara ${i.huruf_asli}`} · sampel {i.sampel} laporan
-        </span>
-        <span className={`text-kecil ${i.peringatan_penolakan ? 'font-semibold text-tinta' : 'text-lembut'}`}>
-          {i.peringatan_penolakan && <Ikon nama="peringatan" className="mr-1 inline size-3.5 align-[-2px]" />}
+          {tertahan && `, setara ${i.huruf_asli}`}
+        </p>
+        <p className={`flex items-center gap-1 ${i.peringatan_penolakan ? 'font-semibold text-tinta' : 'text-lembut'}`}>
+          {i.peringatan_penolakan && <Ikon nama="peringatan" className="size-3.5" />}
           Ditolak {persen(i.tingkat_penolakan)}
-          {i.peringatan_penolakan ? ', melewati batas 25%: huruf ditahan maksimal C' : ''}
-        </span>
+          {i.peringatan_penolakan && ', huruf ditahan C'}
+        </p>
       </div>
     </div>
   );
@@ -42,77 +73,83 @@ export default function AlurLapor({ rapor, kodeContoh }: { rapor: RaporInstansi[
   const tertahan = rapor.find((r) => r.peringatan_penolakan) ?? rapor[1];
 
   return (
-    <ol className="grid gap-20 sm:gap-24">
-      <li className="grid gap-4" data-muncul>
-        <p className="text-lead font-medium">Pertama, warga melapor dengan foto dan titik di peta.</p>
-        <div data-ui className="grid gap-3 bg-terang p-5">
-          <Isian label="Kategori">Jalan rusak</Isian>
-          <Isian label="Deskripsi">Lubang besar di lajur kiri, motor sering oleng saat malam karena gelap.</Isian>
-          <Isian label="Lokasi">
-            <span className="inline-flex items-center gap-1.5">
-              <Ikon nama="lokasi" className="size-4" /> Cipayung, Jakarta Timur
+    <ol className="grid gap-6 lg:grid-cols-3 lg:gap-10">
+      <Langkah nomor={1} judul="Warga melapor" isi="Foto, titik di peta, dan cerita singkat. Kecamatan dan dinasnya ditentukan otomatis.">
+        <div className="panel grid gap-3 p-4">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="rounded-full bg-tinta px-3 py-1 text-kecil font-semibold text-white">Jalan rusak</span>
+            <span className="inline-flex items-center gap-1 text-kecil text-lembut">
+              <Ikon nama="lokasi" className="size-3.5" />
+              Cipayung, Jakarta Timur
             </span>
-          </Isian>
-          <Isian label="Foto">2 foto, wajah dan plat nomor tidak terlihat</Isian>
-        </div>
-        <div data-ui className="grid gap-2 bg-lapis p-5 sm:ml-14">
-          <p className="text-kecil text-lembut">Yang kembali ke pelapor</p>
-          <p className="text-tinta angka text-judul font-semibold tracking-[-0.03em]">{kodeContoh}</p>
-          <div className="flex flex-wrap items-center gap-3">
-            <BadgeStatus status="menunggu" />
-            <span className="text-kecil">Sisa 24 jam menuju batas waktu respons</span>
+          </div>
+          <p className="text-kecil">&ldquo;Lubang besar di lajur kiri, motor sering oleng saat malam.&rdquo;</p>
+          <div className="flex gap-2">
+            {[0, 1].map((n) => (
+              <span
+                key={n}
+                className="flex size-14 items-center justify-center rounded-(--radius-kontrol) border border-dashed border-lapis-2 bg-permukaan text-lembut"
+              >
+                <Ikon nama="kamera" className="size-5" />
+              </span>
+            ))}
           </div>
         </div>
-      </li>
+        <div className="mt-3 flex items-center justify-between gap-3 rounded-(--radius-kontrol) border border-batas p-4">
+          <div>
+            <p className="text-kecil text-lembut">Kode lacak</p>
+            <p className="angka text-lead font-bold tracking-tight text-tinta">{kodeContoh}</p>
+          </div>
+          <BadgeStatus status="menunggu" />
+        </div>
+      </Langkah>
 
-      <li className="grid gap-4" data-muncul>
-        <p className="text-lead font-medium">Lalu dinas menjawab, dan jawabannya terbuka untuk publik.</p>
-        <div data-ui className="grid gap-3 bg-terang p-5">
-          <Isian label="Ubah status">
-            <span className="inline-flex flex-wrap items-center gap-2">
-              <BadgeStatus status="diverifikasi" /> menjadi <BadgeStatus status="diproses" />
-            </span>
-          </Isian>
-          <Isian label="Catatan">Petugas sudah di lokasi, penambalan dijadwalkan besok pagi.</Isian>
-        </div>
-        <div data-ui className="grid gap-3 bg-lapis p-5 sm:ml-14">
-          <p className="text-kecil text-lembut">Riwayat yang dilihat semua orang</p>
-          <ul className="grid gap-2 text-kecil">
-            <li className="flex flex-wrap items-center gap-2">
-              <BadgeStatus status="menunggu" /> Senin 08.12 · Pelapor
+      <Langkah nomor={2} judul="Dinas menjawab terbuka" isi="Setiap perubahan status tercatat publik. Laporan yang ditolak tetap tampil, lengkap dengan alasannya.">
+        <ol className="panel grid gap-0 p-4">
+          {[
+            { status: 'menunggu' as const, waktu: 'Senin 08.12', siapa: 'Pelapor' },
+            { status: 'diverifikasi' as const, waktu: 'Senin 15.40', siapa: 'Dinas Bina Jalan' },
+            { status: 'diproses' as const, waktu: 'Selasa 09.05', siapa: 'Petugas sudah di lokasi' },
+          ].map((t, i, semua) => (
+            <li key={t.status} className="relative grid grid-cols-[1.25rem_1fr] gap-x-3 pb-4 last:pb-0">
+              {i < semua.length - 1 && (
+                <span aria-hidden="true" className="absolute top-5 bottom-0 left-[0.5625rem] w-0.5 rounded-full bg-lapis-2" />
+              )}
+              <span aria-hidden="true" className="relative mt-1 size-5 rounded-full border-4 border-permukaan bg-tinta" />
+              <div>
+                <BadgeStatus status={t.status} />
+                <p className="mt-1 text-kecil text-lembut">
+                  {t.waktu} · {t.siapa}
+                </p>
+              </div>
             </li>
-            <li className="flex flex-wrap items-center gap-2">
-              <BadgeStatus status="diverifikasi" /> Senin 15.40 · Admin Dinas Bina Jalan (simulasi)
-            </li>
-            <li className="flex flex-wrap items-center gap-2">
-              <BadgeStatus status="diproses" /> Selasa 09.05 · Petugas sudah di lokasi
-            </li>
-          </ul>
-          <p className="text-kecil">
-            Laporan yang <strong className="font-semibold">ditolak</strong> tetap tampil di peta dan di halaman ini, lengkap
-            dengan alasannya.
-          </p>
-        </div>
-      </li>
+          ))}
+        </ol>
+        <p className="mt-3 flex items-center gap-2 rounded-(--radius-kontrol) bg-tinta-muda px-4 py-3 text-kecil">
+          <Ikon nama="info" className="size-4 shrink-0 text-tinta" />
+          Sisa 4 hari menuju batas waktu selesai
+        </p>
+      </Langkah>
 
-      <li className="grid gap-4" data-muncul>
-        <p className="text-lead font-medium">Terakhir, warga menilai, dan rapor dinas ikut berubah.</p>
-        <div data-ui className="grid gap-3 bg-terang p-5">
-          <Isian label="Rating">
-            <span className="inline-flex items-center gap-0.5" aria-label="4 dari 5 bintang">
-              {[1, 2, 3, 4, 5].map((n) => (
-                <Ikon key={n} nama="bintang" isi={n <= 4} className="size-5" />
-              ))}
-            </span>
-          </Isian>
-          <Isian label="Komentar">Ditambal rapi, tapi baru selesai setelah enam hari.</Isian>
+      <Langkah
+        nomor={3}
+        judul="Warga menilai, rapor berubah"
+        isi="Rating, ketepatan waktu, dan tingkat penolakan menjadi Rapor Instansi A–E."
+        terakhir
+      >
+        <div className="panel flex items-center justify-between gap-3 p-4">
+          <span className="flex gap-0.5 text-tinta" aria-label="4 dari 5 bintang">
+            {[1, 2, 3, 4, 5].map((n) => (
+              <Ikon key={n} nama="bintang" isi={n <= 4} className="size-5" />
+            ))}
+          </span>
+          <span className="text-kecil text-lembut">&ldquo;Rapi, tapi enam hari.&rdquo;</span>
         </div>
-        <div data-ui className="grid gap-2 bg-lapis p-5 sm:ml-14 lg:mr-[-12rem]">
-          <p className="text-kecil text-lembut">Rapor Instansi, dihitung ulang dari semua laporan</p>
+        <div className="mt-3 grid gap-2">
           <BarisRapor i={baik} />
           <BarisRapor i={tertahan} />
         </div>
-      </li>
+      </Langkah>
     </ol>
   );
 }

@@ -105,8 +105,8 @@ export default function BadgeStatus({
 }) {
   return (
     <span
-      className={`inline-flex items-center gap-1.5 font-medium whitespace-nowrap ${
-        besar ? 'px-3 py-1.5 text-badan' : 'px-2 py-0.5 text-kecil'
+      className={`inline-flex items-center gap-1.5 rounded-full font-semibold whitespace-nowrap ${
+        besar ? 'px-3.5 py-1.5 text-badan' : 'px-2.5 py-0.5 text-kecil'
       } ${GAYA_STATUS[status]} ${className}`}
     >
       <IkonStatus status={status} className={besar ? 'size-5' : 'size-3.5'} />

@@ -97,7 +97,7 @@ export function TombolBatalkan({ kode }: { kode: string }) {
   }
 
   return (
-    <div className="bg-lapis p-5">
+    <div className="kartu p-5">
       <p className="text-badan font-medium">Laporan Anda masih menunggu verifikasi.</p>
       <p className="mt-1 text-kecil">
         Selama status masih Menunggu, Anda bisa membatalkannya, misalnya karena salah kategori atau salah titik. Laporan
@@ -148,11 +148,11 @@ export function FormRating({ kode }: { kode: string }) {
   }
 
   if (terkirim) {
-    return <p className="bg-lapis p-5 text-badan font-medium">Terima kasih. Rating Anda ikut menghitung nilai kepuasan di Rapor Instansi.</p>;
+    return <p className="kartu p-5 text-badan font-medium">Terima kasih. Rating Anda ikut menghitung nilai kepuasan di Rapor Instansi.</p>;
   }
 
   return (
-    <form onSubmit={kirim} className="grid gap-4 bg-lapis p-5">
+    <form onSubmit={kirim} className="kartu grid gap-4 p-5">
       <fieldset>
         <legend className="text-badan font-medium">Seberapa baik penanganannya?</legend>
         <p className="text-kecil text-lembut">Rating hanya bisa diberikan sekali, oleh pelapor, setelah laporan selesai.</p>
@@ -173,7 +173,7 @@ export function FormRating({ kode }: { kode: string }) {
           onChange={(e) => setKomentar(e.target.value)}
           maxLength={300}
           rows={3}
-          className="bg-terang p-3 text-badan focus:outline-3 focus:outline-tinta"
+          className="p-3 text-badan"
         />
       </label>
       <Tombol type="submit" disabled={!nilai || memuat} className="justify-self-start">

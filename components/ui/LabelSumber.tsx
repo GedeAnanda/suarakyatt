@@ -28,9 +28,9 @@ export default function LabelSumber({
     <Link
       href="/sumber-data"
       title={PENJELASAN[sumber]}
-      className={`inline-flex items-center gap-1.5 bg-lapis px-2 py-0.5 text-kecil font-medium text-tinta hover:bg-lapis-2 ${className}`}
+      className={`inline-flex items-center gap-1.5 rounded-full bg-tinta-muda px-2.5 py-0.5 text-kecil font-semibold text-tinta transition-colors hover:bg-lapis-2 ${className}`}
     >
-      <span aria-hidden="true" className={`size-2 ${sumber === 'terbuka' ? 'bg-st-selesai' : 'bg-tinta'}`} />
+      <span aria-hidden="true" className={`size-2 rounded-full ${sumber === 'terbuka' ? 'bg-st-selesai' : 'bg-tinta'}`} />
       {TEKS[sumber]}
       {keterangan && <span className="font-normal text-lembut">{keterangan}</span>}
     </Link>

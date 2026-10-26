@@ -12,7 +12,7 @@ const p = (x: number) => `${Math.round(x * 100)}%`;
 export default function RiwayatBobot({ riwayat }: { riwayat: Riwayat[] }) {
   if (riwayat.length === 0) {
     return (
-      <p className="bg-lapis p-5 text-badan">
+      <p className="kartu p-5 text-badan">
         Belum ada perubahan bobot. Bobot yang berlaku masih bobot awal dari PRD; perubahan pertama oleh Perencana akan
         tercatat di sini beserta alasannya.
       </p>
@@ -23,7 +23,7 @@ export default function RiwayatBobot({ riwayat }: { riwayat: Riwayat[] }) {
       {riwayat.map((r) => {
         const berubah = FAKTOR.filter((f) => Math.abs((r.bobot_baru[f] ?? 0) - (r.bobot_lama[f] ?? 0)) >= 0.005);
         return (
-          <li key={r.created_at} className="grid gap-4 bg-lapis p-5 sm:grid-cols-[14rem_1fr] sm:gap-8 sm:p-6">
+          <li key={r.created_at} className="kartu grid gap-4 p-5 sm:grid-cols-[14rem_1fr] sm:gap-8 sm:p-6">
             <div className="text-kecil">
               <p className="font-medium">{tanggalJam(r.created_at)}</p>
               <p className="text-lembut">{r.pelaku}</p>
@@ -34,7 +34,7 @@ export default function RiwayatBobot({ riwayat }: { riwayat: Riwayat[] }) {
                 {berubah.map((f) => {
                   const naik = r.bobot_baru[f] > r.bobot_lama[f];
                   return (
-                    <li key={f} className="flex items-center gap-1.5 bg-terang px-2.5 py-1 text-kecil">
+                    <li key={f} className="flex items-center gap-1.5 rounded-full bg-lapis px-3 py-1 text-kecil">
                       {NAMA_FAKTOR[f]}
                       <span className="angka text-lembut">{p(r.bobot_lama[f])}</span>
                       <Ikon nama={naik ? 'naik' : 'turun'} className="size-3.5" />

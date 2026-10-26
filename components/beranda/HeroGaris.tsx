@@ -26,7 +26,7 @@ function Judul({ salinan = false }: { salinan?: boolean }) {
 
 export default function HeroGaris() {
   return (
-    <section aria-labelledby="judul-beranda" className="relative h-[calc(100svh-4rem)] max-h-[64rem] min-h-[34rem] overflow-hidden sm:h-[calc(100svh-4.5rem)]">
+    <section aria-labelledby="judul-beranda" className="relative h-[82svh] max-h-[64rem] min-h-[32rem] overflow-hidden sm:h-[calc(100svh-4.5rem)] sm:min-h-[34rem]">
       <h1 id="judul-beranda" className="sr-only">
         Kenapa belum? suaRAkyat membuka alasan di balik urutan penanganan masalah kota.
       </h1>

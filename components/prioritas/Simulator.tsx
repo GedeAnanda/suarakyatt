@@ -159,7 +159,7 @@ export default function Simulator({
     <div className="grid gap-10 lg:grid-cols-12 lg:gap-8">
       {/* Panel bobot */}
       <section aria-labelledby="judul-bobot" className="lg:col-span-4">
-        <div className="bg-lapis p-5 sm:p-6 lg:sticky lg:top-4">
+        <div className="kartu p-5 sm:p-6 lg:sticky lg:top-24">
           <div className="flex items-baseline justify-between gap-4">
             <h2 id="judul-bobot" className="text-lead font-medium tracking-tight">
               Bobot faktor
@@ -182,7 +182,7 @@ export default function Simulator({
                 type="button"
                 aria-pressed={presetAktif === p}
                 onClick={() => setSlider(keSlider(PRESET[p]))}
-                className="min-h-11 bg-terang px-3 py-1.5 text-kecil transition-colors hover:bg-kertas active:translate-y-px aria-pressed:bg-tinta aria-pressed:text-kertas"
+                className="min-h-11 rounded-full bg-lapis px-4 py-1.5 text-kecil font-medium transition-colors hover:bg-lapis-2 active:translate-y-px aria-pressed:bg-tinta aria-pressed:text-kertas"
               >
                 {LABEL_PRESET[p]}
               </button>
@@ -194,7 +194,7 @@ export default function Simulator({
             aria-expanded={sliderTerbuka}
             aria-controls="daftar-slider"
             onClick={() => setSliderTerbuka((b) => !b)}
-            className="mt-4 flex min-h-11 w-full items-center justify-between gap-2 border-b-2 border-lapis-2 text-badan font-medium lg:hidden"
+            className="mt-4 flex min-h-11 w-full items-center justify-between gap-2 border-b border-batas text-badan font-semibold lg:hidden"
           >
             Atur keenam bobot sendiri
             <Ikon nama={sliderTerbuka ? 'naik' : 'turun'} className="size-5" />
@@ -242,11 +242,11 @@ export default function Simulator({
           )}
 
           <div className="mt-5 flex flex-wrap items-center gap-2">
-            <Tombol varian="kedua" className="bg-terang" onClick={() => setSlider(keSlider(bobotResmi))} disabled={!disimulasikan && totalSlider > 0}>
+            <Tombol varian="garis" onClick={() => setSlider(keSlider(bobotResmi))} disabled={!disimulasikan && totalSlider > 0}>
               Kembali ke bobot resmi
             </Tombol>
             {disimulasikan && (
-              <Tombol varian="kedua" className="bg-terang" onClick={salinTautan}>
+              <Tombol varian="garis" onClick={salinTautan}>
                 <Ikon nama="tautan" className="size-4" />
                 Salin tautan simulasi
               </Tombol>
@@ -270,7 +270,7 @@ export default function Simulator({
                   setKategori(k.id);
                   setPilihId(null);
                 }}
-                className="min-h-11 bg-lapis px-3 py-1.5 text-kecil transition-colors hover:bg-lapis-2 active:translate-y-px aria-pressed:bg-tinta aria-pressed:text-kertas"
+                className="min-h-11 rounded-full bg-permukaan px-4 py-1.5 text-kecil font-medium ring-1 ring-batas ring-inset transition-colors hover:bg-terang aria-pressed:ring-tinta active:translate-y-px aria-pressed:bg-tinta aria-pressed:text-kertas"
               >
                 {k.nama}
               </button>
@@ -299,7 +299,7 @@ export default function Simulator({
           </figure>
 
           {terpilih && (
-            <section ref={panelIsu} aria-labelledby="judul-isu" aria-live="polite" className="scroll-mt-4 bg-terang p-5 sm:p-6">
+            <section ref={panelIsu} aria-labelledby="judul-isu" aria-live="polite" className="kartu scroll-mt-4 p-5 sm:p-6">
               <p className="text-kecil text-lembut">
                 Peringkat {terpilih.peringkat} dari {simulasi.length}
                 {disimulasikan && (
@@ -338,7 +338,7 @@ export default function Simulator({
                   type="button"
                   aria-pressed={s.id === terpilih?.id}
                   onClick={() => pilihIsu(s.id)}
-                  className="grid w-full grid-cols-[2.5rem_1fr_auto] items-center gap-x-3 gap-y-2 bg-lapis px-3 py-3 text-left transition-colors hover:bg-lapis-2 aria-pressed:bg-terang aria-pressed:shadow-[inset_4px_0_0_var(--color-tinta)] sm:grid-cols-[2.75rem_3rem_1fr_minmax(8rem,14rem)_3.5rem] sm:px-4"
+                  className="grid w-full grid-cols-[2.5rem_1fr_auto] items-center gap-x-3 gap-y-2 rounded-(--radius-kontrol) border border-batas bg-permukaan px-3 py-3 text-left transition-colors hover:border-lapis-2 hover:bg-terang aria-pressed:border-tinta aria-pressed:bg-tinta-muda/50 aria-pressed:shadow-[inset_4px_0_0_var(--color-tinta)] sm:grid-cols-[2.75rem_3rem_1fr_minmax(8rem,14rem)_3.5rem] sm:px-4"
                 >
                   <span className="angka text-lead font-semibold tracking-tight text-tinta">{s.peringkat}</span>
                   <span className="hidden sm:block">{disimulasikan && <TandaGeser n={selisih[s.id]} />}</span>
@@ -401,7 +401,7 @@ function SimpanBobot({ bobot, aktif, onTersimpan }: { bobot: Bobot; aktif: boole
   }
 
   return (
-    <form onSubmit={simpan} className="mt-6 grid gap-3 bg-kertas p-4">
+    <form onSubmit={simpan} className="panel mt-6 grid gap-3 p-4">
       <p className="flex items-center gap-2 text-badan font-medium">
         <Ikon nama="kunci" className="size-4" /> Mode Perencana
       </p>
@@ -418,7 +418,7 @@ function SimpanBobot({ bobot, aktif, onTersimpan }: { bobot: Bobot; aktif: boole
         rows={3}
         aria-invalid={galat ? true : undefined}
         aria-describedby={galat ? 'galat-bobot' : undefined}
-        className="w-full bg-terang p-3 text-badan focus:outline-3 focus:outline-tinta"
+        className="w-full p-3 text-badan"
       />
       <Tombol type="submit" disabled={!aktif || pendek || memuat}>
         {memuat ? 'Menyimpan…' : 'Simpan sebagai bobot resmi'}

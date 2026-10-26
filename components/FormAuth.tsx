@@ -41,7 +41,7 @@ function Isian({
           required
           minLength={minLength}
           aria-describedby={petunjuk ? `${id}-petunjuk` : undefined}
-          className="h-12 min-w-0 flex-1 bg-terang px-4 text-badan focus:outline-3 focus:outline-tinta"
+          className="h-12 min-w-0 flex-1 px-4 text-badan"
         />
         {sandi && (
           <button
@@ -49,7 +49,7 @@ function Isian({
             onClick={() => setLihat((x) => !x)}
             aria-pressed={lihat}
             aria-controls={id}
-            className="h-12 shrink-0 border-b-2 border-garis bg-lapis px-4 text-kecil font-medium hover:bg-lapis-2"
+            className="ml-2 h-12 shrink-0 rounded-(--radius-kontrol) bg-lapis px-4 text-kecil font-semibold hover:bg-lapis-2"
           >
             {lihat ? 'Sembunyikan' : 'Tampilkan'}
           </button>
@@ -92,7 +92,7 @@ function FormDaftar() {
   const [hasil, aksi, memuat] = useActionState(daftar, null);
   if (hasil && 'ok' in hasil) {
     return (
-      <div role="status" className="grid gap-3 bg-terang p-6">
+      <div role="status" className="kartu grid gap-3 p-6">
         <p className="text-lead font-medium tracking-tight">Cek email Anda</p>
         <p className="text-badan">
           Kami mengirim tautan verifikasi. Buka tautan itu untuk mengaktifkan akun; setelah itu Anda bisa melapor,
@@ -127,7 +127,7 @@ export default function FormAuth({
   const [mode, setMode] = useState(modeAwal);
   return (
     <div>
-      <div role="tablist" aria-label="Masuk atau daftar" className="flex gap-1">
+      <div role="tablist" aria-label="Masuk atau daftar" className="inline-flex gap-1 rounded-(--radius-kontrol) bg-lapis p-1">
         {(['masuk', 'daftar'] as const).map((m) => (
           <button
             key={m}
@@ -137,14 +137,14 @@ export default function FormAuth({
             aria-selected={mode === m}
             aria-controls={`panel-${m}`}
             onClick={() => setMode(m)}
-            className="min-h-12 bg-lapis px-5 text-badan font-medium hover:bg-lapis-2 aria-selected:bg-tinta aria-selected:text-kertas"
+            className="min-h-11 rounded-[0.5rem] px-5 text-badan font-semibold text-lembut transition-colors hover:text-teks aria-selected:bg-permukaan aria-selected:text-tinta aria-selected:shadow-[0_1px_3px_rgb(42_19_22/0.15)]"
           >
             {m === 'masuk' ? 'Masuk' : 'Daftar akun warga'}
           </button>
         ))}
       </div>
       {verifikasiGagal && (
-        <p role="status" className="mt-6 bg-lapis p-4 text-badan">
+        <p role="status" className="panel mt-6 p-4 text-badan">
           Tautan verifikasi dibuka di browser lain atau sudah kedaluwarsa. Email Anda biasanya sudah terverifikasi; silakan
           masuk di sini.
         </p>

@@ -35,7 +35,7 @@ function TautanNavIsi({ pathname }: { pathname: string }) {
           <Link
             href={item.href}
             aria-current={aktif(pathname, item.href) ? 'page' : undefined}
-            className="block px-3 py-2 text-badan text-tinta decoration-2 underline-offset-[0.4em] hover:bg-lapis aria-[current=page]:underline"
+            className="block rounded-(--radius-kontrol) px-3 py-2 text-badan font-medium text-teks decoration-2 transition-colors aria-[current=page]:text-tinta underline-offset-[0.4em] hover:bg-lapis aria-[current=page]:underline"
           >
             {item.label}
           </Link>
@@ -49,7 +49,7 @@ function TautanNavIsi({ pathname }: { pathname: string }) {
 export function MenuPonselStatis() {
   return (
     <div className="xl:hidden">
-      <span className="flex h-11 items-center gap-2 bg-lapis px-3 text-kecil font-medium">
+      <span className="flex h-11 items-center gap-2 rounded-(--radius-kontrol) bg-lapis px-3 text-kecil font-medium">
         <Ikon nama="menu" className="size-4" />
         Menu
       </span>
@@ -81,7 +81,7 @@ export function MenuPonsel({ children }: { children: ReactNode }) {
         aria-expanded={buka}
         aria-controls="menu-ponsel"
         onClick={() => setBuka((b) => !b)}
-        className="flex h-11 items-center gap-2 bg-lapis px-3 text-kecil font-medium hover:bg-lapis-2"
+        className="flex h-11 items-center gap-2 rounded-(--radius-kontrol) bg-lapis px-3 text-kecil font-medium hover:bg-lapis-2"
       >
         <Ikon nama={buka ? 'tutup' : 'menu'} className="size-4" />
         Menu

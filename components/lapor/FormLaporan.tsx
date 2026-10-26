@@ -72,15 +72,15 @@ function Langkah({
     <section
       id={`bagian-langkah-${n}`}
       aria-labelledby={`langkah-${n}`}
-      className={`grid scroll-mt-6 gap-4 border-t-4 pt-6 transition-colors lg:grid-cols-12 lg:gap-8 ${
-        galat.length ? 'border-tinta' : selesai ? 'border-st-selesai' : 'border-lapis'
+      className={`kartu grid scroll-mt-6 gap-4 p-5 transition-colors sm:p-6 lg:grid-cols-12 lg:gap-8 ${
+        galat.length ? 'border-tinta ring-2 ring-tinta/15' : selesai ? 'border-st-selesai/50' : ''
       }`}
     >
       <div className="lg:col-span-4">
         <h2 id={`langkah-${n}`} className="flex items-center gap-3 text-lead font-medium tracking-tight text-teks">
           <span
-            className={`angka flex size-9 shrink-0 items-center justify-center text-badan font-semibold transition-colors ${
-              selesai ? 'bg-st-selesai text-kertas' : galat.length ? 'bg-tinta text-kertas' : 'bg-lapis text-teks'
+            className={`angka flex size-9 shrink-0 items-center justify-center rounded-full text-badan font-semibold transition-colors ${
+              selesai ? 'bg-st-selesai text-white' : galat.length ? 'bg-tinta text-white' : 'bg-lapis text-teks'
             }`}
           >
             {selesai ? <Ikon nama="centang" className="size-5" /> : n}
@@ -272,7 +272,7 @@ export default function FormLaporan() {
             {KATEGORI.map((k) => (
               <label
                 key={k.id}
-                className="grid cursor-pointer gap-1 bg-lapis p-4 transition-colors hover:bg-lapis-2 has-checked:bg-tinta has-checked:text-kertas has-focus-visible:outline-3 has-focus-visible:outline-tinta"
+                className="kartu kartu-klik grid cursor-pointer gap-1 p-4 has-checked:border-tinta has-checked:bg-tinta has-checked:text-white has-focus-visible:outline-3 has-focus-visible:outline-tinta"
               >
                 <input type="radio" name="kategori" value={k.id} checked={kategori === k.id} onChange={() => setKategori(k.id)} className="sr-only" />
                 <span className="text-lead font-medium tracking-tight">{k.nama}</span>
@@ -317,7 +317,7 @@ export default function FormLaporan() {
       </Langkah>
 
       <Langkah n={3} selesai={lengkap.includes(3)} galat={galatLangkah(3)} judul="Foto masalahnya" petunjuk="1–3 foto JPG, PNG, atau WebP, maksimal 5 MB. Foto dikecilkan dan data lokasi di dalam file dibuang sebelum diunggah.">
-        <p className="flex gap-2 bg-st-menunggu-bg p-3 text-kecil text-st-menunggu">
+        <p className="flex gap-2 rounded-(--radius-kontrol) bg-st-menunggu-bg p-3 text-kecil text-st-menunggu">
           <Ikon nama="peringatan" className="mt-0.5 size-4" />
           Jangan memotret wajah atau plat nomor orang lain. Foto tampil publik.
         </p>
@@ -325,12 +325,12 @@ export default function FormLaporan() {
           {foto.map((f, i) => (
             <figure key={f.id} className="relative">
               {/* eslint-disable-next-line @next/next/no-img-element -- pratinjau blob lokal */}
-              <img src={f.pratinjau} alt={`Foto ${i + 1} yang dipilih`} className="aspect-square w-full bg-lapis object-cover" />
+              <img src={f.pratinjau} alt={`Foto ${i + 1} yang dipilih`} className="aspect-square w-full rounded-(--radius-kontrol) bg-lapis object-cover" />
               <button
                 type="button"
                 onClick={() => hapusFoto(f.id)}
                 disabled={sibuk}
-                className="absolute top-2 right-2 flex size-11 items-center justify-center bg-tinta text-kertas hover:bg-tinta-tua"
+                className="absolute top-2 right-2 flex size-11 items-center justify-center rounded-full bg-tinta shadow-md text-kertas hover:bg-tinta-tua"
                 aria-label={`Hapus foto ${i + 1}`}
               >
                 <Ikon nama="tutup" className="size-4" />
@@ -340,7 +340,7 @@ export default function FormLaporan() {
           {foto.length < MAKS_FOTO && (
             <label
               htmlFor={idInputFoto}
-              className="flex aspect-square cursor-pointer flex-col items-center justify-center gap-2 bg-lapis p-4 text-center text-kecil hover:bg-lapis-2 has-focus-visible:outline-3 has-focus-visible:outline-tinta"
+              className="flex aspect-square cursor-pointer flex-col items-center justify-center gap-2 rounded-(--radius-kontrol) border-2 border-dashed border-lapis-2 bg-permukaan p-4 text-center text-kecil font-medium transition-colors hover:border-tinta hover:bg-tinta-muda/40 has-focus-visible:outline-3 has-focus-visible:outline-tinta"
             >
               <Ikon nama="kamera" className="size-7" />
               Tambah foto
@@ -380,7 +380,7 @@ export default function FormLaporan() {
           maxLength={MAKS_DESKRIPSI + 50}
           aria-describedby={`hitung-deskripsi${galatLangkah(4).length ? ' galat-langkah-4' : ''}`}
           aria-invalid={galatLangkah(4).length > 0 || undefined}
-          className="w-full bg-terang p-4 text-badan focus:outline-3 focus:outline-tinta"
+          className="w-full p-4 text-badan"
           placeholder="Contoh: Lubang besar di lajur kiri dekat halte, motor sering oleng saat malam karena lampu jalan mati."
         />
         <p id="hitung-deskripsi" className={`angka mt-1 text-kecil ${panjang > MAKS_DESKRIPSI ? 'font-semibold' : 'text-lembut'}`}>
@@ -389,7 +389,7 @@ export default function FormLaporan() {
       </Langkah>
 
       {serupa && serupa.length > 0 && (
-        <section aria-labelledby="judul-serupa" className="di-medan bg-medan p-5 text-medan-tinta sm:p-8">
+        <section aria-labelledby="judul-serupa" className="di-medan rounded-(--radius-kartu) bg-medan p-5 text-medan-tinta sm:p-8">
           <h2 id="judul-serupa" className="text-lead font-medium tracking-tight">
             Sudah ada {serupa.length} laporan serupa dalam 100 meter
           </h2>
@@ -399,7 +399,7 @@ export default function FormLaporan() {
           </p>
           <ul className="mt-6 grid gap-2">
             {serupa.map((s) => (
-              <li key={s.kode} className="flex flex-wrap items-center gap-x-5 gap-y-3 bg-terang p-4 text-tinta">
+              <li key={s.kode} className="flex flex-wrap items-center gap-x-5 gap-y-3 rounded-(--radius-kontrol) bg-permukaan p-4 text-teks">
                 <div className="min-w-0 flex-1">
                   <p className="flex flex-wrap items-center gap-3">
                     <Link href={`/laporan/${s.kode}`} target="_blank" className="angka font-semibold underline-offset-4 hover:underline">
@@ -421,7 +421,7 @@ export default function FormLaporan() {
         </section>
       )}
 
-      <div className="grid gap-4 bg-lapis p-5 sm:p-6 lg:grid-cols-12 lg:items-center lg:gap-8">
+      <div className="kartu grid gap-4 p-5 sm:p-6 lg:grid-cols-12 lg:items-center lg:gap-8">
         <div className="lg:col-span-8">
           {cobaKirim && masalah.length > 0 ? (
             <div ref={ringkasan} tabIndex={-1} role="alert" className="outline-none focus-visible:outline-3 focus-visible:outline-tinta">
@@ -448,7 +448,7 @@ export default function FormLaporan() {
                 <span className="angka">{lengkap.length} dari 4 langkah lengkap</span>
                 <span aria-hidden="true" className="flex gap-1">
                   {[1, 2, 3, 4].map((n) => (
-                    <span key={n} className={`h-1.5 w-6 transition-colors ${lengkap.includes(n) ? 'bg-st-selesai' : 'bg-lapis-2'}`} />
+                    <span key={n} className={`h-1.5 w-6 rounded-full transition-colors ${lengkap.includes(n) ? 'bg-st-selesai' : 'bg-lapis-2'}`} />
                   ))}
                 </span>
               </p>

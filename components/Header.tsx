@@ -20,7 +20,7 @@ async function Akun() {
   const sesi = await ambilSesi();
   if (!sesi) {
     return (
-      <Link href="/masuk" className="flex h-11 items-center px-3 text-badan hover:bg-lapis">
+      <Link href="/masuk" className="flex h-11 items-center rounded-(--radius-kontrol) px-3 text-badan font-medium hover:bg-lapis">
         Masuk
       </Link>
     );
@@ -55,7 +55,7 @@ async function AkunPonsel() {
     );
   }
   return (
-    <div className="grid gap-3 bg-lapis p-4">
+    <div className="panel grid gap-3 p-4">
       <p className="text-badan font-medium">
         {sesi.nama}
         <span className="block text-kecil font-normal text-lembut">{peranTeks(sesi)}</span>
@@ -76,7 +76,7 @@ async function AkunPonsel() {
 
 export default function Header() {
   return (
-    <header className="relative z-1000 bg-kertas">
+    <header className="sticky top-0 z-1000 border-b border-batas bg-kertas/85 backdrop-blur-md supports-[backdrop-filter]:bg-kertas/75">
       <nav aria-label="Navigasi utama" className="bingkai flex h-16 items-center gap-3 sm:h-18">
         <Link href="/" className="mr-auto text-[1.375rem] xl:mr-4" aria-label="suaRAkyat, ke Beranda">
           <Wordmark />

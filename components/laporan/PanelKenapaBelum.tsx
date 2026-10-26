@@ -43,7 +43,7 @@ export default function PanelKenapaBelum({
         aria-expanded={buka}
         aria-controls="isi-kenapa-belum"
         onClick={() => setBuka(!buka)}
-        className="flex w-full items-center justify-between gap-4 bg-tinta px-5 py-4 text-left text-kertas hover:bg-tinta-tua active:translate-y-px sm:px-6"
+        className="flex w-full items-center justify-between gap-4 rounded-(--radius-kartu) bg-tinta px-5 py-4 text-left text-white shadow-[0_10px_30px_-14px_rgb(125_12_20/0.7)] transition-[border-radius,background-color] aria-expanded:rounded-b-none hover:bg-tinta-tua active:translate-y-px sm:px-6"
       >
         <span>
           <span className="block text-[clamp(1.75rem,1.2rem+2.4vw,3rem)] leading-none font-semibold tracking-[-0.04em]">
@@ -58,7 +58,7 @@ export default function PanelKenapaBelum({
 
       <div className="lipat" data-buka={buka}>
         <div id="isi-kenapa-belum" inert={!buka}>
-          <div className="bg-lapis p-5 sm:p-6">
+          <div className="rounded-b-(--radius-kartu) border border-t-0 border-batas bg-permukaan p-5 shadow-(--shadow-kartu) sm:p-6">
             {!data ? (
               <p className="text-badan">
                 Isu {isu.kategori.toLowerCase()} di {isu.kecamatan} belum masuk daftar prioritas. Daftar hanya memuat isu wilayah
@@ -74,14 +74,14 @@ export default function PanelKenapaBelum({
                   isu wilayah yang dinilai.
                 </p>
                 <dl className="grid gap-4 sm:grid-cols-2">
-                  <div className="bg-terang p-4">
+                  <div className="panel p-4">
                     <dt className="flex items-center gap-2 text-kecil">
                       <Ikon nama="naik" className="size-4" /> Pendorong terbesar
                     </dt>
                     <dd className="mt-1 text-lead font-medium tracking-tight">{NAMA_FAKTOR[data.pendorong.faktor]}</dd>
                     <dd className="angka text-badan">{formatPoin(data.pendorong.poin)} poin</dd>
                   </div>
-                  <div className="bg-terang p-4">
+                  <div className="panel p-4">
                     <dt className="flex items-center gap-2 text-kecil">
                       <Ikon nama="turun" className="size-4" /> Penahan terbesar
                     </dt>
@@ -97,7 +97,7 @@ export default function PanelKenapaBelum({
                     {data.per_preset.map((p) => {
                       const geser = data.peringkat - p.peringkat;
                       return (
-                        <li key={p.preset} className="flex items-baseline justify-between gap-4 bg-terang px-4 py-2.5 text-badan">
+                        <li key={p.preset} className="panel flex items-baseline justify-between gap-4 px-4 py-2.5 text-badan">
                           <span>{p.preset}</span>
                           <span className="angka font-semibold">
                             peringkat {p.peringkat}
@@ -110,7 +110,7 @@ export default function PanelKenapaBelum({
                     })}
                   </ul>
                 </div>
-                {data.catatan && <p className="bg-terang p-4 text-badan">{data.catatan}</p>}
+                {data.catatan && <p className="panel p-4 text-badan">{data.catatan}</p>}
                 <p className="text-badan">
                   <Link href={`/prioritas${idIsu ? `?isu=${encodeURIComponent(idIsu)}` : ''}`} className={kelasTautan}>
                     Lihat rincian skornya dan uji bobot lain

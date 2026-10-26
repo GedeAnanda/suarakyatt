@@ -57,7 +57,7 @@ async function Isi({ params, searchParams }: Pick<PageProps<'/laporan/[kode]'>, 
   return (
     <>
       {baru && (
-        <div role="status" className="di-medan mb-10 bg-medan p-5 text-medan-tinta sm:p-6">
+        <div role="status" className="di-medan mb-10 rounded-(--radius-kartu) bg-medan p-5 text-medan-tinta sm:p-6">
           <p className="text-lead font-medium">Laporan terkirim. Simpan kode {l.kode} untuk melacaknya.</p>
           <p className="mt-2 max-w-[70ch] text-badan text-medan-lembut">
             Laporan di suaRAkyat tidak diteruskan ke instansi. Untuk pengaduan resmi, kirim juga lewat{' '}
@@ -109,7 +109,7 @@ async function Isi({ params, searchParams }: Pick<PageProps<'/laporan/[kode]'>, 
       </div>
 
       {penolakan && (
-        <section aria-labelledby="judul-tolak" className="mt-12 bg-st-ditolak-bg p-5 text-st-ditolak sm:p-6">
+        <section aria-labelledby="judul-tolak" className="mt-12 rounded-(--radius-kartu) bg-st-ditolak-bg p-5 text-st-ditolak sm:p-6">
           <h2 id="judul-tolak" className="flex items-center gap-2 text-lead font-medium">
             <Ikon nama="peringatan" className="size-5" />
             Ditolak · {penolakan.alasan_tolak ? LABEL_ALASAN[penolakan.alasan_tolak] : 'tanpa alasan tercatat'}
@@ -157,11 +157,11 @@ async function Isi({ params, searchParams }: Pick<PageProps<'/laporan/[kode]'>, 
           {hubungan.pemilik && l.status === 'menunggu' && <TombolBatalkan kode={l.kode} />}
           {hubungan.pemilik && l.status === 'selesai' && !hubungan.sudahRating && <FormRating kode={l.kode} />}
           {sumber === 'contoh' && (
-            <p className="bg-lapis p-5 text-kecil">
+            <p className="kartu p-5 text-kecil">
               Ini laporan dari data contoh. Tombol dukung, batal, dan rating aktif untuk laporan yang tersimpan di database.
             </p>
           )}
-          <div className="bg-lapis p-5 text-kecil">
+          <div className="kartu p-5 text-kecil">
             <p className="font-medium">Batas waktu layanan untuk {l.kategori.toLowerCase()}</p>
             <p className="mt-1">
               Respons sampai {tanggalJam(l.batas_respons)}, selesai sampai {tanggalJam(l.batas_selesai)}. Angka batas waktu

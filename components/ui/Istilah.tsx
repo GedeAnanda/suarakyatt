@@ -29,7 +29,7 @@ export default function Istilah({
       <div
         id={id}
         popover="auto"
-        className="m-auto max-w-[min(32rem,calc(100vw-2rem))] bg-terang p-6 text-tinta shadow-[0_18px_48px_rgb(60_10_14/0.22)] backdrop:bg-tinta/20"
+        className="kartu m-auto max-w-[min(32rem,calc(100vw-2rem))] p-6 text-teks shadow-(--shadow-angkat) backdrop:bg-tinta/20"
       >
         <p className="text-lead font-medium tracking-tight">{judul}</p>
         <div className="mt-2 text-badan">{definisi}</div>
@@ -37,7 +37,7 @@ export default function Istilah({
           type="button"
           popoverTarget={id}
           popoverTargetAction="hide"
-          className="mt-5 bg-lapis px-4 py-2 text-kecil font-medium hover:bg-lapis-2"
+          className="mt-5 rounded-(--radius-kontrol) bg-lapis px-4 py-2 text-kecil font-semibold hover:bg-lapis-2"
         >
           Tutup
         </button>

@@ -79,22 +79,22 @@ export default function TabelLaporanAdmin({ laporan, sekarang }: { laporan: Lapo
             type="button"
             aria-pressed={filter === f.id}
             onClick={() => setFilter(f.id)}
-            className="flex min-h-11 items-center gap-1.5 bg-lapis px-3 py-1.5 text-kecil hover:bg-lapis-2 aria-pressed:bg-tinta aria-pressed:text-kertas"
+            className="flex min-h-11 items-center gap-1.5 rounded-full bg-permukaan px-4 py-1.5 text-kecil font-medium ring-1 ring-batas ring-inset transition-colors hover:bg-terang aria-pressed:ring-tinta aria-pressed:bg-tinta aria-pressed:text-kertas"
           >
             {f.id !== 'aktif' && f.id !== 'semua' && <IkonStatus status={f.id} className="size-3.5" />}
             {f.label}
           </button>
         ))}
-        <label className="ml-auto flex min-h-11 cursor-pointer items-center gap-2 bg-lapis px-3 text-kecil has-checked:bg-tinta has-checked:text-kertas">
+        <label className="ml-auto flex min-h-11 cursor-pointer items-center gap-2 rounded-full bg-permukaan px-4 text-kecil font-medium ring-1 ring-batas ring-inset has-checked:bg-tinta has-checked:text-kertas">
           <input type="checkbox" checked={hanyaTerlambat} onChange={(e) => setHanyaTerlambat(e.target.checked)} className="size-4 accent-current" />
           Hanya yang terlambat
         </label>
       </div>
 
-      <div className="mt-4 overflow-x-auto">
+      <div className="kartu mt-4 overflow-x-auto">
         <table className="w-full min-w-[52rem] text-left text-badan">
           <caption className="sr-only">Laporan instansi, terlambat paling atas</caption>
-          <thead className="bg-lapis-2 text-kecil">
+          <thead className="bg-terang text-kecil">
             <tr>
               <th scope="col" className="px-4 py-3 font-medium">Kode</th>
               <th scope="col" className="px-4 py-3 font-medium">Status</th>
@@ -109,7 +109,7 @@ export default function TabelLaporanAdmin({ laporan, sekarang }: { laporan: Lapo
           </thead>
           <tbody>
             {tampil.map((l) => (
-              <tr key={l.kode} className={`border-t-2 border-kertas ${l.terlambat ? 'bg-st-menunggu-bg/45' : 'bg-lapis'} hover:bg-lapis-2`}>
+              <tr key={l.kode} className={`border-t border-batas ${l.terlambat ? 'bg-tinta-muda/60' : ''} transition-colors hover:bg-terang`}>
                 <th scope="row" className="px-4 py-3 font-semibold whitespace-nowrap">
                   <Link href={`/admin/laporan/${l.kode}`} className="angka underline decoration-2 underline-offset-4 hover:decoration-transparent">
                     {l.kode}
@@ -132,7 +132,7 @@ export default function TabelLaporanAdmin({ laporan, sekarang }: { laporan: Lapo
           </tbody>
         </table>
         {tampil.length === 0 && (
-          <p className="bg-lapis p-5 text-badan">Tidak ada laporan dengan saringan ini.</p>
+          <p className="p-5 text-badan">Tidak ada laporan dengan saringan ini.</p>
         )}
       </div>
     </div>

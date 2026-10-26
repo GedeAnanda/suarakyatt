@@ -7,7 +7,7 @@ import Ikon from '../ui/Ikon';
 
 function Kosong({ teks }: { teks: string }) {
   return (
-    <div className="flex aspect-[16/7] flex-col items-center justify-center gap-2 bg-lapis p-6 text-center text-kecil text-lembut">
+    <div className="flex aspect-[16/7] flex-col items-center justify-center gap-2 rounded-(--radius-kartu) border border-dashed border-lapis-2 bg-terang p-6 text-center text-kecil text-lembut">
       <Ikon nama="kamera" className="size-7" />
       {teks}
     </div>
@@ -25,7 +25,7 @@ export default function Galeri({ laporan }: { laporan: Pick<LaporanPublik, 'foto
     <div className={`grid gap-3 ${selesai ? 'sm:grid-cols-2' : ''}`}>
       <figure>
         {utama ? (
-          <Image src={utama} alt="Foto dari pelapor" width={960} height={720} className="aspect-4/3 w-full bg-lapis object-cover" />
+          <Image src={utama} alt="Foto dari pelapor" width={960} height={720} className="aspect-4/3 w-full rounded-(--radius-kartu) bg-lapis object-cover" />
         ) : (
           <Kosong teks={laporan.is_simulated ? 'Laporan simulasi ini tidak punya foto.' : 'Foto tidak tersedia.'} />
         )}
@@ -33,7 +33,7 @@ export default function Galeri({ laporan }: { laporan: Pick<LaporanPublik, 'foto
         {lain.length > 0 && (
           <div className="mt-3 grid grid-cols-2 gap-3">
             {lain.map((src, i) => (
-              <Image key={src} src={src} alt={`Foto tambahan ${i + 2} dari pelapor`} width={480} height={360} className="aspect-4/3 w-full bg-lapis object-cover" />
+              <Image key={src} src={src} alt={`Foto tambahan ${i + 2} dari pelapor`} width={480} height={360} className="aspect-4/3 w-full rounded-(--radius-kartu) bg-lapis object-cover" />
             ))}
           </div>
         )}
@@ -41,7 +41,7 @@ export default function Galeri({ laporan }: { laporan: Pick<LaporanPublik, 'foto
       {selesai && (
         <figure>
           {laporan.foto_bukti ? (
-            <Image src={laporan.foto_bukti} alt="Foto bukti penyelesaian dari dinas" width={960} height={720} className="aspect-4/3 w-full bg-lapis object-cover" />
+            <Image src={laporan.foto_bukti} alt="Foto bukti penyelesaian dari dinas" width={960} height={720} className="aspect-4/3 w-full rounded-(--radius-kartu) bg-lapis object-cover" />
           ) : (
             <Kosong teks={laporan.is_simulated ? 'Laporan simulasi ini tidak punya foto bukti.' : 'Foto bukti tidak tersedia.'} />
           )}

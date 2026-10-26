@@ -35,11 +35,11 @@ export default function Turun({ label, children }: { label: ReactNode; children:
 
   return (
     <details ref={ref} className="group relative">
-      <summary className="flex h-11 list-none items-center gap-2 px-3 text-badan transition-colors hover:bg-lapis group-open:bg-lapis [&::-webkit-details-marker]:hidden">
+      <summary className="flex h-11 list-none items-center gap-2 rounded-(--radius-kontrol) px-3 text-badan font-medium transition-colors hover:bg-lapis group-open:bg-lapis [&::-webkit-details-marker]:hidden">
         {label}
         <Ikon nama="turun" className="size-4 transition-transform duration-200 group-open:rotate-180" />
       </summary>
-      <div className="absolute top-full right-0 z-10 mt-1 w-80 bg-terang p-4 shadow-[0_18px_40px_rgb(42_19_22/0.18)]">
+      <div className="kartu absolute top-full right-0 z-10 mt-2 w-80 p-4 shadow-(--shadow-angkat)">
         {children}
       </div>
     </details>

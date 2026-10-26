@@ -91,9 +91,9 @@ export default function SumberDataPage() {
         <h2 id="judul-terbuka" className="text-lead font-medium tracking-tight">
           Data terbuka
         </h2>
-        <div className="mt-5 overflow-x-auto">
+        <div className="kartu mt-5 overflow-x-auto">
           <table className="w-full min-w-[56rem] text-left text-badan">
-            <thead className="bg-lapis-2 text-kecil">
+            <thead className="bg-terang text-kecil">
               <tr>
                 <th scope="col" className="p-4 font-medium">Dataset</th>
                 <th scope="col" className="p-4 font-medium">Dipakai untuk</th>
@@ -104,7 +104,7 @@ export default function SumberDataPage() {
             </thead>
             <tbody>
               {DATA_TERBUKA.map((d) => (
-                <tr key={d.nama} className="border-t-2 border-kertas bg-lapis align-top">
+                <tr key={d.nama} className="border-t border-batas align-top">
                   <th scope="row" className="p-4 font-semibold">{d.nama}</th>
                   <td className="p-4 text-kecil">{d.dipakai}</td>
                   <td className="p-4 text-kecil">
@@ -150,9 +150,9 @@ export default function SumberDataPage() {
             </p>
           </div>
         </div>
-        <div className="mt-10 overflow-x-auto">
+        <div className="kartu mt-10 overflow-x-auto">
           <table className="w-full min-w-[48rem] text-left text-badan">
-            <thead className="bg-lapis-2 text-kecil">
+            <thead className="bg-terang text-kecil">
               <tr>
                 <th scope="col" className="p-4 font-medium">Instansi (simulasi)</th>
                 <th scope="col" className="p-4 text-right font-medium">Peluang ditolak</th>
@@ -164,7 +164,7 @@ export default function SumberDataPage() {
             </thead>
             <tbody>
               {PROFIL.map((p) => (
-                <tr key={p.instansi} className="border-t-2 border-kertas bg-lapis">
+                <tr key={p.instansi} className="border-t border-batas">
                   <th scope="row" className="p-4 font-semibold">{p.instansi}</th>
                   <td className="angka p-4 text-right">{p.tolak}</td>
                   <td className="angka p-4 text-right">{p.respons}</td>
@@ -181,9 +181,9 @@ export default function SumberDataPage() {
         <p className="mt-2 max-w-[70ch] text-badan">
           Dihitung dalam jam kalender agar sederhana. Angkanya ilustrasi dan dinyatakan terbuka di sini.
         </p>
-        <div className="mt-5 overflow-x-auto">
+        <div className="kartu mt-5 overflow-x-auto">
           <table className="w-full min-w-[40rem] text-left text-badan">
-            <thead className="bg-lapis-2 text-kecil">
+            <thead className="bg-terang text-kecil">
               <tr>
                 <th scope="col" className="p-4 font-medium">Kategori</th>
                 <th scope="col" className="p-4 font-medium">Instansi</th>
@@ -194,7 +194,7 @@ export default function SumberDataPage() {
             </thead>
             <tbody>
               {KATEGORI.map((k) => (
-                <tr key={k.id} className="border-t-2 border-kertas bg-lapis">
+                <tr key={k.id} className="border-t border-batas">
                   <th scope="row" className="p-4 font-semibold">{k.nama}</th>
                   <td className="p-4 text-kecil">{k.instansi}</td>
                   <td className="p-4">{k.urgensi}</td>
@@ -220,7 +220,7 @@ export default function SumberDataPage() {
         <ul className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {Object.values(FOTO).map((f) => (
             <li key={f.src}>
-              <Image src={f.src} alt={f.alt} width={f.lebar} height={f.tinggi} sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 100vw" className="aspect-[3/2] w-full object-cover grayscale" />
+              <Image src={f.src} alt={f.alt} width={f.lebar} height={f.tinggi} sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 100vw" className="aspect-[3/2] w-full rounded-(--radius-kartu) object-cover grayscale" />
               <p className="mt-2 text-kecil">
                 &ldquo;{f.judul}&rdquo; · {f.pembuat} ·{' '}
                 <a href={f.url} target="_blank" rel="noreferrer" className="underline underline-offset-4">

@@ -84,7 +84,7 @@ export default function PetaLaporan({
                 type="button"
                 aria-pressed={kategori.includes(k.id)}
                 onClick={() => ubahKategori(k.id)}
-                className="min-h-11 bg-lapis px-3 py-1.5 text-kecil hover:bg-lapis-2 active:translate-y-px aria-pressed:bg-tinta aria-pressed:text-kertas"
+                className="min-h-11 rounded-full bg-permukaan px-4 py-1.5 text-kecil font-medium ring-1 ring-batas ring-inset transition-colors hover:bg-terang aria-pressed:ring-tinta active:translate-y-px aria-pressed:bg-tinta aria-pressed:text-kertas"
               >
                 {k.nama}
               </button>
@@ -100,7 +100,7 @@ export default function PetaLaporan({
                 type="button"
                 aria-pressed={status.includes(s)}
                 onClick={() => ubahStatus(s)}
-                className="flex min-h-11 items-center gap-1.5 bg-lapis px-3 py-1.5 text-kecil hover:bg-lapis-2 active:translate-y-px aria-pressed:bg-tinta aria-pressed:text-kertas"
+                className="flex min-h-11 items-center gap-1.5 rounded-full bg-permukaan px-4 py-1.5 text-kecil font-medium ring-1 ring-batas ring-inset transition-colors hover:bg-terang aria-pressed:ring-tinta active:translate-y-px aria-pressed:bg-tinta aria-pressed:text-kertas"
               >
                 <IkonStatus status={s} className="size-3.5" />
                 {LABEL_STATUS[s]}
@@ -119,12 +119,12 @@ export default function PetaLaporan({
           <ul aria-label="Arti warna titik" className="flex flex-wrap gap-x-4 gap-y-1.5 text-kecil">
             {STATUS_PUBLIK.map((s) => (
               <li key={s} className="flex items-center gap-1.5">
-                <span aria-hidden="true" className="size-3 outline-2 outline-terang" style={{ background: WARNA_TITIK[s] }} />
+                <span aria-hidden="true" className="size-3 rounded-full ring-2 ring-white" style={{ background: WARNA_TITIK[s] }} />
                 {LABEL_STATUS[s]}
               </li>
             ))}
             <li className="flex items-center gap-1.5">
-              <span aria-hidden="true" className="size-3.5 bg-tinta" />
+              <span aria-hidden="true" className="size-3.5 rounded-full bg-tinta" />
               Kotak berangka: kumpulan laporan berdekatan
             </li>
           </ul>
@@ -139,7 +139,7 @@ export default function PetaLaporan({
           Laporan terbaru sesuai saringan
         </h2>
         {tersaring.length === 0 ? (
-          <p className="mt-4 bg-lapis p-5 text-badan">
+          <p className="kartu mt-4 p-5 text-badan">
             Tidak ada laporan dengan saringan ini. Pilih kategori atau status lain di atas.
           </p>
         ) : (

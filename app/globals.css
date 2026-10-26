@@ -2,23 +2,31 @@
 
 /*
  * Sistem desain suaRAkyat (pemilik: A)
- * Kertas abu-abu terang, teks badan gelap, merah tua untuk judul, angka utama, aksi, dan peringatan.
- * Merah tidak dipakai untuk teks biasa supaya tetap berarti "penting" atau "terlambat".
- * Sudut selalu persegi, tanpa gradasi; permukaan dibedakan lewat selisih nada.
- * Kontras: teks badan 14,8:1, teks lembut ≥ 5,3:1 di semua permukaan (WCAG AA, sebagian besar AAA).
+ * Halaman abu-abu sangat terang, kartu putih membulat dengan garis tipis dan bayangan lembut.
+ * Teks badan gelap; merah tua untuk judul, angka utama, aksi, dan peringatan, tidak untuk teks biasa,
+ * supaya merah tetap berarti "penting" atau "terlambat". Tanpa gradasi.
+ * Kontras: teks badan ≥ 14:1, teks lembut ≥ 7:1, batas isian ≥ 3:1 (WCAG AA, sebagian besar AAA).
  * Warna status dan peta selalu didampingi teks atau ikon (PRD 11).
  */
 
 @theme {
-  --color-kertas: #ececeb;
-  --color-lapis: #e0dfde;
-  --color-lapis-2: #d2d0cf;
-  --color-terang: #f7f7f6;
+  --color-kertas: #f3f3f4;
+  --color-permukaan: #ffffff;
+  --color-lapis: #ebeaea;
+  --color-lapis-2: #dcd9d9;
+  --color-terang: #f7f6f6;
+  --color-batas: #e4e1e1; /* garis tipis kartu (dekoratif) */
   --color-teks: #2a1316;
   --color-tinta: #7d0c14;
   --color-tinta-tua: #5c0710;
+  --color-tinta-muda: #f6e9ea; /* latar lembut untuk sorotan merah */
   --color-lembut: #5c4a4c;
-  --color-garis: #8c7c7e; /* batas isian form: 3,6:1 terhadap kertas (WCAG 1.4.11) */
+  --color-garis: #8c7c7e; /* batas isian form: ≥ 3,6:1 terhadap putih dan kertas (WCAG 1.4.11) */
+
+  --radius-kartu: 1rem;
+  --radius-kontrol: 0.625rem;
+  --shadow-kartu: 0 1px 2px rgb(42 19 22 / 0.05), 0 14px 32px -22px rgb(42 19 22 / 0.28);
+  --shadow-angkat: 0 2px 4px rgb(42 19 22 / 0.06), 0 22px 44px -24px rgb(42 19 22 / 0.38);
   --color-medan: #7d0c14;
   --color-medan-tinta: #f4eeee;
   --color-medan-lembut: #e3c6c8;
@@ -69,92 +77,137 @@
   color-scheme: light;
 }
 
-html {
-  background: var(--color-kertas);
-  -webkit-text-size-adjust: 100%;
+/* Aturan elemen di layer base supaya kelas utilitas Tailwind tetap bisa menimpanya. */
+@layer base {
+  html {
+    background: var(--color-kertas);
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background: var(--color-kertas);
+    color: var(--color-teks);
+    font-family: var(--font-sans);
+    font-size: var(--text-badan);
+    line-height: 1.55;
+    letter-spacing: -0.005em;
+    font-feature-settings: "ss01" 0;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-weight: 600;
+    letter-spacing: -0.035em;
+    text-wrap: balance;
+  }
+
+  h1,
+  h2 {
+    color: var(--color-tinta);
+  }
+
+  .di-medan h1,
+  .di-medan h2 {
+    color: inherit;
+  }
+
+  /* Tailwind 4 tidak lagi memberi kursor tangan pada tombol; semua yang bisa diklik harus terlihat bisa diklik. */
+  button:not(:disabled),
+  [role="button"],
+  [role="tab"],
+  summary,
+  label:has(> input[type="radio"]),
+  label:has(> input[type="checkbox"]),
+  label:has(> input[type="file"]),
+  select {
+    cursor: pointer;
+  }
+
+  a,
+  button,
+  summary,
+  input,
+  label {
+    touch-action: manipulation;
+  }
+
+  /* Isian form: kotak putih bertepi (kontras non-teks ≥ 3:1), sudut sama dengan tombol. */
+  input:not([type="range"], [type="radio"], [type="checkbox"], [type="file"], [type="hidden"]),
+  textarea,
+  select {
+    background-color: var(--color-permukaan);
+    border: 1.5px solid var(--color-garis);
+    border-radius: var(--radius-kontrol);
+    transition: border-color 150ms, box-shadow 150ms;
+  }
+
+  input:not([type="range"], [type="radio"], [type="checkbox"], [type="file"], [type="hidden"]):hover,
+  textarea:hover {
+    border-color: var(--color-teks);
+  }
+
+  input:not([type="range"], [type="radio"], [type="checkbox"], [type="file"], [type="hidden"]):focus,
+  textarea:focus {
+    border-color: var(--color-tinta);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-tinta) 14%, transparent);
+    outline: none;
+  }
+
+  input[aria-invalid="true"],
+  textarea[aria-invalid="true"] {
+    border-color: var(--color-tinta);
+    background-color: var(--color-tinta-muda);
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  ::selection {
+    background: var(--color-tinta);
+    color: var(--color-kertas);
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--color-tinta);
+    outline-offset: 2px;
+  }
+
+  .di-medan :focus-visible {
+    outline-color: var(--color-medan-tinta);
+  }
+
+  .angka {
+    font-variant-numeric: tabular-nums lining-nums;
+  }
 }
 
-body {
-  background: var(--color-kertas);
-  color: var(--color-teks);
-  font-family: var(--font-sans);
-  font-size: var(--text-badan);
-  line-height: 1.55;
-  letter-spacing: -0.005em;
-  font-feature-settings: "ss01" 0;
-}
-
-h1,
-h2,
-h3 {
-  font-weight: 500;
-  letter-spacing: -0.035em;
-  text-wrap: balance;
-}
-
-h1,
-h2 {
-  color: var(--color-tinta);
-}
-
-.di-medan h1,
-.di-medan h2 {
-  color: inherit;
-}
-
-/* Tailwind 4 tidak lagi memberi kursor tangan pada tombol; semua yang bisa diklik harus terlihat bisa diklik. */
-button:not(:disabled),
-[role="button"],
-[role="tab"],
-summary,
-label:has(> input[type="radio"]),
-label:has(> input[type="checkbox"]),
-label:has(> input[type="file"]),
-select {
-  cursor: pointer;
-}
-
-a,
-button,
-summary,
-input,
-label {
-  touch-action: manipulation;
-}
-
-/* Isian form: batas bawah tegas supaya kotaknya terlihat sebagai isian (kontras non-teks 3:1). */
-input:not([type="range"], [type="radio"], [type="checkbox"], [type="file"], [type="hidden"]),
-textarea,
-select {
-  border-bottom: 2px solid var(--color-garis);
-}
-
-input[aria-invalid="true"],
-textarea[aria-invalid="true"] {
-  border-bottom-color: var(--color-tinta);
-  background-color: color-mix(in srgb, var(--color-tinta) 6%, var(--color-terang));
-}
-
-p {
-  text-wrap: pretty;
-}
-
-::selection {
-  background: var(--color-tinta);
-  color: var(--color-kertas);
-}
-
-:focus-visible {
-  outline: 3px solid var(--color-tinta);
-  outline-offset: 2px;
-}
-
-.di-medan :focus-visible {
-  outline-color: var(--color-medan-tinta);
-}
-
-.angka {
-  font-variant-numeric: tabular-nums lining-nums;
+@layer components {
+  /* Kartu: permukaan utama untuk isi yang dikelompokkan. */
+  .kartu {
+    background: var(--color-permukaan);
+    border: 1px solid var(--color-batas);
+    border-radius: var(--radius-kartu);
+    box-shadow: var(--shadow-kartu);
+  }
+  /* Kartu yang bisa diklik: sedikit terangkat saat disorot. */
+  .kartu-klik {
+    transition:
+      box-shadow 200ms var(--ease-keluar),
+      transform 200ms var(--ease-keluar),
+      border-color 200ms;
+  }
+  .kartu-klik:hover {
+    box-shadow: var(--shadow-angkat);
+    transform: translateY(-2px);
+    border-color: var(--color-lapis-2);
+  }
+  /* Panel: isian lembut di dalam kartu. */
+  .panel {
+    background: var(--color-terang);
+    border-radius: 0.75rem;
+  }
 }
 
 /* Halaman: satu pasang tepi untuk semua. */
@@ -285,13 +338,14 @@ p {
 }
 .kerangka {
   background: var(--color-lapis);
+  border-radius: var(--radius-kartu);
   animation: denyut 1.6s ease-in-out infinite;
 }
 @media (prefers-reduced-motion: reduce) {
   .kerangka { animation: none; }
 }
 
-/* Slider bobot: persegi, tinta penuh. */
+/* Slider bobot: lintasan membulat, kenop bulat merah dengan cincin putih. */
 input[type="range"].slider {
   appearance: none;
   height: 2.75rem;
@@ -300,33 +354,48 @@ input[type="range"].slider {
 }
 input[type="range"].slider::-webkit-slider-runnable-track {
   height: 0.5rem;
+  border-radius: 999px;
   background: var(--color-lapis-2);
 }
 input[type="range"].slider::-moz-range-track {
   height: 0.5rem;
+  border-radius: 999px;
   background: var(--color-lapis-2);
 }
 input[type="range"].slider::-moz-range-progress {
   height: 0.5rem;
+  border-radius: 999px;
   background: var(--color-tinta);
 }
 input[type="range"].slider::-webkit-slider-thumb {
   appearance: none;
-  width: 1.375rem;
-  height: 1.375rem;
-  margin-top: -0.4375rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-top: -0.5rem;
+  border-radius: 999px;
   background: var(--color-tinta);
-  border: 3px solid var(--color-kertas);
+  border: 4px solid var(--color-permukaan);
+  box-shadow: 0 1px 4px rgb(42 19 22 / 0.35);
+  transition: transform 150ms var(--ease-keluar);
+}
+input[type="range"].slider:active::-webkit-slider-thumb {
+  transform: scale(1.15);
 }
 input[type="range"].slider::-moz-range-thumb {
   width: 1.125rem;
   height: 1.125rem;
+  border-radius: 999px;
   background: var(--color-tinta);
-  border: 3px solid var(--color-kertas);
-  border-radius: 0;
+  border: 4px solid var(--color-permukaan);
+  box-shadow: 0 1px 4px rgb(42 19 22 / 0.35);
 }
 
 /* Leaflet: ubin OSM dibuat abu-abu supaya warna laporan dan choropleth yang bicara. */
+.peta {
+  border-radius: var(--radius-kartu);
+  border: 1px solid var(--color-batas);
+  box-shadow: var(--shadow-kartu);
+}
 .peta .leaflet-container {
   background: var(--color-lapis);
   font-family: var(--font-sans);
@@ -334,37 +403,41 @@ input[type="range"].slider::-moz-range-thumb {
 .peta .leaflet-tile-pane {
   filter: grayscale(1) contrast(0.92) brightness(1.04);
 }
-.peta .leaflet-bar,
-.peta .leaflet-bar a {
-  border-radius: 0 !important;
-  border: 0 !important;
-  box-shadow: none !important;
+.peta .leaflet-bar {
+  border-radius: var(--radius-kontrol) !important;
+  border: 1px solid var(--color-batas) !important;
+  box-shadow: var(--shadow-kartu) !important;
+  overflow: hidden;
 }
 .peta .leaflet-bar a {
-  background: var(--color-terang);
-  color: var(--color-tinta);
+  background: var(--color-permukaan);
+  color: var(--color-teks);
   width: 2.75rem;
   height: 2.75rem;
   line-height: 2.75rem;
   font-size: 1.25rem;
+  border-radius: 0 !important;
 }
 .peta .leaflet-bar a:hover {
   background: var(--color-lapis);
 }
 .peta .leaflet-control-attribution {
-  background: color-mix(in srgb, var(--color-terang) 88%, transparent);
+  background: color-mix(in srgb, var(--color-permukaan) 88%, transparent);
   color: var(--color-lembut);
   font-size: 0.75rem;
+  border-top-left-radius: 0.5rem;
 }
 .peta .leaflet-control-attribution a {
   color: var(--color-tinta);
 }
-.peta .leaflet-popup-content-wrapper,
+.peta .leaflet-popup-content-wrapper {
+  border-radius: 0.875rem;
+  background: var(--color-permukaan);
+  color: var(--color-teks);
+  box-shadow: var(--shadow-angkat);
+}
 .peta .leaflet-popup-tip {
-  border-radius: 0;
-  background: var(--color-terang);
-  color: var(--color-tinta);
-  box-shadow: 0 6px 24px rgb(60 10 14 / 0.18);
+  background: var(--color-permukaan);
 }
 .peta .leaflet-popup-content {
   margin: 0.875rem 1rem;
@@ -372,18 +445,27 @@ input[type="range"].slider::-moz-range-thumb {
   line-height: 1.45;
 }
 
-/* Cluster: kotak tinta dengan jumlah, bukan gelembung hijau-kuning bawaan. */
+/* Cluster: lingkaran tinta dengan jumlah, bukan gelembung hijau-kuning bawaan. */
 .peta .klaster {
   display: grid;
   place-items: center;
+  border-radius: 999px;
   background: var(--color-tinta);
-  color: var(--color-kertas);
-  font-weight: 600;
+  color: var(--color-permukaan);
+  font-weight: 700;
   font-size: 0.875rem;
   font-variant-numeric: tabular-nums;
-  outline: 3px solid color-mix(in srgb, var(--color-kertas) 85%, transparent);
+  box-shadow:
+    0 0 0 4px color-mix(in srgb, var(--color-tinta) 22%, transparent),
+    0 4px 10px rgb(42 19 22 / 0.3);
+  transition: transform 150ms var(--ease-keluar);
+}
+.peta .klaster:hover {
+  transform: scale(1.08);
 }
 .peta .titik {
   display: block;
-  outline: 2px solid var(--color-terang);
+  border-radius: 999px;
+  border: 2.5px solid var(--color-permukaan);
+  box-shadow: 0 1px 4px rgb(42 19 22 / 0.4);
 }

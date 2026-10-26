@@ -26,10 +26,10 @@ async function Isi() {
       <div className="flex flex-wrap items-center gap-3">
         {instansi && <p className="text-lead font-medium tracking-tight">{instansi}</p>}
         <LabelSumber sumber={sumber} />
-        {sesi?.demo && <span className="bg-lapis px-2 py-0.5 text-kecil">Akun demo: hanya bisa mengubah laporan simulasi</span>}
+        {sesi?.demo && <span className="rounded-full bg-lapis px-2.5 py-0.5 text-kecil">Akun demo: hanya bisa mengubah laporan simulasi</span>}
       </div>
       {sumber === 'contoh' && (
-        <p className="mt-4 bg-lapis p-4 text-badan">
+        <p className="kartu mt-4 p-4 text-badan">
           Database belum berisi laporan, jadi halaman ini menampilkan laporan contoh Dinas Bina Jalan (simulasi) sebagai
           pratinjau. Ubah status aktif setelah data seed dimuat.
         </p>
@@ -44,7 +44,7 @@ async function Isi() {
       </dl>
       <div className="mt-10">
         {laporan.length === 0 ? (
-          <p className="bg-lapis p-5 text-badan">Belum ada laporan untuk instansi Anda.</p>
+          <p className="kartu p-5 text-badan">Belum ada laporan untuk instansi Anda.</p>
         ) : (
           <TabelLaporanAdmin laporan={laporan} sekarang={sekarang} />
         )}

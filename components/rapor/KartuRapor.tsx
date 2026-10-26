@@ -15,7 +15,7 @@ export default function KartuRapor({ i, kategoriId }: { i: RaporInstansi; katego
   const nama = i.nama.replace(' (simulasi)', '');
 
   return (
-    <article id={`instansi-${i.id}`} aria-labelledby={`rapor-${i.id}`} className="flex scroll-mt-6 flex-col bg-lapis">
+    <article id={`instansi-${i.id}`} aria-labelledby={`rapor-${i.id}`} className="kartu flex scroll-mt-6 flex-col overflow-hidden">
       {i.peringatan_penolakan && (
         <div className="di-medan flex gap-3 bg-medan px-5 py-3 text-badan text-medan-tinta sm:px-6">
           <Ikon nama="peringatan" className="mt-1 size-5" />
@@ -64,8 +64,8 @@ export default function KartuRapor({ i, kategoriId }: { i: RaporInstansi; katego
                   </Istilah>
                 </dt>
                 <dd className="angka text-right text-badan font-medium">{desimal(i[k], 2)}</dd>
-                <dd aria-hidden="true" className="relative col-span-2 h-2.5 overflow-hidden bg-lapis-2">
-                  <span className="batang absolute inset-y-0 left-0 bg-tinta" style={{ width: `${i[k] * 100}%` }} />
+                <dd aria-hidden="true" className="relative col-span-2 h-2.5 overflow-hidden rounded-full bg-lapis">
+                  <span className="batang absolute inset-y-0 left-0 rounded-full bg-tinta" style={{ width: `${i[k] * 100}%` }} />
                 </dd>
               </div>
             ))}
@@ -73,7 +73,7 @@ export default function KartuRapor({ i, kategoriId }: { i: RaporInstansi; katego
         </div>
       </div>
 
-      <dl className="grid grid-cols-2 gap-x-6 gap-y-4 bg-lapis-2/50 p-5 text-kecil sm:grid-cols-4 sm:p-6">
+      <dl className="grid grid-cols-2 gap-x-6 gap-y-4 border-t border-batas bg-terang p-5 text-kecil sm:grid-cols-4 sm:p-6">
         <div>
           <dt>
             <Istilah id={`istilah-${i.id}-tolak`} judul="Tingkat penolakan" definisi={DEFINISI_RAPOR.penolakan}>
@@ -112,7 +112,7 @@ export default function KartuRapor({ i, kategoriId }: { i: RaporInstansi; katego
         </div>
       </dl>
 
-      <details className="group bg-lapis px-5 py-4 sm:px-6">
+      <details className="group border-t border-batas px-5 py-4 sm:px-6">
         <summary className="cursor-pointer list-none text-kecil font-medium marker:hidden">
           <span className="underline decoration-2 underline-offset-4 group-open:no-underline">Rincian per kategori</span>
         </summary>
@@ -129,7 +129,7 @@ export default function KartuRapor({ i, kategoriId }: { i: RaporInstansi; katego
             </thead>
             <tbody>
               {i.per_kategori.map((k) => (
-                <tr key={k.kategori} className="border-t border-lapis-2">
+                <tr key={k.kategori} className="border-t border-batas">
                   <th scope="row" className="py-1.5 pr-3 font-medium">{k.kategori}</th>
                   <td className="angka py-1.5 pr-3 text-right">{k.sampel}</td>
                   <td className="angka py-1.5 pr-3 text-right">{desimal(k.R, 2)}</td>

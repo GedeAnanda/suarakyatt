@@ -30,7 +30,7 @@ const KETERANGAN_ALASAN: Record<AlasanTolak, string> = {
   konten_melanggar: 'Kata kasar, foto tidak pantas, atau data pribadi orang lain. Isi dan foto disembunyikan dari publik. Wajib catatan. Masuk tingkat penolakan.',
 };
 
-const kelasIsian = 'w-full bg-terang px-4 py-3 text-badan focus:outline-3 focus:outline-tinta';
+const kelasIsian = 'w-full px-4 py-3 text-badan';
 
 export default function FormUbahStatus({ kode, status, aktif }: { kode: string; status: StatusLaporan; aktif: boolean }) {
   const router = useRouter();
@@ -47,7 +47,7 @@ export default function FormUbahStatus({ kode, status, aktif }: { kode: string; 
 
   if (pilihan.length === 0) {
     return (
-      <p className="bg-lapis p-5 text-badan">
+      <p className="kartu p-5 text-badan">
         Status {LABEL_STATUS[status].toLowerCase()} bersifat final. Perubahan berikutnya hanya lewat Keberatan Warga yang
         diputuskan Perencana.
       </p>
@@ -108,7 +108,7 @@ export default function FormUbahStatus({ kode, status, aktif }: { kode: string; 
 
   if (berhasil) {
     return (
-      <p role="status" className="flex gap-2 bg-st-selesai-bg p-5 text-badan text-st-selesai">
+      <p role="status" className="flex gap-2 rounded-(--radius-kartu) bg-st-selesai-bg p-5 text-badan text-st-selesai">
         <Ikon nama="centang" className="mt-1 size-5" />
         {berhasil}
       </p>
@@ -116,7 +116,7 @@ export default function FormUbahStatus({ kode, status, aktif }: { kode: string; 
   }
 
   return (
-    <form onSubmit={simpan} className="grid gap-6 bg-lapis p-5 sm:p-6">
+    <form onSubmit={simpan} className="kartu grid gap-6 p-5 sm:p-6">
       <fieldset disabled={!aktif || memuat} className="grid gap-6 disabled:opacity-70">
         <div role="radiogroup" aria-labelledby={`label-status-${kode}`}>
           <p id={`label-status-${kode}`} className="text-badan font-medium">
@@ -126,7 +126,7 @@ export default function FormUbahStatus({ kode, status, aktif }: { kode: string; 
             {pilihan.map((s) => (
               <label
                 key={s}
-                className="flex min-h-11 cursor-pointer items-center gap-2 bg-terang px-4 has-checked:bg-tinta has-checked:text-kertas has-focus-visible:outline-3 has-focus-visible:outline-tinta"
+                className="flex min-h-11 cursor-pointer items-center gap-2 rounded-full bg-lapis px-4 font-medium transition-colors hover:bg-lapis-2 has-checked:bg-tinta has-checked:text-white has-focus-visible:outline-3 has-focus-visible:outline-tinta"
               >
                 <input type="radio" name="status" checked={baru === s} onChange={() => setBaru(s)} className="sr-only" />
                 <IkonStatus status={s} />
@@ -140,7 +140,7 @@ export default function FormUbahStatus({ kode, status, aktif }: { kode: string; 
           <fieldset className="grid gap-2">
             <legend className="text-badan font-medium">Alasan penolakan</legend>
             {(Object.keys(LABEL_ALASAN) as AlasanTolak[]).map((a) => (
-              <label key={a} className="grid cursor-pointer gap-1 bg-terang p-4 has-checked:outline-3 has-checked:outline-tinta">
+              <label key={a} className="grid cursor-pointer gap-1 rounded-(--radius-kontrol) border border-batas p-4 transition-colors hover:bg-terang has-checked:border-tinta has-checked:bg-tinta-muda">
                 <span className="flex items-center gap-2 font-medium">
                   <input type="radio" name="alasan" checked={alasan === a} onChange={() => setAlasan(a)} className="size-4 accent-tinta" />
                   {LABEL_ALASAN[a]}
@@ -173,7 +173,7 @@ export default function FormUbahStatus({ kode, status, aktif }: { kode: string; 
                 /* eslint-disable-next-line @next/next/no-img-element -- pratinjau blob lokal */
                 <img src={bukti.pratinjau} alt="Pratinjau foto bukti" className="size-28 object-cover" />
               )}
-              <label className="flex min-h-11 cursor-pointer items-center gap-2 bg-terang px-4 has-focus-visible:outline-3 has-focus-visible:outline-tinta">
+              <label className="flex min-h-11 cursor-pointer items-center gap-2 rounded-(--radius-kontrol) bg-lapis px-4 font-semibold hover:bg-lapis-2 has-focus-visible:outline-3 has-focus-visible:outline-tinta">
                 <Ikon nama="unggah" className="size-4" />
                 {bukti ? 'Ganti foto' : 'Pilih foto'}
                 <input type="file" accept={TIPE_FOTO.join(',')} onChange={(e) => pilihBukti(e.target.files)} className="sr-only" />
