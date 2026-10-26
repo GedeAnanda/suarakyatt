@@ -27,7 +27,7 @@ export default function KartuLaporan({
   return (
     <Link
       href={href}
-      className="group grid grid-cols-[1fr_auto] gap-x-4 gap-y-2 bg-lapis p-4 transition-colors hover:bg-lapis-2 sm:p-5"
+      className="group grid grid-cols-[1fr_auto] gap-x-4 gap-y-2 kartu kartu-klik h-full p-4 sm:p-5"
     >
       <div className="min-w-0">
         <p className="flex flex-wrap items-center gap-x-3 gap-y-1">

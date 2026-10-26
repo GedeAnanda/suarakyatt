@@ -20,7 +20,7 @@ export default function LaporPage() {
         </p>
       </div>
 
-      <aside role="note" className="mt-10 flex gap-3 bg-st-ditolak-bg p-4 text-badan text-st-ditolak sm:p-5">
+      <aside role="note" className="mt-10 flex gap-3 rounded-(--radius-kartu) bg-st-ditolak-bg p-4 text-badan text-st-ditolak sm:p-5">
         <Ikon nama="info" className="mt-1 size-5" />
         <p>
           <strong className="font-semibold">suaRAkyat bukan kanal pengaduan resmi.</strong> Laporan di sini tidak diteruskan

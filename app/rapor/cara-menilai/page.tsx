@@ -45,17 +45,17 @@ export default function CaraMenilaiPage() {
         </p>
       </div>
 
-      <section aria-labelledby="judul-rumus" className="mt-16 bg-lapis p-6 sm:mt-20 sm:p-10">
+      <section aria-labelledby="judul-rumus" className="kartu mt-16 p-6 sm:mt-20 sm:p-10">
         <h2 id="judul-rumus" className="sr-only">
           Rumus
         </h2>
-        <p className="angka text-[clamp(1.75rem,1rem+3.4vw,4rem)] leading-tight font-medium tracking-[-0.04em]">
+        <p className="text-tinta angka text-[clamp(1.75rem,1rem+3.4vw,4rem)] leading-tight font-medium tracking-[-0.04em]">
           Nilai = 100 × (0,3 R + 0,3 S + 0,2 P + 0,2 K)
         </p>
         <dl className="mt-10 grid gap-x-10 gap-y-8 md:grid-cols-2">
           {KOMPONEN.map((k) => (
             <div key={k} className="grid grid-cols-[3rem_1fr] gap-x-4">
-              <dt className="text-judul leading-none font-semibold">{k}</dt>
+              <dt className="text-tinta text-judul leading-none font-semibold">{k}</dt>
               <dd>
                 <p className="text-badan font-semibold">
                   {INFO_KOMPONEN[k].nama} · bobot {Math.round(INFO_KOMPONEN[k].bobot * 100)}%
@@ -78,8 +78,8 @@ export default function CaraMenilaiPage() {
         </div>
         <ul className="grid grid-cols-5 gap-2 lg:col-span-8">
           {HURUF.map((h) => (
-            <li key={h.h} className="bg-lapis p-4">
-              <p className="text-[clamp(3rem,2rem+4vw,6rem)] leading-none font-semibold tracking-[-0.05em]">{h.h}</p>
+            <li key={h.h} className="kartu p-4">
+              <p className="text-tinta text-[clamp(3rem,2rem+4vw,6rem)] leading-none font-semibold tracking-[-0.05em]">{h.h}</p>
               <p className="mt-2 text-kecil">{h.rentang}</p>
             </li>
           ))}
@@ -97,15 +97,15 @@ export default function CaraMenilaiPage() {
         </div>
         <ol className="mt-10 grid gap-2">
           {CONTOH.map((c) => (
-            <li key={c.k} className="grid gap-3 bg-lapis p-5 sm:grid-cols-[3rem_1fr_9rem_5rem] sm:items-baseline sm:gap-6">
-              <span className="text-judul leading-none font-semibold">{c.k}</span>
+            <li key={c.k} className="kartu grid gap-3 p-5 sm:grid-cols-[3rem_1fr_9rem_5rem] sm:items-baseline sm:gap-6">
+              <span className="text-tinta text-judul leading-none font-semibold">{c.k}</span>
               <span className="text-badan">{c.kejadian}</span>
               <span className="angka text-badan text-lembut sm:text-right">{c.hitung}</span>
-              <span className="angka text-lead font-semibold sm:text-right">{desimal(c.nilai, 2)}</span>
+              <span className="text-tinta angka text-lead font-semibold sm:text-right">{desimal(c.nilai, 2)}</span>
             </li>
           ))}
         </ol>
-        <div className="di-medan mt-2 flex flex-wrap items-baseline justify-between gap-4 bg-medan p-5 text-medan-tinta sm:p-6">
+        <div className="di-medan mt-2 flex flex-wrap items-baseline justify-between gap-4 rounded-(--radius-kartu) bg-medan p-5 text-medan-tinta sm:p-6">
           <p className="angka text-badan">
             100 × (0,3 × {desimal(dua(CONTOH[0].nilai), 2)} + 0,3 × {desimal(dua(CONTOH[1].nilai), 2)} + 0,2 ×{' '}
             {desimal(dua(CONTOH[2].nilai), 2)} + 0,2 × {desimal(dua(CONTOH[3].nilai), 2)})
@@ -131,30 +131,30 @@ export default function CaraMenilaiPage() {
             .
           </p>
         </div>
-        <div className="overflow-x-auto lg:col-span-7">
+        <div className="kartu relative overflow-x-auto lg:col-span-7">
           <table className="w-full min-w-[30rem] text-left text-badan">
             <caption className="mb-3 text-left text-kecil text-lembut">
               Dua dinas yang sama-sama menerima 100 laporan
             </caption>
             <thead>
-              <tr className="bg-lapis-2">
+              <tr className="bg-terang">
                 <th scope="col" className="p-3 font-medium"></th>
                 <th scope="col" className="p-3 font-medium">Dinas A, menangani laporan susah</th>
                 <th scope="col" className="p-3 font-medium">Dinas B, menolak laporan susah</th>
               </tr>
             </thead>
-            <tbody className="bg-lapis">
-              <tr className="border-t border-kertas">
+            <tbody>
+              <tr className="border-t border-batas">
                 <th scope="row" className="p-3 font-medium">Ditolak &ldquo;Tidak valid&rdquo;</th>
                 <td className="angka p-3">5</td>
                 <td className="angka p-3">35</td>
               </tr>
-              <tr className="border-t border-kertas">
+              <tr className="border-t border-batas">
                 <th scope="row" className="p-3 font-medium">Jika hanya huruf</th>
                 <td className="p-3">B</td>
                 <td className="p-3">A</td>
               </tr>
-              <tr className="border-t border-kertas">
+              <tr className="border-t border-batas">
                 <th scope="row" className="p-3 font-medium">Di suaRAkyat</th>
                 <td className="p-3">B · ditolak 5%</td>
                 <td className="p-3 font-semibold">C (angkanya setara A) · ditolak 35%, melewati batas 25%</td>

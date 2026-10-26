@@ -32,7 +32,7 @@ export default function PerbandinganPeringkat({
   const geser = jelas.peringkat - simulasi.peringkat;
 
   return (
-    <section aria-labelledby="judul-dua-urutan" className="overflow-hidden bg-lapis">
+    <section aria-labelledby="judul-dua-urutan" className="overflow-hidden bg-permukaan">
       <div className="bingkai pt-24 sm:pt-32" data-muncul>
         <div className="grid gap-6 lg:grid-cols-12">
           <h2 id="judul-dua-urutan" className="text-judul lg:col-span-5">
@@ -56,7 +56,7 @@ export default function PerbandinganPeringkat({
                 type="button"
                 aria-pressed={preset === p}
                 onClick={() => setPreset(p)}
-                className="min-h-11 bg-terang px-4 py-2 text-badan transition-colors hover:bg-kertas active:translate-y-px aria-pressed:bg-tinta aria-pressed:text-kertas"
+                className="min-h-11 rounded-full bg-lapis px-5 py-2 text-badan font-medium transition-colors hover:bg-lapis-2 active:translate-y-px aria-pressed:bg-tinta aria-pressed:text-kertas"
               >
                 {LABEL_PRESET[p]}
               </button>
@@ -71,7 +71,7 @@ export default function PerbandinganPeringkat({
             Bobot resmi
             <span className="block text-kecil text-lembut">Peringkat {jelas.peringkat} dari {jelas.total}</span>
           </figcaption>
-          <p aria-hidden="true" className="angka mt-2 text-[62vw] leading-[0.8] font-medium tracking-[-0.06em] sm:text-[clamp(11rem,34vw,32rem)]">
+          <p aria-hidden="true" className="text-tinta angka mt-2 text-[62vw] leading-[0.8] font-medium tracking-[-0.06em] sm:text-[clamp(11rem,34vw,32rem)]">
             {jelas.peringkat}
           </p>
         </figure>

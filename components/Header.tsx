@@ -3,29 +3,15 @@
 // Di bawah 1280 px semuanya pindah ke menu supaya bar tidak pernah terlipat.
 
 import Link from 'next/link';
-import { Suspense, type ReactNode } from 'react';
+import { Suspense } from 'react';
 import { ambilSesi } from '@/lib/data/sesi';
 import { keluar } from '@/lib/supabase/aksi-auth';
 import CariKode from './CariKode';
 import { MenuPonsel, MenuPonselStatis, TautanNav, TautanNavStatis } from './NavUtama';
+import Turun from './Turun';
 import Ikon from './ui/Ikon';
 import { kelasTombol } from './ui/Tombol';
 import Wordmark from './Wordmark';
-
-/** Panel tarik-turun tanpa JavaScript: <details> dengan panel yang menempel di kanan. */
-function Turun({ label, children }: { label: ReactNode; children: ReactNode }) {
-  return (
-    <details className="group relative">
-      <summary className="flex h-11 cursor-pointer list-none items-center gap-2 px-3 text-badan hover:bg-lapis group-open:bg-lapis [&::-webkit-details-marker]:hidden">
-        {label}
-        <Ikon nama="turun" className="size-4 transition-transform group-open:rotate-180" />
-      </summary>
-      <div className="absolute top-full right-0 z-10 mt-1 w-80 bg-kertas p-4 shadow-[0_18px_40px_rgb(60_10_14/0.18)]">
-        {children}
-      </div>
-    </details>
-  );
-}
 
 const peranTeks = (s: NonNullable<Awaited<ReturnType<typeof ambilSesi>>>) =>
   `${s.perencana ? 'Perencana' : s.peran === 'admin' ? 'Admin instansi' : 'Warga'}${s.demo ? ' · akun demo' : ''}`;
@@ -34,7 +20,7 @@ async function Akun() {
   const sesi = await ambilSesi();
   if (!sesi) {
     return (
-      <Link href="/masuk" className="flex h-11 items-center px-3 text-badan hover:bg-lapis">
+      <Link href="/masuk" className="flex h-11 items-center rounded-(--radius-kontrol) px-3 text-badan font-medium hover:bg-lapis">
         Masuk
       </Link>
     );
@@ -69,7 +55,7 @@ async function AkunPonsel() {
     );
   }
   return (
-    <div className="grid gap-3 bg-lapis p-4">
+    <div className="panel grid gap-3 p-4">
       <p className="text-badan font-medium">
         {sesi.nama}
         <span className="block text-kecil font-normal text-lembut">{peranTeks(sesi)}</span>
@@ -90,7 +76,7 @@ async function AkunPonsel() {
 
 export default function Header() {
   return (
-    <header className="relative z-1000 bg-kertas">
+    <header className="sticky top-0 z-1000 border-b border-batas bg-kertas/85 backdrop-blur-md supports-[backdrop-filter]:bg-kertas/75">
       <nav aria-label="Navigasi utama" className="bingkai flex h-16 items-center gap-3 sm:h-18">
         <Link href="/" className="mr-auto text-[1.375rem] xl:mr-4" aria-label="suaRAkyat, ke Beranda">
           <Wordmark />

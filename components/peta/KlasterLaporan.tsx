@@ -21,7 +21,8 @@ function Lapisan({ laporan, onPilih }: { laporan: TitikLaporan[]; onPilih?: (kod
   useEffect(() => {
     const g = L.markerClusterGroup({
       showCoverageOnHover: false,
-      maxClusterRadius: 48,
+      // Di layar sempit klaster digabung lebih longgar supaya kotaknya tidak saling tumpuk.
+      maxClusterRadius: window.innerWidth < 640 ? 72 : 48,
       spiderfyOnMaxZoom: true,
       iconCreateFunction: (c) => {
         const n = c.getChildCount();

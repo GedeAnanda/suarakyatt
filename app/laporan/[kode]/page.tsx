@@ -10,6 +10,7 @@ import BadgeStatus, { WARNA_TITIK } from '@/components/BadgeStatus';
 import IndikatorSLA from '@/components/IndikatorSLA';
 import { FormRating, TombolBatalkan, TombolDukung } from '@/components/laporan/AksiLaporan';
 import Galeri from '@/components/laporan/Galeri';
+import SalinKode from '@/components/laporan/SalinKode';
 import PanelKenapaBelum from '@/components/laporan/PanelKenapaBelum';
 import Timeline from '@/components/laporan/Timeline';
 import TitikTunggal from '@/components/peta/TitikTunggal';
@@ -56,7 +57,7 @@ async function Isi({ params, searchParams }: Pick<PageProps<'/laporan/[kode]'>, 
   return (
     <>
       {baru && (
-        <div role="status" className="di-medan mb-10 bg-medan p-5 text-medan-tinta sm:p-6">
+        <div role="status" className="di-medan mb-10 rounded-(--radius-kartu) bg-medan p-5 text-medan-tinta sm:p-6">
           <p className="text-lead font-medium">Laporan terkirim. Simpan kode {l.kode} untuk melacaknya.</p>
           <p className="mt-2 max-w-[70ch] text-badan text-medan-lembut">
             Laporan di suaRAkyat tidak diteruskan ke instansi. Untuk pengaduan resmi, kirim juga lewat{' '}
@@ -80,6 +81,9 @@ async function Isi({ params, searchParams }: Pick<PageProps<'/laporan/[kode]'>, 
             {(l.is_simulated || sumber === 'contoh') && <LabelSumber sumber={sumber} />}
           </div>
           <h1 className="angka mt-5 text-[clamp(3rem,1.6rem+6vw,7rem)] leading-[0.9] font-semibold tracking-[-0.05em]">{l.kode}</h1>
+          <div className="mt-4">
+            <SalinKode kode={l.kode} />
+          </div>
           <p className="mt-5 text-pernyataan tracking-[-0.02em]">
             {l.kategori} di {l.kecamatan}, {l.kota}
           </p>
@@ -105,7 +109,7 @@ async function Isi({ params, searchParams }: Pick<PageProps<'/laporan/[kode]'>, 
       </div>
 
       {penolakan && (
-        <section aria-labelledby="judul-tolak" className="mt-12 bg-st-ditolak-bg p-5 text-st-ditolak sm:p-6">
+        <section aria-labelledby="judul-tolak" className="mt-12 rounded-(--radius-kartu) bg-st-ditolak-bg p-5 text-st-ditolak sm:p-6">
           <h2 id="judul-tolak" className="flex items-center gap-2 text-lead font-medium">
             <Ikon nama="peringatan" className="size-5" />
             Ditolak · {penolakan.alasan_tolak ? LABEL_ALASAN[penolakan.alasan_tolak] : 'tanpa alasan tercatat'}
@@ -153,11 +157,11 @@ async function Isi({ params, searchParams }: Pick<PageProps<'/laporan/[kode]'>, 
           {hubungan.pemilik && l.status === 'menunggu' && <TombolBatalkan kode={l.kode} />}
           {hubungan.pemilik && l.status === 'selesai' && !hubungan.sudahRating && <FormRating kode={l.kode} />}
           {sumber === 'contoh' && (
-            <p className="bg-lapis p-5 text-kecil">
+            <p className="kartu p-5 text-kecil">
               Ini laporan dari data contoh. Tombol dukung, batal, dan rating aktif untuk laporan yang tersimpan di database.
             </p>
           )}
-          <div className="bg-lapis p-5 text-kecil">
+          <div className="kartu p-5 text-kecil">
             <p className="font-medium">Batas waktu layanan untuk {l.kategori.toLowerCase()}</p>
             <p className="mt-1">
               Respons sampai {tanggalJam(l.batas_respons)}, selesai sampai {tanggalJam(l.batas_selesai)}. Angka batas waktu

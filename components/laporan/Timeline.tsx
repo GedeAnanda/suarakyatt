@@ -13,8 +13,8 @@ export default function Timeline({ item }: { item: TimelineItem[] }) {
         const terakhir = i === item.length - 1;
         return (
           <li key={`${t.status_baru}-${t.created_at}`} className="relative grid grid-cols-[2.25rem_1fr] gap-x-4 pb-8 last:pb-0">
-            {!terakhir && <span aria-hidden="true" className="absolute top-9 bottom-0 left-[1.0625rem] w-0.5 bg-lapis-2" />}
-            <span className={`relative flex size-9 items-center justify-center ${GAYA_STATUS[t.status_baru]}`}>
+            {!terakhir && <span aria-hidden="true" className="absolute top-9 bottom-0 left-[1.0625rem] w-0.5 rounded-full bg-lapis-2" />}
+            <span className={`relative flex size-9 items-center justify-center rounded-full ring-4 ring-kertas ${GAYA_STATUS[t.status_baru]}`}>
               <IkonStatus status={t.status_baru} className="size-[1.125rem]" />
             </span>
             <div className="pt-1">

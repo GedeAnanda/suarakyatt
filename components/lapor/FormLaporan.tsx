@@ -53,17 +53,59 @@ const PESAN_FOTO: Record<string, string> = {
   KOMPRES_GAGAL: 'Foto tidak bisa diproses di perangkat ini. Coba foto lain.',
 };
 
-function Langkah({ n, judul, children, petunjuk }: { n: number; judul: string; petunjuk?: string; children: React.ReactNode }) {
+function Langkah({
+  n,
+  judul,
+  children,
+  petunjuk,
+  selesai,
+  galat,
+}: {
+  n: number;
+  judul: string;
+  petunjuk?: string;
+  selesai: boolean;
+  galat: string[];
+  children: React.ReactNode;
+}) {
   return (
-    <section aria-labelledby={`langkah-${n}`} className="grid gap-4 border-t-4 border-lapis pt-6 lg:grid-cols-12 lg:gap-8">
+    <section
+      id={`bagian-langkah-${n}`}
+      aria-labelledby={`langkah-${n}`}
+      className={`kartu grid scroll-mt-6 gap-4 p-5 transition-colors sm:p-6 lg:grid-cols-12 lg:gap-8 ${
+        galat.length ? 'border-tinta ring-2 ring-tinta/15' : selesai ? 'border-st-selesai/50' : ''
+      }`}
+    >
       <div className="lg:col-span-4">
-        <h2 id={`langkah-${n}`} className="text-lead font-medium tracking-tight">
-          <span className="angka mr-2 text-lembut">{n}.</span>
+        <h2 id={`langkah-${n}`} className="flex items-center gap-3 text-lead font-medium tracking-tight text-teks">
+          <span
+            className={`angka flex size-9 shrink-0 items-center justify-center rounded-full text-badan font-semibold transition-colors ${
+              selesai ? 'bg-st-selesai text-white' : galat.length ? 'bg-tinta text-white' : 'bg-lapis text-teks'
+            }`}
+          >
+            {selesai ? <Ikon nama="centang" className="size-5" /> : n}
+            <span className="sr-only">{selesai ? ', lengkap' : ', belum lengkap'}</span>
+          </span>
           {judul}
+          <span className="text-kecil font-normal text-tinta" aria-hidden="true">
+            *
+          </span>
         </h2>
         {petunjuk && <p className="mt-2 max-w-[40ch] text-kecil text-lembut">{petunjuk}</p>}
       </div>
-      <div className="min-w-0 lg:col-span-8">{children}</div>
+      <div className="min-w-0 lg:col-span-8">
+        {children}
+        {galat.length > 0 && (
+          <ul id={`galat-langkah-${n}`} className="mt-3 grid gap-1">
+            {galat.map((t) => (
+              <li key={t} className="flex items-center gap-2 text-badan font-medium text-tinta">
+                <Ikon nama="peringatan" className="size-4" />
+                {t}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </section>
   );
 }
@@ -86,6 +128,7 @@ export default function FormLaporan() {
   const [tahap, setTahap] = useState<'isi' | 'mengunggah' | 'mengirim'>('isi');
   const [galat, setGalat] = useState<string | null>(null);
   const [cobaKirim, setCobaKirim] = useState(false);
+  const ringkasan = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     muatKecamatan().then(setBatas, () => setBatas([]));
@@ -173,19 +216,26 @@ export default function FormLaporan() {
   }
 
   const panjang = deskripsi.trim().length;
-  const masalah = [
-    !kategori && 'Pilih kategori.',
-    !titik && 'Taruh titik lokasi di peta.',
-    diLuar && 'Titik berada di luar DKI Jakarta daratan.',
-    foto.length === 0 && 'Tambahkan minimal satu foto.',
-    panjang < MIN_DESKRIPSI && `Deskripsi minimal ${MIN_DESKRIPSI} karakter.`,
-    panjang > MAKS_DESKRIPSI && `Deskripsi maksimal ${MAKS_DESKRIPSI} karakter.`,
-  ].filter(Boolean) as string[];
+  const semuaMasalah: { langkah: number; teks: string | false }[] = [
+    { langkah: 1, teks: !kategori && 'Pilih salah satu kategori.' },
+    { langkah: 2, teks: !titik && 'Ketuk peta untuk menaruh titik lokasi.' },
+    { langkah: 2, teks: diLuar && 'Titik berada di luar DKI Jakarta daratan; pindahkan ke wilayah layanan.' },
+    { langkah: 3, teks: foto.length === 0 && 'Tambahkan minimal satu foto.' },
+    { langkah: 4, teks: panjang < MIN_DESKRIPSI && `Tulis minimal ${MIN_DESKRIPSI} karakter (sekarang ${panjang}).` },
+    { langkah: 4, teks: panjang > MAKS_DESKRIPSI && `Persingkat menjadi maksimal ${MAKS_DESKRIPSI} karakter.` },
+  ];
+  const masalah = semuaMasalah.filter((m): m is { langkah: number; teks: string } => Boolean(m.teks));
+  const galatLangkah = (n: number) => (cobaKirim ? masalah.filter((m) => m.langkah === n).map((m) => m.teks) : []);
+  const lengkap = [1, 2, 3, 4].filter((n) => !masalah.some((m) => m.langkah === n));
 
   async function kirim(e: React.FormEvent) {
     e.preventDefault();
     setCobaKirim(true);
-    if (masalah.length > 0 || !titik || !kategori) return;
+    if (masalah.length > 0 || !titik || !kategori) {
+      // Fokus ke ringkasan supaya pembaca layar dan keyboard langsung tahu apa yang kurang.
+      window.requestAnimationFrame(() => ringkasan.current?.focus());
+      return;
+    }
     setGalat(null);
     try {
       setTahap('mengunggah');
@@ -215,14 +265,14 @@ export default function FormLaporan() {
 
   return (
     <form onSubmit={kirim} noValidate className="grid gap-14">
-      <Langkah n={1} judul="Masalahnya apa?" petunjuk="Urgensi dan dinas penanggung jawab ditentukan dari kategori, bukan dipilih pelapor.">
+      <Langkah n={1} selesai={lengkap.includes(1)} galat={galatLangkah(1)} judul="Masalahnya apa?" petunjuk="Urgensi dan dinas penanggung jawab ditentukan dari kategori, bukan dipilih pelapor.">
         <fieldset>
           <legend className="sr-only">Kategori</legend>
           <div className="grid gap-2 sm:grid-cols-2">
             {KATEGORI.map((k) => (
               <label
                 key={k.id}
-                className="grid cursor-pointer gap-1 bg-lapis p-4 transition-colors hover:bg-lapis-2 has-checked:bg-tinta has-checked:text-kertas has-focus-visible:outline-3 has-focus-visible:outline-tinta"
+                className="kartu kartu-klik grid cursor-pointer gap-1 p-4 has-checked:border-tinta has-checked:bg-tinta has-checked:text-white has-focus-visible:outline-3 has-focus-visible:outline-tinta"
               >
                 <input type="radio" name="kategori" value={k.id} checked={kategori === k.id} onChange={() => setKategori(k.id)} className="sr-only" />
                 <span className="text-lead font-medium tracking-tight">{k.nama}</span>
@@ -235,7 +285,7 @@ export default function FormLaporan() {
         </fieldset>
       </Langkah>
 
-      <Langkah n={2} judul="Di mana tepatnya?" petunjuk="Ketuk peta untuk menaruh titik, lalu geser titiknya kalau perlu. Kecamatan dan instansi ditentukan otomatis.">
+      <Langkah n={2} selesai={lengkap.includes(2)} galat={galatLangkah(2)} judul="Di mana tepatnya?" petunjuk="Ketuk peta untuk menaruh titik, lalu geser titiknya kalau perlu. Kecamatan dan instansi ditentukan otomatis.">
         <div className="peta isolate overflow-hidden bg-lapis">
           <PetaPin titik={titik} onPilih={setTitik} />
         </div>
@@ -266,8 +316,8 @@ export default function FormLaporan() {
         )}
       </Langkah>
 
-      <Langkah n={3} judul="Foto masalahnya" petunjuk="1–3 foto JPG, PNG, atau WebP, maksimal 5 MB. Foto dikecilkan dan data lokasi di dalam file dibuang sebelum diunggah.">
-        <p className="flex gap-2 bg-st-menunggu-bg p-3 text-kecil text-st-menunggu">
+      <Langkah n={3} selesai={lengkap.includes(3)} galat={galatLangkah(3)} judul="Foto masalahnya" petunjuk="1–3 foto JPG, PNG, atau WebP, maksimal 5 MB. Foto dikecilkan dan data lokasi di dalam file dibuang sebelum diunggah.">
+        <p className="flex gap-2 rounded-(--radius-kontrol) bg-st-menunggu-bg p-3 text-kecil text-st-menunggu">
           <Ikon nama="peringatan" className="mt-0.5 size-4" />
           Jangan memotret wajah atau plat nomor orang lain. Foto tampil publik.
         </p>
@@ -275,12 +325,12 @@ export default function FormLaporan() {
           {foto.map((f, i) => (
             <figure key={f.id} className="relative">
               {/* eslint-disable-next-line @next/next/no-img-element -- pratinjau blob lokal */}
-              <img src={f.pratinjau} alt={`Foto ${i + 1} yang dipilih`} className="aspect-square w-full bg-lapis object-cover" />
+              <img src={f.pratinjau} alt={`Foto ${i + 1} yang dipilih`} className="aspect-square w-full rounded-(--radius-kontrol) bg-lapis object-cover" />
               <button
                 type="button"
                 onClick={() => hapusFoto(f.id)}
                 disabled={sibuk}
-                className="absolute top-2 right-2 flex size-9 items-center justify-center bg-tinta text-kertas hover:bg-tinta-tua"
+                className="absolute top-2 right-2 flex size-11 items-center justify-center rounded-full bg-tinta shadow-md text-kertas hover:bg-tinta-tua"
                 aria-label={`Hapus foto ${i + 1}`}
               >
                 <Ikon nama="tutup" className="size-4" />
@@ -290,7 +340,7 @@ export default function FormLaporan() {
           {foto.length < MAKS_FOTO && (
             <label
               htmlFor={idInputFoto}
-              className="flex aspect-square cursor-pointer flex-col items-center justify-center gap-2 bg-lapis p-4 text-center text-kecil hover:bg-lapis-2 has-focus-visible:outline-3 has-focus-visible:outline-tinta"
+              className="flex aspect-square cursor-pointer flex-col items-center justify-center gap-2 rounded-(--radius-kontrol) border-2 border-dashed border-lapis-2 bg-permukaan p-4 text-center text-kecil font-medium transition-colors hover:border-tinta hover:bg-tinta-muda/40 has-focus-visible:outline-3 has-focus-visible:outline-tinta"
             >
               <Ikon nama="kamera" className="size-7" />
               Tambah foto
@@ -318,7 +368,7 @@ export default function FormLaporan() {
         )}
       </Langkah>
 
-      <Langkah n={4} judul="Ceritakan singkat" petunjuk="Apa yang terjadi, sejak kapan, dan dampaknya. 20–500 karakter.">
+      <Langkah n={4} selesai={lengkap.includes(4)} galat={galatLangkah(4)} judul="Ceritakan singkat" petunjuk="Apa yang terjadi, sejak kapan, dan dampaknya. 20–500 karakter.">
         <label htmlFor="deskripsi" className="sr-only">
           Deskripsi
         </label>
@@ -328,8 +378,9 @@ export default function FormLaporan() {
           onChange={(e) => setDeskripsi(e.target.value)}
           rows={5}
           maxLength={MAKS_DESKRIPSI + 50}
-          aria-describedby="hitung-deskripsi"
-          className="w-full bg-terang p-4 text-badan focus:outline-3 focus:outline-tinta"
+          aria-describedby={`hitung-deskripsi${galatLangkah(4).length ? ' galat-langkah-4' : ''}`}
+          aria-invalid={galatLangkah(4).length > 0 || undefined}
+          className="w-full p-4 text-badan"
           placeholder="Contoh: Lubang besar di lajur kiri dekat halte, motor sering oleng saat malam karena lampu jalan mati."
         />
         <p id="hitung-deskripsi" className={`angka mt-1 text-kecil ${panjang > MAKS_DESKRIPSI ? 'font-semibold' : 'text-lembut'}`}>
@@ -338,7 +389,7 @@ export default function FormLaporan() {
       </Langkah>
 
       {serupa && serupa.length > 0 && (
-        <section aria-labelledby="judul-serupa" className="di-medan bg-medan p-5 text-medan-tinta sm:p-8">
+        <section aria-labelledby="judul-serupa" className="di-medan rounded-(--radius-kartu) bg-medan p-5 text-medan-tinta sm:p-8">
           <h2 id="judul-serupa" className="text-lead font-medium tracking-tight">
             Sudah ada {serupa.length} laporan serupa dalam 100 meter
           </h2>
@@ -348,7 +399,7 @@ export default function FormLaporan() {
           </p>
           <ul className="mt-6 grid gap-2">
             {serupa.map((s) => (
-              <li key={s.kode} className="flex flex-wrap items-center gap-x-5 gap-y-3 bg-terang p-4 text-tinta">
+              <li key={s.kode} className="flex flex-wrap items-center gap-x-5 gap-y-3 rounded-(--radius-kontrol) bg-permukaan p-4 text-teks">
                 <div className="min-w-0 flex-1">
                   <p className="flex flex-wrap items-center gap-3">
                     <Link href={`/laporan/${s.kode}`} target="_blank" className="angka font-semibold underline-offset-4 hover:underline">
@@ -370,14 +421,20 @@ export default function FormLaporan() {
         </section>
       )}
 
-      <div className="grid gap-4 bg-lapis p-5 sm:p-6 lg:grid-cols-12 lg:items-center lg:gap-8">
+      <div className="kartu grid gap-4 p-5 sm:p-6 lg:grid-cols-12 lg:items-center lg:gap-8">
         <div className="lg:col-span-8">
           {cobaKirim && masalah.length > 0 ? (
-            <div role="alert">
-              <p className="text-badan font-semibold">Belum bisa dikirim:</p>
-              <ul className="mt-1 list-inside list-disc text-badan">
+            <div ref={ringkasan} tabIndex={-1} role="alert" className="outline-none focus-visible:outline-3 focus-visible:outline-tinta">
+              <p className="text-badan font-semibold text-tinta">
+                Belum bisa dikirim: {masalah.length} hal perlu dilengkapi
+              </p>
+              <ul className="mt-2 grid gap-1">
                 {masalah.map((m) => (
-                  <li key={m}>{m}</li>
+                  <li key={m.teks}>
+                    <a href={`#bagian-langkah-${m.langkah}`} className="text-badan underline decoration-2 underline-offset-4">
+                      Langkah {m.langkah}: {m.teks}
+                    </a>
+                  </li>
                 ))}
               </ul>
             </div>
@@ -386,9 +443,19 @@ export default function FormLaporan() {
               {galat} Isian Anda masih tersimpan; tekan tombol kirim untuk mencoba lagi.
             </p>
           ) : (
-            <p className="text-badan">
-              Setelah terkirim Anda mendapat kode SR untuk melacak laporan. Status awalnya Menunggu sampai dinas merespons.
-            </p>
+            <div>
+              <p className="flex items-center gap-3 text-badan font-semibold">
+                <span className="angka">{lengkap.length} dari 4 langkah lengkap</span>
+                <span aria-hidden="true" className="flex gap-1">
+                  {[1, 2, 3, 4].map((n) => (
+                    <span key={n} className={`h-1.5 w-6 rounded-full transition-colors ${lengkap.includes(n) ? 'bg-st-selesai' : 'bg-lapis-2'}`} />
+                  ))}
+                </span>
+              </p>
+              <p className="mt-1 text-kecil">
+                Setelah terkirim Anda mendapat kode SR untuk melacak laporan. Status awalnya Menunggu sampai dinas merespons.
+              </p>
+            </div>
           )}
         </div>
         <Tombol type="submit" disabled={sibuk} className="min-h-12 lg:col-span-4 lg:justify-self-end">

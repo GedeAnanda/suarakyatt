@@ -61,7 +61,7 @@ async function Isi({ params }: { params: PageProps<'/admin/laporan/[kode]'>['par
       <aside className="grid content-start gap-4 lg:col-span-5">
         <h2 className="text-lead font-medium tracking-tight">Tindak lanjut</h2>
         {!milikInstansi && (
-          <p className="bg-lapis p-4 text-kecil">
+          <p className="panel p-4 text-kecil">
             {sumber === 'contoh'
               ? 'Ini laporan dari data contoh, jadi statusnya tidak bisa diubah. Formulir di bawah menunjukkan langkahnya.'
               : 'Laporan ini bukan milik instansi Anda, jadi statusnya tidak bisa diubah dari akun ini.'}

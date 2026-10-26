@@ -76,7 +76,7 @@ export default function SorotKecamatan({
                 setIndeks(i);
                 setJeda(true);
               }}
-              className="angka size-9 bg-tinta-tua text-kecil text-medan-lembut hover:text-medan-tinta aria-pressed:bg-medan-tinta aria-pressed:text-tinta"
+              className="angka size-11 bg-tinta-tua text-kecil text-medan-lembut hover:text-medan-tinta aria-pressed:bg-medan-tinta aria-pressed:text-tinta"
             >
               {t.peringkat}
             </button>

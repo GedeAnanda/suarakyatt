@@ -12,6 +12,7 @@ import HeroGaris from '@/components/beranda/HeroGaris';
 import PerbandinganPeringkat from '@/components/beranda/PerbandinganPeringkat';
 import SorotKecamatan, { type IsuTeratas } from '@/components/beranda/SorotKecamatan';
 import TombolDemo from '@/components/TombolDemo';
+import Ikon from '@/components/ui/Ikon';
 import LabelSumber from '@/components/ui/LabelSumber';
 import { kodeLaporanUntukIsu, ambilStatistik } from '@/lib/data/laporan';
 import { ambilDataPrioritas, ambilRapor } from '@/lib/data/prioritas';
@@ -136,10 +137,10 @@ function AngkaMusrenbang() {
         <dl className="grid gap-5 lg:col-span-6 lg:col-start-7">
           {BARIS.map((b) => (
             <div key={b.label} className="grid grid-cols-[52%_1fr] items-baseline sm:grid-cols-[minmax(0,5fr)_minmax(0,1.2fr)_minmax(0,6fr)]">
-              <dd className="angka text-right text-[clamp(3.25rem,1rem+5.4vw,6rem)] leading-none font-medium tracking-[-0.05em]">
+              <dd className="text-tinta angka text-right text-[clamp(3.25rem,1rem+5.4vw,6rem)] leading-none font-medium tracking-[-0.05em]">
                 {b.utuh}
               </dd>
-              <dd className="angka text-[clamp(3.25rem,1rem+5.4vw,6rem)] leading-none font-medium tracking-[-0.05em]">
+              <dd className="text-tinta angka text-[clamp(3.25rem,1rem+5.4vw,6rem)] leading-none font-medium tracking-[-0.05em]">
                 {b.desimal}
               </dd>
               <dt className="col-span-2 mt-1 text-kecil sm:col-span-1 sm:mt-0 sm:pl-4 sm:text-badan">{b.label}</dt>
@@ -172,24 +173,38 @@ export default function BerandaPage() {
             jalan di satu kecamatan diperbaiki lebih dulu, dinas mana yang lambat, dan apa yang berubah kalau prioritasnya
             diganti.
           </p>
-          <div className="mt-16 grid gap-x-6 gap-y-8 sm:grid-cols-2 lg:mt-20 lg:grid-cols-4">
-            <p className="text-badan">
-              <strong className="font-semibold">Untuk warga.</strong> Lihat posisi isu wilayahmu di antara semua
-              isu yang dinilai, faktor yang mendorong dan menahannya, lalu lacak laporanmu dengan kode SR.
-            </p>
-            <p className="text-badan">
-              <strong className="font-semibold">Untuk perencana.</strong> Bobot enam faktor diatur Perencana.
-              Setiap perubahan wajib beralasan dan tercatat publik: siapa, kapan, dari berapa ke berapa.
-            </p>
-            <p className="text-badan">
-              <strong className="font-semibold">Untuk pengawas.</strong> Jurnalis, DPRD, dan komunitas membaca
-              Rapor Instansi A sampai E, selalu bersama tingkat penolakan, ukuran sampel, dan periodenya.
-            </p>
-            <p className="text-badan">
-              <strong className="font-semibold">Bukan kanal resmi.</strong> Laporan di sini tidak diteruskan ke
-              instansi. Wilayah studinya DKI Jakarta daratan: lima kota administrasi, 42 kecamatan.
-            </p>
-          </div>
+          <ul className="mt-14 grid gap-4 sm:grid-cols-2 lg:mt-16 lg:grid-cols-4">
+            {[
+              {
+                ikon: 'warga' as const,
+                judul: 'Untuk warga',
+                isi: 'Lihat posisi isu wilayahmu di antara semua isu yang dinilai, faktor yang mendorong dan menahannya, lalu lacak laporanmu dengan kode SR.',
+              },
+              {
+                ikon: 'grafik' as const,
+                judul: 'Untuk perencana',
+                isi: 'Bobot enam faktor diatur Perencana. Setiap perubahan wajib beralasan dan tercatat publik: siapa, kapan, dari berapa ke berapa.',
+              },
+              {
+                ikon: 'mata' as const,
+                judul: 'Untuk pengawas',
+                isi: 'Jurnalis, DPRD, dan komunitas membaca Rapor Instansi A sampai E, selalu bersama tingkat penolakan, sampel, dan periodenya.',
+              },
+              {
+                ikon: 'perisai' as const,
+                judul: 'Bukan kanal resmi',
+                isi: 'Laporan di sini tidak diteruskan ke instansi. Wilayah studinya DKI Jakarta daratan: lima kota administrasi, 42 kecamatan.',
+              },
+            ].map((k) => (
+              <li key={k.judul} className="kartu p-5 sm:p-6">
+                <span className="flex size-11 items-center justify-center rounded-(--radius-kontrol) bg-tinta-muda text-tinta">
+                  <Ikon nama={k.ikon} className="size-5" />
+                </span>
+                <h3 className="mt-4 text-lead leading-tight font-semibold tracking-tight">{k.judul}</h3>
+                <p className="mt-2 text-badan text-lembut">{k.isi}</p>
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
 
@@ -208,25 +223,34 @@ export default function BerandaPage() {
         </div>
       </section>
 
-      <section aria-labelledby="judul-alur" className="bg-lapis py-24 sm:py-36">
-        <div className="bingkai grid lg:grid-cols-12">
-          <div className="lg:col-span-7 lg:col-start-3 xl:col-span-6 xl:col-start-4">
-            <h2 id="judul-alur" className="text-judul">
+      <section aria-labelledby="judul-alur" className="bg-lapis/60 py-24 sm:py-32">
+        <div className="bingkai">
+          <div className="grid gap-6 lg:grid-cols-12 lg:items-end" data-muncul>
+            <h2 id="judul-alur" className="text-judul lg:col-span-6">
               Dari mana datanya
             </h2>
-            <div className="mt-14">
-              <Suspense fallback={<KerangkaBagian tinggi="h-[60svh]" nada="bg-lapis-2" />}>
-                <BagianAlur />
-              </Suspense>
-            </div>
-            <div className="mt-24 bg-kertas p-6 sm:p-8" data-muncul>
-              <h3 className="text-lead font-medium">Coba alurnya sendiri, tanpa daftar</h3>
-              <p className="mt-2 max-w-[52ch] text-badan">
+            <p className="max-w-[56ch] text-badan text-lembut lg:col-span-6">
+              Semua angka di dashboard prioritas dan rapor instansi berasal dari tiga langkah ini. Setiap langkah tercatat
+              dan bisa dibuka siapa saja.
+            </p>
+          </div>
+          <div className="mt-12 sm:mt-16">
+            <Suspense fallback={<KerangkaBagian tinggi="h-[32rem]" />}>
+              <BagianAlur />
+            </Suspense>
+          </div>
+          <div
+            className="di-medan mt-10 grid gap-6 rounded-(--radius-kartu) bg-medan p-6 text-medan-tinta shadow-[0_28px_56px_-28px_rgb(125_12_20/0.7)] sm:p-10 lg:grid-cols-12 lg:items-center"
+            data-muncul
+          >
+            <div className="lg:col-span-7">
+              <h3 className="text-pernyataan font-semibold tracking-tight">Coba alurnya sendiri, tanpa daftar</h3>
+              <p className="mt-2 max-w-[56ch] text-badan text-medan-lembut">
                 Warga demo bisa melapor dan mendukung laporan; admin demo bisa mengubah status laporan Dinas Bina Jalan
                 (simulasi). Data demo dikembalikan ke awal setiap malam.
               </p>
-              <TombolDemo className="mt-6" />
             </div>
+            <TombolDemo className="lg:col-span-5 lg:justify-self-end" varianWarga="medan" varianAdmin="medan-garis" />
           </div>
         </div>
       </section>
@@ -236,7 +260,7 @@ export default function BerandaPage() {
           <h2 id="judul-lacak" className="sr-only">
             Lacak laporan
           </h2>
-          <form action="/lacak" method="get" className="text-[clamp(2.25rem,1rem+5.4vw,6rem)] leading-[1.1] font-medium tracking-[-0.04em]">
+          <form action="/lacak" method="get" className="text-tinta text-[clamp(2.25rem,1rem+5.4vw,6rem)] leading-[1.1] font-medium tracking-[-0.04em]">
             <label htmlFor="kode-kalimat">Lacak laporan </label>
             <input
               id="kode-kalimat"
@@ -245,10 +269,10 @@ export default function BerandaPage() {
               autoComplete="off"
               autoCapitalize="characters"
               spellCheck={false}
-              className="my-1 h-[1.08em] w-full bg-lapis px-[0.2em] align-baseline text-tinta uppercase placeholder:text-lembut/60 focus:bg-terang focus:outline-3 focus:outline-tinta sm:w-[6.3em]"
+              className="my-1 h-[1.08em] w-full rounded-(--radius-kartu) px-[0.2em] align-baseline text-tinta uppercase placeholder:text-lembut/50 sm:w-[6.3em]"
             />{' '}
             dengan kode,{' '}
-            <button type="submit" className="bg-tinta px-[0.2em] text-kertas hover:bg-tinta-tua active:translate-y-px">
+            <button type="submit" className="rounded-(--radius-kartu) bg-tinta px-[0.25em] text-white transition-colors hover:bg-tinta-tua active:scale-[0.98]">
               sekarang
             </button>
             .

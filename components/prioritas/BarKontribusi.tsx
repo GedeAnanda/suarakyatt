@@ -19,7 +19,7 @@ export const WARNA_FAKTOR: Record<Faktor, string> = {
 /** Satu bar bertumpuk: lebar tiap ruas = poin faktor, dari skala 0–100. */
 export function BarTumpuk({ isu, className = 'h-2.5' }: { isu: SkorIsu; className?: string }) {
   return (
-    <div className={`flex w-full bg-lapis-2 ${className}`} aria-hidden="true">
+    <div className={`flex w-full overflow-hidden rounded-full bg-lapis ${className}`} aria-hidden="true">
       {FAKTOR.map((f) => (
         <span key={f} style={{ width: `${isu.kontribusi[f]}%`, background: WARNA_FAKTOR[f] }} />
       ))}
@@ -60,9 +60,9 @@ export default function BarKontribusi({ isu, bobot }: { isu: SkorIsu; bobot: Bob
                 <span className="text-lembut"> / {formatPoin(maksimal)} poin</span>
               </dd>
               <dd className="col-span-2 grid gap-1.5">
-                <span className="relative block h-1.5 bg-lapis-2" aria-hidden="true">
+                <span className="relative block h-1.5 overflow-hidden rounded-full bg-lapis" aria-hidden="true">
                   <span
-                    className="absolute inset-y-0 left-0 transition-[width] duration-300"
+                    className="absolute inset-y-0 left-0 rounded-full transition-[width] duration-300"
                     style={{ width: maksimal > 0 ? `${(isu.kontribusi[f] / maksimal) * 100}%` : '0%', background: WARNA_FAKTOR[f] }}
                   />
                 </span>

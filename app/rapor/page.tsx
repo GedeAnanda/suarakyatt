@@ -10,7 +10,8 @@ import KartuRapor from '@/components/rapor/KartuRapor';
 import LabelSumber from '@/components/ui/LabelSumber';
 import { kelasTautan } from '@/components/ui/Tombol';
 import { ambilRapor } from '@/lib/data/prioritas';
-import { tanggal } from '@/lib/format';
+import Ikon from '@/components/ui/Ikon';
+import { persen, tanggal } from '@/lib/format';
 import { KATEGORI } from '@/lib/konten';
 
 export const metadata: Metadata = {
@@ -34,7 +35,32 @@ async function Isi() {
         </span>
       </div>
       <BannerSimulasi sumber={sumber} className="mt-4" />
-      <div className="mt-10 grid gap-6 lg:grid-cols-2">
+      <nav aria-label="Ringkasan rapor" className="mt-10">
+        <ul className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          {urut.map((i) => (
+            <li key={i.id}>
+              <a
+                href={`#instansi-${i.id}`}
+                className="kartu kartu-klik flex h-full items-center gap-3 p-3 sm:p-4"
+              >
+                <span
+                  className={`text-[2.75rem] leading-none font-semibold tracking-[-0.05em] ${i.huruf ? 'text-tinta' : 'text-lembut'}`}
+                >
+                  {i.huruf ?? '–'}
+                </span>
+                <span className="min-w-0 text-kecil leading-tight">
+                  <span className="block font-semibold">{i.nama.replace(' (simulasi)', '').replace('Dinas ', '')}</span>
+                  <span className={`flex items-center gap-1 ${i.peringatan_penolakan ? 'font-semibold text-tinta' : 'text-lembut'}`}>
+                    {i.peringatan_penolakan && <Ikon nama="peringatan" className="size-3.5" />}
+                    ditolak {persen(i.tingkat_penolakan)}
+                  </span>
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+      <div className="mt-6 grid gap-6 lg:grid-cols-2">
         {urut.map((i) => (
           <KartuRapor key={i.id} i={i} kategoriId={KATEGORI.find((k) => k.instansi === i.nama)?.id} />
         ))}
@@ -53,7 +79,7 @@ export default function RaporPage() {
             Nilai tiap instansi dalam merespons dan menyelesaikan laporan warga. Laporan yang diabaikan ikut dihitung, dan
             huruf selalu tampil bersama tingkat penolakannya: nilai bagus hasil membuang laporan langsung terlihat.
           </p>
-          <p className="mt-4 angka text-lead font-medium tracking-tight">Nilai = 100 × (0,3 R + 0,3 S + 0,2 P + 0,2 K)</p>
+          <p className="text-tinta mt-4 angka text-lead font-medium tracking-tight">Nilai = 100 × (0,3 R + 0,3 S + 0,2 P + 0,2 K)</p>
           <p className="mt-3 text-badan">
             <Link href="/rapor/cara-menilai" className={kelasTautan}>
               Cara menilai, lengkap dengan contoh hitungan
