@@ -15,7 +15,7 @@ const DATA_TERBUKA = [
   {
     nama: 'Batas kecamatan DKI Jakarta',
     dipakai: 'Peta kecamatan, choropleth prioritas, penentuan kecamatan dari titik laporan',
-    sumber: 'HDX Indonesia Subnational Administrative Boundaries (COD-AB), sumber BPS, berlaku 2020; dipecah per provinsi oleh repositori indonesia-district',
+    sumber: 'HDX Indonesia Subnational Administrative Boundaries (COD-AB), dipotong ke 42 kecamatan DKI daratan dan disederhanakan (scripts/01_wilayah.py)',
     lisensi: 'CC BY-IGO',
     url: 'https://data.humdata.org/dataset/cod-ab-idn',
     status: 'Dipakai',

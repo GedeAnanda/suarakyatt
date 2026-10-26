@@ -4,7 +4,8 @@ Acuan: SDD v1.0 bagian 10. Jalankan berurutan dari folder root repo.
 
 | Urutan | Skrip | Fungsi | Keluaran |
 | --- | --- | --- | --- |
-| 1 | `01_wilayah.py` | Saring kecamatan DKI daratan, sederhanakan bentuk | `public/data/kecamatan.geojson`, `data/processed/regions.csv` |
+| 0 | `00_potong_dki.py` | Potong batas kecamatan HDX nasional menjadi DKI | `data/raw/batas/idn_admin3_dki.geojson` |
+| 1 | `01_wilayah.py` | Saring 42 kecamatan DKI daratan, sederhanakan bentuk | `public/data/kecamatan.geojson`, `data/processed/wilayah_detail.geojson`, `data/processed/regions.csv` |
 | 2 | `02_bps.py` | Gabungkan penduduk, luas, kemiskinan via kode wilayah | Data wilayah siap muat |
 | 3 | `03_cek_crm.py` | Cek kelayakan dataset CRM DKI (paling lambat 27 Okt) | Ringkasan untuk tim, `crm_agregat.csv` jika layak |
 | 4 | `04_akun.py` | Buat akun admin, Perencana, demo, warga simulasi | Akun di Supabase Auth |

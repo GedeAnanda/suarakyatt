@@ -126,7 +126,8 @@ const wilayah = geo.features.map((f, i) => {
   const luas = Math.round(luasKasar(kotak) * 10) / 10;
   const kepadatanDasar = { 'Jakarta Pusat': 19000, 'Jakarta Barat': 17000, 'Jakarta Timur': 15000, 'Jakarta Selatan': 14000, 'Jakarta Utara': 12000 }[f.properties.kota];
   const penduduk = Math.round(luas * kepadatanDasar * antara(0.75, 1.3));
-  return { id: i + 1, ...f.properties, geometri: f.geometry, kotak, luas, penduduk };
+  const { kode_wilayah, nama: kecamatan, kota } = f.properties;
+  return { id: i + 1, kode_wilayah, kecamatan, kota, geometri: f.geometry, kotak, luas, penduduk };
 });
 
 function titikAcak(w) {

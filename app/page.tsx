@@ -24,7 +24,7 @@ import type { SkorIsu } from '@/lib/types';
 function pilihIsuContoh(resmi: SkorIsu[], keselamatan: SkorIsu[]): SkorIsu {
   const posisi = new Map(keselamatan.map((s) => [s.id, s.peringkat]));
   const naik = (s: SkorIsu) => s.peringkat - (posisi.get(s.id) ?? s.peringkat);
-  const tengah = resmi.filter((s) => s.peringkat >= 8 && s.peringkat <= Math.max(12, resmi.length * 0.4));
+  const tengah = resmi.filter((s) => s.peringkat >= 8 && s.peringkat <= Math.max(12, resmi.length * 0.25));
   const kandidat = [...tengah.filter((s) => s.category_id === 1), ...tengah].sort((a, b) => naik(b) - naik(a));
   return kandidat.find((s) => s.category_id === 1 && naik(s) > 0) ?? kandidat[0] ?? resmi[0];
 }

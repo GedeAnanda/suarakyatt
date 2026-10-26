@@ -5,7 +5,8 @@ type Cincin = number[][];
 type Geometri = { type: 'Polygon'; coordinates: Cincin[] } | { type: 'MultiPolygon'; coordinates: Cincin[][] };
 
 export interface FiturKecamatan {
-  properties: { kode_wilayah: string; kecamatan: string; kota: string };
+  /** Properti keluaran scripts/01_wilayah.py; kode_wilayah berformat 31.71.010. */
+  properties: { kode_wilayah: string; nama: string; kota: string };
   geometry: Geometri;
 }
 
@@ -25,7 +26,7 @@ export function cariKecamatan(lat: number, lng: number, fitur: FiturKecamatan[])
     const kena = poligon.some(
       ([luar, ...lubang]) => dalamCincin(lng, lat, luar) && !lubang.some((l) => dalamCincin(lng, lat, l)),
     );
-    if (kena) return f.properties;
+    if (kena) return { kode_wilayah: f.properties.kode_wilayah, kecamatan: f.properties.nama, kota: f.properties.kota };
   }
   return null;
 }

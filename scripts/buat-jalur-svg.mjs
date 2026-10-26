@@ -36,7 +36,7 @@ function pusat(g) {
 const kecamatan = geo.features
   .map((f) => ({
     kode_wilayah: f.properties.kode_wilayah,
-    kecamatan: f.properties.kecamatan,
+    kecamatan: f.properties.nama,
     kota: f.properties.kota,
     d: poligon(f.geometry)
       .flatMap((p) => p.map((cincin) => 'M' + cincin.map((t) => proyeksi(t).join(',')).join('L') + 'Z'))
@@ -46,7 +46,7 @@ const kecamatan = geo.features
   .sort((a, b) => a.kode_wilayah.localeCompare(b.kode_wilayah));
 
 const isi = `// lib/geo/kecamatan-svg.ts — DIBUAT OTOMATIS oleh scripts/buat-jalur-svg.mjs, jangan diedit.
-// Sumber: public/data/kecamatan.geojson (HDX COD-AB Indonesia, BPS 2020, CC BY-IGO).
+// Sumber: public/data/kecamatan.geojson dari scripts/01_wilayah.py (HDX COD-AB Indonesia, CC BY-IGO).
 
 export interface JalurKecamatan {
   kode_wilayah: string;
