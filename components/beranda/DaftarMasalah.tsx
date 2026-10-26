@@ -5,10 +5,13 @@
 'use client';
 
 import Image from 'next/image';
-import { useState } from 'react';
+import { useState, type CSSProperties } from 'react';
 import { FOTO, KATEGORI, type FotoTerbuka } from '@/lib/konten';
 
 const FOTO_KATEGORI: FotoTerbuka[] = [FOTO.jalan1975, FOTO.kanalTimur, FOTO.ciliwung, FOTO.lampuJalan];
+
+// Batas terlama (lampu jalan, 168 jam) menjadi lebar penuh bar batas waktu.
+const JAM_MAKS = Math.max(...KATEGORI.map((k) => k.selesai));
 
 const hari = (jam: number) => (jam % 24 === 0 && jam >= 48 ? `${jam / 24} hari` : `${jam} jam`);
 
@@ -17,7 +20,7 @@ export default function DaftarMasalah() {
   const foto = FOTO_KATEGORI[pilih];
 
   return (
-    <div className="grid gap-10 lg:grid-cols-12 lg:gap-8">
+    <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-8">
       <ul className="lg:col-span-7" aria-label="Kategori laporan">
         {KATEGORI.map((k, i) => (
           <li key={k.id}>
@@ -36,6 +39,17 @@ export default function DaftarMasalah() {
               </span>
               <span className="angka col-start-2 row-start-1 text-right sm:col-start-3">
                 {hari(k.respons)} / {hari(k.selesai)}
+              </span>
+              {/* Bar batas waktu: tinta = respons, merah muda = sampai selesai. Lebar sebanding jam. */}
+              <span aria-hidden="true" className="relative col-span-full mt-2 block h-1.5 bg-lapis-2">
+                <span
+                  className="bar-isi absolute inset-y-0 left-0 w-full bg-k2"
+                  style={{ '--isi': k.selesai / JAM_MAKS } as CSSProperties}
+                />
+                <span
+                  className="bar-isi absolute inset-y-0 left-0 w-full bg-tinta"
+                  style={{ '--isi': k.respons / JAM_MAKS } as CSSProperties}
+                />
               </span>
             </button>
           </li>
@@ -56,8 +70,12 @@ export default function DaftarMasalah() {
               alt={f.alt}
               fill
               sizes="(min-width: 1024px) 40vw, 100vw"
-              className={`object-cover grayscale-[0.9] contrast-[1.05] transition-opacity duration-500 ${
-                i === pilih ? 'opacity-100' : 'opacity-0'
+              // Sapuan: foto baru membuka dari kiri di atas foto lama dan pelan-pelan mendekat.
+              className={`sapu object-cover grayscale-[0.9] contrast-[1.05] ${
+                i === pilih
+                  ? 'z-10 scale-100 [clip-path:inset(0)]'
+                  : // Foto lama baru menutup setelah foto baru selesai membuka, supaya tidak ada celah.
+                    'z-0 scale-[1.06] [clip-path:inset(0_100%_0_0)] [transition-delay:750ms]'
               }`}
               aria-hidden={i !== pilih}
             />

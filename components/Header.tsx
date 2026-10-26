@@ -93,7 +93,7 @@ export default function Header() {
     <header className="relative z-1000 bg-kertas">
       <nav aria-label="Navigasi utama" className="bingkai flex h-16 items-center gap-3 sm:h-18">
         <Link href="/" className="mr-auto text-[1.375rem] xl:mr-4" aria-label="suaRAkyat, ke Beranda">
-          <Wordmark />
+          <Wordmark className="font-wordmark" />
         </Link>
         <Suspense fallback={<TautanNavStatis />}>
           <TautanNav />

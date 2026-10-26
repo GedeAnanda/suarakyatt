@@ -42,8 +42,14 @@ export default function AlurLapor({ rapor, kodeContoh }: { rapor: RaporInstansi[
   const tertahan = rapor.find((r) => r.peringatan_penolakan) ?? rapor[1];
 
   return (
+    // Garis alur di kiri terisi mengikuti gulir (view-timeline --alur di globals.css); kotak menandai tiap langkah.
+    <div className="relative pl-7 [view-timeline-name:--alur] sm:pl-12">
+      <div aria-hidden="true" className="absolute top-2 bottom-2 left-[5px] w-[3px] bg-lapis-2 sm:left-[9px]">
+        <div className="garis-alur size-full bg-tinta" />
+      </div>
     <ol className="grid gap-20 sm:gap-24">
-      <li className="grid gap-4" data-muncul>
+      <li className="relative grid gap-4" data-muncul>
+        <span aria-hidden="true" className="absolute top-2 -left-7 size-[13px] bg-tinta sm:-left-12 sm:size-[21px]" />
         <p className="text-lead font-medium">Pertama, warga melapor dengan foto dan titik di peta.</p>
         <div data-ui className="grid gap-3 bg-terang p-5">
           <Isian label="Kategori">Jalan rusak</Isian>
@@ -57,7 +63,7 @@ export default function AlurLapor({ rapor, kodeContoh }: { rapor: RaporInstansi[
         </div>
         <div data-ui className="grid gap-2 bg-lapis p-5 sm:ml-14">
           <p className="text-kecil text-lembut">Yang kembali ke pelapor</p>
-          <p className="angka text-judul font-semibold tracking-[-0.03em]">{kodeContoh}</p>
+          <p className="angka font-kode text-judul font-semibold tracking-[-0.03em]">{kodeContoh}</p>
           <div className="flex flex-wrap items-center gap-3">
             <BadgeStatus status="menunggu" />
             <span className="text-kecil">Sisa 24 jam menuju batas waktu respons</span>
@@ -65,7 +71,8 @@ export default function AlurLapor({ rapor, kodeContoh }: { rapor: RaporInstansi[
         </div>
       </li>
 
-      <li className="grid gap-4" data-muncul>
+      <li className="relative grid gap-4" data-muncul>
+        <span aria-hidden="true" className="absolute top-2 -left-7 size-[13px] bg-tinta sm:-left-12 sm:size-[21px]" />
         <p className="text-lead font-medium">Lalu dinas menjawab, dan jawabannya terbuka untuk publik.</p>
         <div data-ui className="grid gap-3 bg-terang p-5">
           <Isian label="Ubah status">
@@ -95,7 +102,8 @@ export default function AlurLapor({ rapor, kodeContoh }: { rapor: RaporInstansi[
         </div>
       </li>
 
-      <li className="grid gap-4" data-muncul>
+      <li className="relative grid gap-4" data-muncul>
+        <span aria-hidden="true" className="absolute top-2 -left-7 size-[13px] bg-tinta sm:-left-12 sm:size-[21px]" />
         <p className="text-lead font-medium">Terakhir, warga menilai, dan rapor dinas ikut berubah.</p>
         <div data-ui className="grid gap-3 bg-terang p-5">
           <Isian label="Rating">
@@ -114,5 +122,6 @@ export default function AlurLapor({ rapor, kodeContoh }: { rapor: RaporInstansi[
         </div>
       </li>
     </ol>
+    </div>
   );
 }

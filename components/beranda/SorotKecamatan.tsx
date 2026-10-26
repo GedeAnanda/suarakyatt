@@ -40,7 +40,13 @@ export default function SorotKecamatan({
   const nyala = teratas[indeks];
 
   return (
-    <div className="grid gap-12 lg:grid-cols-12 lg:gap-8" onMouseEnter={() => setJeda(true)} onMouseLeave={() => setJeda(false)}>
+    <div
+      className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-8"
+      onMouseEnter={() => setJeda(true)}
+      onMouseLeave={() => setJeda(false)}
+      onFocus={() => setJeda(true)}
+      onBlur={(e) => !e.currentTarget.contains(e.relatedTarget) && setJeda(false)}
+    >
       <div className="lg:col-span-7">
         <p className="text-lead text-medan-lembut">
           <span className="text-medan-tinta">Isu wilayah dinilai di 42 kecamatan: </span>
@@ -58,14 +64,18 @@ export default function SorotKecamatan({
           ))}
         </p>
         {nyala && (
-          <p className="mt-8 text-badan" aria-live="off">
+          <p key={nyala.kode_wilayah + nyala.kategori} className="ganti mt-8 text-badan" aria-live="off">
             <span className="angka mr-3 inline-block min-w-[3ch] bg-medan-tinta px-2 text-center font-semibold text-tinta">
               {nyala.peringkat}
             </span>
             {nyala.kategori} di {nyala.kecamatan}, {nyala.kota}. Skor {formatPoin(nyala.skor)}.
           </p>
         )}
-        <div className="mt-6 flex flex-wrap gap-2" role="group" aria-label="Pilih isu teratas untuk disorot">
+        <p className="mt-6 text-kecil text-medan-lembut">
+          Isu teratas {indeks + 1} dari {teratas.length}
+          {jeda ? ' · berhenti bergantian' : ''}
+        </p>
+        <div className="mt-3 flex flex-wrap gap-2" role="group" aria-label="Pilih isu teratas untuk disorot">
           {teratas.map((t, i) => (
             <button
               key={t.kode_wilayah + t.kategori}
@@ -76,7 +86,7 @@ export default function SorotKecamatan({
                 setIndeks(i);
                 setJeda(true);
               }}
-              className="angka size-9 bg-tinta-tua text-kecil text-medan-lembut hover:text-medan-tinta aria-pressed:bg-medan-tinta aria-pressed:text-tinta"
+              className="angka size-9 bg-tinta-tua text-kecil text-medan-lembut transition-[background-color,color,transform] duration-200 hover:text-medan-tinta active:scale-95 aria-pressed:bg-medan-tinta aria-pressed:text-tinta"
             >
               {t.peringkat}
             </button>

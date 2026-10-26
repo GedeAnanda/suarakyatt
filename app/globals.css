@@ -40,7 +40,11 @@
   --color-k4: #922f39;
   --color-k5: #5c0710;
 
-  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-author), ui-sans-serif, system-ui, sans-serif;
+  /* Hanya untuk wordmark di header (kelas font-wordmark). */
+  --font-wordmark: var(--font-satoshi), ui-sans-serif, system-ui, sans-serif;
+  /* Kode laporan contoh di Beranda (kelas font-kode). */
+  --font-kode: var(--font-satoshi), ui-sans-serif, system-ui, sans-serif;
 
   /* Lima langkah ukuran; tidak ada yang lain. */
   --text-kecil: clamp(0.8125rem, 0.79rem + 0.1vw, 0.875rem);
@@ -107,6 +111,13 @@ p {
 
 .angka {
   font-variant-numeric: tabular-nums lining-nums;
+}
+
+/* Author memakai angka gaya lama (3, 7, 9 turun di bawah garis dasar). Kolom isian dan placeholder-nya
+   memakai angka sejajar supaya kode seperti SR-K7W3PA terbaca rata. */
+input,
+input::placeholder {
+  font-variant-numeric: lining-nums;
 }
 
 /* Halaman: satu pasang tepi untuk semua. */
@@ -179,6 +190,213 @@ p {
 @keyframes timbul {
   from { opacity: 0; transform: translateY(12px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+/*
+ * Gerak Beranda (pemilik: A). Aturan: scroll tetap milik pengguna (tanpa scroll-jacking), teks tidak pernah
+ * tersembunyi tanpa JavaScript, dan pengguna yang meminta gerak dikurangi melihat keadaan akhir yang statis.
+ */
+
+/* Garis prioritas di hero. --garis-muat: garis naik dari bawah saat halaman dibuka.
+   --garis-gulir: garis terus naik saat hero digulir pergi, medan merah memenuhi layar. */
+@property --garis-muat {
+  syntax: "<percentage>";
+  inherits: true;
+  initial-value: 0%;
+}
+@property --garis-gulir {
+  syntax: "<percentage>";
+  inherits: true;
+  initial-value: 0%;
+}
+.hero-garis {
+  --garis: calc(50% + var(--garis-muat) - var(--garis-gulir));
+}
+@media (prefers-reduced-motion: no-preference) {
+  .hero-garis {
+    animation: garis-muat 1100ms var(--ease-keluar) both;
+  }
+  @supports (animation-timeline: view()) {
+    .hero-garis {
+      animation:
+        garis-muat 1100ms var(--ease-keluar) both,
+        garis-gulir linear both;
+      animation-timeline: auto, view();
+      animation-range: normal, exit 0% exit 85%;
+    }
+    .hero-angkat {
+      animation: hero-angkat linear both;
+      animation-timeline: view();
+      animation-range: exit 0% exit 85%;
+    }
+  }
+}
+@keyframes garis-muat {
+  from { --garis-muat: 50%; }
+  to { --garis-muat: 0%; }
+}
+@keyframes garis-gulir {
+  from { --garis-gulir: 0%; }
+  to { --garis-gulir: 34%; }
+}
+@keyframes hero-angkat {
+  to { transform: translateY(-7%); }
+}
+
+/* Tinta mengisi pernyataan pembuka kata demi kata saat dibaca (sekali per halaman, mulai 45%). */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .tinta-isi > span {
+      color: color-mix(in oklab, var(--color-tinta) 45%, transparent);
+      animation: tinta-isi linear both;
+      animation-timeline: view();
+      animation-range: cover 18% cover 42%;
+    }
+  }
+}
+@keyframes tinta-isi {
+  to { color: var(--color-tinta); }
+}
+
+/* Jendela yang membuka: foto arsip mulai sebagai bingkai kecil lalu terbuka penuh saat masuk layar.
+   Tidak sticky dan setinggi setengah layar, jadi keterangan di bawahnya tidak pernah tertutup. */
+.jendela-panggung {
+  height: 50svh;
+  min-height: 18rem;
+  overflow: clip;
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .jendela-panggung {
+      animation: jendela-buka linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 45%;
+    }
+    .jendela-panggung img {
+      animation: jendela-mendekat linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 45%;
+    }
+  }
+}
+@media (max-width: 700px) {
+  .jendela { --jendela-y: 22%; --jendela-x: 10%; }
+}
+@keyframes jendela-buka {
+  from { clip-path: inset(var(--jendela-y, 20%) var(--jendela-x, 27%)); }
+  to { clip-path: inset(0); }
+}
+@keyframes jendela-mendekat {
+  from { transform: scale(1.15); }
+  to { transform: none; }
+}
+
+/* Angka bergulir: tiap digit kolom 0–9 yang digeser ke nilainya (components/ui/AngkaGulir.tsx). */
+.gulir-kolom {
+  display: inline-block;
+  height: 1em;
+  overflow: clip;
+  vertical-align: top;
+}
+.gulir-strip {
+  display: flex;
+  flex-direction: column;
+  transform: translateY(calc(var(--d, 0) * -1em));
+}
+.gulir-strip > span {
+  height: 1em;
+  line-height: 1em;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .gulir-strip {
+    transition: transform 1000ms var(--ease-keluar) calc(var(--i, 0) * 70ms);
+  }
+  [data-gulir-tahan] .gulir-strip {
+    transform: none;
+  }
+}
+
+/* Bar yang terisi saat masuk layar (scaleX dari kiri). Tanpa dukungan: langsung penuh. */
+.bar-isi {
+  transform-origin: left;
+  transform: scaleX(var(--isi, 1));
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .bar-isi {
+      animation: bar-isi linear both;
+      animation-timeline: view();
+      animation-range: entry 30% cover 45%;
+    }
+  }
+}
+@keyframes bar-isi {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(var(--isi, 1)); }
+}
+
+/* Garis alur di "Dari mana datanya": terisi mengikuti gulir sepanjang tiga langkah. */
+.garis-alur {
+  transform-origin: top;
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .garis-alur {
+      animation: garis-alur linear both;
+      animation-timeline: --alur;
+      animation-range: cover 20% cover 80%;
+    }
+  }
+}
+@keyframes garis-alur {
+  from { transform: scaleY(0); }
+  to { transform: scaleY(1); }
+}
+
+/* Penanda yang bergeser di jalur peringkat dan sapuan foto kategori. */
+@media (prefers-reduced-motion: no-preference) {
+  .geser-halus {
+    transition: transform 700ms var(--ease-keluar), width 700ms var(--ease-keluar), left 700ms var(--ease-keluar);
+  }
+  .sapu {
+    transition:
+      clip-path 750ms var(--ease-keluar),
+      transform 1200ms var(--ease-keluar);
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .tekan:hover {
+    background-color: var(--color-kertas);
+  }
+}
+
+/*
+ * Bayangan tipis (hitam 70%) untuk teks terang di atas merah, supaya hurufnya lebih tegas.
+ * text-shadow diwariskan, jadi cukup dipasang di wadah merah; elemen terang di dalamnya (tombol putih,
+ * chip yang sedang dipilih) dikembalikan tanpa bayangan supaya teks gelapnya tidak kotor.
+ */
+.di-medan,
+.bg-tinta.text-kertas,
+.bg-medan.text-kertas,
+.aria-pressed\:bg-tinta[aria-pressed="true"],
+.aria-selected\:bg-tinta[aria-selected="true"],
+.has-checked\:bg-tinta:has(:checked) {
+  text-shadow: 0 1px 2px rgb(0 0 0 / 0.7);
+}
+.di-medan :is(.bg-medan-tinta, .bg-terang, .bg-kertas, .bg-lapis, .bg-lapis-2),
+.di-medan .aria-pressed\:bg-medan-tinta[aria-pressed="true"] {
+  text-shadow: none;
+}
+/* Kotak peringkat preset di Beranda hanya merah di ponsel; di layar lebar latarnya kertas. */
+@media (min-width: 40rem) {
+  .di-medan.sm\:bg-transparent {
+    text-shadow: none;
+  }
+}
+/* Judul hero sangat besar: bayangan ikut skala huruf (em dihitung di elemen judul, bukan di wadahnya). */
+.bayang-judul p {
+  text-shadow: 0 0.012em 0.035em rgb(0 0 0 / 0.7);
 }
 
 /* Kerangka memuat: denyut nada, bukan kilau gradasi. */

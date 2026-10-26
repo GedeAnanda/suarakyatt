@@ -1,13 +1,22 @@
 import type { Metadata, Viewport } from 'next';
-import { Plus_Jakarta_Sans } from 'next/font/google';
+import localFont from 'next/font/local';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import './globals.css';
 
-// Plus Jakarta Sans: huruf yang dibuat untuk identitas kota Jakarta (PRD 11).
-const jakarta = Plus_Jakarta_Sans({
-  variable: '--font-jakarta',
-  subsets: ['latin'],
+// Author: huruf utama seluruh situs. Satoshi: hanya wordmark di header.
+// Keduanya dari Fontshare (ITF Free Font License, app/fonts/LICENSE-FFL.txt), di-host sendiri.
+const author = localFont({
+  src: './fonts/Author-Variable.woff2',
+  variable: '--font-author',
+  weight: '200 700',
+  display: 'swap',
+});
+
+const satoshi = localFont({
+  src: './fonts/Satoshi-Variable.woff2',
+  variable: '--font-satoshi',
+  weight: '300 900',
   display: 'swap',
 });
 
@@ -23,7 +32,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<'/'>) {
   return (
-    <html lang="id" className={`${jakarta.variable} h-full antialiased`}>
+    <html lang="id" className={`${author.variable} ${satoshi.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col" suppressHydrationWarning>
         <a
           href="#isi"
