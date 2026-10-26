@@ -1,31 +1,40 @@
-import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
+import type { Metadata, Viewport } from 'next';
+import { Plus_Jakarta_Sans } from 'next/font/google';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import './globals.css';
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
+// Plus Jakarta Sans: huruf yang dibuat untuk identitas kota Jakarta (PRD 11).
+const jakarta = Plus_Jakarta_Sans({
+  variable: '--font-jakarta',
   subsets: ['latin'],
-});
-
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
+  display: 'swap',
 });
 
 export const metadata: Metadata = {
-  title: { default: 'suaRAkyat', template: '%s · suaRAkyat' },
+  title: { default: 'suaRAkyat · Kenapa belum?', template: '%s · suaRAkyat' },
   description:
-    'Platform transparansi keputusan publik: lapor masalah kota, lacak penanganannya, dan uji kenapa sebuah masalah didahulukan.',
+    'Kanal pengaduan sudah melacak laporan. suaRAkyat membuka alasan di balik keputusan: kenapa satu masalah kota didahulukan, dan siapa saja bisa mengujinya.',
+};
+
+export const viewport: Viewport = {
+  themeColor: '#e2e2e2',
 };
 
 export default function RootLayout({ children }: LayoutProps<'/'>) {
   return (
-    <html lang="id" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
-      <body className="flex min-h-full flex-col">
+    <html lang="id" className={`${jakarta.variable} h-full antialiased`}>
+      <body className="flex min-h-full flex-col" suppressHydrationWarning>
+        <a
+          href="#isi"
+          className="sr-only z-2000 bg-tinta px-4 py-3 text-kertas focus:not-sr-only focus:fixed focus:top-2 focus:left-2"
+        >
+          Lewati ke isi
+        </a>
         <Header />
-        <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8">{children}</main>
+        <main id="isi" className="flex-1">
+          {children}
+        </main>
         <Footer />
       </body>
     </html>

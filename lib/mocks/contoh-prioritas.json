@@ -1,0 +1,1914 @@
+{
+ "sumber": "simulasi",
+ "waktu_acuan": "2026-10-31T17:00:00.000Z",
+ "isu": [
+  {
+   "id": "40-4",
+   "kode_wilayah": "3175030",
+   "kecamatan": "Tanjung Priok",
+   "kota": "Jakarta Utara",
+   "category_id": 4,
+   "kategori": "Lampu jalan mati",
+   "laporan_aktif": 2,
+   "laporan_terverifikasi": 1,
+   "mentah": {
+    "urgensi": 0.6,
+    "volume": 0.035,
+    "dukungan": 0.035,
+    "umur": 0.1,
+    "kerentanan": 6.4,
+    "kepadatan": 11606
+   }
+  },
+  {
+   "id": "5-4",
+   "kode_wilayah": "3172030",
+   "kecamatan": "Cipayung",
+   "kota": "Jakarta Timur",
+   "category_id": 4,
+   "kategori": "Lampu jalan mati",
+   "laporan_aktif": 4,
+   "laporan_terverifikasi": 1,
+   "mentah": {
+    "urgensi": 0.6,
+    "volume": 0.031,
+    "dukungan": 0,
+    "umur": 0.29,
+    "kerentanan": 4.1,
+    "kepadatan": 12506
+   }
+  },
+  {
+   "id": "32-1",
+   "kode_wilayah": "3174040",
+   "kecamatan": "Grogol Petamburan",
+   "kota": "Jakarta Barat",
+   "category_id": 1,
+   "kategori": "Jalan rusak",
+   "laporan_aktif": 3,
+   "laporan_terverifikasi": 1,
+   "mentah": {
+    "urgensi": 1,
+    "volume": 0.039,
+    "dukungan": 0.079,
+    "umur": 1.34,
+    "kerentanan": 3.8,
+    "kepadatan": 20627
+   }
+  },
+  {
+   "id": "37-4",
+   "kode_wilayah": "3174080",
+   "kecamatan": "Kali Deres",
+   "kota": "Jakarta Barat",
+   "category_id": 4,
+   "kategori": "Lampu jalan mati",
+   "laporan_aktif": 4,
+   "laporan_terverifikasi": 3,
+   "mentah": {
+    "urgensi": 0.6,
+    "volume": 0.067,
+    "dukungan": 0.156,
+    "umur": 0.99,
+    "kerentanan": 3.8,
+    "kepadatan": 15886
+   }
+  },
+  {
+   "id": "7-1",
+   "kode_wilayah": "3172010",
+   "kecamatan": "Pasar Rebo",
+   "kota": "Jakarta Timur",
+   "category_id": 1,
+   "kategori": "Jalan rusak",
+   "laporan_aktif": 3,
+   "laporan_terverifikasi": 1,
+   "mentah": {
+    "urgensi": 1,
+    "volume": 0.033,
+    "dukungan": 0.067,
+    "umur": 0.72,
+    "kerentanan": 4.1,
+    "kepadatan": 16884
+   }
+  },
+  {
+   "id": "6-2",
+   "kode_wilayah": "3171070",
+   "kecamatan": "Mampang Prapatan",
+   "kota": "Jakarta Selatan",
+   "category_id": 2,
+   "kategori": "Saluran tersumbat",
+   "laporan_aktif": 2,
+   "laporan_terverifikasi": 1,
+   "mentah": {
+    "urgensi": 1,
+    "volume": 0.082,
+    "dukungan": 0.819,
+    "umur": 1.23,
+    "kerentanan": 3.2,
+    "kepadatan": 12208
+   }
+  },
+  {
+   "id": "13-2",
+   "kode_wilayah": "3173060",
+   "kecamatan": "Kemayoran",
+   "kota": "Jakarta Pusat",
+   "category_id": 2,
+   "kategori": "Saluran tersumbat",
+   "laporan_aktif": 3,
+   "laporan_terverifikasi": 3,
+   "mentah": {
+    "urgensi": 1,
+    "volume": 0.205,
+    "dukungan": 0.614,
+    "umur": 1.81,
+    "kerentanan": 4.5,
+    "kepadatan": 18313
+   }
+  },
+  {
+   "id": "29-2",
+   "kode_wilayah": "3174020",
+   "kecamatan": "Kebon Jeruk",
+   "kota": "Jakarta Barat",
+   "category_id": 2,
+   "kategori": "Saluran tersumbat",
+   "laporan_aktif": 2,
+   "laporan_terverifikasi": 2,
+   "mentah": {
+    "urgensi": 1,
+    "volume": 0.066,
+    "dukungan": 0.133,
+    "umur": 1.25,
+    "kerentanan": 3.8,
+    "kepadatan": 16621
+   }
+  },
+  {
+   "id": "15-4",
+   "kode_wilayah": "3174070",
+   "kecamatan": "Cengkareng",
+   "kota": "Jakarta Barat",
+   "category_id": 4,
+   "kategori": "Lampu jalan mati",
+   "laporan_aktif": 4,
+   "laporan_terverifikasi": 2,
+   "mentah": {
+    "urgensi": 0.6,
+    "volume": 0.036,
+    "dukungan": 0.16,
+    "umur": 1.54,
+    "kerentanan": 3.8,
+    "kepadatan": 14428
+   }
+  },
+  {
+   "id": "37-2",
+   "kode_wilayah": "3174080",
+   "kecamatan": "Kali Deres",
+   "kota": "Jakarta Barat",
+   "category_id": 2,
+   "kategori": "Saluran tersumbat",
+   "laporan_aktif": 6,
+   "laporan_terverifikasi": 3,
+   "mentah": {
+    "urgensi": 1,
+    "volume": 0.067,
+    "dukungan": 0.156,
+    "umur": 1.49,
+    "kerentanan": 3.8,
+    "kepadatan": 15886
+   }
+  },
+  {
+   "id": "17-1",
+   "kode_wilayah": "3173080",
+   "kecamatan": "Gambir",
+   "kota": "Jakarta Pusat",
+   "category_id": 1,
+   "kategori": "Jalan rusak",
+   "laporan_aktif": 2,
+   "laporan_terverifikasi": 2,
+   "mentah": {
+    "urgensi": 1,
+    "volume": 0.137,
+    "dukungan": 0.684,
+    "umur": 1.26,
+    "kerentanan": 4.5,
+    "kepadatan": 18500
+   }
+  },
+  {
+   "id": "12-2",
+   "kode_wilayah": "3172080",
+   "kecamatan": "Cakung",
+   "kota": "Jakarta Timur",
+   "category_id": 2,
+   "kategori": "Saluran tersumbat",
+   "laporan_aktif": 2,
+   "laporan_terverifikasi": 2,
+   "mentah": {
+    "urgensi": 1,
+    "volume": 0.033,
+    "dukungan": 0.033,
+    "umur": 2,
+    "kerentanan": 4.1,
+    "kepadatan": 16362
+   }
+  },
+  {
+   "id": "30-3",
+   "kode_wilayah": "3173040",
+   "kecamatan": "Johar Baru",
+   "kota": "Jakarta Pusat",
+   "category_id": 3,
+   "kategori": "Sampah menumpuk",
+   "laporan_aktif": 1,
+   "laporan_terverifikasi": 0,
+   "mentah": {
+    "urgensi": 0.6,
+    "volume": 0,
+    "dukungan": 0,
+    "umur": 2,
+    "kerentanan": 4.5,
+    "kepadatan": 17245
+   }
+  },
+  {
+   "id": "22-3",
+   "kode_wilayah": "3171020",
+   "kecamatan": "Pasar Minggu",
+   "kota": "Jakarta Selatan",
+   "category_id": 3,
+   "kategori": "Sampah menumpuk",
+   "laporan_aktif": 3,
+   "laporan_terverifikasi": 2,
+   "mentah": {
+    "urgensi": 0.6,
+    "volume": 0.067,
+    "dukungan": 0.067,
+    "umur": 1.34,
+    "kerentanan": 3.2,
+    "kepadatan": 12626
+   }
+  },
+  {
+   "id": "25-3",
+   "kode_wilayah": "3172090",
+   "kecamatan": "Pulo Gadung",
+   "kota": "Jakarta Timur",
+   "category_id": 3,
+   "kategori": "Sampah menumpuk",
+   "laporan_aktif": 2,
+   "laporan_terverifikasi": 2,
+   "mentah": {
+    "urgensi": 0.6,
+    "volume": 0.077,
+    "dukungan": 0.502,
+    "umur": 2,
+    "kerentanan": 4.1,
+    "kepadatan": 19023
+   }
+  },
+  {
+   "id": "16-2",
+   "kode_wilayah": "3172020",
+   "kecamatan": "Ciracas",
+   "kota": "Jakarta Timur",
+   "category_id": 2,
+   "kategori": "Saluran tersumbat",
+   "laporan_aktif": 2,
+   "laporan_terverifikasi": 1,
+   "mentah": {
+    "urgensi": 1,
+    "volume": 0.033,
+    "dukungan": 0,
+    "umur": 1.04,
+    "kerentanan": 4.1,
+    "kepadatan": 13981
+   }
+  },
+  {
+   "id": "23-3",
+   "kode_wilayah": "3175060",
+   "kecamatan": "Cilincing",
+   "kota": "Jakarta Utara",
+   "category_id": 3,
+   "kategori": "Sampah menumpuk",
+   "laporan_aktif": 2,
+   "laporan_terverifikasi": 1,
+   "mentah": {
+    "urgensi": 0.6,
+    "volume": 0.02,
+    "dukungan": 0.179,
+    "umur": 0.74,
+    "kerentanan": 6.4,
+    "kepadatan": 14135
+   }
+  },
+  {
+   "id": "23-1",
+   "kode_wilayah": "3175060",
+   "kecamatan": "Cilincing",
+   "kota": "Jakarta Utara",
+   "category_id": 1,
+   "kategori": "Jalan rusak",
+   "laporan_aktif": 2,
+   "laporan_terverifikasi": 1,
+   "mentah": {
+    "urgensi": 1,
+    "volume": 0.02,
+    "dukungan": 0.079,
+    "umur": 1.02,
+    "kerentanan": 6.4,
+    "kepadatan": 14135
+   }
+  },
+  {
+   "id": "28-1",
+   "kode_wilayah": "3172070",
+   "kecamatan": "Duren Sawit",
+   "kota": "Jakarta Timur",
+   "category_id": 1,
+   "kategori": "Jalan rusak",
+   "laporan_aktif": 4,
+   "laporan_terverifikasi": 2,
+   "mentah": {
+    "urgensi": 1,
+    "volume": 0.078,
+    "dukungan": 0.234,
+    "umur": 0.81,
+    "kerentanan": 4.1,
+    "kepadatan": 13511
+   }
+  },
+  {
+   "id": "23-2",
+   "kode_wilayah": "3175060",
+   "kecamatan": "Cilincing",
+   "kota": "Jakarta Utara",
+   "category_id": 2,
+   "kategori": "Saluran tersumbat",
+   "laporan_aktif": 4,
+   "laporan_terverifikasi": 2,
+   "mentah": {
+    "urgensi": 1,
+    "volume": 0.04,
+    "dukungan": 0.397,
+    "umur": 1.86,
+    "kerentanan": 6.4,
+    "kepadatan": 14135
+   }
+  },
+  {
+   "id": "40-3",
+   "kode_wilayah": "3175030",
+   "kecamatan": "Tanjung Priok",
+   "kota": "Jakarta Utara",
+   "category_id": 3,
+   "kategori": "Sampah menumpuk",
+   "laporan_aktif": 4,
+   "laporan_terverifikasi": 2,
+   "mentah": {
+    "urgensi": 0.6,
+    "volume": 0.071,
+    "dukungan": 0.142,
+    "umur": 1.52,
+    "kerentanan": 6.4,
+    "kepadatan": 11606
+   }
+  },
+  {
+   "id": "28-3",
+   "kode_wilayah": "3172070",
+   "kecamatan": "Duren Sawit",
+   "kota": "Jakarta Timur",
+   "category_id": 3,
+   "kategori": "Sampah menumpuk",
+   "laporan_aktif": 2,
+   "laporan_terverifikasi": 1,
+   "mentah": {
+    "urgensi": 0.6,
+    "volume": 0.039,
+    "dukungan": 0.39,
+    "umur": 1.03,
+    "kerentanan": 4.1,
+    "kepadatan": 13511
+   }
+  },
+  {
+   "id": "39-3",
+   "kode_wilayah": "3172100",
+   "kecamatan": "Matraman",
+   "kota": "Jakarta Timur",
+   "category_id": 3,
+   "kategori": "Sampah menumpuk",
+   "laporan_aktif": 1,
+   "laporan_terverifikasi": 1,
+   "mentah": {
+    "urgensi": 0.6,
+    "volume": 0.128,
+    "dukungan": 0,
+    "umur": 2,
+    "kerentanan": 4.1,
+    "kepadatan": 17371
+   }
+  },
+  {
+   "id": "37-3",
+   "kode_wilayah": "3174080",
+   "kecamatan": "Kali Deres",
+   "kota": "Jakarta Barat",
+   "category_id": 3,
+   "kategori": "Sampah menumpuk",
+   "laporan_aktif": 3,
+   "laporan_terverifikasi": 1,
+   "mentah": {
+    "urgensi": 0.6,
+    "volume": 0.022,
+    "dukungan": 0.134,
+    "umur": 0.9,
+    "kerentanan": 3.8,
+    "kepadatan": 15886
+   }
+  },
+  {
+   "id": "5-1",
+   "kode_wilayah": "3172030",
+   "kecamatan": "Cipayung",
+   "kota": "Jakarta Timur",
+   "category_id": 1,
+   "kategori": "Jalan rusak",
+   "laporan_aktif": 3,
+   "laporan_terverifikasi": 3,
+   "mentah": {
+    "urgensi": 1,
+    "volume": 0.093,
+    "dukungan": 0.432,
+    "umur": 2,
+    "kerentanan": 4.1,
+    "kepadatan": 12506
+   }
+  },
+  {
+   "id": "41-2",
+   "kode_wilayah": "3175050",
+   "kecamatan": "Kelapa Gading",
+   "kota": "Jakarta Utara",
+   "category_id": 2,
+   "kategori": "Saluran tersumbat",
+   "laporan_aktif": 1,
+   "laporan_terverifikasi": 1,
+   "mentah": {
+    "urgensi": 1,
+    "volume": 0.042,
+    "dukungan": 0.417,
+    "umur": 1.52,
+    "kerentanan": 6.4,
+    "kepadatan": 15384
+   }
+  },
+  {
+   "id": "19-3",
+   "kode_wilayah": "3173020",
+   "kecamatan": "Menteng",
+   "kota": "Jakarta Pusat",
+   "category_id": 3,
+   "kategori": "Sampah menumpuk",
+   "laporan_aktif": 1,
+   "laporan_terverifikasi": 1,
+   "mentah": {
+    "urgensi": 0.6,
+    "volume": 0.069,
+    "dukungan": 0.207,
+    "umur": 1.04,
+    "kerentanan": 4.5,
+    "kepadatan": 20155
+   }
+  },
+  {
+   "id": "26-2",
+   "kode_wilayah": "3172040",
+   "kecamatan": "Makasar",
+   "kota": "Jakarta Timur",
+   "category_id": 2,
+   "kategori": "Saluran tersumbat",
+   "laporan_aktif": 4,
+   "laporan_terverifikasi": 4,
+   "mentah": {
+    "urgensi": 1,
+    "volume": 0.099,
+    "dukungan": 0.37,
+    "umur": 1.66,
+    "kerentanan": 4.1,
+    "kepadatan": 17563
+   }
+  },
+  {
+   "id": "29-1",
+   "kode_wilayah": "3174020",
+   "kecamatan": "Kebon Jeruk",
+   "kota": "Jakarta Barat",
+   "category_id": 1,
+   "kategori": "Jalan rusak",
+   "laporan_aktif": 1,
+   "laporan_terverifikasi": 1,
+   "mentah": {
+    "urgensi": 1,
+    "volume": 0.033,
+    "dukungan": 0.033,
+    "umur": 0.43,
+    "kerentanan": 3.8,
+    "kepadatan": 16621
+   }
+  },
+  {
+   "id": "12-1",
+   "kode_wilayah": "3172080",
+   "kecamatan": "Cakung",
+   "kota": "Jakarta Timur",
+   "category_id": 1,
+   "kategori": "Jalan rusak",
+   "laporan_aktif": 1,
+   "laporan_terverifikasi": 0,
+   "mentah": {
+    "urgensi": 1,
+    "volume": 0,
+    "dukungan": 0,
+    "umur": 0.04,
+    "kerentanan": 4.1,
+    "kepadatan": 16362
+   }
+  },
+  {
+   "id": "37-1",
+   "kode_wilayah": "3174080",
+   "kecamatan": "Kali Deres",
+   "kota": "Jakarta Barat",
+   "category_id": 1,
+   "kategori": "Jalan rusak",
+   "laporan_aktif": 6,
+   "laporan_terverifikasi": 5,
+   "mentah": {
+    "urgensi": 1,
+    "volume": 0.112,
+    "dukungan": 0.446,
+    "umur": 1.06,
+    "kerentanan": 3.8,
+    "kepadatan": 15886
+   }
+  },
+  {
+   "id": "18-2",
+   "kode_wilayah": "3171010",
+   "kecamatan": "Jagakarsa",
+   "kota": "Jakarta Selatan",
+   "category_id": 2,
+   "kategori": "Saluran tersumbat",
+   "laporan_aktif": 1,
+   "laporan_terverifikasi": 1,
+   "mentah": {
+    "urgensi": 1,
+    "volume": 0.016,
+    "dukungan": 0.162,
+    "umur": 2,
+    "kerentanan": 3.2,
+    "kepadatan": 17591
+   }
+  },
+  {
+   "id": "20-2",
+   "kode_wilayah": "3171080",
+   "kecamatan": "Pancoran",
+   "kota": "Jakarta Selatan",
+   "category_id": 2,
+   "kategori": "Saluran tersumbat",
+   "laporan_aktif": 2,
+   "laporan_terverifikasi": 1,
+   "mentah": {
+    "urgensi": 1,
+    "volume": 0.094,
+    "dukungan": 0.942,
+    "umur": 1.43,
+    "kerentanan": 3.2,
+    "kepadatan": 10513
+   }
+  },
+  {
+   "id": "1-3",
+   "kode_wilayah": "3175020",
+   "kecamatan": "Pademangan",
+   "kota": "Jakarta Utara",
+   "category_id": 3,
+   "kategori": "Sampah menumpuk",
+   "laporan_aktif": 4,
+   "laporan_terverifikasi": 4,
+   "mentah": {
+    "urgensi": 0.6,
+    "volume": 0.139,
+    "dukungan": 0.697,
+    "umur": 1.38,
+    "kerentanan": 6.4,
+    "kepadatan": 12006
+   }
+  },
+  {
+   "id": "3-2",
+   "kode_wilayah": "3172050",
+   "kecamatan": "Kramat Jati",
+   "kota": "Jakarta Timur",
+   "category_id": 2,
+   "kategori": "Saluran tersumbat",
+   "laporan_aktif": 3,
+   "laporan_terverifikasi": 1,
+   "mentah": {
+    "urgensi": 1,
+    "volume": 0.033,
+    "dukungan": 0.067,
+    "umur": 1.41,
+    "kerentanan": 4.1,
+    "kepadatan": 16705
+   }
+  },
+  {
+   "id": "33-2",
+   "kode_wilayah": "3171100",
+   "kecamatan": "Setia Budi",
+   "kota": "Jakarta Selatan",
+   "category_id": 2,
+   "kategori": "Saluran tersumbat",
+   "laporan_aktif": 1,
+   "laporan_terverifikasi": 1,
+   "mentah": {
+    "urgensi": 1,
+    "volume": 0.075,
+    "dukungan": 0.75,
+    "umur": 0.18,
+    "kerentanan": 3.2,
+    "kepadatan": 12819
+   }
+  },
+  {
+   "id": "34-4",
+   "kode_wilayah": "3173070",
+   "kecamatan": "Sawah Besar",
+   "kota": "Jakarta Pusat",
+   "category_id": 4,
+   "kategori": "Lampu jalan mati",
+   "laporan_aktif": 1,
+   "laporan_terverifikasi": 0,
+   "mentah": {
+    "urgensi": 0.6,
+    "volume": 0,
+    "dukungan": 0,
+    "umur": 2,
+    "kerentanan": 4.5,
+    "kepadatan": 23850
+   }
+  },
+  {
+   "id": "38-4",
+   "kode_wilayah": "3175010",
+   "kecamatan": "Penjaringan",
+   "kota": "Jakarta Utara",
+   "category_id": 4,
+   "kategori": "Lampu jalan mati",
+   "laporan_aktif": 2,
+   "laporan_terverifikasi": 0,
+   "mentah": {
+    "urgensi": 0.6,
+    "volume": 0,
+    "dukungan": 0,
+    "umur": 1.01,
+    "kerentanan": 6.4,
+    "kepadatan": 14104
+   }
+  },
+  {
+   "id": "15-3",
+   "kode_wilayah": "3174070",
+   "kecamatan": "Cengkareng",
+   "kota": "Jakarta Barat",
+   "category_id": 3,
+   "kategori": "Sampah menumpuk",
+   "laporan_aktif": 2,
+   "laporan_terverifikasi": 1,
+   "mentah": {
+    "urgensi": 0.6,
+    "volume": 0.018,
+    "dukungan": 0.107,
+    "umur": 2,
+    "kerentanan": 3.8,
+    "kepadatan": 14428
+   }
+  },
+  {
+   "id": "18-3",
+   "kode_wilayah": "3171010",
+   "kecamatan": "Jagakarsa",
+   "kota": "Jakarta Selatan",
+   "category_id": 3,
+   "kategori": "Sampah menumpuk",
+   "laporan_aktif": 5,
+   "laporan_terverifikasi": 4,
+   "mentah": {
+    "urgensi": 0.6,
+    "volume": 0.065,
+    "dukungan": 0.146,
+    "umur": 1.68,
+    "kerentanan": 3.2,
+    "kepadatan": 17591
+   }
+  },
+  {
+   "id": "5-2",
+   "kode_wilayah": "3172030",
+   "kecamatan": "Cipayung",
+   "kota": "Jakarta Timur",
+   "category_id": 2,
+   "kategori": "Saluran tersumbat",
+   "laporan_aktif": 5,
+   "laporan_terverifikasi": 3,
+   "mentah": {
+    "urgensi": 1,
+    "volume": 0.093,
+    "dukungan": 0.401,
+    "umur": 1.19,
+    "kerentanan": 4.1,
+    "kepadatan": 12506
+   }
+  },
+  {
+   "id": "38-2",
+   "kode_wilayah": "3175010",
+   "kecamatan": "Penjaringan",
+   "kota": "Jakarta Utara",
+   "category_id": 2,
+   "kategori": "Saluran tersumbat",
+   "laporan_aktif": 7,
+   "laporan_terverifikasi": 5,
+   "mentah": {
+    "urgensi": 1,
+    "volume": 0.084,
+    "dukungan": 0.437,
+    "umur": 1.2,
+    "kerentanan": 6.4,
+    "kepadatan": 14104
+   }
+  },
+  {
+   "id": "28-4",
+   "kode_wilayah": "3172070",
+   "kecamatan": "Duren Sawit",
+   "kota": "Jakarta Timur",
+   "category_id": 4,
+   "kategori": "Lampu jalan mati",
+   "laporan_aktif": 2,
+   "laporan_terverifikasi": 1,
+   "mentah": {
+    "urgensi": 0.6,
+    "volume": 0.039,
+    "dukungan": 0.39,
+    "umur": 0.19,
+    "kerentanan": 4.1,
+    "kepadatan": 13511
+   }
+  },
+  {
+   "id": "7-2",
+   "kode_wilayah": "3172010",
+   "kecamatan": "Pasar Rebo",
+   "kota": "Jakarta Timur",
+   "category_id": 2,
+   "kategori": "Saluran tersumbat",
+   "laporan_aktif": 3,
+   "laporan_terverifikasi": 2,
+   "mentah": {
+    "urgensi": 1,
+    "volume": 0.067,
+    "dukungan": 0.033,
+    "umur": 2,
+    "kerentanan": 4.1,
+    "kepadatan": 16884
+   }
+  },
+  {
+   "id": "22-2",
+   "kode_wilayah": "3171020",
+   "kecamatan": "Pasar Minggu",
+   "kota": "Jakarta Selatan",
+   "category_id": 2,
+   "kategori": "Saluran tersumbat",
+   "laporan_aktif": 3,
+   "laporan_terverifikasi": 3,
+   "mentah": {
+    "urgensi": 1,
+    "volume": 0.101,
+    "dukungan": 0.169,
+    "umur": 1.52,
+    "kerentanan": 3.2,
+    "kepadatan": 12626
+   }
+  },
+  {
+   "id": "24-2",
+   "kode_wilayah": "3171060",
+   "kecamatan": "Kebayoran Baru",
+   "kota": "Jakarta Selatan",
+   "category_id": 2,
+   "kategori": "Saluran tersumbat",
+   "laporan_aktif": 1,
+   "laporan_terverifikasi": 1,
+   "mentah": {
+    "urgensi": 1,
+    "volume": 0.045,
+    "dukungan": 0.452,
+    "umur": 2,
+    "kerentanan": 3.2,
+    "kepadatan": 17841
+   }
+  },
+  {
+   "id": "4-1",
+   "kode_wilayah": "3172060",
+   "kecamatan": "Jatinegara",
+   "kota": "Jakarta Timur",
+   "category_id": 1,
+   "kategori": "Jalan rusak",
+   "laporan_aktif": 1,
+   "laporan_terverifikasi": 1,
+   "mentah": {
+    "urgensi": 1,
+    "volume": 0.057,
+    "dukungan": 0.343,
+    "umur": 1.02,
+    "kerentanan": 4.1,
+    "kepadatan": 16352
+   }
+  },
+  {
+   "id": "13-3",
+   "kode_wilayah": "3173060",
+   "kecamatan": "Kemayoran",
+   "kota": "Jakarta Pusat",
+   "category_id": 3,
+   "kategori": "Sampah menumpuk",
+   "laporan_aktif": 2,
+   "laporan_terverifikasi": 1,
+   "mentah": {
+    "urgensi": 0.6,
+    "volume": 0.068,
+    "dukungan": 0.341,
+    "umur": 1.27,
+    "kerentanan": 4.5,
+    "kepadatan": 18313
+   }
+  },
+  {
+   "id": "9-1",
+   "kode_wilayah": "3171040",
+   "kecamatan": "Pesanggrahan",
+   "kota": "Jakarta Selatan",
+   "category_id": 1,
+   "kategori": "Jalan rusak",
+   "laporan_aktif": 2,
+   "laporan_terverifikasi": 2,
+   "mentah": {
+    "urgensi": 1,
+    "volume": 0.086,
+    "dukungan": 0.043,
+    "umur": 1.02,
+    "kerentanan": 3.2,
+    "kepadatan": 12760
+   }
+  },
+  {
+   "id": "24-1",
+   "kode_wilayah": "3171060",
+   "kecamatan": "Kebayoran Baru",
+   "kota": "Jakarta Selatan",
+   "category_id": 1,
+   "kategori": "Jalan rusak",
+   "laporan_aktif": 2,
+   "laporan_terverifikasi": 2,
+   "mentah": {
+    "urgensi": 1,
+    "volume": 0.09,
+    "dukungan": 0.045,
+    "umur": 0.53,
+    "kerentanan": 3.2,
+    "kepadatan": 17841
+   }
+  },
+  {
+   "id": "19-4",
+   "kode_wilayah": "3173020",
+   "kecamatan": "Menteng",
+   "kota": "Jakarta Pusat",
+   "category_id": 4,
+   "kategori": "Lampu jalan mati",
+   "laporan_aktif": 1,
+   "laporan_terverifikasi": 1,
+   "mentah": {
+    "urgensi": 0.6,
+    "volume": 0.069,
+    "dukungan": 0.138,
+    "umur": 0.9,
+    "kerentanan": 4.5,
+    "kepadatan": 20155
+   }
+  },
+  {
+   "id": "7-3",
+   "kode_wilayah": "3172010",
+   "kecamatan": "Pasar Rebo",
+   "kota": "Jakarta Timur",
+   "category_id": 3,
+   "kategori": "Sampah menumpuk",
+   "laporan_aktif": 2,
+   "laporan_terverifikasi": 0,
+   "mentah": {
+    "urgensi": 0.6,
+    "volume": 0,
+    "dukungan": 0,
+    "umur": 1.1,
+    "kerentanan": 4.1,
+    "kepadatan": 16884
+   }
+  },
+  {
+   "id": "38-1",
+   "kode_wilayah": "3175010",
+   "kecamatan": "Penjaringan",
+   "kota": "Jakarta Utara",
+   "category_id": 1,
+   "kategori": "Jalan rusak",
+   "laporan_aktif": 1,
+   "laporan_terverifikasi": 0,
+   "mentah": {
+    "urgensi": 1,
+    "volume": 0,
+    "dukungan": 0,
+    "umur": 0.02,
+    "kerentanan": 6.4,
+    "kepadatan": 14104
+   }
+  },
+  {
+   "id": "15-2",
+   "kode_wilayah": "3174070",
+   "kecamatan": "Cengkareng",
+   "kota": "Jakarta Barat",
+   "category_id": 2,
+   "kategori": "Saluran tersumbat",
+   "laporan_aktif": 7,
+   "laporan_terverifikasi": 5,
+   "mentah": {
+    "urgensi": 1,
+    "volume": 0.089,
+    "dukungan": 0.302,
+    "umur": 1.56,
+    "kerentanan": 3.8,
+    "kepadatan": 14428
+   }
+  },
+  {
+   "id": "26-3",
+   "kode_wilayah": "3172040",
+   "kecamatan": "Makasar",
+   "kota": "Jakarta Timur",
+   "category_id": 3,
+   "kategori": "Sampah menumpuk",
+   "laporan_aktif": 2,
+   "laporan_terverifikasi": 2,
+   "mentah": {
+    "urgensi": 0.6,
+    "volume": 0.049,
+    "dukungan": 0.444,
+    "umur": 2,
+    "kerentanan": 4.1,
+    "kepadatan": 17563
+   }
+  },
+  {
+   "id": "12-3",
+   "kode_wilayah": "3172080",
+   "kecamatan": "Cakung",
+   "kota": "Jakarta Timur",
+   "category_id": 3,
+   "kategori": "Sampah menumpuk",
+   "laporan_aktif": 5,
+   "laporan_terverifikasi": 3,
+   "mentah": {
+    "urgensi": 0.6,
+    "volume": 0.05,
+    "dukungan": 0.182,
+    "umur": 1.66,
+    "kerentanan": 4.1,
+    "kepadatan": 16362
+   }
+  },
+  {
+   "id": "33-4",
+   "kode_wilayah": "3171100",
+   "kecamatan": "Setia Budi",
+   "kota": "Jakarta Selatan",
+   "category_id": 4,
+   "kategori": "Lampu jalan mati",
+   "laporan_aktif": 1,
+   "laporan_terverifikasi": 1,
+   "mentah": {
+    "urgensi": 0.6,
+    "volume": 0.075,
+    "dukungan": 0.6,
+    "umur": 2,
+    "kerentanan": 3.2,
+    "kepadatan": 12819
+   }
+  },
+  {
+   "id": "3-3",
+   "kode_wilayah": "3172050",
+   "kecamatan": "Kramat Jati",
+   "kota": "Jakarta Timur",
+   "category_id": 3,
+   "kategori": "Sampah menumpuk",
+   "laporan_aktif": 3,
+   "laporan_terverifikasi": 1,
+   "mentah": {
+    "urgensi": 0.6,
+    "volume": 0.033,
+    "dukungan": 0,
+    "umur": 2,
+    "kerentanan": 4.1,
+    "kepadatan": 16705
+   }
+  },
+  {
+   "id": "16-3",
+   "kode_wilayah": "3172020",
+   "kecamatan": "Ciracas",
+   "kota": "Jakarta Timur",
+   "category_id": 3,
+   "kategori": "Sampah menumpuk",
+   "laporan_aktif": 3,
+   "laporan_terverifikasi": 3,
+   "mentah": {
+    "urgensi": 0.6,
+    "volume": 0.1,
+    "dukungan": 0.267,
+    "umur": 2,
+    "kerentanan": 4.1,
+    "kepadatan": 13981
+   }
+  },
+  {
+   "id": "40-2",
+   "kode_wilayah": "3175030",
+   "kecamatan": "Tanjung Priok",
+   "kota": "Jakarta Utara",
+   "category_id": 2,
+   "kategori": "Saluran tersumbat",
+   "laporan_aktif": 2,
+   "laporan_terverifikasi": 1,
+   "mentah": {
+    "urgensi": 1,
+    "volume": 0.035,
+    "dukungan": 0.213,
+    "umur": 1.29,
+    "kerentanan": 6.4,
+    "kepadatan": 11606
+   }
+  },
+  {
+   "id": "8-4",
+   "kode_wilayah": "3173010",
+   "kecamatan": "Tanah Abang",
+   "kota": "Jakarta Pusat",
+   "category_id": 4,
+   "kategori": "Lampu jalan mati",
+   "laporan_aktif": 1,
+   "laporan_terverifikasi": 0,
+   "mentah": {
+    "urgensi": 0.6,
+    "volume": 0,
+    "dukungan": 0,
+    "umur": 0.1,
+    "kerentanan": 4.5,
+    "kepadatan": 22625
+   }
+  },
+  {
+   "id": "42-2",
+   "kode_wilayah": "3175040",
+   "kecamatan": "Koja",
+   "kota": "Jakarta Utara",
+   "category_id": 2,
+   "kategori": "Saluran tersumbat",
+   "laporan_aktif": 1,
+   "laporan_terverifikasi": 1,
+   "mentah": {
+    "urgensi": 1,
+    "volume": 0.068,
+    "dukungan": 0.068,
+    "umur": 2,
+    "kerentanan": 6.4,
+    "kepadatan": 13465
+   }
+  },
+  {
+   "id": "27-2",
+   "kode_wilayah": "3171050",
+   "kecamatan": "Kebayoran Lama",
+   "kota": "Jakarta Selatan",
+   "category_id": 2,
+   "kategori": "Saluran tersumbat",
+   "laporan_aktif": 1,
+   "laporan_terverifikasi": 1,
+   "mentah": {
+    "urgensi": 1,
+    "volume": 0.037,
+    "dukungan": 0.149,
+    "umur": 2,
+    "kerentanan": 3.2,
+    "kepadatan": 12644
+   }
+  },
+  {
+   "id": "34-2",
+   "kode_wilayah": "3173070",
+   "kecamatan": "Sawah Besar",
+   "kota": "Jakarta Pusat",
+   "category_id": 2,
+   "kategori": "Saluran tersumbat",
+   "laporan_aktif": 2,
+   "laporan_terverifikasi": 1,
+   "mentah": {
+    "urgensi": 1,
+    "volume": 0.06,
+    "dukungan": 0,
+    "umur": 2,
+    "kerentanan": 4.5,
+    "kepadatan": 23850
+   }
+  },
+  {
+   "id": "31-1",
+   "kode_wilayah": "3174060",
+   "kecamatan": "Taman Sari",
+   "kota": "Jakarta Barat",
+   "category_id": 1,
+   "kategori": "Jalan rusak",
+   "laporan_aktif": 2,
+   "laporan_terverifikasi": 1,
+   "mentah": {
+    "urgensi": 1,
+    "volume": 0.12,
+    "dukungan": 1.199,
+    "umur": 0.09,
+    "kerentanan": 3.8,
+    "kepadatan": 18956
+   }
+  },
+  {
+   "id": "29-4",
+   "kode_wilayah": "3174020",
+   "kecamatan": "Kebon Jeruk",
+   "kota": "Jakarta Barat",
+   "category_id": 4,
+   "kategori": "Lampu jalan mati",
+   "laporan_aktif": 2,
+   "laporan_terverifikasi": 1,
+   "mentah": {
+    "urgensi": 0.6,
+    "volume": 0.033,
+    "dukungan": 0.266,
+    "umur": 0.21,
+    "kerentanan": 3.8,
+    "kepadatan": 16621
+   }
+  },
+  {
+   "id": "4-4",
+   "kode_wilayah": "3172060",
+   "kecamatan": "Jatinegara",
+   "kota": "Jakarta Timur",
+   "category_id": 4,
+   "kategori": "Lampu jalan mati",
+   "laporan_aktif": 1,
+   "laporan_terverifikasi": 0,
+   "mentah": {
+    "urgensi": 0.6,
+    "volume": 0,
+    "dukungan": 0,
+    "umur": 0.01,
+    "kerentanan": 4.1,
+    "kepadatan": 16352
+   }
+  },
+  {
+   "id": "5-3",
+   "kode_wilayah": "3172030",
+   "kecamatan": "Cipayung",
+   "kota": "Jakarta Timur",
+   "category_id": 3,
+   "kategori": "Sampah menumpuk",
+   "laporan_aktif": 3,
+   "laporan_terverifikasi": 3,
+   "mentah": {
+    "urgensi": 0.6,
+    "volume": 0.093,
+    "dukungan": 0.309,
+    "umur": 1.45,
+    "kerentanan": 4.1,
+    "kepadatan": 12506
+   }
+  },
+  {
+   "id": "39-1",
+   "kode_wilayah": "3172100",
+   "kecamatan": "Matraman",
+   "kota": "Jakarta Timur",
+   "category_id": 1,
+   "kategori": "Jalan rusak",
+   "laporan_aktif": 2,
+   "laporan_terverifikasi": 2,
+   "mentah": {
+    "urgensi": 1,
+    "volume": 0.256,
+    "dukungan": 1.919,
+    "umur": 1.05,
+    "kerentanan": 4.1,
+    "kepadatan": 17371
+   }
+  },
+  {
+   "id": "25-2",
+   "kode_wilayah": "3172090",
+   "kecamatan": "Pulo Gadung",
+   "kota": "Jakarta Timur",
+   "category_id": 2,
+   "kategori": "Saluran tersumbat",
+   "laporan_aktif": 2,
+   "laporan_terverifikasi": 2,
+   "mentah": {
+    "urgensi": 1,
+    "volume": 0.077,
+    "dukungan": 0.502,
+    "umur": 1.71,
+    "kerentanan": 4.1,
+    "kepadatan": 19023
+   }
+  },
+  {
+   "id": "32-2",
+   "kode_wilayah": "3174040",
+   "kecamatan": "Grogol Petamburan",
+   "kota": "Jakarta Barat",
+   "category_id": 2,
+   "kategori": "Saluran tersumbat",
+   "laporan_aktif": 3,
+   "laporan_terverifikasi": 2,
+   "mentah": {
+    "urgensi": 1,
+    "volume": 0.079,
+    "dukungan": 0.158,
+    "umur": 1.82,
+    "kerentanan": 3.8,
+    "kepadatan": 20627
+   }
+  },
+  {
+   "id": "11-1",
+   "kode_wilayah": "3173030",
+   "kecamatan": "Senen",
+   "kota": "Jakarta Pusat",
+   "category_id": 1,
+   "kategori": "Jalan rusak",
+   "laporan_aktif": 1,
+   "laporan_terverifikasi": 1,
+   "mentah": {
+    "urgensi": 1,
+    "volume": 0.103,
+    "dukungan": 1.029,
+    "umur": 2,
+    "kerentanan": 4.5,
+    "kepadatan": 14946
+   }
+  },
+  {
+   "id": "32-4",
+   "kode_wilayah": "3174040",
+   "kecamatan": "Grogol Petamburan",
+   "kota": "Jakarta Barat",
+   "category_id": 4,
+   "kategori": "Lampu jalan mati",
+   "laporan_aktif": 1,
+   "laporan_terverifikasi": 1,
+   "mentah": {
+    "urgensi": 0.6,
+    "volume": 0.039,
+    "dukungan": 0,
+    "umur": 0.27,
+    "kerentanan": 3.8,
+    "kepadatan": 20627
+   }
+  },
+  {
+   "id": "11-3",
+   "kode_wilayah": "3173030",
+   "kecamatan": "Senen",
+   "kota": "Jakarta Pusat",
+   "category_id": 3,
+   "kategori": "Sampah menumpuk",
+   "laporan_aktif": 1,
+   "laporan_terverifikasi": 1,
+   "mentah": {
+    "urgensi": 0.6,
+    "volume": 0.103,
+    "dukungan": 0.103,
+    "umur": 0.82,
+    "kerentanan": 4.5,
+    "kepadatan": 14946
+   }
+  },
+  {
+   "id": "42-3",
+   "kode_wilayah": "3175040",
+   "kecamatan": "Koja",
+   "kota": "Jakarta Utara",
+   "category_id": 3,
+   "kategori": "Sampah menumpuk",
+   "laporan_aktif": 2,
+   "laporan_terverifikasi": 2,
+   "mentah": {
+    "urgensi": 0.6,
+    "volume": 0.135,
+    "dukungan": 0.743,
+    "umur": 1.51,
+    "kerentanan": 6.4,
+    "kepadatan": 13465
+   }
+  },
+  {
+   "id": "41-4",
+   "kode_wilayah": "3175050",
+   "kecamatan": "Kelapa Gading",
+   "kota": "Jakarta Utara",
+   "category_id": 4,
+   "kategori": "Lampu jalan mati",
+   "laporan_aktif": 1,
+   "laporan_terverifikasi": 1,
+   "mentah": {
+    "urgensi": 0.6,
+    "volume": 0.042,
+    "dukungan": 0.125,
+    "umur": 0.17,
+    "kerentanan": 6.4,
+    "kepadatan": 15384
+   }
+  },
+  {
+   "id": "20-3",
+   "kode_wilayah": "3171080",
+   "kecamatan": "Pancoran",
+   "kota": "Jakarta Selatan",
+   "category_id": 3,
+   "kategori": "Sampah menumpuk",
+   "laporan_aktif": 1,
+   "laporan_terverifikasi": 1,
+   "mentah": {
+    "urgensi": 0.6,
+    "volume": 0.094,
+    "dukungan": 0.094,
+    "umur": 2,
+    "kerentanan": 3.2,
+    "kepadatan": 10513
+   }
+  },
+  {
+   "id": "9-4",
+   "kode_wilayah": "3171040",
+   "kecamatan": "Pesanggrahan",
+   "kota": "Jakarta Selatan",
+   "category_id": 4,
+   "kategori": "Lampu jalan mati",
+   "laporan_aktif": 1,
+   "laporan_terverifikasi": 0,
+   "mentah": {
+    "urgensi": 0.6,
+    "volume": 0,
+    "dukungan": 0,
+    "umur": 0.04,
+    "kerentanan": 3.2,
+    "kepadatan": 12760
+   }
+  },
+  {
+   "id": "9-3",
+   "kode_wilayah": "3171040",
+   "kecamatan": "Pesanggrahan",
+   "kota": "Jakarta Selatan",
+   "category_id": 3,
+   "kategori": "Sampah menumpuk",
+   "laporan_aktif": 1,
+   "laporan_terverifikasi": 1,
+   "mentah": {
+    "urgensi": 0.6,
+    "volume": 0.043,
+    "dukungan": 0,
+    "umur": 0.26,
+    "kerentanan": 3.2,
+    "kepadatan": 12760
+   }
+  },
+  {
+   "id": "26-1",
+   "kode_wilayah": "3172040",
+   "kecamatan": "Makasar",
+   "kota": "Jakarta Timur",
+   "category_id": 1,
+   "kategori": "Jalan rusak",
+   "laporan_aktif": 2,
+   "laporan_terverifikasi": 1,
+   "mentah": {
+    "urgensi": 1,
+    "volume": 0.025,
+    "dukungan": 0.025,
+    "umur": 1.02,
+    "kerentanan": 4.1,
+    "kepadatan": 17563
+   }
+  },
+  {
+   "id": "41-1",
+   "kode_wilayah": "3175050",
+   "kecamatan": "Kelapa Gading",
+   "kota": "Jakarta Utara",
+   "category_id": 1,
+   "kategori": "Jalan rusak",
+   "laporan_aktif": 1,
+   "laporan_terverifikasi": 0,
+   "mentah": {
+    "urgensi": 1,
+    "volume": 0,
+    "dukungan": 0,
+    "umur": 0.02,
+    "kerentanan": 6.4,
+    "kepadatan": 15384
+   }
+  },
+  {
+   "id": "36-1",
+   "kode_wilayah": "3174010",
+   "kecamatan": "Kembangan",
+   "kota": "Jakarta Barat",
+   "category_id": 1,
+   "kategori": "Jalan rusak",
+   "laporan_aktif": 3,
+   "laporan_terverifikasi": 2,
+   "mentah": {
+    "urgensi": 1,
+    "volume": 0.061,
+    "dukungan": 0.152,
+    "umur": 0.71,
+    "kerentanan": 3.8,
+    "kepadatan": 13132
+   }
+  },
+  {
+   "id": "28-2",
+   "kode_wilayah": "3172070",
+   "kecamatan": "Duren Sawit",
+   "kota": "Jakarta Timur",
+   "category_id": 2,
+   "kategori": "Saluran tersumbat",
+   "laporan_aktif": 2,
+   "laporan_terverifikasi": 1,
+   "mentah": {
+    "urgensi": 1,
+    "volume": 0.039,
+    "dukungan": 0.39,
+    "umur": 1.76,
+    "kerentanan": 4.1,
+    "kepadatan": 13511
+   }
+  },
+  {
+   "id": "36-2",
+   "kode_wilayah": "3174010",
+   "kecamatan": "Kembangan",
+   "kota": "Jakarta Barat",
+   "category_id": 2,
+   "kategori": "Saluran tersumbat",
+   "laporan_aktif": 1,
+   "laporan_terverifikasi": 1,
+   "mentah": {
+    "urgensi": 1,
+    "volume": 0.03,
+    "dukungan": 0.303,
+    "umur": 2,
+    "kerentanan": 3.8,
+    "kepadatan": 13132
+   }
+  },
+  {
+   "id": "40-1",
+   "kode_wilayah": "3175030",
+   "kecamatan": "Tanjung Priok",
+   "kota": "Jakarta Utara",
+   "category_id": 1,
+   "kategori": "Jalan rusak",
+   "laporan_aktif": 1,
+   "laporan_terverifikasi": 1,
+   "mentah": {
+    "urgensi": 1,
+    "volume": 0.035,
+    "dukungan": 0.355,
+    "umur": 0.32,
+    "kerentanan": 6.4,
+    "kepadatan": 11606
+   }
+  },
+  {
+   "id": "23-4",
+   "kode_wilayah": "3175060",
+   "kecamatan": "Cilincing",
+   "kota": "Jakarta Utara",
+   "category_id": 4,
+   "kategori": "Lampu jalan mati",
+   "laporan_aktif": 3,
+   "laporan_terverifikasi": 2,
+   "mentah": {
+    "urgensi": 0.6,
+    "volume": 0.04,
+    "dukungan": 0.278,
+    "umur": 0.75,
+    "kerentanan": 6.4,
+    "kepadatan": 14135
+   }
+  },
+  {
+   "id": "21-3",
+   "kode_wilayah": "3171030",
+   "kecamatan": "Cilandak",
+   "kota": "Jakarta Selatan",
+   "category_id": 3,
+   "kategori": "Sampah menumpuk",
+   "laporan_aktif": 1,
+   "laporan_terverifikasi": 1,
+   "mentah": {
+    "urgensi": 0.6,
+    "volume": 0.043,
+    "dukungan": 0.043,
+    "umur": 2,
+    "kerentanan": 3.2,
+    "kepadatan": 12069
+   }
+  },
+  {
+   "id": "19-1",
+   "kode_wilayah": "3173020",
+   "kecamatan": "Menteng",
+   "kota": "Jakarta Pusat",
+   "category_id": 1,
+   "kategori": "Jalan rusak",
+   "laporan_aktif": 1,
+   "laporan_terverifikasi": 1,
+   "mentah": {
+    "urgensi": 1,
+    "volume": 0.069,
+    "dukungan": 0,
+    "umur": 2,
+    "kerentanan": 4.5,
+    "kepadatan": 20155
+   }
+  },
+  {
+   "id": "36-3",
+   "kode_wilayah": "3174010",
+   "kecamatan": "Kembangan",
+   "kota": "Jakarta Barat",
+   "category_id": 3,
+   "kategori": "Sampah menumpuk",
+   "laporan_aktif": 1,
+   "laporan_terverifikasi": 1,
+   "mentah": {
+    "urgensi": 0.6,
+    "volume": 0.03,
+    "dukungan": 0,
+    "umur": 2,
+    "kerentanan": 3.8,
+    "kepadatan": 13132
+   }
+  },
+  {
+   "id": "1-1",
+   "kode_wilayah": "3175020",
+   "kecamatan": "Pademangan",
+   "kota": "Jakarta Utara",
+   "category_id": 1,
+   "kategori": "Jalan rusak",
+   "laporan_aktif": 1,
+   "laporan_terverifikasi": 1,
+   "mentah": {
+    "urgensi": 1,
+    "volume": 0.035,
+    "dukungan": 0.349,
+    "umur": 2,
+    "kerentanan": 6.4,
+    "kepadatan": 12006
+   }
+  },
+  {
+   "id": "29-3",
+   "kode_wilayah": "3174020",
+   "kecamatan": "Kebon Jeruk",
+   "kota": "Jakarta Barat",
+   "category_id": 3,
+   "kategori": "Sampah menumpuk",
+   "laporan_aktif": 2,
+   "laporan_terverifikasi": 1,
+   "mentah": {
+    "urgensi": 0.6,
+    "volume": 0.033,
+    "dukungan": 0.1,
+    "umur": 2,
+    "kerentanan": 3.8,
+    "kepadatan": 16621
+   }
+  },
+  {
+   "id": "27-1",
+   "kode_wilayah": "3171050",
+   "kecamatan": "Kebayoran Lama",
+   "kota": "Jakarta Selatan",
+   "category_id": 1,
+   "kategori": "Jalan rusak",
+   "laporan_aktif": 1,
+   "laporan_terverifikasi": 1,
+   "mentah": {
+    "urgensi": 1,
+    "volume": 0.037,
+    "dukungan": 0.373,
+    "umur": 0.98,
+    "kerentanan": 3.2,
+    "kepadatan": 12644
+   }
+  },
+  {
+   "id": "27-3",
+   "kode_wilayah": "3171050",
+   "kecamatan": "Kebayoran Lama",
+   "kota": "Jakarta Selatan",
+   "category_id": 3,
+   "kategori": "Sampah menumpuk",
+   "laporan_aktif": 1,
+   "laporan_terverifikasi": 1,
+   "mentah": {
+    "urgensi": 0.6,
+    "volume": 0.037,
+    "dukungan": 0.037,
+    "umur": 2,
+    "kerentanan": 3.2,
+    "kepadatan": 12644
+   }
+  },
+  {
+   "id": "42-1",
+   "kode_wilayah": "3175040",
+   "kecamatan": "Koja",
+   "kota": "Jakarta Utara",
+   "category_id": 1,
+   "kategori": "Jalan rusak",
+   "laporan_aktif": 1,
+   "laporan_terverifikasi": 1,
+   "mentah": {
+    "urgensi": 1,
+    "volume": 0.068,
+    "dukungan": 0.203,
+    "umur": 1.4,
+    "kerentanan": 6.4,
+    "kepadatan": 13465
+   }
+  },
+  {
+   "id": "8-1",
+   "kode_wilayah": "3173010",
+   "kecamatan": "Tanah Abang",
+   "kota": "Jakarta Pusat",
+   "category_id": 1,
+   "kategori": "Jalan rusak",
+   "laporan_aktif": 1,
+   "laporan_terverifikasi": 1,
+   "mentah": {
+    "urgensi": 1,
+    "volume": 0.039,
+    "dukungan": 0.313,
+    "umur": 0.38,
+    "kerentanan": 4.5,
+    "kepadatan": 22625
+   }
+  },
+  {
+   "id": "3-1",
+   "kode_wilayah": "3172050",
+   "kecamatan": "Kramat Jati",
+   "kota": "Jakarta Timur",
+   "category_id": 1,
+   "kategori": "Jalan rusak",
+   "laporan_aktif": 1,
+   "laporan_terverifikasi": 1,
+   "mentah": {
+    "urgensi": 1,
+    "volume": 0.033,
+    "dukungan": 0.334,
+    "umur": 2,
+    "kerentanan": 4.1,
+    "kepadatan": 16705
+   }
+  },
+  {
+   "id": "31-2",
+   "kode_wilayah": "3174060",
+   "kecamatan": "Taman Sari",
+   "kota": "Jakarta Barat",
+   "category_id": 2,
+   "kategori": "Saluran tersumbat",
+   "laporan_aktif": 1,
+   "laporan_terverifikasi": 1,
+   "mentah": {
+    "urgensi": 1,
+    "volume": 0.12,
+    "dukungan": 0.12,
+    "umur": 1.32,
+    "kerentanan": 3.8,
+    "kepadatan": 18956
+   }
+  },
+  {
+   "id": "9-2",
+   "kode_wilayah": "3171040",
+   "kecamatan": "Pesanggrahan",
+   "kota": "Jakarta Selatan",
+   "category_id": 2,
+   "kategori": "Saluran tersumbat",
+   "laporan_aktif": 1,
+   "laporan_terverifikasi": 0,
+   "mentah": {
+    "urgensi": 1,
+    "volume": 0,
+    "dukungan": 0,
+    "umur": 0.02,
+    "kerentanan": 3.2,
+    "kepadatan": 12760
+   }
+  },
+  {
+   "id": "20-4",
+   "kode_wilayah": "3171080",
+   "kecamatan": "Pancoran",
+   "kota": "Jakarta Selatan",
+   "category_id": 4,
+   "kategori": "Lampu jalan mati",
+   "laporan_aktif": 2,
+   "laporan_terverifikasi": 2,
+   "mentah": {
+    "urgensi": 0.6,
+    "volume": 0.188,
+    "dukungan": 1.884,
+    "umur": 0.33,
+    "kerentanan": 3.2,
+    "kepadatan": 10513
+   }
+  },
+  {
+   "id": "25-1",
+   "kode_wilayah": "3172090",
+   "kecamatan": "Pulo Gadung",
+   "kota": "Jakarta Timur",
+   "category_id": 1,
+   "kategori": "Jalan rusak",
+   "laporan_aktif": 2,
+   "laporan_terverifikasi": 1,
+   "mentah": {
+    "urgensi": 1,
+    "volume": 0.039,
+    "dukungan": 0.271,
+    "umur": 1.34,
+    "kerentanan": 4.1,
+    "kepadatan": 19023
+   }
+  },
+  {
+   "id": "24-3",
+   "kode_wilayah": "3171060",
+   "kecamatan": "Kebayoran Baru",
+   "kota": "Jakarta Selatan",
+   "category_id": 3,
+   "kategori": "Sampah menumpuk",
+   "laporan_aktif": 1,
+   "laporan_terverifikasi": 1,
+   "mentah": {
+    "urgensi": 0.6,
+    "volume": 0.045,
+    "dukungan": 0,
+    "umur": 2,
+    "kerentanan": 3.2,
+    "kepadatan": 17841
+   }
+  },
+  {
+   "id": "18-1",
+   "kode_wilayah": "3171010",
+   "kecamatan": "Jagakarsa",
+   "kota": "Jakarta Selatan",
+   "category_id": 1,
+   "kategori": "Jalan rusak",
+   "laporan_aktif": 1,
+   "laporan_terverifikasi": 1,
+   "mentah": {
+    "urgensi": 1,
+    "volume": 0.016,
+    "dukungan": 0.146,
+    "umur": 0.2,
+    "kerentanan": 3.2,
+    "kepadatan": 17591
+   }
+  },
+  {
+   "id": "41-3",
+   "kode_wilayah": "3175050",
+   "kecamatan": "Kelapa Gading",
+   "kota": "Jakarta Utara",
+   "category_id": 3,
+   "kategori": "Sampah menumpuk",
+   "laporan_aktif": 2,
+   "laporan_terverifikasi": 1,
+   "mentah": {
+    "urgensi": 0.6,
+    "volume": 0.042,
+    "dukungan": 0.417,
+    "umur": 1.08,
+    "kerentanan": 6.4,
+    "kepadatan": 15384
+   }
+  },
+  {
+   "id": "34-3",
+   "kode_wilayah": "3173070",
+   "kecamatan": "Sawah Besar",
+   "kota": "Jakarta Pusat",
+   "category_id": 3,
+   "kategori": "Sampah menumpuk",
+   "laporan_aktif": 1,
+   "laporan_terverifikasi": 1,
+   "mentah": {
+    "urgensi": 0.6,
+    "volume": 0.06,
+    "dukungan": 0.12,
+    "umur": 2,
+    "kerentanan": 4.5,
+    "kepadatan": 23850
+   }
+  },
+  {
+   "id": "35-2",
+   "kode_wilayah": "3174030",
+   "kecamatan": "Palmerah",
+   "kota": "Jakarta Barat",
+   "category_id": 2,
+   "kategori": "Saluran tersumbat",
+   "laporan_aktif": 1,
+   "laporan_terverifikasi": 0,
+   "mentah": {
+    "urgensi": 1,
+    "volume": 0,
+    "dukungan": 0,
+    "umur": 2,
+    "kerentanan": 3.8,
+    "kepadatan": 13502
+   }
+  },
+  {
+   "id": "18-4",
+   "kode_wilayah": "3171010",
+   "kecamatan": "Jagakarsa",
+   "kota": "Jakarta Selatan",
+   "category_id": 4,
+   "kategori": "Lampu jalan mati",
+   "laporan_aktif": 1,
+   "laporan_terverifikasi": 0,
+   "mentah": {
+    "urgensi": 0.6,
+    "volume": 0,
+    "dukungan": 0,
+    "umur": 0.01,
+    "kerentanan": 3.2,
+    "kepadatan": 17591
+   }
+  }
+ ]
+}

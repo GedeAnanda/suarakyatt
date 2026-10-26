@@ -1,19 +1,45 @@
 // app/lapor/page.tsx — Buat Laporan (SDD 9), pemilik: A. Hanya untuk pengguna login (proxy.ts).
-// TODO(A): BannerBukanKanalResmi, PetaPin, UnggahFoto (kompres + buang EXIF di browser), DaftarLaporanSerupa.
-// Operasi SDD 6: Q4 categories + agencies (pilihan kategori), S1 unggah foto ke Storage,
-// R2 similar_reports (laporan serupa), R3 create_report (kirim laporan).
+// Operasi SDD 6: Q4 (kategori, dari lib/konten yang sama dengan 0006), S1 unggah foto, R2 similar_reports,
+// R3 create_report. Semua ada di components/lapor/FormLaporan.tsx.
 
 import type { Metadata } from 'next';
+import FormLaporan from '@/components/lapor/FormLaporan';
+import Ikon from '@/components/ui/Ikon';
+import { KANAL_RESMI } from '@/lib/konten';
 
-export const metadata: Metadata = { title: 'Buat Laporan' };
+export const metadata: Metadata = { title: 'Lapor masalah' };
 
 export default function LaporPage() {
   return (
-    <div>
-      <h1 className="text-2xl font-semibold tracking-tight">Buat Laporan</h1>
-      <p className="mt-2 text-neutral-600">
-        Laporkan masalah kota dengan foto dan titik lokasi, lalu dapatkan kode untuk melacak penanganannya.
-      </p>
+    <div className="bingkai pt-12 pb-24 sm:pt-16">
+      <div className="grid gap-6 lg:grid-cols-12">
+        <h1 className="text-judul lg:col-span-6">Lapor masalah</h1>
+        <p className="max-w-[60ch] text-badan lg:col-span-6">
+          Laporkan masalah kota dengan foto dan titik lokasi. Anda akan mendapat kode untuk melacak penanganannya, dan
+          laporan Anda ikut menentukan posisi isu wilayahnya di daftar prioritas.
+        </p>
+      </div>
+
+      <aside role="note" className="mt-10 flex gap-3 bg-st-ditolak-bg p-4 text-badan text-st-ditolak sm:p-5">
+        <Ikon nama="info" className="mt-1 size-5" />
+        <p>
+          <strong className="font-semibold">suaRAkyat bukan kanal pengaduan resmi.</strong> Laporan di sini tidak diteruskan
+          ke instansi. Untuk pengaduan resmi ke Pemprov DKI Jakarta, gunakan{' '}
+          {KANAL_RESMI.map((k, i) => (
+            <span key={k.nama}>
+              {i > 0 && ' atau '}
+              <a href={k.url} target="_blank" rel="noreferrer" className="font-semibold underline underline-offset-4">
+                {k.nama}
+              </a>
+            </span>
+          ))}
+          .
+        </p>
+      </aside>
+
+      <div className="mt-14">
+        <FormLaporan />
+      </div>
     </div>
   );
 }

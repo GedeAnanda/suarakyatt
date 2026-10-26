@@ -13,16 +13,26 @@ export const LABEL_STATUS: Record<StatusLaporan, string> = {
   dibatalkan: 'Dibatalkan',
 };
 
-const GAYA_STATUS: Record<StatusLaporan, string> = {
-  menunggu: 'border-amber-300 bg-amber-50 text-amber-900',
-  diverifikasi: 'border-sky-300 bg-sky-50 text-sky-900',
-  diproses: 'border-indigo-300 bg-indigo-50 text-indigo-900',
-  selesai: 'border-emerald-300 bg-emerald-50 text-emerald-900',
-  ditolak: 'border-rose-300 bg-rose-50 text-rose-900',
-  dibatalkan: 'border-neutral-300 bg-neutral-100 text-neutral-700',
+export const GAYA_STATUS: Record<StatusLaporan, string> = {
+  menunggu: 'bg-st-menunggu-bg text-st-menunggu',
+  diverifikasi: 'bg-st-diverifikasi-bg text-st-diverifikasi',
+  diproses: 'bg-st-diproses-bg text-st-diproses',
+  selesai: 'bg-st-selesai-bg text-st-selesai',
+  ditolak: 'bg-st-ditolak-bg text-st-ditolak',
+  dibatalkan: 'bg-st-dibatalkan-bg text-st-dibatalkan',
 };
 
-const IKON_STATUS: Record<StatusLaporan, ReactNode> = {
+/** Warna titik di peta, sama dengan teks badge. */
+export const WARNA_TITIK: Record<StatusLaporan, string> = {
+  menunggu: '#9a6a00',
+  diverifikasi: '#12476b',
+  diproses: '#0e4d4b',
+  selesai: '#22521e',
+  ditolak: '#3b3536',
+  dibatalkan: '#4d4848',
+};
+
+export const IKON_STATUS: Record<StatusLaporan, ReactNode> = {
   // jam
   menunggu: (
     <>
@@ -67,23 +77,39 @@ const IKON_STATUS: Record<StatusLaporan, ReactNode> = {
   ),
 };
 
-export default function BadgeStatus({ status, className = '' }: { status: StatusLaporan; className?: string }) {
+export function IkonStatus({ status, className = 'size-4' }: { status: StatusLaporan; className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className={`shrink-0 ${className}`}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2.25}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      {IKON_STATUS[status]}
+    </svg>
+  );
+}
+
+export default function BadgeStatus({
+  status,
+  besar = false,
+  className = '',
+}: {
+  status: StatusLaporan;
+  besar?: boolean;
+  className?: string;
+}) {
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-medium ${GAYA_STATUS[status]} ${className}`}
+      className={`inline-flex items-center gap-1.5 font-medium whitespace-nowrap ${
+        besar ? 'px-3 py-1.5 text-badan' : 'px-2 py-0.5 text-kecil'
+      } ${GAYA_STATUS[status]} ${className}`}
     >
-      <svg
-        viewBox="0 0 24 24"
-        className="size-3.5 shrink-0"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth={2}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        aria-hidden="true"
-      >
-        {IKON_STATUS[status]}
-      </svg>
+      <IkonStatus status={status} className={besar ? 'size-5' : 'size-3.5'} />
       {LABEL_STATUS[status]}
     </span>
   );
