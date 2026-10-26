@@ -37,6 +37,7 @@ BUKAN_KECAMATAN = {"ID3175555", "ID3175888"}
 # Ejaan HDX -> ejaan tabel BPS "Dalam Angka 2026". Tambahkan jika ada nama lain yang berbeda.
 EJAAN_BPS = {
     "Kali Deres": "Kalideres",
+    "Setia Budi": "Setiabudi",
 }
 
 UTM_48S = 32748  # proyeksi meter untuk menghitung luas dan menyederhanakan garis
