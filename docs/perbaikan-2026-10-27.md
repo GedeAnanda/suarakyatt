@@ -53,3 +53,9 @@ Foto lama di repositori tetap digunakan dengan kredit di caption, footer, dan `/
 ## Batas kesiapan
 
 Frontend diperbaiki dan diuji secara lokal; database demo yang terhubung juga diperbarui. Deploy frontend belum dijalankan. Data BPS/CRM belum terintegrasi; rapor adalah simulasi dan laporan tidak diteruskan ke instansi pemerintah. Verifikasi email ke alamat baru dan deployment publik tidak termasuk pemeriksaan end-to-end yang dilakukan. Sebelum mengubah produk menjadi layanan nyata, sumber demografi dan lampiran contoh harus diganti dengan data yang sah, dan integrasi instansi perlu tersedia.
+
+## Tambahan: animasi halus
+
+Gerakan mengikuti tindakan pengguna: angka peringkat bergeser sesuai arah perubahan, tombol merespons hover/tekan, menu membuka dalam 240 ms, foto kategori berpindah dengan crossfade dan zoom 2,5%, serta garis wilayah pilihan muncul halus. Angka aksesibel langsung memakai hasil perhitungan terbaru, tanpa menghitung angka perantara. Tidak ada dependensi animasi tambahan.
+
+Pengaturan `prefers-reduced-motion` mematikan animasi serta transisi gerak, termasuk efek lama. Pemeriksaan browser memastikan pergantian angka, klik berulang cepat, menu/Escape, lebar 320/390/768/1440 px, dan mode reduced motion bekerja tanpa exception. Lint dan build produksi lulus. Arah visual, foto beserta atribusinya, dan susunan halaman tetap mengikuti ulasan desain di atas.

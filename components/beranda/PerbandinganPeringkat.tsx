@@ -5,6 +5,7 @@ import { useMemo, useState } from 'react';
 import { NAMA_FAKTOR } from '@/lib/konten';
 import { FAKTOR, formatPoin, hitungSkor, kenapaBelum, LABEL_PRESET, PRESET, type NamaPreset } from '@/lib/scoring';
 import type { Bobot, FaktorIsu } from '@/lib/types';
+import AngkaBeralih from '../ui/AngkaBeralih';
 import { kelasTautan, kelasTombol } from '../ui/Tombol';
 
 const PILIHAN: NamaPreset[] = ['keselamatan', 'kerentanan', 'suara_warga'];
@@ -29,7 +30,7 @@ export default function PerbandinganPeringkat({ isu, bobotResmi, idIsu, kodeLapo
             <legend className="text-badan font-semibold">Pilih yang ingin diutamakan</legend>
             <div className="mt-3 flex flex-wrap gap-2">
               {PILIHAN.map((p) => (
-                <button key={p} type="button" aria-pressed={preset === p} onClick={() => setPreset(p)} className="min-h-11 rounded-full bg-lapis px-4 py-2 text-kecil font-medium transition-colors hover:bg-lapis-2 aria-pressed:bg-tinta aria-pressed:text-white">
+                <button key={p} type="button" aria-pressed={preset === p} onClick={() => setPreset(p)} className="pilihan-gerak min-h-11 rounded-full bg-lapis px-4 py-2 text-kecil font-medium transition-colors hover:bg-lapis-2 aria-pressed:bg-tinta aria-pressed:text-white">
                   {LABEL_PRESET[p].replace('Utamakan ', '')}
                 </button>
               ))}
@@ -46,7 +47,7 @@ export default function PerbandinganPeringkat({ isu, bobotResmi, idIsu, kodeLapo
             </div>
             <div className="di-medan bg-medan p-4 text-medan-tinta sm:p-6">
               <p className="text-kecil">Pilihanmu</p>
-              <p key={preset} className="ganti angka mt-3 text-[clamp(4.5rem,12vw,11rem)] leading-none font-medium tracking-[-0.06em]">{simulasi.peringkat}</p>
+              <p className="angka mt-3 text-[clamp(4.5rem,12vw,11rem)] leading-none font-medium tracking-[-0.06em]"><AngkaBeralih nilai={simulasi.peringkat} /></p>
               <p className="mt-3 text-kecil text-medan-lembut">dari {jelas.total} isu</p>
             </div>
           </div>

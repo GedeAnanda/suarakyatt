@@ -7,7 +7,7 @@ import type { ComponentProps } from 'react';
 export type VarianTombol = 'utama' | 'kedua' | 'medan' | 'medan-garis' | 'bahaya' | 'garis';
 
 const DASAR =
-  'inline-flex min-h-11 items-center justify-center gap-2 rounded-full px-5 py-2.5 text-badan font-semibold leading-tight transition-[background-color,color,box-shadow,scale] duration-150 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100';
+  'tombol-gerak inline-flex min-h-11 items-center justify-center gap-2 rounded-full px-5 py-2.5 text-badan font-semibold leading-tight transition-[background-color,color,box-shadow] duration-150 disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100';
 
 const VARIAN: Record<VarianTombol, string> = {
   utama:

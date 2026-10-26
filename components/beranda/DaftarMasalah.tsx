@@ -56,7 +56,7 @@ export default function DaftarMasalah() {
               alt={f.alt}
               fill
               sizes="(min-width: 1024px) 40vw, 100vw"
-              className={`object-cover grayscale-[0.9] contrast-[1.05] transition-opacity duration-500 ${
+              className={`foto-pilihan object-cover grayscale-[0.9] contrast-[1.05] ${
                 i === pilih ? 'opacity-100' : 'opacity-0'
               }`}
               aria-hidden={i !== pilih}

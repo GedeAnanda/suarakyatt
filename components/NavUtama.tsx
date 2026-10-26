@@ -94,7 +94,7 @@ export function MenuPonsel({ children }: { children: ReactNode }) {
       <div
         id="menu-ponsel"
         hidden={!buka}
-        className="absolute inset-x-0 top-full z-1000 max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain bg-kertas px-[var(--tepi)] pt-2 pb-8 shadow-[0_24px_40px_rgb(60_10_14/0.14)]"
+        className="menu-gerak absolute inset-x-0 top-full z-1000 max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain bg-kertas px-[var(--tepi)] pt-2 pb-8 shadow-[0_24px_40px_rgb(60_10_14/0.14)]"
       >
         <ul className="grid">
           {NAVIGASI.map((item) => (
