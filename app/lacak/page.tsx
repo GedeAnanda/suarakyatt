@@ -32,8 +32,8 @@ async function Isi({ searchParams }: { searchParams: PageProps<'/lacak'>['search
 export default function LacakPage({ searchParams }: PageProps<'/lacak'>) {
   return (
     <div className="bingkai py-16 sm:py-24">
-      <h1 className="text-judul">Lacak laporan</h1>
-      <p className="mt-4 max-w-[52ch] text-badan">
+      <h1 data-pembuka="judul" className="text-judul">Lacak laporan</h1>
+      <p data-pembuka="teks" className="mt-4 max-w-[52ch] text-badan">
         Masukkan kode yang Anda terima saat laporan terkirim. Halaman lacak terbuka untuk siapa saja: status, riwayat
         penanganan, batas waktu, dan posisi isunya di daftar prioritas.
       </p>

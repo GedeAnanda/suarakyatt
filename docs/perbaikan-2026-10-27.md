@@ -59,3 +59,9 @@ Frontend diperbaiki dan diuji secara lokal; database demo yang terhubung juga di
 Gerakan mengikuti tindakan pengguna: angka peringkat bergeser sesuai arah perubahan, tombol merespons hover/tekan, menu membuka dalam 240 ms, foto kategori berpindah dengan crossfade dan zoom 2,5%, serta garis wilayah pilihan muncul halus. Angka aksesibel langsung memakai hasil perhitungan terbaru, tanpa menghitung angka perantara. Tidak ada dependensi animasi tambahan.
 
 Pengaturan `prefers-reduced-motion` mematikan animasi serta transisi gerak, termasuk efek lama. Pemeriksaan browser memastikan pergantian angka, klik berulang cepat, menu/Escape, lebar 320/390/768/1440 px, dan mode reduced motion bekerja tanpa exception. Lint dan build produksi lulus. Arah visual, foto beserta atribusinya, dan susunan halaman tetap mengikuti ulasan desain di atas.
+
+### Pembuka saat halaman dimuat
+
+Animasi masuk kini dipicu setelah komponen halaman terpasang, bukan hanya ketika stylesheet pertama dibaca. Beranda membuka dua baris judul, teks pengantar, lalu tombol secara berurutan (durasi baris 1.100 ms; jeda 60/210/380/520 ms). Halaman lain memakai judul dan pengantar yang masuk dalam 720 ms. Pemicu mengikuti template halaman dan menangani konten yang datang lewat streaming; perubahan filter tidak mengulang intro.
+
+Pemeriksaan produksi di browser: pemuatan pertama dan reload desktop/HP menjalankan keempat tahap; Prioritas, Peta, Rapor, Masuk, dan Sumber Data menjalankan pembuka masing-masing. Mode reduced motion tidak menjalankan animasi. Konten tetap terbaca tanpa JavaScript. Lint, build, pemeriksaan overflow ponsel, dan pemeriksaan exception browser lulus.

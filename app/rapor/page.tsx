@@ -73,9 +73,9 @@ export default function RaporPage() {
   return (
     <div className="bingkai pt-12 pb-24 sm:pt-16">
       <div className="grid gap-6 lg:grid-cols-12">
-        <h1 className="text-judul lg:col-span-6">Rapor instansi</h1>
+        <h1 data-pembuka="judul" className="text-judul lg:col-span-6">Rapor instansi</h1>
         <div className="lg:col-span-6">
-          <p className="max-w-[60ch] text-badan">
+          <p data-pembuka="teks" className="max-w-[60ch] text-badan">
             Nilai tiap instansi dalam merespons dan menyelesaikan laporan warga. Laporan yang diabaikan ikut dihitung, dan
             huruf selalu tampil bersama tingkat penolakannya: nilai bagus hasil membuang laporan langsung terlihat.
           </p>

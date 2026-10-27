@@ -80,8 +80,8 @@ async function Isi({ params, searchParams }: Pick<PageProps<'/laporan/[kode]'>, 
             <BadgeStatus status={l.status} besar />
             {(l.is_simulated || sumber === 'contoh') && <LabelSumber sumber={sumber} />}
           </div>
-          <h1 className="mt-5 text-judul">{l.kategori} di {l.kecamatan}</h1>
-          <p className="mt-3 text-badan text-lembut">{l.kota} · Kode <span className="angka font-semibold text-teks">{l.kode}</span></p>
+          <h1 data-pembuka="judul" className="mt-5 text-judul">{l.kategori} di {l.kecamatan}</h1>
+          <p data-pembuka="teks" className="mt-3 text-badan text-lembut">{l.kota} · Kode <span className="angka font-semibold text-teks">{l.kode}</span></p>
           <div className="mt-4" data-ui>
             <SalinKode kode={l.kode} />
           </div>

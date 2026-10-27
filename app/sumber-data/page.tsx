@@ -88,8 +88,8 @@ export default function SumberDataPage() {
   return (
     <div className="bingkai pt-12 pb-24 sm:pt-16">
       <div className="grid gap-6 lg:grid-cols-12">
-        <h1 className="text-judul lg:col-span-6">Sumber data</h1>
-        <p className="max-w-[60ch] text-badan lg:col-span-6">
+        <h1 data-pembuka="judul" className="text-judul lg:col-span-6">Sumber data</h1>
+        <p data-pembuka="teks" className="max-w-[60ch] text-badan lg:col-span-6">
           Batas wilayah berasal dari data terbuka. Laporan, profil instansi, penduduk, dan kemiskinan untuk perhitungan
           adalah simulasi. Angka Musrenbang hanya menjadi konteks publik dan tidak masuk ke skor prioritas.
         </p>

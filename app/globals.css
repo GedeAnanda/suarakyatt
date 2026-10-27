@@ -272,13 +272,6 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .baris-naik > span {
-    display: block;
-    animation: baris-naik 900ms var(--ease-keluar) both;
-  }
-  .baris-naik:nth-child(2) > span {
-    animation-delay: 110ms;
-  }
   .timbul {
     animation: timbul 700ms var(--ease-keluar) 420ms both;
   }
@@ -322,10 +315,8 @@
   min-height: 0;
 }
 
-@keyframes baris-naik {
-  from { transform: translateY(105%); }
-  to { transform: translateY(0); }
-}
+/* Lapisan judul selalu terbaca; animasi pembuka dipicu setelah halaman terpasang. */
+.baris-naik > span { display: block; }
 
 @keyframes timbul {
   from { opacity: 0; transform: translateY(12px); }
