@@ -319,7 +319,6 @@ export default function Simulator({
               <div className="mt-5">
                 <BarKontribusi isu={terpilih} bobot={bobot} />
               </div>
-              </div>
             </section>
           )}
         </div>

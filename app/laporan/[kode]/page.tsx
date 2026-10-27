@@ -16,7 +16,6 @@ import Timeline from '@/components/laporan/Timeline';
 import TitikTunggal from '@/components/peta/TitikTunggal';
 import Ikon from '@/components/ui/Ikon';
 import LabelSumber from '@/components/ui/LabelSumber';
-import TeksRakit from '@/components/ui/TeksRakit';
 import { kelasTautan } from '@/components/ui/Tombol';
 import { ambilDetailLaporan, ambilHubungan } from '@/lib/data/laporan';
 import { ambilDataPrioritas } from '@/lib/data/prioritas';

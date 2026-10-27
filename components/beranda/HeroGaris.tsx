@@ -8,8 +8,9 @@ export default function HeroGaris() {
     <section aria-labelledby="judul-beranda" className="hero-prioritas">
       <div className="bingkai hero-judul">
         <h1 id="judul-beranda" className="hero-kalimat" aria-label="Kenapa belum?">
-          <span className="baris-naik"><span data-pembuka="baris" data-jeda="60">KENAPA</span></span>
-          <span className="baris-naik"><span data-pembuka="baris" data-jeda="210">BELUM?</span></span>
+          {/* Huruf dirakit dari posisi acak (TeksRakit); dua baris memakai urutan yang sambung. */}
+          <span className="baris-naik baris-rakit" aria-hidden="true"><span><TeksRakit teks="KENAPA" sebar={0.9} /></span></span>
+          <span className="baris-naik baris-rakit" aria-hidden="true"><span><TeksRakit teks="BELUM?" sebar={0.9} urutAwal={6} /></span></span>
         </h1>
       </div>
       <div className="di-medan bg-medan text-medan-tinta">

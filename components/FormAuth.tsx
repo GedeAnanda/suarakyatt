@@ -144,7 +144,6 @@ export default function FormAuth({
             tabIndex={mode === m ? 0 : -1}
             aria-selected={mode === m}
             aria-controls={`panel-${m}`}
-            tabIndex={mode === m ? 0 : -1}
             onClick={() => setMode(m)}
             onKeyDown={(e) => {
               const MODE = ['masuk', 'daftar'] as const;
