@@ -76,9 +76,13 @@ async function AkunPonsel() {
 
 export default function Header() {
   return (
-    <header className="sticky top-0 z-1000 border-b border-batas bg-kertas/85 backdrop-blur-md supports-[backdrop-filter]:bg-kertas/75">
+    <header className="kepala sticky top-0 z-1000 border-b border-batas bg-kertas/85 backdrop-blur-md supports-[backdrop-filter]:bg-kertas/75">
       <nav aria-label="Navigasi utama" className="bingkai flex h-16 items-center gap-3 sm:h-18">
-        <Link href="/" className="mr-auto text-[1.375rem] xl:mr-4" aria-label="suaRAkyat, ke Beranda">
+        <Link
+          href="/"
+          className="mr-auto text-[1.375rem] transition-[scale] duration-200 hover:scale-[1.03] active:scale-[0.97] xl:mr-4"
+          aria-label="suaRAkyat, ke Beranda"
+        >
           <Wordmark />
         </Link>
         <Suspense fallback={<TautanNavStatis />}>

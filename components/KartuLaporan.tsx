@@ -31,7 +31,7 @@ export default function KartuLaporan({
     >
       <div className="min-w-0">
         <p className="flex flex-wrap items-center gap-x-3 gap-y-1">
-          <span className="angka text-badan font-semibold tracking-tight group-hover:underline">{l.kode}</span>
+          <span className="font-kode angka text-badan font-semibold tracking-tight group-hover:underline">{l.kode}</span>
           <BadgeStatus status={l.status} />
         </p>
         <p className="mt-1.5 text-badan font-medium">{l.kategori}</p>

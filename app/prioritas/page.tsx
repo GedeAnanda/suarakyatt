@@ -38,7 +38,7 @@ async function Isi() {
         <Simulator isu={data.faktor.isu} bobotResmi={data.bobotResmi} perencana={Boolean(sesi?.perencana)} />
       </div>
 
-      <section aria-labelledby="judul-riwayat" className="mt-24 grid gap-8 lg:grid-cols-12">
+      <section aria-labelledby="judul-riwayat" className="mt-24 grid grid-cols-1 gap-8 lg:grid-cols-12" data-muncul>
         <div className="lg:col-span-4">
           <h2 id="judul-riwayat" className="text-judul">
             Riwayat keputusan
@@ -72,7 +72,7 @@ function Kerangka() {
 export default function PrioritasPage() {
   return (
     <div className="bingkai pt-12 pb-24 sm:pt-16">
-      <div className="grid gap-6 lg:grid-cols-12">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-12" data-awal>
         <h1 className="text-judul lg:col-span-6">Dashboard prioritas</h1>
         <p className="max-w-[60ch] text-badan lg:col-span-6">
           Setiap isu wilayah (satu kecamatan × satu kategori yang punya laporan aktif) mendapat skor 0–100 dari enam
@@ -81,7 +81,7 @@ export default function PrioritasPage() {
         </p>
       </div>
 
-      <ol aria-label="Cara membaca dashboard ini" className="mt-10 grid gap-3 sm:grid-cols-3">
+      <ol aria-label="Cara membaca dashboard ini" className="mt-10 grid grid-cols-1 gap-3 sm:grid-cols-3" data-muncul>
         {[
           { judul: 'Pilih isu', isi: 'Klik kecamatan di peta atau baris di daftar peringkat.' },
           { judul: 'Baca alasannya', isi: 'Lihat faktor yang mendorong skornya naik dan yang menahannya.' },
@@ -105,7 +105,7 @@ export default function PrioritasPage() {
         </Suspense>
       </div>
 
-      <section aria-labelledby="judul-faktor" className="mt-24 grid gap-8 lg:grid-cols-12">
+      <section aria-labelledby="judul-faktor" className="mt-24 grid grid-cols-1 gap-8 lg:grid-cols-12" data-muncul>
         <div className="lg:col-span-4">
           <h2 id="judul-faktor" className="text-judul">
             Enam faktor

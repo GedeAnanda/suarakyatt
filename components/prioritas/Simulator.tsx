@@ -166,9 +166,11 @@ export default function Simulator({
             </h2>
             <span
               aria-live="polite"
-              className={`text-kecil font-medium transition-colors ${disimulasikan ? 'bg-tinta px-2 py-0.5 text-kertas' : 'text-lembut'}`}
+              className={`text-kecil font-medium transition-colors ${disimulasikan ? 'rounded-full bg-tinta px-2.5 py-0.5 text-kertas' : 'text-lembut'}`}
             >
-              {disimulasikan ? 'Mode simulasi' : 'Bobot resmi'}
+              <span key={String(disimulasikan)} className="pop inline-block">
+                {disimulasikan ? 'Mode simulasi' : 'Bobot resmi'}
+              </span>
             </span>
           </div>
           <p className="mt-2 text-kecil text-lembut">
@@ -182,7 +184,7 @@ export default function Simulator({
                 type="button"
                 aria-pressed={presetAktif === p}
                 onClick={() => setSlider(keSlider(PRESET[p]))}
-                className="min-h-11 rounded-full bg-lapis px-4 py-1.5 text-kecil font-medium transition-colors hover:bg-lapis-2 active:translate-y-px aria-pressed:bg-tinta aria-pressed:text-kertas"
+                className="min-h-11 rounded-full bg-lapis px-4 py-1.5 text-kecil font-medium transition-[background-color,color,scale] duration-200 hover:bg-lapis-2 active:scale-95 aria-pressed:bg-tinta aria-pressed:text-kertas"
               >
                 {LABEL_PRESET[p]}
               </button>
@@ -236,7 +238,7 @@ export default function Simulator({
           </ul>
 
           {totalSlider === 0 && (
-            <p role="alert" className="mt-3 bg-tinta px-3 py-2 text-kecil text-kertas">
+            <p role="alert" className="goyang mt-3 rounded-(--radius-kontrol) bg-tinta px-3 py-2 text-kecil text-kertas">
               Semua bobot nol tidak bisa dipakai. Naikkan minimal satu faktor; urutan sementara memakai bobot resmi.
             </p>
           )}
@@ -270,13 +272,13 @@ export default function Simulator({
                   setKategori(k.id);
                   setPilihId(null);
                 }}
-                className="min-h-11 rounded-full bg-permukaan px-4 py-1.5 text-kecil font-medium ring-1 ring-batas ring-inset transition-colors hover:bg-terang aria-pressed:ring-tinta active:translate-y-px aria-pressed:bg-tinta aria-pressed:text-kertas"
+                className="min-h-11 rounded-full bg-permukaan px-4 py-1.5 text-kecil font-medium ring-1 ring-batas ring-inset transition-[background-color,color,scale] duration-200 hover:bg-terang active:scale-95 aria-pressed:bg-tinta aria-pressed:text-kertas aria-pressed:ring-tinta"
               >
                 {k.nama}
               </button>
             ))}
           </div>
-          <p className={`min-h-[1.55em] text-pernyataan tracking-[-0.02em] ${disimulasikan ? 'text-tinta' : ''}`} aria-live="polite">
+          <p className={`min-h-[1.55em] text-pernyataan tracking-[-0.02em] transition-colors ${disimulasikan ? 'text-tinta' : ''}`} aria-live="polite">
             {konsekuensi ??
               `${simulasi.length} isu wilayah dinilai${kategori ? ` untuk kategori ${KATEGORI[kategori - 1].nama.toLowerCase()}` : ''}. Geser bobot dan lihat urutannya bergeser.`}
           </p>
@@ -300,6 +302,8 @@ export default function Simulator({
 
           {terpilih && (
             <section ref={panelIsu} aria-labelledby="judul-isu" aria-live="polite" className="kartu scroll-mt-4 p-5 sm:p-6">
+              {/* Isinya berganti dengan gerak singkat setiap isu lain dipilih; wadah live region tetap sama. */}
+              <div key={terpilih.id} className="ganti">
               <p className="text-kecil text-lembut">
                 Peringkat {terpilih.peringkat} dari {simulasi.length}
                 {disimulasikan && (
@@ -318,6 +322,7 @@ export default function Simulator({
               <p className="mt-4 text-badan font-medium">{terpilih.penjelasan}</p>
               <div className="mt-5">
                 <BarKontribusi isu={terpilih} bobot={bobot} />
+              </div>
               </div>
             </section>
           )}

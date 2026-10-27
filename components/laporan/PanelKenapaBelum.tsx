@@ -65,7 +65,7 @@ export default function PanelKenapaBelum({
                 yang punya laporan aktif; peringkatnya muncul setelah data prioritas diperbarui.
               </p>
             ) : (
-              <div className="grid gap-6">
+              <div className="grid gap-6" data-susul>
                 <p className="text-pernyataan tracking-[-0.02em]">
                   Isu {isu.kategori.toLowerCase()} di Kecamatan {isu.kecamatan} berada di{' '}
                   <strong className="font-semibold">

@@ -32,7 +32,7 @@ export default function KartuRapor({ i, kategoriId }: { i: RaporInstansi; katego
       <div className="grid flex-1 gap-6 p-5 sm:grid-cols-[auto_1fr] sm:gap-8 sm:p-6">
         <div className="flex items-end gap-4 sm:block">
           <p
-            className={`text-[clamp(6rem,4rem+8vw,10rem)] leading-[0.78] font-semibold tracking-[-0.06em] ${kurang ? 'text-lembut' : 'text-tinta'}`}
+            className={`cap text-[clamp(6rem,4rem+8vw,10rem)] leading-[0.78] font-semibold tracking-[-0.06em] ${kurang ? 'text-lembut' : 'text-tinta'}`}
             aria-label={kurang ? 'Data belum cukup' : `Huruf ${i.huruf}${tertahan ? `, ditahan dari ${i.huruf_asli}` : ''}`}
           >
             {kurang ? '–' : i.huruf}
@@ -113,10 +113,11 @@ export default function KartuRapor({ i, kategoriId }: { i: RaporInstansi; katego
       </dl>
 
       <details className="group border-t border-batas px-5 py-4 sm:px-6">
-        <summary className="cursor-pointer list-none text-kecil font-medium marker:hidden">
+        <summary className="flex min-h-11 cursor-pointer list-none items-center gap-2 text-kecil font-medium marker:hidden [&::-webkit-details-marker]:hidden">
+          <Ikon nama="turun" className="size-4 transition-transform duration-300 group-open:rotate-180" />
           <span className="underline decoration-2 underline-offset-4 group-open:no-underline">Rincian per kategori</span>
         </summary>
-        <div className="mt-3 relative overflow-x-auto">
+        <div className="turun-panel relative mt-3 overflow-x-auto">
           <table className="w-full min-w-[26rem] text-left text-kecil">
             <thead className="text-lembut">
               <tr>

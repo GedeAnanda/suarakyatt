@@ -46,7 +46,12 @@ export default function Footer() {
             <ul className="mt-3 grid gap-1">
               {KANAL_RESMI.map((k) => (
                 <li key={k.nama}>
-                  <a href={k.url} target="_blank" rel="noreferrer" className="text-judul font-medium tracking-tight hover:underline">
+                  <a
+                    href={k.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-block text-judul font-medium tracking-tight decoration-2 underline-offset-[0.12em] transition-[translate] duration-300 ease-(--ease-keluar) hover:underline motion-safe:hover:translate-x-2"
+                  >
                     {k.nama}
                   </a>
                 </li>
@@ -60,7 +65,10 @@ export default function Footer() {
                 <ul className="mt-3 grid gap-2">
                   {k.tautan.map((t) => (
                     <li key={t.href}>
-                      <Link href={t.href} className="text-badan hover:underline">
+                      <Link
+                        href={t.href}
+                        className="inline-block py-1 text-badan decoration-2 underline-offset-4 transition-[translate] duration-200 hover:underline motion-safe:hover:translate-x-1"
+                      >
                         {t.label}
                       </Link>
                     </li>
@@ -90,8 +98,10 @@ export default function Footer() {
         </div>
       </div>
 
-      <div aria-hidden="true" className="mt-10 -mb-[0.16em] text-center text-[19.5vw] leading-[0.8] select-none">
-        <Wordmark />
+      <div aria-hidden="true" className="mt-10 -mb-[0.16em] overflow-hidden text-center text-[19.5vw] leading-[0.8] select-none">
+        <div className="kaki-nama">
+          <Wordmark />
+        </div>
       </div>
     </footer>
   );

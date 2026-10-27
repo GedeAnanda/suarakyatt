@@ -27,7 +27,7 @@ export default function CariKode({
         autoComplete="off"
         autoCapitalize="characters"
         spellCheck={false}
-        className={`relative z-[1] min-w-0 flex-1 rounded-r-none border-r-0 font-medium tracking-wide text-teks uppercase placeholder:font-normal placeholder:text-lembut/70 placeholder:normal-case ${
+        className={`font-kode relative z-[1] min-w-0 flex-1 rounded-r-none border-r-0 font-medium tracking-wide text-teks uppercase placeholder:font-normal placeholder:text-lembut/70 placeholder:normal-case ${
           besar ? 'h-14 px-4 text-lead' : 'h-11 w-36 px-3 text-kecil'
         }`}
       />

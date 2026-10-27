@@ -11,6 +11,7 @@ import { KATEGORI } from '@/lib/konten';
 import type { StatusLaporan } from '@/lib/types';
 import { IkonStatus, LABEL_STATUS, WARNA_TITIK } from '../BadgeStatus';
 import KartuLaporan from '../KartuLaporan';
+import AngkaGulir from '../ui/AngkaGulir';
 import { Tombol } from '../ui/Tombol';
 
 const KlasterLaporan = dynamic(() => import('./KlasterLaporan'), {
@@ -73,8 +74,8 @@ export default function PetaLaporan({
   }
 
   return (
-    <div className="grid gap-8">
-      <div className="grid gap-5 lg:grid-cols-2 lg:gap-8">
+    <div className="grid gap-8" data-muncul>
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-2 lg:gap-8">
         <fieldset>
           <legend className="text-kecil text-lembut">Kategori</legend>
           <div className="mt-2 flex flex-wrap gap-2">
@@ -84,7 +85,7 @@ export default function PetaLaporan({
                 type="button"
                 aria-pressed={kategori.includes(k.id)}
                 onClick={() => ubahKategori(k.id)}
-                className="min-h-11 rounded-full bg-permukaan px-4 py-1.5 text-kecil font-medium ring-1 ring-batas ring-inset transition-colors hover:bg-terang aria-pressed:ring-tinta active:translate-y-px aria-pressed:bg-tinta aria-pressed:text-kertas"
+                className="min-h-11 rounded-full bg-permukaan px-4 py-1.5 text-kecil font-medium ring-1 ring-batas ring-inset transition-[background-color,color,scale] duration-200 hover:bg-terang active:scale-95 aria-pressed:bg-tinta aria-pressed:text-kertas aria-pressed:ring-tinta"
               >
                 {k.nama}
               </button>
@@ -100,11 +101,11 @@ export default function PetaLaporan({
                 type="button"
                 aria-pressed={status.includes(s)}
                 onClick={() => ubahStatus(s)}
-                className="flex min-h-11 items-center gap-1.5 rounded-full bg-permukaan px-4 py-1.5 text-kecil font-medium ring-1 ring-batas ring-inset transition-colors hover:bg-terang aria-pressed:ring-tinta active:translate-y-px aria-pressed:bg-tinta aria-pressed:text-kertas"
+                className="flex min-h-11 items-center gap-1.5 rounded-full bg-permukaan px-4 py-1.5 text-kecil font-medium ring-1 ring-batas ring-inset transition-[background-color,color,scale] duration-200 hover:bg-terang active:scale-95 aria-pressed:bg-tinta aria-pressed:text-kertas aria-pressed:ring-tinta"
               >
                 <IkonStatus status={s} className="size-3.5" />
                 {LABEL_STATUS[s]}
-                <span className="angka opacity-75">{hitungStatus[s]}</span>
+                <AngkaGulir className="angka opacity-75" nilai={String(hitungStatus[s])} />
               </button>
             ))}
           </div>
@@ -112,7 +113,7 @@ export default function PetaLaporan({
       </div>
 
       <div>
-        <div className="peta isolate overflow-hidden bg-lapis">
+        <div className="peta peta-buka isolate overflow-hidden bg-lapis">
           <KlasterLaporan laporan={tersaring} className="h-[min(72svh,44rem)] min-h-96" />
         </div>
         <div className="mt-3 flex flex-wrap items-start justify-between gap-x-8 gap-y-3">
@@ -129,7 +130,11 @@ export default function PetaLaporan({
             </li>
           </ul>
           <p className="text-kecil text-lembut" aria-live="polite">
-            {tersaring.length} laporan tampil. Klik kotak untuk memperbesar; klik titik untuk membuka ringkasannya.
+            {/* Hitungannya berganti dengan gerak singkat; wadah live region tetap sama supaya tetap dibacakan. */}
+            <span key={tersaring.length} className="ganti inline-block">
+              {tersaring.length} laporan tampil.
+            </span>{' '}
+            Klik kotak untuk memperbesar; klik titik untuk membuka ringkasannya.
           </p>
         </div>
       </div>
@@ -144,7 +149,7 @@ export default function PetaLaporan({
           </p>
         ) : (
           <>
-            <ul className="mt-4 grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
+            <ul className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3" data-muncul>
               {tersaring.slice(0, jumlah).map((l) => (
                 <li key={l.kode}>
                   <KartuLaporan laporan={l} sekarang={sekarang} />

@@ -136,7 +136,17 @@ export default function FormAuth({
             id={`tab-${m}`}
             aria-selected={mode === m}
             aria-controls={`panel-${m}`}
+            tabIndex={mode === m ? 0 : -1}
             onClick={() => setMode(m)}
+            onKeyDown={(e) => {
+              const MODE = ['masuk', 'daftar'] as const;
+              const geser = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+              const tujuan = e.key === 'Home' ? 0 : e.key === 'End' ? 1 : geser ? (MODE.indexOf(m) + geser + 2) % 2 : -1;
+              if (tujuan < 0) return;
+              e.preventDefault();
+              setMode(MODE[tujuan]);
+              document.getElementById(`tab-${MODE[tujuan]}`)?.focus();
+            }}
             className="min-h-11 rounded-[0.5rem] px-5 text-badan font-semibold text-lembut transition-colors hover:text-teks aria-selected:bg-permukaan aria-selected:text-tinta aria-selected:shadow-[0_1px_3px_rgb(42_19_22/0.15)]"
           >
             {m === 'masuk' ? 'Masuk' : 'Daftar akun warga'}
@@ -149,7 +159,7 @@ export default function FormAuth({
           masuk di sini.
         </p>
       )}
-      <div id={`panel-${mode}`} role="tabpanel" aria-labelledby={`tab-${mode}`} className="mt-8 max-w-md">
+      <div key={mode} id={`panel-${mode}`} role="tabpanel" aria-labelledby={`tab-${mode}`} className="ganti mt-8 max-w-md">
         {mode === 'masuk' ? <FormMasuk lanjut={lanjut} /> : <FormDaftar />}
       </div>
     </div>

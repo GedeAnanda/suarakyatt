@@ -78,7 +78,7 @@ const warnaStatus: Record<string, string> = {
 export default function SumberDataPage() {
   return (
     <div className="bingkai pt-12 pb-24 sm:pt-16">
-      <div className="grid gap-6 lg:grid-cols-12">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-12" data-awal>
         <h1 className="text-judul lg:col-span-6">Sumber data</h1>
         <p className="max-w-[60ch] text-badan lg:col-span-6">
           Data nyata dipakai untuk wilayah dan statistik yang didukung sumber; data simulasi hanya untuk memperagakan
@@ -87,11 +87,11 @@ export default function SumberDataPage() {
         </p>
       </div>
 
-      <section aria-labelledby="judul-terbuka" className="mt-16">
+      <section aria-labelledby="judul-terbuka" className="mt-16" data-muncul>
         <h2 id="judul-terbuka" className="text-lead font-medium tracking-tight">
           Data terbuka
         </h2>
-        <ul className="mt-5 grid gap-3 sm:hidden">
+        <ul className="mt-5 grid gap-3 sm:hidden" data-muncul>
           {DATA_TERBUKA.map((d) => (
             <li key={d.nama} className="kartu grid gap-2 p-4">
               <div className="flex items-start justify-between gap-3">
@@ -112,7 +112,7 @@ export default function SumberDataPage() {
             </li>
           ))}
         </ul>
-        <div className="kartu relative mt-5 hidden overflow-x-auto sm:block">
+        <div className="kartu tabel-masuk relative mt-5 hidden overflow-x-auto sm:block">
           <table className="w-full min-w-[56rem] text-left text-badan">
             <thead className="bg-terang text-kecil">
               <tr>
@@ -125,7 +125,7 @@ export default function SumberDataPage() {
             </thead>
             <tbody>
               {DATA_TERBUKA.map((d) => (
-                <tr key={d.nama} className="border-t border-batas align-top">
+                <tr key={d.nama} className="border-t border-batas align-top transition-colors hover:bg-terang">
                   <th scope="row" className="p-4 font-semibold">{d.nama}</th>
                   <td className="p-4 text-kecil">{d.dipakai}</td>
                   <td className="p-4 text-kecil">
@@ -153,8 +153,8 @@ export default function SumberDataPage() {
         </p>
       </section>
 
-      <section id="simulasi" aria-labelledby="judul-simulasi" className="mt-24 scroll-mt-6">
-        <div className="grid gap-6 lg:grid-cols-12">
+      <section id="simulasi" aria-labelledby="judul-simulasi" className="mt-24 scroll-mt-6" data-muncul>
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
           <h2 id="judul-simulasi" className="text-judul lg:col-span-6">
             Skenario simulasi
           </h2>
@@ -171,7 +171,7 @@ export default function SumberDataPage() {
             </p>
           </div>
         </div>
-        <ul className="mt-10 grid gap-3 sm:hidden">
+        <ul className="mt-10 grid gap-3 sm:hidden" data-muncul>
           {PROFIL.map((p) => (
             <li key={p.instansi} className="kartu p-4">
               <p className="font-semibold">{p.instansi} (simulasi)</p>
@@ -192,7 +192,7 @@ export default function SumberDataPage() {
             </li>
           ))}
         </ul>
-        <div className="kartu relative mt-10 hidden overflow-x-auto sm:block">
+        <div className="kartu tabel-masuk relative mt-10 hidden overflow-x-auto sm:block">
           <table className="w-full min-w-[48rem] text-left text-badan">
             <thead className="bg-terang text-kecil">
               <tr>
@@ -206,7 +206,7 @@ export default function SumberDataPage() {
             </thead>
             <tbody>
               {PROFIL.map((p) => (
-                <tr key={p.instansi} className="border-t border-batas">
+                <tr key={p.instansi} className="border-t border-batas transition-colors hover:bg-terang">
                   <th scope="row" className="p-4 font-semibold">{p.instansi}</th>
                   <td className="angka p-4 text-right">{p.tolak}</td>
                   <td className="angka p-4 text-right">{p.respons}</td>
@@ -223,7 +223,7 @@ export default function SumberDataPage() {
         <p className="mt-2 max-w-[70ch] text-badan">
           Dihitung dalam jam kalender agar sederhana. Angkanya ilustrasi dan dinyatakan terbuka di sini.
         </p>
-        <ul className="mt-5 grid gap-3 sm:hidden">
+        <ul className="mt-5 grid gap-3 sm:hidden" data-muncul>
           {KATEGORI.map((k) => (
             <li key={k.id} className="kartu flex items-start justify-between gap-4 p-4">
               <div>
@@ -239,7 +239,7 @@ export default function SumberDataPage() {
             </li>
           ))}
         </ul>
-        <div className="kartu relative mt-5 hidden overflow-x-auto sm:block">
+        <div className="kartu tabel-masuk relative mt-5 hidden overflow-x-auto sm:block">
           <table className="w-full min-w-[40rem] text-left text-badan">
             <thead className="bg-terang text-kecil">
               <tr>
@@ -252,7 +252,7 @@ export default function SumberDataPage() {
             </thead>
             <tbody>
               {KATEGORI.map((k) => (
-                <tr key={k.id} className="border-t border-batas">
+                <tr key={k.id} className="border-t border-batas transition-colors hover:bg-terang">
                   <th scope="row" className="p-4 font-semibold">{k.nama}</th>
                   <td className="p-4 text-kecil">{k.instansi}</td>
                   <td className="p-4">{k.urgensi}</td>
@@ -275,7 +275,7 @@ export default function SumberDataPage() {
           Foto di Beranda menunjukkan dunia masalah kota Jakarta dan diambil dari koleksi terbuka. Foto-foto ini bukan foto
           laporan di aplikasi.
         </p>
-        <ul className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <ul className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3" data-muncul>
           {Object.values(FOTO).map((f) => (
             <li key={f.src}>
               <Image src={f.src} alt={f.alt} width={f.lebar} height={f.tinggi} sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 100vw" className="aspect-[3/2] w-full rounded-(--radius-kartu) object-cover grayscale" />

@@ -11,7 +11,9 @@ import DaftarMasalah from '@/components/beranda/DaftarMasalah';
 import HeroGaris from '@/components/beranda/HeroGaris';
 import PerbandinganPeringkat from '@/components/beranda/PerbandinganPeringkat';
 import SorotKecamatan, { type IsuTeratas } from '@/components/beranda/SorotKecamatan';
+import TeksTinta from '@/components/beranda/TeksTinta';
 import TombolDemo from '@/components/TombolDemo';
+import AngkaGulir from '@/components/ui/AngkaGulir';
 import Ikon from '@/components/ui/Ikon';
 import LabelSumber from '@/components/ui/LabelSumber';
 import { kodeLaporanUntukIsu, ambilStatistik } from '@/lib/data/laporan';
@@ -52,15 +54,16 @@ async function BagianPrioritas() {
     <>
       <PerbandinganPeringkat isu={data.faktor.isu} bobotResmi={data.bobotResmi} idIsu={contoh.id} kodeLaporan={kode} />
 
-      <figure className="relative">
-        <div className="h-[70svh] min-h-[22rem] overflow-hidden">
+      {/* Jendela yang membuka (globals.css .jendela): foto mulai sebagai bingkai kecil lalu memenuhi lebar layar. */}
+      <figure className="jendela relative">
+        <div className="jendela-panggung">
           <Image
             src={FOTO.banjirBatavia.src}
             alt={FOTO.banjirBatavia.alt}
             width={FOTO.banjirBatavia.lebar}
             height={FOTO.banjirBatavia.tinggi}
             sizes="100vw"
-            className="foto-dekat size-full object-cover grayscale contrast-[1.05]"
+            className="size-full object-cover grayscale contrast-[1.05]"
           />
         </div>
         <figcaption className="bingkai grid gap-4 pt-5 pb-2 lg:grid-cols-12">
@@ -95,7 +98,9 @@ async function BagianPrioritas() {
             ].map((s) => (
               <div key={s.label} className="flex flex-col-reverse">
                 <dt className="text-kecil text-medan-lembut">{s.label}</dt>
-                <dd className="angka text-judul font-medium tracking-[-0.04em]">{s.nilai}</dd>
+                <dd className="angka text-judul font-medium tracking-[-0.04em]">
+                  <AngkaGulir nilai={s.nilai} />
+                </dd>
               </div>
             ))}
           </dl>
@@ -138,15 +143,27 @@ function AngkaMusrenbang() {
           {BARIS.map((b) => (
             <div key={b.label} className="grid grid-cols-[52%_1fr] items-baseline sm:grid-cols-[minmax(0,5fr)_minmax(0,1.2fr)_minmax(0,6fr)]">
               <dd className="text-tinta angka text-right text-[clamp(3.25rem,1rem+5.4vw,6rem)] leading-none font-medium tracking-[-0.05em]">
-                {b.utuh}
+                <AngkaGulir nilai={b.utuh} />
               </dd>
               <dd className="text-tinta angka text-[clamp(3.25rem,1rem+5.4vw,6rem)] leading-none font-medium tracking-[-0.05em]">
-                {b.desimal}
+                {b.desimal && <AngkaGulir nilai={b.desimal} />}
               </dd>
               <dt className="col-span-2 mt-1 text-kecil sm:col-span-1 sm:mt-0 sm:pl-4 sm:text-badan">{b.label}</dt>
             </div>
           ))}
         </dl>
+        <figure className="lg:col-span-12">
+          {/* 254 dari 18.221 usulan: ruas tinta tipis di bar penuh, terisi saat terlihat. */}
+          <div className="relative h-4 overflow-hidden rounded-full bg-lapis-2" aria-hidden="true">
+            <div className="bar-isi absolute inset-y-0 left-0 w-[max(1.4%,6px)] rounded-full bg-tinta" />
+          </div>
+          <figcaption className="mt-3 flex flex-wrap justify-between gap-x-6 gap-y-1 text-kecil text-lembut">
+            <span>
+              <strong className="font-semibold text-tinta">254</strong> usulan terealisasi
+            </span>
+            <span>dari 18.221 usulan langsung warga, e-Musrenbang DKI 2019</span>
+          </figcaption>
+        </figure>
       </div>
     </section>
   );
@@ -167,13 +184,12 @@ export default function BerandaPage() {
       <HeroGaris />
 
       <section aria-label="Tentang suaRAkyat" className="py-24 sm:py-32">
-        <div className="bingkai" data-muncul>
-          <p className="max-w-[58ch] text-pernyataan tracking-[-0.02em]">
-            Warga Jakarta sudah bisa melapor dan melacak status laporannya. Yang belum terbuka adalah lapis kedua: kenapa
-            jalan di satu kecamatan diperbaiki lebih dulu, dinas mana yang lambat, dan apa yang berubah kalau prioritasnya
-            diganti.
-          </p>
-          <ul className="mt-14 grid gap-4 sm:grid-cols-2 lg:mt-16 lg:grid-cols-4">
+        <div className="bingkai">
+          <TeksTinta
+            className="max-w-[58ch] text-pernyataan tracking-[-0.02em]"
+            teks="Warga Jakarta sudah bisa melapor dan melacak status laporannya. Yang belum terbuka adalah lapis kedua: kenapa jalan di satu kecamatan diperbaiki lebih dulu, dinas mana yang lambat, dan apa yang berubah kalau prioritasnya diganti."
+          />
+          <ul className="mt-14 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:mt-16 lg:grid-cols-4" data-muncul>
             {[
               {
                 ikon: 'warga' as const,
@@ -196,8 +212,8 @@ export default function BerandaPage() {
                 isi: 'Laporan di sini tidak diteruskan ke instansi. Wilayah studinya DKI Jakarta daratan: lima kota administrasi, 42 kecamatan.',
               },
             ].map((k) => (
-              <li key={k.judul} className="kartu p-5 sm:p-6">
-                <span className="flex size-11 items-center justify-center rounded-(--radius-kontrol) bg-tinta-muda text-tinta">
+              <li key={k.judul} className="kartu group p-5 transition-[border-color,box-shadow] duration-300 hover:border-lapis-2 hover:shadow-(--shadow-angkat) sm:p-6">
+                <span className="flex size-11 items-center justify-center rounded-(--radius-kontrol) bg-tinta-muda text-tinta transition-transform duration-300 ease-(--ease-pegas) group-hover:-rotate-6 group-hover:scale-110">
                   <Ikon nama={k.ikon} className="size-5" />
                 </span>
                 <h3 className="mt-4 text-lead leading-tight font-semibold tracking-tight">{k.judul}</h3>
@@ -256,7 +272,7 @@ export default function BerandaPage() {
       </section>
 
       <section aria-labelledby="judul-lacak" className="py-24 sm:py-36">
-        <div className="bingkai">
+        <div className="bingkai" data-muncul>
           <h2 id="judul-lacak" className="sr-only">
             Lacak laporan
           </h2>
@@ -269,10 +285,13 @@ export default function BerandaPage() {
               autoComplete="off"
               autoCapitalize="characters"
               spellCheck={false}
-              className="my-1 h-[1.08em] w-full rounded-(--radius-kartu) px-[0.2em] align-baseline text-tinta uppercase placeholder:text-lembut/50 sm:w-[6.3em]"
+              className="font-kode angka my-1 h-[1.08em] w-full rounded-(--radius-kartu) px-[0.2em] align-baseline text-tinta uppercase placeholder:text-lembut/50 sm:w-[6.3em]"
             />{' '}
             dengan kode,{' '}
-            <button type="submit" className="rounded-(--radius-kartu) bg-tinta px-[0.25em] text-white transition-colors hover:bg-tinta-tua active:scale-[0.98]">
+            <button
+              type="submit"
+              className="rounded-(--radius-kartu) bg-tinta px-[0.25em] text-white transition-[background-color,scale,translate] duration-200 hover:bg-tinta-tua active:scale-[0.97] motion-safe:hover:-translate-y-1"
+            >
               sekarang
             </button>
             .

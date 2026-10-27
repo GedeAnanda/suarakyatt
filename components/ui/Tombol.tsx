@@ -1,5 +1,6 @@
 // components/ui/Tombol.tsx — satu bentuk tombol untuk seluruh aplikasi (pemilik: A)
-// Sudut 10px, satu warna isi. Disorot: sedikit lebih gelap; ditekan: mengecil 2% (umpan balik < 100 ms).
+// Sudut 10px, satu warna isi. Disorot: sedikit lebih gelap dan terangkat 1px; ditekan: mengecil 2%
+// (umpan balik < 100 ms). Gerak angkat hilang untuk pengguna yang meminta gerak dikurangi.
 
 import Link from 'next/link';
 import type { ComponentProps } from 'react';
@@ -7,7 +8,7 @@ import type { ComponentProps } from 'react';
 export type VarianTombol = 'utama' | 'kedua' | 'medan' | 'medan-garis' | 'bahaya' | 'garis';
 
 const DASAR =
-  'inline-flex min-h-11 items-center justify-center gap-2 rounded-(--radius-kontrol) px-5 py-2.5 text-badan font-semibold leading-tight transition-[background-color,color,box-shadow,scale] duration-150 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100';
+  'inline-flex min-h-11 items-center justify-center gap-2 rounded-(--radius-kontrol) px-5 py-2.5 text-badan font-semibold leading-tight transition-[background-color,color,box-shadow,scale,translate] duration-150 motion-safe:hover:-translate-y-px active:scale-[0.98] active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 disabled:active:scale-100';
 
 const VARIAN: Record<VarianTombol, string> = {
   utama:

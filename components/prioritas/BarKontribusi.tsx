@@ -21,7 +21,11 @@ export function BarTumpuk({ isu, className = 'h-2.5' }: { isu: SkorIsu; classNam
   return (
     <div className={`flex w-full overflow-hidden rounded-full bg-lapis ${className}`} aria-hidden="true">
       {FAKTOR.map((f) => (
-        <span key={f} style={{ width: `${isu.kontribusi[f]}%`, background: WARNA_FAKTOR[f] }} />
+        <span
+          key={f}
+          className="transition-[width] duration-500 ease-(--ease-keluar) motion-reduce:transition-none"
+          style={{ width: `${isu.kontribusi[f]}%`, background: WARNA_FAKTOR[f] }}
+        />
       ))}
     </div>
   );
@@ -62,7 +66,7 @@ export default function BarKontribusi({ isu, bobot }: { isu: SkorIsu; bobot: Bob
               <dd className="col-span-2 grid gap-1.5">
                 <span className="relative block h-1.5 overflow-hidden rounded-full bg-lapis" aria-hidden="true">
                   <span
-                    className="absolute inset-y-0 left-0 rounded-full transition-[width] duration-300"
+                    className="absolute inset-y-0 left-0 rounded-full transition-[width] duration-500 ease-(--ease-keluar) motion-reduce:transition-none"
                     style={{ width: maksimal > 0 ? `${(isu.kontribusi[f] / maksimal) * 100}%` : '0%', background: WARNA_FAKTOR[f] }}
                   />
                 </span>

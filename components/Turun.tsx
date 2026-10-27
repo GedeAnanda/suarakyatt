@@ -39,7 +39,7 @@ export default function Turun({ label, children }: { label: ReactNode; children:
         {label}
         <Ikon nama="turun" className="size-4 transition-transform duration-200 group-open:rotate-180" />
       </summary>
-      <div className="kartu absolute top-full right-0 z-10 mt-2 w-80 p-4 shadow-(--shadow-angkat)">
+      <div className="turun-panel kartu absolute top-full right-0 z-10 mt-2 w-80 origin-top-right p-4 shadow-(--shadow-angkat)">
         {children}
       </div>
     </details>

@@ -37,7 +37,7 @@ async function Isi({ searchParams }: { searchParams: PageProps<'/peta'>['searchP
 export default function PetaPage({ searchParams }: PageProps<'/peta'>) {
   return (
     <div className="bingkai pt-12 pb-24 sm:pt-16">
-      <div className="grid gap-6 lg:grid-cols-12">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-12" data-awal>
         <h1 className="text-judul lg:col-span-6">Peta laporan</h1>
         <p className="max-w-[60ch] text-badan lg:col-span-6">
           Semua laporan warga di DKI Jakarta daratan beserta statusnya. Saring menurut kategori dan status, lalu buka

@@ -28,7 +28,11 @@ export default function SorotKecamatan({
   skorPerKecamatan: Record<string, number>;
 }) {
   const [indeks, setIndeks] = useState(0);
-  const [jeda, setJeda] = useState(false);
+  // Berhenti sementara selama kursor atau fokus keyboard ada di bagian ini.
+  const [disentuh, setDisentuh] = useState(false);
+  // Dihentikan lewat tombol atau dengan memilih isu: tetap berhenti sampai dijalankan lagi (WCAG 2.2.2).
+  const [kunci, setKunci] = useState(false);
+  const jeda = disentuh || kunci;
 
   useEffect(() => {
     if (jeda || teratas.length < 2) return;
@@ -40,7 +44,13 @@ export default function SorotKecamatan({
   const nyala = teratas[indeks];
 
   return (
-    <div className="grid gap-12 lg:grid-cols-12 lg:gap-8" onMouseEnter={() => setJeda(true)} onMouseLeave={() => setJeda(false)}>
+    <div
+      className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-8"
+      onMouseEnter={() => setDisentuh(true)}
+      onMouseLeave={() => setDisentuh(false)}
+      onFocus={() => setDisentuh(true)}
+      onBlur={(e) => !e.currentTarget.contains(e.relatedTarget) && setDisentuh(false)}
+    >
       <div className="lg:col-span-7">
         <p className="text-lead text-medan-lembut">
           <span className="text-medan-tinta">Isu wilayah dinilai di 42 kecamatan: </span>
@@ -58,14 +68,28 @@ export default function SorotKecamatan({
           ))}
         </p>
         {nyala && (
-          <p className="mt-8 text-badan" aria-live="off">
+          <p key={nyala.kode_wilayah + nyala.kategori} className="ganti mt-8 text-badan" aria-live="off">
             <span className="angka mr-3 inline-block min-w-[3ch] bg-medan-tinta px-2 text-center font-semibold text-tinta">
               {nyala.peringkat}
             </span>
             {nyala.kategori} di {nyala.kecamatan}, {nyala.kota}. Skor {formatPoin(nyala.skor)}.
           </p>
         )}
-        <div className="mt-6 flex flex-wrap gap-2" role="group" aria-label="Pilih isu teratas untuk disorot">
+        <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-kecil text-medan-lembut">
+          <span className="angka">
+            Isu teratas {indeks + 1} dari {teratas.length}
+          </span>
+          {teratas.length > 1 && (
+            <button
+              type="button"
+              onClick={() => setKunci(!kunci)}
+              className="inline-flex min-h-11 items-center gap-2 rounded-full px-3 text-medan-tinta underline decoration-2 underline-offset-4 hover:decoration-transparent"
+            >
+              {kunci ? 'Jalankan pergantian otomatis' : 'Hentikan pergantian otomatis'}
+            </button>
+          )}
+        </div>
+        <div className="mt-3 flex flex-wrap gap-2" role="group" aria-label="Pilih isu teratas untuk disorot">
           {teratas.map((t, i) => (
             <button
               key={t.kode_wilayah + t.kategori}
@@ -74,9 +98,9 @@ export default function SorotKecamatan({
               aria-label={`Peringkat ${t.peringkat}: ${t.kategori} di ${t.kecamatan}`}
               onClick={() => {
                 setIndeks(i);
-                setJeda(true);
+                setKunci(true);
               }}
-              className="angka size-11 bg-tinta-tua text-kecil text-medan-lembut hover:text-medan-tinta aria-pressed:bg-medan-tinta aria-pressed:text-tinta"
+              className="angka size-11 rounded-(--radius-kontrol) bg-tinta-tua text-kecil text-medan-lembut transition-[background-color,color,scale] duration-200 hover:text-medan-tinta active:scale-90 aria-pressed:bg-medan-tinta aria-pressed:text-tinta"
             >
               {t.peringkat}
             </button>

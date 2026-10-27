@@ -28,12 +28,12 @@ async function Isi({ params }: { params: PageProps<'/admin/laporan/[kode]'>['par
   return (
     <div className="grid gap-12 lg:grid-cols-12 lg:gap-8">
       <div className="grid content-start gap-10 lg:col-span-7">
-        <div>
+        <div data-awal>
           <div className="flex flex-wrap items-center gap-3">
             <BadgeStatus status={l.status} besar />
             {(l.is_simulated || sumber === 'contoh') && <LabelSumber sumber={sumber} />}
           </div>
-          <h1 className="angka mt-4 text-judul font-semibold tracking-[-0.04em]">{l.kode}</h1>
+          <h1 className="font-kode angka mt-4 text-judul font-semibold tracking-[-0.04em]">{l.kode}</h1>
           <p className="mt-2 text-lead">
             {l.kategori} di {l.kecamatan}, {l.kota}
           </p>
@@ -53,12 +53,12 @@ async function Isi({ params }: { params: PageProps<'/admin/laporan/[kode]'>['par
             Riwayat
           </h2>
           <div className="mt-5">
-            <Timeline item={timeline} />
+            <Timeline item={timeline} berjalan={['menunggu', 'diverifikasi', 'diproses'].includes(l.status)} />
           </div>
         </section>
       </div>
 
-      <aside className="grid content-start gap-4 lg:col-span-5">
+      <aside className="grid content-start gap-4 lg:col-span-5" data-awal>
         <h2 className="text-lead font-medium tracking-tight">Tindak lanjut</h2>
         {!milikInstansi && (
           <p className="panel p-4 text-kecil">

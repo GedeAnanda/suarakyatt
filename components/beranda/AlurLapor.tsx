@@ -73,7 +73,7 @@ export default function AlurLapor({ rapor, kodeContoh }: { rapor: RaporInstansi[
   const tertahan = rapor.find((r) => r.peringatan_penolakan) ?? rapor[1];
 
   return (
-    <ol className="grid gap-6 lg:grid-cols-3 lg:gap-10">
+    <ol className="grid grid-cols-1 gap-6 lg:grid-cols-3 lg:gap-10" data-muncul>
       <Langkah nomor={1} judul="Warga melapor" isi="Foto, titik di peta, dan cerita singkat. Kecamatan dan dinasnya ditentukan otomatis.">
         <div className="panel grid gap-3 p-4">
           <div className="flex flex-wrap items-center gap-2">
@@ -98,7 +98,7 @@ export default function AlurLapor({ rapor, kodeContoh }: { rapor: RaporInstansi[
         <div className="mt-3 flex items-center justify-between gap-3 rounded-(--radius-kontrol) border border-batas p-4">
           <div>
             <p className="text-kecil text-lembut">Kode lacak</p>
-            <p className="angka text-lead font-bold tracking-tight text-tinta">{kodeContoh}</p>
+            <p className="font-kode angka text-lead font-bold tracking-tight text-tinta">{kodeContoh}</p>
           </div>
           <BadgeStatus status="menunggu" />
         </div>
@@ -115,7 +115,11 @@ export default function AlurLapor({ rapor, kodeContoh }: { rapor: RaporInstansi[
               {i < semua.length - 1 && (
                 <span aria-hidden="true" className="absolute top-5 bottom-0 left-[0.5625rem] w-0.5 rounded-full bg-lapis-2" />
               )}
-              <span aria-hidden="true" className="relative mt-1 size-5 rounded-full border-4 border-permukaan bg-tinta" />
+              {/* Status terakhir (masih diproses) memancarkan cincin, seperti di halaman lacak. */}
+              <span
+                aria-hidden="true"
+                className={`relative mt-1 size-5 rounded-full border-4 border-permukaan bg-tinta text-tinta ${i === semua.length - 1 ? 'cincin' : ''}`}
+              />
               <div>
                 <BadgeStatus status={t.status} />
                 <p className="mt-1 text-kecil text-lembut">

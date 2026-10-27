@@ -35,7 +35,7 @@ function TautanNavIsi({ pathname }: { pathname: string }) {
           <Link
             href={item.href}
             aria-current={aktif(pathname, item.href) ? 'page' : undefined}
-            className="block rounded-(--radius-kontrol) px-3 py-2 text-badan font-medium text-teks decoration-2 transition-colors aria-[current=page]:text-tinta underline-offset-[0.4em] hover:bg-lapis aria-[current=page]:underline"
+            className="tautan-nav block rounded-(--radius-kontrol) px-3 py-2 text-badan font-medium text-teks transition-colors hover:text-tinta aria-[current=page]:text-tinta"
           >
             {item.label}
           </Link>
@@ -81,15 +81,15 @@ export function MenuPonsel({ children }: { children: ReactNode }) {
         aria-expanded={buka}
         aria-controls="menu-ponsel"
         onClick={() => setBuka((b) => !b)}
-        className="flex h-11 items-center gap-2 rounded-(--radius-kontrol) bg-lapis px-3 text-kecil font-medium hover:bg-lapis-2"
+        className="flex h-11 items-center gap-2 rounded-(--radius-kontrol) bg-lapis px-3 text-kecil font-medium transition-[background-color,scale] duration-150 hover:bg-lapis-2 active:scale-95"
       >
-        <Ikon nama={buka ? 'tutup' : 'menu'} className="size-4" />
+        <Ikon key={buka ? 'tutup' : 'menu'} nama={buka ? 'tutup' : 'menu'} className="pop size-4" />
         Menu
       </button>
       <div
         id="menu-ponsel"
         hidden={!buka}
-        className="absolute inset-x-0 top-full z-1000 bg-kertas px-[var(--tepi)] pt-2 pb-8 shadow-[0_24px_40px_rgb(60_10_14/0.14)]"
+        className="menu-buka absolute inset-x-0 top-full z-1000 bg-kertas px-[var(--tepi)] pt-2 pb-8 shadow-[0_24px_40px_rgb(60_10_14/0.14)]"
       >
         <ul className="grid">
           {NAVIGASI.map((item) => (
@@ -97,7 +97,7 @@ export function MenuPonsel({ children }: { children: ReactNode }) {
               <Link
                 href={item.href}
                 aria-current={aktif(pathname, item.href) ? 'page' : undefined}
-                className="block py-3 text-lead font-medium tracking-tight aria-[current=page]:underline"
+                className="flex items-center justify-between py-3 text-lead font-medium tracking-tight transition-colors hover:text-tinta aria-[current=page]:text-tinta aria-[current=page]:underline"
               >
                 {item.label}
               </Link>

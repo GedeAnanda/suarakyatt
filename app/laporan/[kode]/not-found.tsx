@@ -6,7 +6,7 @@ import { kelasTautan } from '@/components/ui/Tombol';
 
 export default function LaporanTidakAda() {
   return (
-    <div className="bingkai py-16 sm:py-24">
+    <div className="bingkai py-16 sm:py-24" data-awal>
       <h1 className="text-judul">Kode laporan tidak ditemukan</h1>
       <p className="mt-4 max-w-[56ch] text-badan">
         Periksa kembali kodenya: SR- lalu 6 huruf atau angka. Kode tidak memakai huruf O dan I, juga angka 0 dan 1, supaya

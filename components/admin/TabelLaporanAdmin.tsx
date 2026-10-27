@@ -79,7 +79,7 @@ export default function TabelLaporanAdmin({ laporan, sekarang }: { laporan: Lapo
             type="button"
             aria-pressed={filter === f.id}
             onClick={() => setFilter(f.id)}
-            className="flex min-h-11 items-center gap-1.5 rounded-full bg-permukaan px-4 py-1.5 text-kecil font-medium ring-1 ring-batas ring-inset transition-colors hover:bg-terang aria-pressed:ring-tinta aria-pressed:bg-tinta aria-pressed:text-kertas"
+            className="flex min-h-11 items-center gap-1.5 rounded-full bg-permukaan px-4 py-1.5 text-kecil font-medium ring-1 ring-batas ring-inset transition-[background-color,color,scale] duration-200 hover:bg-terang active:scale-95 aria-pressed:bg-tinta aria-pressed:text-kertas aria-pressed:ring-tinta"
           >
             {f.id !== 'aktif' && f.id !== 'semua' && <IkonStatus status={f.id} className="size-3.5" />}
             {f.label}
@@ -111,7 +111,7 @@ export default function TabelLaporanAdmin({ laporan, sekarang }: { laporan: Lapo
             {tampil.map((l) => (
               <tr key={l.kode} className={`border-t border-batas ${l.terlambat ? 'bg-tinta-muda/60' : ''} transition-colors hover:bg-terang`}>
                 <th scope="row" className="px-4 py-3 font-semibold whitespace-nowrap">
-                  <Link href={`/admin/laporan/${l.kode}`} className="angka underline decoration-2 underline-offset-4 hover:decoration-transparent">
+                  <Link href={`/admin/laporan/${l.kode}`} className="font-kode angka underline decoration-2 underline-offset-4 hover:decoration-transparent">
                     {l.kode}
                   </Link>
                   <span className="block text-kecil font-normal text-lembut">{l.kategori}</span>
