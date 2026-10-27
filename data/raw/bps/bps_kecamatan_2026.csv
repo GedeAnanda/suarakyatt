@@ -1,43 +1,43 @@
 kode_wilayah,nama,kota,luas_km2,penduduk
-31.71.010,Jagakarsa,Jakarta Selatan,,
-31.71.020,Pasar Minggu,Jakarta Selatan,,
-31.71.030,Cilandak,Jakarta Selatan,,
-31.71.040,Pesanggrahan,Jakarta Selatan,,
-31.71.050,Kebayoran Lama,Jakarta Selatan,,
-31.71.060,Kebayoran Baru,Jakarta Selatan,,
-31.71.070,Mampang Prapatan,Jakarta Selatan,,
-31.71.080,Pancoran,Jakarta Selatan,,
-31.71.090,Tebet,Jakarta Selatan,,
-31.71.100,Setiabudi,Jakarta Selatan,,
-31.72.010,Pasar Rebo,Jakarta Timur,,
-31.72.020,Ciracas,Jakarta Timur,,
-31.72.030,Cipayung,Jakarta Timur,,
-31.72.040,Makasar,Jakarta Timur,,
-31.72.050,Kramat Jati,Jakarta Timur,,
-31.72.060,Jatinegara,Jakarta Timur,,
-31.72.070,Duren Sawit,Jakarta Timur,,
-31.72.080,Cakung,Jakarta Timur,,
-31.72.090,Pulo Gadung,Jakarta Timur,,
-31.72.100,Matraman,Jakarta Timur,,
-31.73.010,Tanah Abang,Jakarta Pusat,,
-31.73.020,Menteng,Jakarta Pusat,,
-31.73.030,Senen,Jakarta Pusat,,
-31.73.040,Johar Baru,Jakarta Pusat,,
-31.73.050,Cempaka Putih,Jakarta Pusat,,
-31.73.060,Kemayoran,Jakarta Pusat,,
-31.73.070,Sawah Besar,Jakarta Pusat,,
-31.73.080,Gambir,Jakarta Pusat,,
-31.74.010,Kembangan,Jakarta Barat,,
-31.74.020,Kebon Jeruk,Jakarta Barat,,
-31.74.030,Palmerah,Jakarta Barat,,
-31.74.040,Grogol Petamburan,Jakarta Barat,,
-31.74.050,Tambora,Jakarta Barat,,
-31.74.060,Taman Sari,Jakarta Barat,,
-31.74.070,Cengkareng,Jakarta Barat,,
-31.74.080,Kalideres,Jakarta Barat,,
-31.75.010,Penjaringan,Jakarta Utara,,
-31.75.020,Pademangan,Jakarta Utara,,
-31.75.030,Tanjung Priok,Jakarta Utara,,
-31.75.040,Koja,Jakarta Utara,,
-31.75.050,Kelapa Gading,Jakarta Utara,,
-31.75.060,Cilincing,Jakarta Utara,,
+31.71.010,Jagakarsa,Jakarta Selatan,25.06,380002
+31.71.020,Pasar Minggu,Jakarta Selatan,21.62,323758
+31.71.030,Cilandak,Jakarta Selatan,17.75,220659
+31.71.040,Pesanggrahan,Jakarta Selatan,13.49,263379
+31.71.050,Kebayoran Lama,Jakarta Selatan,19.06,320880
+31.71.060,Kebayoran Baru,Jakarta Selatan,12.69,147172
+31.71.070,Mampang Prapatan,Jakarta Selatan,7.94,151352
+31.71.080,Pancoran,Jakarta Selatan,8.87,173723
+31.71.090,Tebet,Jakarta Selatan,9.35,229830
+31.71.100,Setiabudi,Jakarta Selatan,8.92,112890
+31.72.010,Pasar Rebo,Jakarta Timur,12.98,235851
+31.72.020,Ciracas,Jakarta Timur,16.08,319431
+31.72.030,Cipayung,Jakarta Timur,28.45,306380
+31.72.040,Makasar,Jakarta Timur,21.85,221067
+31.72.050,Kramat Jati,Jakarta Timur,13.00,317017
+31.72.060,Jatinegara,Jakarta Timur,10.25,318580
+31.72.070,Duren Sawit,Jakarta Timur,22.65,444385
+31.72.080,Cakung,Jakarta Timur,42.28,582775
+31.72.090,Pulo Gadung,Jakarta Timur,15.61,296972
+31.72.100,Matraman,Jakarta Timur,4.88,182841
+31.73.010,Tanah Abang,Jakarta Pusat,9.53,162546
+31.73.020,Menteng,Jakarta Pusat,6.53,84627
+31.73.030,Senen,Jakarta Pusat,4.22,118895
+31.73.040,Johar Baru,Jakarta Pusat,2.38,133317
+31.73.050,Cempaka Putih,Jakarta Pusat,4.69,95244
+31.73.060,Kemayoran,Jakarta Pusat,7.25,245806
+31.73.070,Sawah Besar,Jakarta Pusat,6.16,120596
+31.73.080,Gambir,Jakarta Pusat,7.59,90046
+31.74.010,Kembangan,Jakarta Barat,24.16,308493
+31.74.020,Kebon Jeruk,Jakarta Barat,17.98,358854
+31.74.030,Palmerah,Jakarta Barat,7.51,222178
+31.74.040,Grogol Petamburan,Jakarta Barat,9.99,226069
+31.74.050,Tambora,Jakarta Barat,5.40,252941
+31.74.060,Taman Sari,Jakarta Barat,7.73,120531
+31.74.070,Cengkareng,Jakarta Barat,26.54,575401
+31.74.080,Kalideres,Jakarta Barat,30.23,461389
+31.75.010,Penjaringan,Jakarta Utara,45.41,326085
+31.75.020,Pademangan,Jakarta Utara,11.92,166587
+31.75.030,Tanjung Priok,Jakarta Utara,22.52,406441
+31.75.040,Koja,Jakarta Utara,12.25,342279
+31.75.050,Kelapa Gading,Jakarta Utara,14.87,144911
+31.75.060,Cilincing,Jakarta Utara,39.70,445729
