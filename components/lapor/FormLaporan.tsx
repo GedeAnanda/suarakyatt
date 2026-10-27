@@ -121,6 +121,8 @@ export default function FormLaporan() {
   const [lokasiGalat, setLokasiGalat] = useState<string | null>(null);
   const [mencariLokasi, setMencariLokasi] = useState(false);
   const [foto, setFoto] = useState<Foto[]>([]);
+  const prosesFoto = useRef(false);
+  const [fotoMemproses, setFotoMemproses] = useState(false);
   const [fotoGalat, setFotoGalat] = useState<string | null>(null);
   const [deskripsi, setDeskripsi] = useState('');
   const [hasilSerupa, setHasilSerupa] = useState<{ kunci: string; data: Serupa[]; waktu: number } | null>(null);
@@ -131,7 +133,7 @@ export default function FormLaporan() {
   const ringkasan = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    muatKecamatan().then(setBatas, () => setBatas([]));
+    muatKecamatan().then(setBatas, () => { setBatas([]); setLokasiGalat('Batas wilayah gagal dimuat. Muat ulang halaman untuk mencoba lagi.'); });
   }, []);
 
   const wilayah = titik && batas && batas.length > 0 ? cariKecamatan(titik.lat, titik.lng, batas) : null;
@@ -145,12 +147,16 @@ export default function FormLaporan() {
     if (!kunciSerupa || !kategori || !titik) return;
     let batal = false;
     const t = window.setTimeout(async () => {
+      try {
       const { data, error } = await createClient().rpc('similar_reports', {
         p_category_id: kategori,
         p_lat: titik.lat,
         p_lng: titik.lng,
       });
       if (!batal) setHasilSerupa({ kunci: kunciSerupa, data: error ? [] : ((data ?? []) as Serupa[]), waktu: Date.now() });
+      } catch {
+        if (!batal) setHasilSerupa({ kunci: kunciSerupa, data: [], waktu: Date.now() });
+      }
     }, 450);
     return () => {
       batal = true;
@@ -179,7 +185,9 @@ export default function FormLaporan() {
   }
 
   async function tambahFoto(files: FileList | null) {
-    if (!files) return;
+    if (!files || prosesFoto.current) return;
+    prosesFoto.current = true;
+    setFotoMemproses(true);
     setFotoGalat(null);
     const sisa = MAKS_FOTO - foto.length;
     const dipilih = Array.from(files).slice(0, sisa);
@@ -195,6 +203,8 @@ export default function FormLaporan() {
     }
     setFoto((x) => [...x, ...baru]);
     if (inputFoto.current) inputFoto.current.value = '';
+    prosesFoto.current = false;
+    setFotoMemproses(false);
   }
 
   function hapusFoto(id: string) {
@@ -218,6 +228,7 @@ export default function FormLaporan() {
   const panjang = deskripsi.trim().length;
   const semuaMasalah: { langkah: number; teks: string | false }[] = [
     { langkah: 1, teks: !kategori && 'Pilih salah satu kategori.' },
+    { langkah: 2, teks: (!batas || batas.length === 0) && 'Tunggu peta wilayah selesai dimuat. Jika gagal, muat ulang halaman.' },
     { langkah: 2, teks: !titik && 'Ketuk peta untuk menaruh titik lokasi.' },
     { langkah: 2, teks: diLuar && 'Titik berada di luar DKI Jakarta daratan; pindahkan ke wilayah layanan.' },
     { langkah: 3, teks: foto.length === 0 && 'Tambahkan minimal satu foto.' },
@@ -230,6 +241,7 @@ export default function FormLaporan() {
 
   async function kirim(e: React.FormEvent) {
     e.preventDefault();
+    if (tahap !== 'isi' || prosesFoto.current) return;
     setCobaKirim(true);
     if (masalah.length > 0 || !titik || !kategori) {
       // Fokus ke ringkasan supaya pembaca layar dan keyboard langsung tahu apa yang kurang.
@@ -265,6 +277,8 @@ export default function FormLaporan() {
 
   return (
     <form onSubmit={kirim} noValidate className="grid gap-14">
+      <fieldset disabled={sibuk || fotoMemproses} className="contents">
+      <legend className="sr-only">Isi laporan masalah</legend>
       <Langkah n={1} selesai={lengkap.includes(1)} galat={galatLangkah(1)} judul="Masalahnya apa?" petunjuk="Urgensi dan dinas penanggung jawab ditentukan dari kategori, bukan dipilih pelapor.">
         <fieldset>
           <legend className="sr-only">Kategori</legend>
@@ -462,6 +476,7 @@ export default function FormLaporan() {
           {tahap === 'mengunggah' ? 'Mengunggah foto…' : tahap === 'mengirim' ? 'Mengirim laporan…' : galat ? 'Coba kirim lagi' : 'Kirim laporan'}
         </Tombol>
       </div>
+      </fieldset>
     </form>
   );
 }

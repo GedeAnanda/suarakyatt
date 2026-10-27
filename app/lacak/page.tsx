@@ -4,6 +4,7 @@
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { Suspense } from 'react';
+import Link from 'next/link';
 import CariKode from '@/components/CariKode';
 import { normalisasiKode } from '@/lib/format';
 
@@ -31,14 +32,15 @@ async function Isi({ searchParams }: { searchParams: PageProps<'/lacak'>['search
 export default function LacakPage({ searchParams }: PageProps<'/lacak'>) {
   return (
     <div className="bingkai py-16 sm:py-24">
-      <h1 className="text-judul">Lacak laporan</h1>
-      <p className="mt-4 max-w-[52ch] text-badan">
+      <h1 data-pembuka="judul" className="text-judul">Lacak laporan</h1>
+      <p data-pembuka="teks" className="mt-4 max-w-[52ch] text-badan">
         Masukkan kode yang Anda terima saat laporan terkirim. Halaman lacak terbuka untuk siapa saja: status, riwayat
         penanganan, batas waktu, dan posisi isunya di daftar prioritas.
       </p>
       <Suspense fallback={<CariKode id="kode-lacak" besar className="mt-8 max-w-xl" />}>
         <Isi searchParams={searchParams} />
       </Suspense>
+      <p className="mt-6 text-badan text-lembut">Belum punya kode? <Link href="/contoh" className="font-medium text-tinta underline underline-offset-4">Buka laporan contoh</Link> untuk mencoba alurnya.</p>
     </div>
   );
 }

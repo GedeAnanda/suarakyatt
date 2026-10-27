@@ -5,6 +5,7 @@
 
 import 'server-only';
 import { connection } from 'next/server';
+import { cache } from 'react';
 import contoh from '@/lib/mocks/contoh-laporan.json';
 import { createClient } from '@/lib/supabase/server';
 import type { LaporanPublik, StatusLaporan, TimelineItem } from '@/lib/types';
@@ -35,7 +36,7 @@ function geser(iso: string | null, ms: number): string | null {
   return iso === null ? null : new Date(Date.parse(iso) + ms).toISOString();
 }
 
-async function dataContoh() {
+const dataContoh = cache(async () => {
   await connection();
   const ms = Date.now() - Date.parse(contoh.jangkar);
   const laporan = (contoh.laporan as LaporanContoh[]).map((l) => ({
@@ -48,7 +49,7 @@ async function dataContoh() {
   }));
   const timeline = (contoh.timeline as TimelineItem[]).map((t) => ({ ...t, created_at: geser(t.created_at, ms)! }));
   return { laporan, timeline, sekarang: Date.now() };
-}
+});
 
 export function terlambat(l: Pick<LaporanPublik, 'status' | 'batas_respons' | 'batas_selesai'>, sekarang: number) {
   if (!AKTIF.includes(l.status)) return false;
@@ -57,7 +58,7 @@ export function terlambat(l: Pick<LaporanPublik, 'status' | 'batas_respons' | 'b
 
 // --- Q1 · titik laporan untuk peta
 
-export async function ambilTitikLaporan(): Promise<{ sumber: Sumber; laporan: TitikLaporan[]; sekarang: number }> {
+export const ambilTitikLaporan = cache(async (): Promise<{ sumber: Sumber; laporan: TitikLaporan[]; sekarang: number }> => {
   await connection();
   try {
     const supabase = await createClient();
@@ -78,7 +79,17 @@ export async function ambilTitikLaporan(): Promise<{ sumber: Sumber; laporan: Ti
       }),
     ),
   };
-}
+});
+
+/** Pilih contoh dari sumber yang sedang tampil; tidak ada kode laporan fiktif di antarmuka. */
+export const ambilContohLaporan = cache(async () => {
+  const { laporan } = await ambilTitikLaporan();
+  const pilihan = laporan.find((l) => l.kategori === 'Jalan rusak' && l.status === 'diverifikasi')
+    ?? laporan.find((l) => l.status === 'diproses')
+    ?? laporan.find((l) => AKTIF.includes(l.status))
+    ?? laporan[0];
+  return pilihan ? ambilDetailLaporan(pilihan.kode) : null;
+});
 
 // --- Q2 · detail + timeline
 
@@ -94,6 +105,7 @@ export async function ambilDetailLaporan(kode: string): Promise<DetailLaporan | 
   try {
     const supabase = await createClient();
     const { data, error } = await supabase.from('v_laporan_publik').select('*').eq('kode', kode).maybeSingle();
+    if (!error && !data && (await ambilTitikLaporan()).sumber === 'db') return null;
     if (!error && data) {
       const { data: tl } = await supabase.from('v_timeline_publik').select('*').eq('kode', kode).order('created_at');
       return { sumber: 'db', laporan: data as LaporanPublik, timeline: (tl ?? []) as TimelineItem[], sekarang: Date.now() };

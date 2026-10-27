@@ -29,23 +29,29 @@ Untuk menyiapkan database dari nol:
 
 Tes modul skor: `npm test`.
 
-## Progress saat ini
+## Fitur dan pemeriksaan
 
-<!-- Perbarui bagian ini sebelum First Draft Submission (1 November 2026) -->
+Beranda interaktif, login/daftar, peta publik, formulir laporan, pelacakan, tindak lanjut admin, rapor instansi, simulator prioritas, dan panel “Kenapa belum?” sudah tersedia. Pengaturan bobot, kategori, dan isu terpilih bisa dibagikan lewat URL. Tautan `/contoh` memilih laporan yang tersedia dari sumber data aktif.
 
-- [x] Repo dan struktur proyek
-- [x] Skema database awal (`0001_schema.sql`)
-- [x] Kontrak data bersama (`lib/types.ts`) dan data contoh untuk frontend
-- [x] Deploy pertama ke Vercel: https://suarakyatt.vercel.app
-- [x] RLS dan view publik (`0002`), RPC laporan dan reset demo (`0003`), data instansi dan kategori (`0006`)
-- [x] Auth: login, daftar, verifikasi email, akun demo warga dan admin
-- [ ] Halaman masuk/daftar (UI)
-- [ ] Landing page
-- [ ] Peta publik dengan data seed
-- [ ] Form laporan dan halaman lacak
-- [ ] Halaman admin
-- [ ] Rapor Instansi
-- [ ] Dashboard Prioritas, simulator bobot, dan "Kenapa belum?"
+```bash
+npm run lint
+npm test
+npm run build
+npm run test:db  # memerlukan DATABASE_URL; semua mutasi pengujian di-rollback
+```
+
+Database demo dapat diisi dengan `npm run demo:setup -- --apply` setelah migrasi dan akun demo tersedia. Skrip hanya menerima database kosong. Panduan ada di [scripts/README.md](scripts/README.md).
+
+## Alur presentasi lomba
+
+1. Buka Beranda. Ubah pilihan di “Satu isu, dua urutan” dan jelaskan perubahan peringkat.
+2. Buka perhitungan lengkap. Pilih kategori dan isu, ubah bobot, lalu bagikan URL skenarionya.
+3. Buka `/contoh`. Bandingkan penjelasan model dengan riwayat penanganan; peringkat bukan janji tanggal perbaikan.
+4. Masuk sebagai warga demo untuk melapor atau mendukung laporan yang sudah ada.
+5. Masuk sebagai admin demo untuk memverifikasi dan memproses laporan kategori Jalan rusak.
+6. Buka rapor: tunjukkan denominator laporan terlambat dan pembatasan huruf ketika tingkat penolakan tinggi.
+
+Fokus subtema: **Data-Driven Decision Support** dan **Civic Reporting & Accountability**, didukung **Public Service Tracking**. Data BPS/CRM belum terintegrasi. Laporan, demografi perhitungan, dan kinerja instansi adalah simulasi; batas wilayah dan angka konteks Musrenbang memiliki sumber publik terpisah.
 
 ## Tim
 

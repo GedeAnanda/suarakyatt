@@ -34,12 +34,12 @@ export default function Turun({ label, children }: { label: ReactNode; children:
   }, []);
 
   return (
-    <details ref={ref} className="group relative">
+    <details data-ui ref={ref} className="group relative">
       <summary className="flex h-11 list-none items-center gap-2 rounded-(--radius-kontrol) px-3 text-badan font-medium transition-colors hover:bg-lapis group-open:bg-lapis [&::-webkit-details-marker]:hidden">
         {label}
         <Ikon nama="turun" className="size-4 transition-transform duration-200 group-open:rotate-180" />
       </summary>
-      <div className="kartu absolute top-full right-0 z-10 mt-2 w-80 p-4 shadow-(--shadow-angkat)">
+      <div className="menu-gerak kartu absolute top-full right-0 z-10 mt-2 w-80 p-4 shadow-(--shadow-angkat)">
         {children}
       </div>
     </details>

@@ -1,95 +1,32 @@
-// components/beranda/SorotKecamatan.tsx — 42 kecamatan sebagai satu kalimat + peta (pemilik: A)
-// Satu nama menyala bergantian mengikuti sepuluh isu teratas, dan kecamatannya disorot di peta.
-// Berhenti bergantian kalau pengguna meminta gerak dikurangi, atau saat diarahkan kursor.
-
 'use client';
 
-import { useEffect, useState } from 'react';
-import { KECAMATAN } from '@/lib/geo/kecamatan-svg';
+import Link from 'next/link';
+import { useState } from 'react';
 import { formatPoin } from '@/lib/scoring';
 import PetaKecamatan from '../PetaKecamatan';
 
 export interface IsuTeratas {
-  kode_wilayah: string;
-  kecamatan: string;
-  kota: string;
-  kategori: string;
-  skor: number;
-  peringkat: number;
+  kode_wilayah: string; kecamatan: string; kota: string; kategori: string; skor: number; peringkat: number;
 }
 
-const NAMA_URUT = [...KECAMATAN].sort((a, b) => a.kecamatan.localeCompare(b.kecamatan, 'id'));
-
-export default function SorotKecamatan({
-  teratas,
-  skorPerKecamatan,
-}: {
-  teratas: IsuTeratas[];
-  skorPerKecamatan: Record<string, number>;
-}) {
+export default function SorotKecamatan({ teratas, skorPerKecamatan }: { teratas: IsuTeratas[]; skorPerKecamatan: Record<string, number> }) {
   const [indeks, setIndeks] = useState(0);
-  const [jeda, setJeda] = useState(false);
-
-  useEffect(() => {
-    if (jeda || teratas.length < 2) return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const t = window.setInterval(() => setIndeks((i) => (i + 1) % teratas.length), 2200);
-    return () => window.clearInterval(t);
-  }, [jeda, teratas.length]);
-
   const nyala = teratas[indeks];
-
   return (
-    <div className="grid gap-12 lg:grid-cols-12 lg:gap-8" onMouseEnter={() => setJeda(true)} onMouseLeave={() => setJeda(false)}>
-      <div className="lg:col-span-7">
-        <p className="text-lead text-medan-lembut">
-          <span className="text-medan-tinta">Isu wilayah dinilai di 42 kecamatan: </span>
-          {NAMA_URUT.map((k, i) => (
-            <span key={k.kode_wilayah}>
-              <span
-                className={`transition-colors duration-[400ms] ${
-                  k.kode_wilayah === nyala?.kode_wilayah ? 'text-medan-tinta underline decoration-2 underline-offset-4' : ''
-                }`}
-              >
-                {k.kecamatan}
-              </span>
-              {i < NAMA_URUT.length - 1 ? ', ' : '.'}
-            </span>
-          ))}
-        </p>
-        {nyala && (
-          <p className="mt-8 text-badan" aria-live="off">
-            <span className="angka mr-3 inline-block min-w-[3ch] bg-medan-tinta px-2 text-center font-semibold text-tinta">
-              {nyala.peringkat}
-            </span>
-            {nyala.kategori} di {nyala.kecamatan}, {nyala.kota}. Skor {formatPoin(nyala.skor)}.
-          </p>
-        )}
-        <div className="mt-6 flex flex-wrap gap-2" role="group" aria-label="Pilih isu teratas untuk disorot">
+    <div className="grid items-center gap-8 lg:grid-cols-12">
+      <div className="lg:col-span-5" data-ui>
+        <p className="text-badan text-medan-lembut">Lima wilayah dengan skor tertinggi</p>
+        <div className="mt-4 grid gap-2" role="group" aria-label="Pilih wilayah untuk disorot">
           {teratas.map((t, i) => (
-            <button
-              key={t.kode_wilayah + t.kategori}
-              type="button"
-              aria-pressed={i === indeks}
-              aria-label={`Peringkat ${t.peringkat}: ${t.kategori} di ${t.kecamatan}`}
-              onClick={() => {
-                setIndeks(i);
-                setJeda(true);
-              }}
-              className="angka size-11 bg-tinta-tua text-kecil text-medan-lembut hover:text-medan-tinta aria-pressed:bg-medan-tinta aria-pressed:text-tinta"
-            >
-              {t.peringkat}
+            <button key={t.kode_wilayah} type="button" aria-pressed={i === indeks} onClick={() => setIndeks(i)} className="flex min-h-14 items-center justify-between gap-4 px-4 py-3 text-left transition-colors hover:bg-tinta-tua aria-pressed:bg-medan-tinta aria-pressed:text-tinta">
+              <span><span className="block text-badan font-semibold">{t.kecamatan}</span><span className="block text-kecil opacity-85">{t.kategori}</span></span>
+              <span className="angka text-lead">{formatPoin(t.skor)}</span>
             </button>
           ))}
         </div>
+        <Link href="/prioritas" className="mt-4 inline-flex min-h-11 items-center text-badan underline underline-offset-4">Jelajahi seluruh 42 kecamatan</Link>
       </div>
-      <div className="lg:col-span-5">
-        <PetaKecamatan
-          skor={skorPerKecamatan}
-          sorot={nyala?.kode_wilayah}
-          judul="Peta DKI Jakarta per kecamatan, diwarnai menurut skor prioritas tertinggi"
-        />
-      </div>
+      <div className="lg:col-span-6 lg:col-start-7"><PetaKecamatan skor={skorPerKecamatan} sorot={nyala?.kode_wilayah} judul="Peta skor prioritas di 42 kecamatan DKI Jakarta daratan" /></div>
     </div>
   );
 }

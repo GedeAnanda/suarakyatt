@@ -96,7 +96,7 @@ function FormDaftar() {
         <p className="text-lead font-medium tracking-tight">Cek email Anda</p>
         <p className="text-badan">
           Kami mengirim tautan verifikasi. Buka tautan itu untuk mengaktifkan akun; setelah itu Anda bisa melapor,
-          mendukung laporan, dan memberi rating. Email wajib diverifikasi supaya satu orang punya satu suara.
+          mendukung laporan, dan memberi rating. Verifikasi memastikan alamat email dapat diakses; satu akun mendapat satu dukungan per laporan.
         </p>
         <p className="text-kecil text-lembut">Tidak menerima email? Periksa folder spam, atau coba lagi beberapa menit lagi.</p>
       </div>
@@ -127,13 +127,21 @@ export default function FormAuth({
   const [mode, setMode] = useState(modeAwal);
   return (
     <div>
-      <div role="tablist" aria-label="Masuk atau daftar" className="inline-flex gap-1 rounded-(--radius-kontrol) bg-lapis p-1">
+      <div role="tablist" aria-label="Masuk atau daftar" onKeyDown={(e) => {
+        if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) return;
+        e.preventDefault();
+        const berikut = e.key === 'Home' ? 'masuk' : e.key === 'End' ? 'daftar' : mode === 'masuk' ? 'daftar' : 'masuk';
+        setMode(berikut);
+        const tabs = e.currentTarget.querySelectorAll<HTMLButtonElement>('[role="tab"]');
+        tabs[berikut === 'masuk' ? 0 : 1]?.focus();
+      }} className="inline-flex gap-1 rounded-(--radius-kontrol) bg-lapis p-1">
         {(['masuk', 'daftar'] as const).map((m) => (
           <button
             key={m}
             type="button"
             role="tab"
             id={`tab-${m}`}
+            tabIndex={mode === m ? 0 : -1}
             aria-selected={mode === m}
             aria-controls={`panel-${m}`}
             onClick={() => setMode(m)}

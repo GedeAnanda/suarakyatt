@@ -2,12 +2,13 @@
 // Semua skor dihitung di browser dengan lib/scoring dari hasil priority_factors, jadi slider
 // langsung mengubah peringkat tanpa ke server dan tanpa menyimpan apa pun (SDD 2.1, 8.3).
 // Bobot simulasi ikut tersimpan di URL (?bobot=30,20,5,20,15,10) supaya skenarionya bisa dibagikan.
-// Perencana bisa menyimpan bobot sebagai bobot resmi, wajib dengan alasan (R10 save_weights).
+// Perencana bisa menyimpan bobot sebagai bobot acuan, wajib dengan alasan (R10 save_weights).
 
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { ubahParameter } from '@/lib/pilihan-url';
 import { pesanError } from '@/lib/errors';
 import { DEFINISI_FAKTOR, KATEGORI, NAMA_FAKTOR } from '@/lib/konten';
 import {
@@ -36,11 +37,10 @@ const sama = (a: Bobot, b: Bobot) => FAKTOR.every((f) => Math.abs(a[f] - b[f]) <
 const persenBobot = (x: number) => `${Math.round(x * 100)}%`;
 const JUMLAH_AWAL = 15;
 
-/** "30,20,5,20,15,10" → slider; null kalau bentuknya tidak sah atau semuanya nol. */
+/** "30,20,5,20,15,10" → slider; null kalau bentuknya tidak sah; nol dipertahankan agar peringatan konsisten. */
 function dariUrl(nilai: string | null): Slider | null {
   const angka = nilai?.split(',').map(Number);
   if (!angka || angka.length !== FAKTOR.length || angka.some((x) => !Number.isFinite(x) || x < 0 || x > 100)) return null;
-  if (angka.every((x) => x === 0)) return null;
   return Object.fromEntries(FAKTOR.map((f, i) => [f, Math.round(angka[i])])) as Slider;
 }
 
@@ -50,7 +50,7 @@ function TandaGeser({ n }: { n: number | undefined }) {
     <span className={`angka inline-flex items-center text-kecil font-semibold ${n > 0 ? 'text-st-selesai' : 'text-tinta'}`}>
       <Ikon nama={n > 0 ? 'naik' : 'turun'} className="size-3.5" />
       {Math.abs(n)}
-      <span className="sr-only">{n > 0 ? ' posisi naik' : ' posisi turun'} dibanding peringkat resmi</span>
+      <span className="sr-only">{n > 0 ? ' posisi naik' : ' posisi turun'} dibanding peringkat acuan</span>
     </span>
   );
 }
@@ -66,9 +66,11 @@ export default function Simulator({
 }) {
   const router = useRouter();
   const params = useSearchParams();
-  const [slider, setSlider] = useState<Slider>(() => dariUrl(params.get('bobot')) ?? keSlider(bobotResmi));
-  const [kategori, setKategori] = useState<number | null>(null);
-  const [pilihId, setPilihId] = useState<string | null>(() => params.get('isu'));
+  const bobotUrl = params.get('bobot');
+  const slider = useMemo(() => dariUrl(bobotUrl) ?? keSlider(bobotResmi), [bobotUrl, bobotResmi]);
+  const kategoriUrl = Number(params.get('kategori'));
+  const kategori = KATEGORI.some((k) => k.id === kategoriUrl) ? kategoriUrl : null;
+  const pilihId = params.get('isu');
   const [semua, setSemua] = useState(false);
   const [sliderTerbuka, setSliderTerbuka] = useState(() => dariUrl(params.get('bobot')) !== null);
   const panelIsu = useRef<HTMLElement>(null);
@@ -101,13 +103,11 @@ export default function Simulator({
   const tampil = semua ? simulasi : simulasi.slice(0, JUMLAH_AWAL);
   const presetAktif = (Object.keys(PRESET) as NamaPreset[]).find((p) => sama(bobot, normalisasiBobot(PRESET[p])));
 
-  // Simpan bobot di URL tanpa menambah riwayat browser, supaya tautannya bisa dibagikan.
-  useEffect(() => {
-    const url = new URL(window.location.href);
-    if (disimulasikan) url.searchParams.set('bobot', FAKTOR.map((f) => slider[f]).join(','));
-    else url.searchParams.delete('bobot');
-    if (url.href !== window.location.href) window.history.replaceState(null, '', url);
-  }, [slider, disimulasikan]);
+  function setSlider(nilai: Slider) {
+    const total = FAKTOR.reduce((s, f) => s + nilai[f], 0);
+    const acuan = total > 0 && sama(normalisasiBobot(nilai), bobotResmi);
+    ubahParameter({ bobot: acuan ? null : FAKTOR.map((f) => nilai[f]).join(',') });
+  }
 
   // FLIP: setiap baris meluncur dari posisi lamanya ke posisi barunya, jadi perubahan peringkat terlihat.
   useLayoutEffect(() => {
@@ -115,12 +115,13 @@ export default function Simulator({
     if (!ol) return;
     const gerak = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const baru = new Map<string, number>();
-    ol.querySelectorAll<HTMLElement>('[data-isu]').forEach((el) => {
+    const baris = [...ol.querySelectorAll<HTMLElement>('[data-isu]')].map((el) => ({ el, top: el.offsetTop }));
+    baris.forEach(({ el, top }) => {
       const id = el.dataset.isu!;
-      baru.set(id, el.offsetTop);
+      baru.set(id, top);
       const lama = posisiLama.current.get(id);
-      if (gerak && lama !== undefined && Math.abs(lama - el.offsetTop) > 2) {
-        el.animate([{ transform: `translateY(${lama - el.offsetTop}px)` }, { transform: 'translateY(0)' }], {
+      if (gerak && lama !== undefined && Math.abs(lama - top) > 2) {
+        el.animate([{ transform: `translateY(${lama - top}px)` }, { transform: 'translateY(0)' }], {
           duration: 520,
           easing: 'cubic-bezier(0.34, 1.36, 0.64, 1)',
         });
@@ -130,12 +131,12 @@ export default function Simulator({
   });
 
   function pilihIsu(id: string) {
-    setPilihId(id);
+    ubahParameter({ isu: id });
     // Di layar sempit panel rincian ada jauh di atas daftar: bawa ke sana.
     const panel = panelIsu.current;
     if (panel) {
       const r = panel.getBoundingClientRect();
-      if (r.bottom < 0 || r.top > window.innerHeight * 0.6) {
+      if (r.top < 88 || r.top > window.innerHeight * 0.6) {
         panel.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
       }
     }
@@ -143,20 +144,21 @@ export default function Simulator({
 
   function pilihKecamatan(kode: string) {
     const teratas = simulasi.find((s) => s.kode_wilayah === kode);
-    if (teratas) setPilihId(teratas.id);
+    if (teratas) pilihIsu(teratas.id);
   }
 
   async function salinTautan() {
     try {
+      if (terpilih) ubahParameter({ isu: terpilih.id });
       await navigator.clipboard.writeText(window.location.href);
-      umumkan('Tautan simulasi disalin. Siapa pun yang membukanya melihat bobot yang sama.');
+      umumkan('Tautan disalin, lengkap dengan bobot, kategori, dan isu yang dipilih.');
     } catch {
       umumkan('Salin tautan dari bilah alamat browser.');
     }
   }
 
   return (
-    <div className="grid gap-10 lg:grid-cols-12 lg:gap-8">
+    <div className="grid gap-6 lg:grid-cols-12 lg:gap-8" data-ui>
       {/* Panel bobot */}
       <section aria-labelledby="judul-bobot" className="lg:col-span-4">
         <div className="kartu p-5 sm:p-6 lg:sticky lg:top-24">
@@ -168,11 +170,11 @@ export default function Simulator({
               aria-live="polite"
               className={`text-kecil font-medium transition-colors ${disimulasikan ? 'bg-tinta px-2 py-0.5 text-kertas' : 'text-lembut'}`}
             >
-              {disimulasikan ? 'Mode simulasi' : 'Bobot resmi'}
+              {disimulasikan ? 'Mode simulasi' : 'Bobot acuan'}
             </span>
           </div>
           <p className="mt-2 text-kecil text-lembut">
-            Pilih preset atau geser sendiri. Bobot dinormalisasi supaya totalnya 100%. Bobot resmi tidak berubah.
+            Pilih preset atau geser sendiri. Bobot dinormalisasi supaya totalnya 100%. Bobot acuan tidak berubah.
           </p>
 
           <div className="mt-4 flex flex-wrap gap-2" role="group" aria-label="Preset bobot">
@@ -212,7 +214,7 @@ export default function Simulator({
                     </label>
                     <span className="angka text-badan">
                       <span className={`font-semibold ${berubah ? 'text-tinta' : ''}`}>{persenBobot(bobot[f])}</span>
-                      {berubah && <span className="text-kecil text-lembut"> resmi {persenBobot(bobotResmi[f])}</span>}
+                      {berubah && <span className="text-kecil text-lembut"> acuan {persenBobot(bobotResmi[f])}</span>}
                     </span>
                   </div>
                   <input
@@ -222,7 +224,7 @@ export default function Simulator({
                     max={100}
                     step={1}
                     value={slider[f]}
-                    onChange={(e) => setSlider((s) => ({ ...s, [f]: Number(e.target.value) }))}
+                    onChange={(e) => setSlider({ ...slider, [f]: Number(e.target.value) })}
                     aria-describedby={`definisi-${f}`}
                     aria-valuetext={`${persenBobot(bobot[f])} setelah dinormalisasi`}
                     className="slider w-full"
@@ -237,20 +239,18 @@ export default function Simulator({
 
           {totalSlider === 0 && (
             <p role="alert" className="mt-3 bg-tinta px-3 py-2 text-kecil text-kertas">
-              Semua bobot nol tidak bisa dipakai. Naikkan minimal satu faktor; urutan sementara memakai bobot resmi.
+              Semua bobot nol tidak bisa dipakai. Naikkan minimal satu faktor; urutan sementara memakai bobot acuan.
             </p>
           )}
 
           <div className="mt-5 flex flex-wrap items-center gap-2">
             <Tombol varian="garis" onClick={() => setSlider(keSlider(bobotResmi))} disabled={!disimulasikan && totalSlider > 0}>
-              Kembali ke bobot resmi
+              Kembali ke bobot acuan
             </Tombol>
-            {disimulasikan && (
-              <Tombol varian="garis" onClick={salinTautan}>
-                <Ikon nama="tautan" className="size-4" />
-                Salin tautan simulasi
-              </Tombol>
-            )}
+            <Tombol varian="garis" onClick={salinTautan}>
+              <Ikon nama="tautan" className="size-4" />
+              Bagikan skenario
+            </Tombol>
           </div>
 
           {perencana && <SimpanBobot bobot={bobot} aktif={disimulasikan} onTersimpan={() => router.refresh()} />}
@@ -267,8 +267,8 @@ export default function Simulator({
                 type="button"
                 aria-pressed={kategori === k.id}
                 onClick={() => {
-                  setKategori(k.id);
-                  setPilihId(null);
+                  ubahParameter({ kategori: k.id === null ? null : String(k.id), isu: null });
+                  setSemua(false);
                 }}
                 className="min-h-11 rounded-full bg-permukaan px-4 py-1.5 text-kecil font-medium ring-1 ring-batas ring-inset transition-colors hover:bg-terang aria-pressed:ring-tinta active:translate-y-px aria-pressed:bg-tinta aria-pressed:text-kertas"
               >
@@ -299,13 +299,13 @@ export default function Simulator({
           </figure>
 
           {terpilih && (
-            <section ref={panelIsu} aria-labelledby="judul-isu" aria-live="polite" className="kartu scroll-mt-4 p-5 sm:p-6">
+            <section ref={panelIsu} aria-labelledby="judul-isu" aria-live="polite" className="kartu scroll-mt-24 p-5 sm:p-6">
               <p className="text-kecil text-lembut">
                 Peringkat {terpilih.peringkat} dari {simulasi.length}
                 {disimulasikan && (
                   <>
                     {' '}
-                    · resmi {resmi.find((r) => r.id === terpilih.id)?.peringkat} <TandaGeser n={selisih[terpilih.id]} />
+                    · acuan {resmi.find((r) => r.id === terpilih.id)?.peringkat} <TandaGeser n={selisih[terpilih.id]} />
                   </>
                 )}
               </p>
@@ -396,7 +396,7 @@ function SimpanBobot({ bobot, aktif, onTersimpan }: { bobot: Bobot; aktif: boole
       return;
     }
     setAlasan('');
-    umumkan('Bobot resmi tersimpan dan tercatat di riwayat keputusan.');
+    umumkan('Bobot acuan tersimpan dan tercatat di riwayat keputusan.');
     onTersimpan();
   }
 
@@ -421,9 +421,9 @@ function SimpanBobot({ bobot, aktif, onTersimpan }: { bobot: Bobot; aktif: boole
         className="w-full p-3 text-badan"
       />
       <Tombol type="submit" disabled={!aktif || pendek || memuat}>
-        {memuat ? 'Menyimpan…' : 'Simpan sebagai bobot resmi'}
+        {memuat ? 'Menyimpan…' : 'Simpan sebagai bobot acuan'}
       </Tombol>
-      {!aktif && <p className="text-kecil text-lembut">Ubah bobot dulu; bobot sekarang sama dengan bobot resmi.</p>}
+      {!aktif && <p className="text-kecil text-lembut">Ubah bobot dulu; bobot sekarang sama dengan bobot acuan.</p>}
       {galat && (
         <p id="galat-bobot" role="alert" className="text-kecil font-medium text-tinta">
           {galat}

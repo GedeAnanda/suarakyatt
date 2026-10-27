@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="720" viewBox="0 0 960 720">
+<rect width="960" height="720" fill="#f4eeee"/>
+<path d="M0 460L960 200M0 200L960 500M330 0L560 720" stroke="#e3c6c8" stroke-width="70"/>
+<path d="M480 185a72 72 0 0 0-72 72c0 58 72 132 72 132s72-74 72-132a72 72 0 0 0-72-72" fill="#7d0c14"/>
+<circle cx="480" cy="257" r="23" fill="#fff"/>
+<rect x="0" y="500" width="960" height="220" fill="#7d0c14"/>
+<text x="48" y="570" font-family="sans-serif" font-size="36" font-weight="700" fill="white">Lampiran simulasi</text>
+<text x="48" y="625" font-family="sans-serif" font-size="25" fill="white">Ilustrasi lokasi, bukan foto atau bukti lapangan.</text>
+<text x="48" y="672" font-family="sans-serif" font-size="22" fill="white">suaRAkyat · demo mekanisme pelaporan</text>
+</svg>

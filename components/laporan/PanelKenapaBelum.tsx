@@ -34,7 +34,7 @@ export default function PanelKenapaBelum({
   const buka = pilihan ?? dariTautan;
 
   return (
-    <section id="kenapa-belum" aria-labelledby="judul-kenapa-belum" className="scroll-mt-6">
+    <section id="kenapa-belum" aria-labelledby="judul-kenapa-belum" className="scroll-mt-24">
       <h2 id="judul-kenapa-belum" className="sr-only">
         Kenapa belum ditangani
       </h2>
@@ -66,6 +66,11 @@ export default function PanelKenapaBelum({
               </p>
             ) : (
               <div className="grid gap-6">
+                <p className="text-badan text-lembut">
+                  Ini penjelasan posisi menurut model prioritas suaRAkyat. Alasan dan kendala penanganan dari
+                  instansi dicatat terpisah di <a href="#judul-riwayat" className={kelasTautan}>riwayat penanganan</a>.
+                  Peringkat tidak menjanjikan tanggal perbaikan.
+                </p>
                 <p className="text-pernyataan tracking-[-0.02em]">
                   Isu {isu.kategori.toLowerCase()} di Kecamatan {isu.kecamatan} berada di{' '}
                   <strong className="font-semibold">

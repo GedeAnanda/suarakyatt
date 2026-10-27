@@ -1,58 +1,24 @@
-// components/beranda/HeroGaris.tsx — layar pertama Beranda (pemilik: A)
-// Dua medan bertemu di garis tengah: garis prioritas. Di atasnya masalah yang didahulukan,
-// di bawahnya yang masih menunggu. Pertanyaan "Kenapa belum?" terpotong tepat di garis itu.
-
 import Link from 'next/link';
 import { kelasTombol } from '../ui/Tombol';
 
-const BARIS = ['KENAPA', 'BELUM?'];
-
-function Judul({ salinan = false }: { salinan?: boolean }) {
-  return (
-    <p
-      aria-hidden={salinan || undefined}
-      className="absolute inset-x-0 text-center text-[19vw] leading-[0.86] font-semibold tracking-[-0.045em] sm:text-[clamp(4.5rem,15.5vw,15rem)]"
-      // Garis tengah memotong baris kedua di tengahnya: puncak teks = 50% − 1,5 × tinggi baris.
-      style={{ top: 'calc(50% - 1.29em)' }}
-    >
-      {BARIS.map((baris) => (
-        <span key={baris} className="baris-naik block overflow-hidden">
-          <span>{baris}</span>
-        </span>
-      ))}
-    </p>
-  );
-}
-
+/** Garis prioritas membelah pertanyaan; satu salinan visual dengan dua bidang warna. */
 export default function HeroGaris() {
   return (
-    <section aria-labelledby="judul-beranda" className="relative h-[82svh] max-h-[64rem] min-h-[32rem] overflow-hidden sm:h-[calc(100svh-4.5rem)] sm:min-h-[34rem]">
-      <h1 id="judul-beranda" className="sr-only">
-        Kenapa belum? suaRAkyat membuka alasan di balik urutan penanganan masalah kota.
-      </h1>
-      <div aria-hidden="true" className="absolute inset-x-0 bottom-0 h-1/2 bg-medan" />
-
-      {/* Salinan atas: tinta di atas kertas. Salinan bawah: kertas di atas medan merah. */}
-      <div aria-hidden="true" className="absolute inset-0 text-tinta [clip-path:inset(0_0_50%_0)]">
-        <Judul />
+    <section aria-labelledby="judul-beranda" className="hero-prioritas">
+      <div className="bingkai hero-judul">
+        <h1 id="judul-beranda" className="hero-kalimat" aria-label="Kenapa belum?">
+          <span className="baris-naik"><span data-pembuka="baris" data-jeda="60">KENAPA</span></span>
+          <span className="baris-naik"><span data-pembuka="baris" data-jeda="210">BELUM?</span></span>
+        </h1>
       </div>
-      <div aria-hidden="true" className="absolute inset-0 text-medan-tinta [clip-path:inset(50%_0_0_0)]">
-        <Judul salinan />
-      </div>
-
-      <div className="di-medan timbul absolute inset-x-0 bottom-0 text-medan-tinta">
-        <div className="bingkai flex flex-col gap-6 pb-8 sm:pb-10 lg:flex-row lg:items-end lg:justify-between">
-          <p className="max-w-[46ch] text-badan sm:text-lead">
-            Kanal pengaduan sudah melacak status laporan. suaRAkyat membuka alasan di balik urutannya: kenapa satu masalah
-            di Jakarta didahulukan, dan bagaimana urutan itu berubah kalau bobotnya diganti.
+      <div className="di-medan bg-medan text-medan-tinta">
+        <div className="bingkai hero-ajakan">
+          <p data-pembuka="teks" data-jeda="380" className="max-w-[42ch] text-lead">
+            Kenali posisi masalah di wilayahmu. Coba ubah prioritas dan lihat siapa yang naik.
           </p>
-          <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
-            <Link href="/prioritas" className={kelasTombol('medan', 'min-h-12')}>
-              Uji bobot prioritas
-            </Link>
-            <Link href="/peta" className="py-2 text-badan underline decoration-2 underline-offset-4 hover:decoration-transparent">
-              Lihat peta laporan
-            </Link>
+          <div data-pembuka="aksi" data-jeda="520" className="flex flex-wrap items-center gap-x-6 gap-y-3">
+            <Link href="#coba-prioritas" className={kelasTombol('medan', 'min-h-12')}>Coba ubah prioritas</Link>
+            <Link href="/contoh" className="inline-flex min-h-11 items-center text-badan underline decoration-2 underline-offset-4 hover:decoration-transparent">Lacak satu contoh</Link>
           </div>
         </div>
       </div>
