@@ -4,22 +4,17 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import BannerSimulasi from '@/components/BannerSimulasi';
-import PetaLaporan, { STATUS_PUBLIK } from '@/components/peta/PetaLaporan';
+import PetaLaporan from '@/components/peta/PetaLaporan';
 import LabelSumber from '@/components/ui/LabelSumber';
 import { ambilTitikLaporan } from '@/lib/data/laporan';
-import type { StatusLaporan } from '@/lib/types';
 
 export const metadata: Metadata = {
   title: 'Peta laporan',
   description: 'Semua laporan warga di DKI Jakarta beserta statusnya, termasuk yang ditolak.',
 };
 
-const daftar = (x: string | string[] | undefined) => (typeof x === 'string' ? x.split(',').filter(Boolean) : []);
-
-async function Isi({ searchParams }: { searchParams: PageProps<'/peta'>['searchParams'] }) {
-  const [sp, { sumber, laporan, sekarang }] = await Promise.all([searchParams, ambilTitikLaporan()]);
-  const kategoriAwal = daftar(sp.kategori).map(Number).filter((n) => n >= 1 && n <= 4);
-  const statusAwal = daftar(sp.status).filter((s): s is StatusLaporan => (STATUS_PUBLIK as string[]).includes(s));
+async function Isi() {
+  const { sumber, laporan, sekarang } = await ambilTitikLaporan();
   return (
     <>
       <div className="flex flex-wrap items-center gap-3">
@@ -28,18 +23,18 @@ async function Isi({ searchParams }: { searchParams: PageProps<'/peta'>['searchP
       </div>
       <BannerSimulasi sumber={sumber} className="mt-4" />
       <div className="mt-8">
-        <PetaLaporan laporan={laporan} sekarang={sekarang} kategoriAwal={kategoriAwal} statusAwal={statusAwal} />
+        <PetaLaporan laporan={laporan} sekarang={sekarang} />
       </div>
     </>
   );
 }
 
-export default function PetaPage({ searchParams }: PageProps<'/peta'>) {
+export default function PetaPage() {
   return (
     <div className="bingkai pt-12 pb-24 sm:pt-16">
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-12" data-awal>
-        <h1 className="text-judul lg:col-span-6">Peta laporan</h1>
-        <p className="max-w-[60ch] text-badan lg:col-span-6">
+      <div className="grid gap-6 lg:grid-cols-12">
+        <h1 data-pembuka="judul" className="text-judul lg:col-span-6">Peta laporan</h1>
+        <p data-pembuka="teks" className="max-w-[60ch] text-badan lg:col-span-6">
           Semua laporan warga di DKI Jakarta daratan beserta statusnya. Saring menurut kategori dan status, lalu buka
           laporannya untuk melihat riwayat penanganan dan posisinya di daftar prioritas.
         </p>
@@ -53,7 +48,7 @@ export default function PetaPage({ searchParams }: PageProps<'/peta'>) {
             </div>
           }
         >
-          <Isi searchParams={searchParams} />
+          <Isi />
         </Suspense>
       </div>
     </div>

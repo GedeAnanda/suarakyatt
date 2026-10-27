@@ -72,14 +72,14 @@ async function Isi() {
 export default function RaporPage() {
   return (
     <div className="bingkai pt-12 pb-24 sm:pt-16">
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-12" data-awal>
-        <h1 className="text-judul lg:col-span-6">Rapor instansi</h1>
+      <div className="grid gap-6 lg:grid-cols-12">
+        <h1 data-pembuka="judul" className="text-judul lg:col-span-6">Rapor instansi</h1>
         <div className="lg:col-span-6">
-          <p className="max-w-[60ch] text-badan">
+          <p data-pembuka="teks" className="max-w-[60ch] text-badan">
             Nilai tiap instansi dalam merespons dan menyelesaikan laporan warga. Laporan yang diabaikan ikut dihitung, dan
             huruf selalu tampil bersama tingkat penolakannya: nilai bagus hasil membuang laporan langsung terlihat.
           </p>
-          <p className="text-tinta mt-4 angka text-lead font-medium tracking-tight">Nilai = 100 × (0,3 R + 0,3 S + 0,2 P + 0,2 K)</p>
+
           <p className="mt-3 text-badan">
             <Link href="/rapor/cara-menilai" className={kelasTautan}>
               Cara menilai, lengkap dengan contoh hitungan
@@ -88,7 +88,7 @@ export default function RaporPage() {
         </div>
       </div>
 
-      <div className="mt-12">
+      <div className="mt-6">
         <Suspense
           fallback={
             <div aria-hidden="true" className="grid gap-6 lg:grid-cols-2">

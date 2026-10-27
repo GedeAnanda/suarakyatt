@@ -20,7 +20,7 @@ export const metadata: Metadata = { title: 'Ubah status laporan' };
 
 async function Isi({ params }: { params: PageProps<'/admin/laporan/[kode]'>['params'] }) {
   const { kode: mentah } = await params;
-  const kode = decodeURIComponent(mentah).toUpperCase();
+  const kode = mentah.toUpperCase();
   const data = await ambilLaporanAdminDetail(kode);
   if (!data) notFound();
   const { laporan: l, timeline, sekarang, sumber, milikInstansi } = data;
@@ -33,8 +33,8 @@ async function Isi({ params }: { params: PageProps<'/admin/laporan/[kode]'>['par
             <BadgeStatus status={l.status} besar />
             {(l.is_simulated || sumber === 'contoh') && <LabelSumber sumber={sumber} />}
           </div>
-          <h1 className="font-kode angka mt-4 text-judul font-semibold tracking-[-0.04em]">{l.kode}</h1>
-          <p className="mt-2 text-lead">
+          <h1 data-pembuka="judul" className="angka mt-4 text-judul font-semibold tracking-[-0.04em]">{l.kode}</h1>
+          <p data-pembuka="teks" className="mt-2 text-lead">
             {l.kategori} di {l.kecamatan}, {l.kota}
           </p>
           <p className="mt-1 text-kecil text-lembut">
@@ -67,7 +67,7 @@ async function Isi({ params }: { params: PageProps<'/admin/laporan/[kode]'>['par
               : 'Laporan ini bukan milik instansi Anda, jadi statusnya tidak bisa diubah dari akun ini.'}
           </p>
         )}
-        <FormUbahStatus kode={l.kode} status={l.status} aktif={milikInstansi} />
+        <FormUbahStatus key={l.status} kode={l.kode} status={l.status} aktif={milikInstansi} />
         <p className="text-kecil">
           <Link href={`/laporan/${l.kode}`} className={kelasTautan}>
             Lihat halaman publik laporan ini

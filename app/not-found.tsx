@@ -6,13 +6,10 @@ import { TautanTombol } from '@/components/ui/Tombol';
 
 export default function TidakDitemukan() {
   return (
-    <div className="bingkai py-16 sm:py-24" data-awal>
-      {/* Angka 404 dirakit seperti judul Beranda: halamannya hilang, hurufnya mencari tempat. */}
-      <p aria-hidden="true" className="text-tinta angka text-[clamp(6rem,4rem+10vw,14rem)] leading-[0.8] font-semibold tracking-[-0.06em]">
-        <TeksRakit teks="404" sebar={0.7} />
-      </p>
-      <h1 className="mt-6 text-judul">Halaman ini tidak ada</h1>
-      <p className="mt-4 max-w-[52ch] text-badan">
+    <div className="bingkai py-16 sm:py-24">
+      <p className="text-tinta angka text-[clamp(6rem,4rem+10vw,14rem)] leading-[0.8] font-semibold tracking-[-0.06em]">404</p>
+      <h1 data-pembuka="judul" className="mt-6 text-judul">Halaman ini tidak ada</h1>
+      <p data-pembuka="teks" className="mt-4 max-w-[52ch] text-badan">
         Tautannya mungkin salah ketik atau sudah dipindah. Kalau Anda mencari laporan, masukkan kodenya di bawah.
       </p>
       <CariKode id="kode-404" besar className="mt-8 max-w-xl" />

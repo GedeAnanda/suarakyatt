@@ -3,6 +3,7 @@
 // data contoh di lib/mocks dan menandainya "Data contoh".
 
 import 'server-only';
+import { cache } from 'react';
 import { connection } from 'next/server';
 import contohPrioritas from '@/lib/mocks/contoh-prioritas.json';
 import contohRapor from '@/lib/mocks/rapor.json';
@@ -27,7 +28,7 @@ export interface DataPrioritas {
   riwayat: RiwayatBobot[];
 }
 
-// Riwayat contoh supaya bagian "Riwayat keputusan" bisa dilihat bentuknya sebelum ada perubahan bobot resmi.
+// Riwayat contoh supaya bagian "Riwayat keputusan" bisa dilihat bentuknya sebelum ada perubahan bobot acuan.
 const RIWAYAT_CONTOH: RiwayatBobot[] = [
   {
     created_at: '2026-10-20T09:12:00+07:00',
@@ -47,7 +48,7 @@ const RIWAYAT_CONTOH: RiwayatBobot[] = [
   },
 ];
 
-export async function ambilDataPrioritas(): Promise<DataPrioritas> {
+export const ambilDataPrioritas = cache(async (): Promise<DataPrioritas> => {
   await connection();
   try {
     const supabase = await createClient();
@@ -57,7 +58,7 @@ export async function ambilDataPrioritas(): Promise<DataPrioritas> {
       supabase.from('v_riwayat_bobot').select('*').order('created_at', { ascending: false }).limit(20),
     ]);
     const isu = (faktor.data as PriorityFactorsResponse | null)?.isu;
-    if (!faktor.error && isu && isu.length > 0) {
+    if (!faktor.error && Array.isArray(isu)) {
       const baris = (bobot.data ?? []) as { faktor: string; bobot: number; updated_at: string }[];
       const bobotResmi = { ...BOBOT_AWAL };
       for (const b of baris) if ((FAKTOR as string[]).includes(b.faktor)) bobotResmi[b.faktor as keyof Bobot] = Number(b.bobot);
@@ -79,9 +80,9 @@ export async function ambilDataPrioritas(): Promise<DataPrioritas> {
     bobotDiperbarui: RIWAYAT_CONTOH[0].created_at,
     riwayat: RIWAYAT_CONTOH,
   };
-}
+});
 
-export async function ambilRapor(): Promise<{ sumber: Sumber; rapor: RaporResponse }> {
+export const ambilRapor = cache(async (): Promise<{ sumber: Sumber; rapor: RaporResponse }> => {
   await connection();
   try {
     const supabase = await createClient();
@@ -92,5 +93,7 @@ export async function ambilRapor(): Promise<{ sumber: Sumber; rapor: RaporRespon
   } catch {
     // lanjut ke data contoh
   }
-  return { sumber: 'contoh', rapor: contohRapor as RaporResponse };
-}
+  const akhir = new Date();
+  const mulai = new Date(akhir.getTime() - 180 * 86400000);
+  return { sumber: 'contoh', rapor: { ...contohRapor, periode: { dari: mulai.toISOString(), sampai: akhir.toISOString() } } as RaporResponse };
+});

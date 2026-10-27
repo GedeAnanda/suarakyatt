@@ -28,13 +28,12 @@ async function Isi() {
       <div className="flex flex-wrap items-center gap-3">
         <LabelSumber sumber={data.sumber} />
         <span className="text-kecil text-lembut">
-          Bobot resmi berlaku{data.bobotDiperbarui ? ` sejak ${tanggal(data.bobotDiperbarui)}` : ''} · kerentanan dari data
-          kemiskinan level kota
+          Bobot acuan berlaku{data.bobotDiperbarui ? ` sejak ${tanggal(data.bobotDiperbarui)}` : ''} · kerentanan memakai asumsi kemiskinan level kota dalam simulasi
         </span>
       </div>
       <BannerSimulasi sumber={data.sumber} className="mt-4" />
 
-      <div className="mt-10">
+      <div className="mt-6">
         <Simulator isu={data.faktor.isu} bobotResmi={data.bobotResmi} perencana={Boolean(sesi?.perencana)} />
       </div>
 
@@ -44,7 +43,7 @@ async function Isi() {
             Riwayat keputusan
           </h2>
           <p className="mt-4 max-w-[42ch] text-badan">
-            Setiap perubahan bobot resmi oleh Perencana tercatat di sini: siapa, kapan, dari berapa ke berapa, dan alasannya.
+            Setiap perubahan bobot acuan oleh Perencana tercatat di sini: siapa, kapan, dari berapa ke berapa, dan alasannya.
             Tidak ada bobot yang objektif; karena itu bobot dibuat terbuka.
           </p>
         </div>
@@ -72,34 +71,25 @@ function Kerangka() {
 export default function PrioritasPage() {
   return (
     <div className="bingkai pt-12 pb-24 sm:pt-16">
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-12" data-awal>
-        <h1 className="text-judul lg:col-span-6">Dashboard prioritas</h1>
-        <p className="max-w-[60ch] text-badan lg:col-span-6">
+      <div className="grid gap-6 lg:grid-cols-12">
+        <h1 data-pembuka="judul" className="text-judul lg:col-span-6">Dashboard prioritas</h1>
+        <p data-pembuka="teks" className="max-w-[60ch] text-badan lg:col-span-6">
           Setiap isu wilayah (satu kecamatan × satu kategori yang punya laporan aktif) mendapat skor 0–100 dari enam
           faktor. Pilih isu untuk melihat faktor yang mendorong dan menahannya, atau geser bobotnya sendiri. Hitungannya
           dijelaskan di bawah.
         </p>
       </div>
 
-      <ol aria-label="Cara membaca dashboard ini" className="mt-10 grid grid-cols-1 gap-3 sm:grid-cols-3" data-muncul>
-        {[
-          { judul: 'Pilih isu', isi: 'Klik kecamatan di peta atau baris di daftar peringkat.' },
-          { judul: 'Baca alasannya', isi: 'Lihat faktor yang mendorong skornya naik dan yang menahannya.' },
-          { judul: 'Uji bobot lain', isi: 'Pilih preset atau geser bobot; urutan bergeser dan tandanya ↑↓ muncul.' },
-        ].map((l, i) => (
-          <li key={l.judul} className="kartu flex gap-4 p-4 sm:p-5">
-            <span aria-hidden="true" className="angka flex size-9 shrink-0 items-center justify-center rounded-full bg-tinta text-badan font-semibold text-kertas">
-              {i + 1}
-            </span>
-            <p className="text-kecil">
-              <strong className="block text-badan font-semibold">{l.judul}</strong>
-              {l.isi}
-            </p>
-          </li>
-        ))}
-      </ol>
+      <details className="mt-5 text-badan">
+        <summary className="w-fit cursor-pointer py-2 font-medium text-tinta">Cara mencoba simulator</summary>
+        <ol className="mt-2 max-w-[65ch] list-decimal space-y-2 pl-5">
+          <li>Pilih kecamatan di peta atau isu di daftar peringkat.</li>
+          <li>Baca faktor yang mendorong dan menahan skornya.</li>
+          <li>Ubah bobot, lalu bagikan tautan untuk membuka skenario yang sama.</li>
+        </ol>
+      </details>
 
-      <div className="mt-10">
+      <div className="mt-6">
         <Suspense fallback={<Kerangka />}>
           <Isi />
         </Suspense>

@@ -151,7 +151,7 @@ export default function FormUbahStatus({ kode, status, aktif }: { kode: string; 
             {alasan === 'duplikat' && (
               <label className="mt-2 grid gap-1.5 text-kecil">
                 Kode laporan rujukan
-                <input value={rujukan} onChange={(e) => setRujukan(e.target.value)} placeholder="SR-K7W3PA" className={`${kelasIsian} font-kode uppercase`} />
+                <input value={rujukan} onChange={(e) => setRujukan(e.target.value)} placeholder="SR-XXXXXX" className={`${kelasIsian} uppercase`} />
               </label>
             )}
           </fieldset>

@@ -79,7 +79,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-16 grid max-w-[75ch] gap-2 text-kecil text-medan-lembut sm:mt-24">
+        <div className="mt-16 grid max-w-[60ch] gap-2 text-kecil text-medan-lembut sm:mt-24">
           <p>
             Peta dasar ©{' '}
             <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer" className="underline">

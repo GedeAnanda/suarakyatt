@@ -62,7 +62,7 @@ export default function DaftarMasalah() {
       </ul>
 
       <figure className="lg:col-span-5">
-        <div className="relative aspect-4/5 overflow-hidden rounded-(--radius-kartu) bg-lapis shadow-(--shadow-kartu)">
+        <div className="relative aspect-4/5 overflow-hidden rounded-(--radius-kartu) bg-lapis">
           {FOTO_KATEGORI.map((f, i) => (
             <Image
               key={f.src}
@@ -70,19 +70,15 @@ export default function DaftarMasalah() {
               alt={f.alt}
               fill
               sizes="(min-width: 1024px) 40vw, 100vw"
-              // Sapuan: foto baru membuka dari kiri di atas foto lama dan pelan-pelan mendekat.
-              className={`sapu object-cover grayscale-[0.9] contrast-[1.05] ${
-                i === pilih
-                  ? 'z-10 scale-100 [clip-path:inset(0)]'
-                  : // Foto lama baru menutup setelah foto baru selesai membuka, supaya tidak ada celah.
-                    'z-0 scale-[1.06] [clip-path:inset(0_100%_0_0)] [transition-delay:750ms]'
+              className={`foto-pilihan object-cover grayscale-[0.9] contrast-[1.05] ${
+                i === pilih ? 'opacity-100' : 'opacity-0'
               }`}
               aria-hidden={i !== pilih}
             />
           ))}
         </div>
         <figcaption className="mt-3 text-kecil text-lembut">
-          {KATEGORI[pilih].nama}: foto &ldquo;{foto.judul}&rdquo; oleh {foto.pembuat},{' '}
+          Foto konteks kota, bukan bukti laporan: &ldquo;{foto.judul}&rdquo; oleh {foto.pembuat},{' '}
           <a href={foto.url} target="_blank" rel="noreferrer" className="underline">
             {foto.lisensi}
           </a>

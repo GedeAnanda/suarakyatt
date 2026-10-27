@@ -37,9 +37,9 @@ const HURUF = [
 export default function CaraMenilaiPage() {
   return (
     <div className="bingkai pt-12 pb-24 sm:pt-16">
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-12" data-awal>
-        <h1 className="text-judul lg:col-span-6">Cara menilai instansi</h1>
-        <p className="max-w-[60ch] text-badan lg:col-span-6">
+      <div className="grid gap-6 lg:grid-cols-12">
+        <h1 data-pembuka="judul" className="text-judul lg:col-span-6">Cara menilai instansi</h1>
+        <p data-pembuka="teks" className="max-w-[60ch] text-badan lg:col-span-6">
           Setiap instansi mendapat nilai 0–100 dan huruf A sampai E dari empat komponen. Laporan yang belum disentuh ikut
           dihitung, sehingga instansi yang mengabaikan laporan tidak terlihat bagus. Semua instansi dihitung dengan susunan
           bobot yang sama.

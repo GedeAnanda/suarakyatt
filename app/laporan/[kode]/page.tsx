@@ -27,12 +27,12 @@ import type { KenapaBelum } from '@/lib/types';
 
 export async function generateMetadata({ params }: PageProps<'/laporan/[kode]'>): Promise<Metadata> {
   const { kode } = await params;
-  return { title: `Laporan ${decodeURIComponent(kode)}` };
+  return { title: `Laporan ${kode}` };
 }
 
 async function Isi({ params, searchParams }: Pick<PageProps<'/laporan/[kode]'>, 'params' | 'searchParams'>) {
   const [{ kode: mentah }, sp] = await Promise.all([params, searchParams]);
-  const kode = decodeURIComponent(mentah).toUpperCase();
+  const kode = mentah.toUpperCase();
   const detail = await ambilDetailLaporan(kode);
   if (!detail) notFound();
 
@@ -81,19 +81,11 @@ async function Isi({ params, searchParams }: Pick<PageProps<'/laporan/[kode]'>, 
             <BadgeStatus status={l.status} besar />
             {(l.is_simulated || sumber === 'contoh') && <LabelSumber sumber={sumber} />}
           </div>
-          {/* Kode dirakit huruf demi huruf, seperti judul Beranda; pembaca layar membaca kodenya utuh. */}
-          <h1 className="font-kode angka mt-5 text-[clamp(3rem,1.6rem+6vw,7rem)] leading-[0.9] font-semibold tracking-[-0.05em]">
-            <span className="sr-only">{l.kode}</span>
-            <span aria-hidden="true">
-              <TeksRakit teks={l.kode} sebar={0.6} jeda={150} />
-            </span>
-          </h1>
-          <div className="mt-4">
+          <h1 data-pembuka="judul" className="mt-5 text-judul">{l.kategori} di {l.kecamatan}</h1>
+          <p data-pembuka="teks" className="mt-3 text-badan text-lembut">{l.kota} · Kode <span className="angka font-semibold text-teks">{l.kode}</span></p>
+          <div className="mt-4" data-ui>
             <SalinKode kode={l.kode} />
           </div>
-          <p className="mt-5 text-pernyataan tracking-[-0.02em]">
-            {l.kategori} di {l.kecamatan}, {l.kota}
-          </p>
           <p className="mt-2 text-kecil text-lembut">
             Dilaporkan {tanggalJam(l.created_at)} oleh {l.inisial_pelapor || 'warga'} · ditangani {l.instansi}
           </p>
@@ -147,6 +139,11 @@ async function Isi({ params, searchParams }: Pick<PageProps<'/laporan/[kode]'>, 
             <h2 id="judul-riwayat" className="text-lead font-medium tracking-tight">
               Riwayat penanganan
             </h2>
+            <p className="mt-2 max-w-[65ch] text-badan text-lembut">
+              Catatan di bawah berasal dari tindakan pelapor dan instansi dalam simulasi ini.
+              {aktif && !timeline.some((t) => t.status_baru !== 'menunggu' && t.catatan) &&
+                ' Belum ada penjelasan instansi tentang tindak lanjut atau kendala penanganan.'}
+            </p>
             <div className="mt-6">
               <Timeline item={timeline} berjalan={aktif} />
             </div>

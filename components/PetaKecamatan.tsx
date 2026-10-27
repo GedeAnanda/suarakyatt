@@ -101,14 +101,14 @@ export default function PetaKecamatan({
         {sorot &&
           KECAMATAN.filter((k) => k.kode_wilayah === sorot).map((k) => (
             <path
-              key="sorot"
+              key={`sorot-${k.kode_wilayah}`}
               d={k.d}
               fill="none"
               stroke="var(--color-teks)"
               strokeWidth={7}
               strokeLinejoin="round"
               pointerEvents="none"
-              className="[.di-medan_&]:stroke-(--color-medan-tinta)"
+              className="sorot-peta [.di-medan_&]:stroke-(--color-medan-tinta)"
             />
           ))}
       </svg>
