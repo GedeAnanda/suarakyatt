@@ -9,13 +9,13 @@ export default function AlurLapor({ rapor, contoh }: { rapor: RaporInstansi[]; c
   const l = contoh?.laporan;
   const instansi = rapor.find((r) => r.peringatan_penolakan) ?? rapor[0];
   return (
-    <div className="grid gap-10 lg:grid-cols-12 lg:gap-8">
-      <div className="lg:col-span-5" data-muncul>
+    <div className="grid gap-8">
+      <div className="grid gap-x-8 gap-y-4 lg:grid-cols-2" data-muncul>
         <h2 id="judul-alur" className="text-judul">Satu laporan.<br />Jejaknya terbuka.</h2>
-        <p className="mt-5 max-w-[38ch] text-badan">Warga membawa bukti. Instansi mencatat tindak lanjut. Publik bisa memeriksa keduanya.</p>
-        <p className="mt-4 max-w-[38ch] text-kecil text-lembut">Cuplikan di samping diambil dari data yang sedang tampil. Semua laporan dan penilaian merupakan simulasi.</p>
+        <p className="max-w-[50ch] self-end text-badan">Warga membawa bukti. Instansi mencatat tindak lanjut. Publik bisa memeriksa keduanya.</p>
+        <p className="max-w-[55ch] text-kecil text-lembut lg:col-start-2">Cuplikan di bawah diambil dari data yang sedang tampil. Semua laporan dan penilaian merupakan simulasi.</p>
       </div>
-      <ol className="grid gap-6 lg:col-span-7" data-muncul>
+      <ol className="grid gap-5 lg:grid-cols-3" data-muncul>
         <li className="bg-lapis p-5 sm:p-7">
           <h3 className="text-lead">Bukti dari warga</h3>
           {l ? <>
@@ -26,7 +26,7 @@ export default function AlurLapor({ rapor, contoh }: { rapor: RaporInstansi[]; c
             </div>
           </> : <p className="mt-3 text-badan">Foto, titik lokasi, dan cerita singkat membuat masalah lebih mudah diperiksa.</p>}
         </li>
-        <li className="pl-5 sm:pl-7">
+        <li className="bg-lapis p-5 sm:p-7">
           <h3 className="text-lead">Tindak lanjut tercatat</h3>
           {contoh?.timeline.length ? <ol className="mt-4 grid gap-4" data-ui>{contoh.timeline.slice(-2).map((t) => (
             <li key={`${t.created_at}-${t.status_baru}`}>

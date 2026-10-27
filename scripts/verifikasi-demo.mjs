@@ -40,6 +40,14 @@ try {
   const dibuat=(await c.query("select create_report(1::smallint,'Uji alur laporan yang selalu di-rollback',array['/demo/lampiran-simulasi.svg'],$1,$2) data",[region.lat,region.lng])).rows[0].data;
   cek(Boolean(dibuat.kode?.startsWith('SR-')),true,'Warga dapat membuat laporan pada wilayah terpetakan');
   await c.query("select set_config('request.jwt.claim.sub',$1,true)",[admin]);
+  // Pemilik laporan lintas instansi boleh membaca, tetapi tidak boleh menindaklanjuti.
+  cek((await c.query("select count(*)::int n from v_laporan_admin where kode='TEST-REJECT-1'")).rows[0].n,1,'RLS kepemilikan berbeda dari izin tindak lanjut');
+  await c.query('savepoint lintas_instansi');
+  let ditolakLintasInstansi=false;
+  try { await c.query("select update_report_status('TEST-REJECT-1','diproses')"); }
+  catch(e) { ditolakLintasInstansi=e.message.includes('BUKAN_INSTANSI'); }
+  await c.query('rollback to savepoint lintas_instansi');
+  cek(ditolakLintasInstansi,true,'Admin pemilik tetap tidak boleh mengubah laporan instansi lain');
   await c.query("select update_report_status($1,'diverifikasi')",[dibuat.kode]);
   await c.query("select update_report_status($1,'diproses')",[dibuat.kode]);
   await c.query('reset role');

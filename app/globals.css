@@ -467,7 +467,7 @@ input[type="range"].slider::-moz-range-thumb {
 .hero-kalimat {
   margin: 0;
   text-align: center;
-  font-size: clamp(3.75rem, 15.5vw, 13rem);
+  font-size: clamp(3.75rem, 13vw, 10rem);
   line-height: .94;
   letter-spacing: -.055em;
   font-weight: 600;
@@ -526,7 +526,7 @@ html { scroll-padding-top: 6rem; }
     animation: angka-masuk 420ms var(--ease-keluar) both;
   }
 
-  #menu-ponsel:not([hidden]), details[open] > .menu-gerak {
+  details[open] > .menu-gerak {
     transform-origin: top center;
     animation: menu-masuk 240ms var(--ease-keluar) both;
   }
@@ -565,3 +565,12 @@ html { scroll-padding-top: 6rem; }
   .kartu-klik:hover { transform: none; }
   .tombol-gerak, .pilihan-gerak { translate: none; scale: none; }
 }
+
+/* Judul informasi berada satu tingkat di bawah judul halaman. */
+main h2.text-judul { font-size: clamp(1.9rem, 1.2rem + 2.4vw, 3rem); line-height: 1.1; }
+#menu-ponsel { opacity: 0; visibility: hidden; transform: translateY(-6px); transition: opacity 180ms ease, transform 180ms var(--ease-keluar), visibility 180ms; }
+#menu-ponsel[data-terbuka="true"] { opacity: 1; visibility: visible; transform: translateY(0); }
+.slider-panel { display: grid; grid-template-rows: 0fr; visibility: hidden; transition: grid-template-rows 240ms var(--ease-keluar), visibility 240ms; }
+.slider-panel[data-terbuka="true"] { grid-template-rows: 1fr; visibility: visible; }
+@media (min-width: 1024px) { .slider-panel { grid-template-rows: 1fr; visibility: visible; } }
+@media (prefers-reduced-motion: reduce) { #menu-ponsel, .slider-panel { transition: none; } }

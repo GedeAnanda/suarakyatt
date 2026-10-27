@@ -46,7 +46,7 @@ async function BagianWilayah() {
     if (teratas.length < 5) teratas.push({ kode_wilayah: s.kode_wilayah, kecamatan: s.kecamatan, kota: s.kota, kategori: s.kategori, skor: s.skor, peringkat: s.peringkat });
   }
   return (
-    <section className="di-medan bg-medan py-14 text-medan-tinta sm:py-24" aria-labelledby="judul-kecamatan">
+    <section className="di-medan bg-medan py-12 text-medan-tinta sm:py-16" aria-labelledby="judul-kecamatan">
       <div className="bingkai" data-muncul>
         <div className="grid gap-6 lg:grid-cols-12">
           <h2 id="judul-kecamatan" className="text-judul lg:col-span-5">Lihat wilayahmu.</h2>
@@ -73,7 +73,7 @@ async function BagianAlur() {
 
 function KonteksPublik() {
   return (
-    <section aria-labelledby="judul-konteks" className="bg-lapis py-14 sm:py-24">
+    <section aria-labelledby="judul-konteks" className="bg-lapis py-12 sm:py-16">
       <div className="bingkai">
         <div className="grid gap-8 lg:grid-cols-12" data-muncul>
           <div className="min-w-0 lg:col-span-5"><h2 id="judul-konteks" className="text-judul">Banyak usulan.<br />Perlu alasan.</h2><p className="mt-5 max-w-[40ch] text-badan">Setiap pilihan prioritas punya konsekuensi. Data dan cara menghitungnya perlu bisa diperiksa bersama.</p></div>
@@ -100,14 +100,15 @@ export default function BerandaPage() {
     <>
       <HeroGaris />
       <Suspense fallback={<KerangkaBagian />}><BagianPrioritas /></Suspense>
-      <section aria-labelledby="judul-alur" className="py-14 sm:py-24"><div className="bingkai"><Suspense fallback={<KerangkaBagian />}><BagianAlur /></Suspense></div></section>
-      <Suspense fallback={<KerangkaBagian />}><BagianWilayah /></Suspense>
-      <section aria-labelledby="judul-masalah" className="py-14 sm:py-24"><div className="bingkai" data-muncul><div className="grid gap-5 lg:grid-cols-12"><h2 id="judul-masalah" className="text-judul lg:col-span-5">Masalahnya nyata.</h2><p className="max-w-[55ch] text-badan lg:col-span-7">Empat jenis masalah sehari-hari menjadi ruang belajar. Batas respons dan penyelesaiannya adalah asumsi simulasi yang terbuka.</p></div><div className="mt-8 sm:mt-12"><DaftarMasalah /></div></div></section>
-      <KonteksPublik />
-      <section aria-labelledby="judul-coba" className="py-14 sm:py-24"><div className="bingkai grid gap-10 lg:grid-cols-12" data-muncul>
+      <section aria-labelledby="judul-coba" className="py-12 sm:py-16"><div className="bingkai grid gap-10 lg:grid-cols-12" data-muncul>
         <div className="min-w-0 lg:col-span-5"><h2 id="judul-coba" className="text-judul">Coba dari sisimu.</h2><p className="mt-5 max-w-[40ch] text-badan">Jelajahi contoh tanpa akun, atau masuk sebagai warga dan admin demo untuk mencoba alur pelaporan.</p><p className="mt-3 max-w-[42ch] text-kecil text-lembut">suaRAkyat adalah prototipe lomba. Laporan tidak diteruskan ke instansi pemerintah.</p></div>
         <div className="min-w-0 lg:col-span-7" data-ui><TombolDemo /><Link href="/contoh" className={`${kelasTautan} mt-5 inline-flex min-h-11 items-center`}>Buka laporan contoh tanpa masuk</Link><div className="mt-8 bg-lapis p-5 sm:p-7"><h3 className="text-lead">Sudah punya kode laporan?</h3><CariKode id="kode-beranda" besar className="mt-4" /><p className="mt-3 text-kecil text-lembut">Status, catatan instansi, dan penjelasan prioritas dalam satu tempat.</p></div></div>
       </div></section>
+      <section aria-labelledby="judul-alur" className="py-12 sm:py-16"><div className="bingkai"><Suspense fallback={<KerangkaBagian />}><BagianAlur /></Suspense></div></section>
+      <Suspense fallback={<KerangkaBagian />}><BagianWilayah /></Suspense>
+      <section aria-labelledby="judul-masalah" className="py-12 sm:py-16"><div className="bingkai" data-muncul><div className="grid gap-5 lg:grid-cols-12"><h2 id="judul-masalah" className="text-judul lg:col-span-5">Masalahnya nyata.</h2><p className="max-w-[55ch] text-badan lg:col-span-7">Empat jenis masalah sehari-hari menjadi ruang belajar. Batas respons dan penyelesaiannya adalah asumsi simulasi yang terbuka.</p></div><div className="mt-8 sm:mt-12"><DaftarMasalah /></div></div></section>
+      <KonteksPublik />
+
     </>
   );
 }

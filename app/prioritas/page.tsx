@@ -5,7 +5,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Suspense } from 'react';
-import BannerSimulasi from '@/components/BannerSimulasi';
 import RiwayatBobot from '@/components/prioritas/RiwayatBobot';
 import Simulator from '@/components/prioritas/Simulator';
 import LabelSumber from '@/components/ui/LabelSumber';
@@ -28,16 +27,16 @@ async function Isi() {
       <div className="flex flex-wrap items-center gap-3">
         <LabelSumber sumber={data.sumber} />
         <span className="text-kecil text-lembut">
-          Bobot acuan berlaku{data.bobotDiperbarui ? ` sejak ${tanggal(data.bobotDiperbarui)}` : ''} · kerentanan memakai asumsi kemiskinan level kota dalam simulasi
+          Bobot acuan berlaku{data.bobotDiperbarui ? ` sejak ${tanggal(data.bobotDiperbarui)}` : ''} · laporan dan demografi simulasi, bukan kebijakan pemerintah
         </span>
       </div>
-      <BannerSimulasi sumber={data.sumber} className="mt-4" />
+
 
       <div className="mt-6">
         <Simulator isu={data.faktor.isu} bobotResmi={data.bobotResmi} perencana={Boolean(sesi?.perencana)} />
       </div>
 
-      <section aria-labelledby="judul-riwayat" className="mt-24 grid gap-8 lg:grid-cols-12">
+      <section aria-labelledby="judul-riwayat" className="mt-16 grid gap-8 lg:grid-cols-12">
         <div className="lg:col-span-4">
           <h2 id="judul-riwayat" className="text-judul">
             Riwayat keputusan
@@ -74,9 +73,7 @@ export default function PrioritasPage() {
       <div className="grid gap-6 lg:grid-cols-12">
         <h1 data-pembuka="judul" className="text-judul lg:col-span-6">Dashboard prioritas</h1>
         <p data-pembuka="teks" className="max-w-[60ch] text-badan lg:col-span-6">
-          Setiap isu wilayah (satu kecamatan × satu kategori yang punya laporan aktif) mendapat skor 0–100 dari enam
-          faktor. Pilih isu untuk melihat faktor yang mendorong dan menahannya, atau geser bobotnya sendiri. Hitungannya
-          dijelaskan di bawah.
+          Uji prioritas masalah di Jakarta. Pilih bobot, lihat perubahan peringkat, lalu buka alasan di balik skornya.
         </p>
       </div>
 
@@ -95,7 +92,7 @@ export default function PrioritasPage() {
         </Suspense>
       </div>
 
-      <section aria-labelledby="judul-faktor" className="mt-24 grid gap-8 lg:grid-cols-12">
+      <section aria-labelledby="judul-faktor" className="mt-16 grid gap-8 lg:grid-cols-12">
         <div className="lg:col-span-4">
           <h2 id="judul-faktor" className="text-judul">
             Enam faktor
@@ -119,6 +116,15 @@ export default function PrioritasPage() {
           ))}
         </dl>
       </section>
+      <details className="mt-8 max-w-4xl border-t border-batas pt-4 text-badan">
+        <summary className="min-h-11 cursor-pointer py-2 font-semibold text-tinta">Dasar model dan batas penafsirannya</summary>
+        <div className="mt-3 grid gap-4">
+          <p>Bobot awal model memberi pengaruh terbesar pada urgensi (30%), diikuti volume dan umur laporan (masing-masing 20%), kerentanan (15%), kepadatan (10%), dan dukungan (5%). Ini pilihan awal rancangan prototipe, belum merupakan bobot yang divalidasi bersama warga atau instansi.</p>
+          <p>Volume, dukungan, kerentanan, dan kepadatan dinormalisasi terhadap isu yang sedang dibandingkan. Karena itu, menyaring kategori bisa mengubah skor dan peringkat. Skor antar-saringan tidak langsung dapat dibandingkan.</p>
+          <p>Penduduk dan kemiskinan masih asumsi simulasi; seluruh kecamatan dalam satu kota memakai nilai kemiskinan yang sama. Skor tidak mengukur kebutuhan setiap orang, ketersediaan anggaran, atau kesiapan petugas.</p>
+          <p>Gunakan preset untuk menguji kepekaan hasil: apakah isu yang sama tetap tinggi ketika prioritas berubah? Buka rincian enam faktor untuk memeriksa kontribusinya. Alasan penanganan dari instansi tetap dibaca di riwayat laporan.</p>
+        </div>
+      </details>
     </div>
   );
 }

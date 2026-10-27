@@ -16,12 +16,13 @@ export default function PerbandinganPeringkat({ isu, bobotResmi, idIsu, kodeLapo
   const [preset, setPreset] = useState<NamaPreset>('keselamatan');
   const jelas = useMemo(() => kenapaBelum(idIsu, isu, bobotResmi, 'diverifikasi'), [idIsu, isu, bobotResmi]);
   const target = isu.find((i) => i.id === idIsu)!;
+  const acuan = useMemo(() => hitungSkor(isu, bobotResmi).find((s) => s.id === idIsu)!, [isu, bobotResmi, idIsu]);
   const simulasi = useMemo(() => hitungSkor(isu, PRESET[preset]).find((s) => s.id === idIsu)!, [isu, preset, idIsu]);
   const geser = jelas.peringkat - simulasi.peringkat;
   const query = new URLSearchParams({ isu: idIsu, bobot: FAKTOR.map((f) => Math.round(PRESET[preset][f] * 100)).join(',') });
 
   return (
-    <section id="coba-prioritas" aria-labelledby="judul-dua-urutan" className="bg-permukaan py-14 sm:py-24">
+    <section id="coba-prioritas" aria-labelledby="judul-dua-urutan" className="bg-permukaan py-14 sm:py-16">
       <div className="bingkai grid gap-8 lg:grid-cols-12 lg:gap-12">
         <div className="lg:col-span-5" data-muncul>
           <h2 id="judul-dua-urutan" className="text-judul">Satu isu,<br />dua urutan.</h2>
@@ -57,6 +58,13 @@ export default function PerbandinganPeringkat({ isu, bobotResmi, idIsu, kodeLapo
           <details className="mt-3 text-badan">
             <summary className="inline-flex min-h-11 cursor-pointer items-center text-tinta underline underline-offset-4">Mengapa posisinya berubah?</summary>
             <p className="mt-2 max-w-[60ch] text-lembut">Bobot menentukan besar pengaruh setiap faktor. Pada acuan, {NAMA_FAKTOR[jelas.pendorong.faktor].toLowerCase()} menyumbang {formatPoin(jelas.pendorong.poin)} poin. Mengubah bobot menghitung ulang seluruh isu, sehingga urutannya dapat bergeser.</p>
+            <table className="mt-4 w-full text-left text-kecil">
+              <caption className="pb-3 text-left font-medium">Kontribusi terhadap skor · poin dari 100</caption>
+              <thead><tr className="border-b border-batas"><th scope="col" className="py-2 font-medium">Faktor</th><th scope="col" className="px-2 text-right font-medium">Acuan</th><th scope="col" className="text-right font-medium">Pilihanmu</th></tr></thead>
+              <tbody>{FAKTOR.map((f) => <tr key={f} className="border-b border-batas"><th scope="row" className="py-2 font-normal">{NAMA_FAKTOR[f]}</th><td className="angka px-2 text-right">{formatPoin(acuan.kontribusi[f])}</td><td className="angka text-right">{formatPoin(simulasi.kontribusi[f])}</td></tr>)}</tbody>
+              <tfoot><tr><th scope="row" className="pt-3">Total skor</th><td className="angka px-2 pt-3 text-right font-semibold">{formatPoin(acuan.skor)}</td><td className="angka pt-3 text-right font-semibold">{formatPoin(simulasi.skor)}</td></tr></tfoot>
+            </table>
+            <p className="mt-3 text-kecil text-lembut">Data isu tetap sama; yang berubah hanya bobot. Peringkat membandingkan seluruh isu, bukan menjanjikan jadwal perbaikan. Selisih kecil pada jumlah poin dapat terjadi karena pembulatan.</p>
           </details>
           <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-3">
             <Link href={`/prioritas?${query}`} className={kelasTombol()}>Jelajahi perhitungannya</Link>

@@ -76,8 +76,7 @@ export default function RaporPage() {
         <h1 data-pembuka="judul" className="text-judul lg:col-span-6">Rapor instansi</h1>
         <div className="lg:col-span-6">
           <p data-pembuka="teks" className="max-w-[60ch] text-badan">
-            Nilai tiap instansi dalam merespons dan menyelesaikan laporan warga. Laporan yang diabaikan ikut dihitung, dan
-            huruf selalu tampil bersama tingkat penolakannya: nilai bagus hasil membuang laporan langsung terlihat.
+            Bandingkan respons, penyelesaian, dan penolakan laporan. Laporan yang diabaikan tetap dihitung dalam penilaian.
           </p>
 
           <p className="mt-3 text-badan">

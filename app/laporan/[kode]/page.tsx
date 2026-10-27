@@ -122,6 +122,8 @@ async function Isi({ params, searchParams }: Pick<PageProps<'/laporan/[kode]'>, 
 
       <div className="mt-14 grid gap-12 lg:grid-cols-12 lg:gap-8">
         <div className="grid content-start gap-12 lg:col-span-7">
+          {aktif && <PanelKenapaBelum data={jelas} isu={{ kategori: l.kategori, kecamatan: l.kecamatan }} idIsu={idIsu} />}
+
           <section aria-labelledby="judul-isi">
             <h2 id="judul-isi" className="sr-only">
               Isi laporan
@@ -132,7 +134,6 @@ async function Isi({ params, searchParams }: Pick<PageProps<'/laporan/[kode]'>, 
             </p>
           </section>
 
-          {aktif && <PanelKenapaBelum data={jelas} isu={{ kategori: l.kategori, kecamatan: l.kecamatan }} idIsu={idIsu} />}
 
           <section aria-labelledby="judul-riwayat">
             <h2 id="judul-riwayat" className="text-lead font-medium tracking-tight">

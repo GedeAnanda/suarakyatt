@@ -6,8 +6,17 @@ import type { Metadata } from 'next';
 import FormLaporan from '@/components/lapor/FormLaporan';
 import Ikon from '@/components/ui/Ikon';
 import { KANAL_RESMI } from '@/lib/konten';
+import { ambilSesi } from '@/lib/data/sesi';
+import { redirect } from 'next/navigation';
+import { Suspense } from 'react';
 
 export const metadata: Metadata = { title: 'Lapor masalah' };
+
+async function FormDenganSesi() {
+  const sesi = await ambilSesi();
+  if (!sesi) redirect('/masuk?lanjut=/lapor');
+  return <FormLaporan key={sesi.uid} uid={sesi.uid} />;
+}
 
 export default function LaporPage() {
   return (
@@ -37,8 +46,8 @@ export default function LaporPage() {
         </p>
       </aside>
 
-      <div className="mt-14">
-        <FormLaporan />
+      <div className="mt-6">
+        <Suspense fallback={<p role="status" className="py-8 text-badan">Membuka formulir…</p>}><FormDenganSesi /></Suspense>
       </div>
     </div>
   );

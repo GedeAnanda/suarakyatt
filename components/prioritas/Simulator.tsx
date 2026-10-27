@@ -7,7 +7,7 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { ubahParameter } from '@/lib/pilihan-url';
 import { pesanError } from '@/lib/errors';
 import { DEFINISI_FAKTOR, KATEGORI, NAMA_FAKTOR } from '@/lib/konten';
@@ -35,7 +35,7 @@ type Slider = Record<Faktor, number>;
 const keSlider = (b: Bobot): Slider => Object.fromEntries(FAKTOR.map((f) => [f, Math.round(b[f] * 100)])) as Slider;
 const sama = (a: Bobot, b: Bobot) => FAKTOR.every((f) => Math.abs(a[f] - b[f]) < 0.0005);
 const persenBobot = (x: number) => `${Math.round(x * 100)}%`;
-const JUMLAH_AWAL = 15;
+const JUMLAH_AWAL = 8;
 
 /** "30,20,5,20,15,10" → slider; null kalau bentuknya tidak sah; nol dipertahankan agar peringatan konsisten. */
 function dariUrl(nilai: string | null): Slider | null {
@@ -73,7 +73,8 @@ export default function Simulator({
   const pilihId = params.get('isu');
   const [semua, setSemua] = useState(false);
   const [sliderTerbuka, setSliderTerbuka] = useState(() => dariUrl(params.get('bobot')) !== null);
-  const panelIsu = useRef<HTMLElement>(null);
+  const [petaTerbuka, setPetaTerbuka] = useState(false);
+  const gerakan = useRef(new Map<HTMLElement, Animation>());
   const daftar = useRef<HTMLOListElement>(null);
   const posisiLama = useRef(new Map<string, number>());
 
@@ -99,7 +100,7 @@ export default function Simulator({
     return { skorKecamatan: skor, keteranganKecamatan: ket };
   }, [simulasi]);
 
-  const terpilih = simulasi.find((s) => s.id === pilihId) ?? simulasi[0];
+  const terpilih = simulasi.find((s) => s.id === (pilihId ?? resmi[0]?.id)) ?? simulasi[0];
   const tampil = semua ? simulasi : simulasi.slice(0, JUMLAH_AWAL);
   const presetAktif = (Object.keys(PRESET) as NamaPreset[]).find((p) => sama(bobot, normalisasiBobot(PRESET[p])));
 
@@ -109,37 +110,47 @@ export default function Simulator({
     ubahParameter({ bobot: acuan ? null : FAKTOR.map((f) => nilai[f]).join(',') });
   }
 
-  // FLIP: setiap baris meluncur dari posisi lamanya ke posisi barunya, jadi perubahan peringkat terlihat.
+  // Baca posisi visual sebelum membatalkan gerak lama: input cepat tetap menyambung.
   useLayoutEffect(() => {
     const ol = daftar.current;
     if (!ol) return;
-    const gerak = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const baru = new Map<string, number>();
-    const baris = [...ol.querySelectorAll<HTMLElement>('[data-isu]')].map((el) => ({ el, top: el.offsetTop }));
-    baris.forEach(({ el, top }) => {
-      const id = el.dataset.isu!;
-      baru.set(id, top);
-      const lama = posisiLama.current.get(id);
-      if (gerak && lama !== undefined && Math.abs(lama - top) > 2) {
-        el.animate([{ transform: `translateY(${lama - top}px)` }, { transform: 'translateY(0)' }], {
-          duration: 520,
-          easing: 'cubic-bezier(0.34, 1.36, 0.64, 1)',
-        });
-      }
+    const bolehGerak = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const baris = [...ol.querySelectorAll<HTMLElement>('[data-isu]')].map((el) => {
+      const transform = getComputedStyle(el).transform;
+      return { el, top: el.offsetTop, geser: transform === 'none' ? 0 : new DOMMatrixReadOnly(transform).m42 };
     });
+    for (const animasi of gerakan.current.values()) animasi.cancel();
+    gerakan.current.clear();
+    const baru = new Map<string, number>();
+    for (const { el, top, geser } of baris) {
+      const id = el.dataset.isu!;
+      const lama = posisiLama.current.get(id);
+      baru.set(id, top);
+      const delta = lama === undefined ? 0 : lama - top + geser;
+      if (bolehGerak && Math.abs(delta) > 2) {
+        const animasi = el.animate([{ transform: `translateY(${delta}px)` }, { transform: 'translateY(0)' }], {
+          duration: 300, easing: 'cubic-bezier(.22, 1, .36, 1)',
+        });
+        gerakan.current.set(el, animasi);
+        animasi.finished.then(() => {
+          if (gerakan.current.get(el) === animasi) gerakan.current.delete(el);
+        }, () => {});
+      }
+    }
     posisiLama.current = baru;
   });
 
+  useEffect(() => {
+    const aktif = gerakan.current;
+    const media = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const hentikan = () => { for (const a of aktif.values()) a.cancel(); aktif.clear(); };
+    const ubah = () => { if (media.matches) hentikan(); };
+    media.addEventListener('change', ubah);
+    return () => { media.removeEventListener('change', ubah); hentikan(); };
+  }, []);
+
   function pilihIsu(id: string) {
     ubahParameter({ isu: id });
-    // Di layar sempit panel rincian ada jauh di atas daftar: bawa ke sana.
-    const panel = panelIsu.current;
-    if (panel) {
-      const r = panel.getBoundingClientRect();
-      if (r.top < 88 || r.top > window.innerHeight * 0.6) {
-        panel.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
-      }
-    }
   }
 
   function pilihKecamatan(kode: string) {
@@ -186,10 +197,22 @@ export default function Simulator({
                 onClick={() => setSlider(keSlider(PRESET[p]))}
                 className="min-h-11 rounded-full bg-lapis px-4 py-1.5 text-kecil font-medium transition-colors hover:bg-lapis-2 active:translate-y-px aria-pressed:bg-tinta aria-pressed:text-kertas"
               >
-                {LABEL_PRESET[p]}
+                <span className="hidden sm:inline">Utamakan </span>{LABEL_PRESET[p].replace('Utamakan ', '')}
               </button>
             ))}
           </div>
+
+          {terpilih && (
+            <div className="sticky top-16 z-10 mt-5 border-t border-batas bg-permukaan py-4 lg:static" role="status" aria-atomic="true" data-hasil-ringkas>
+              <p className="text-kecil text-lembut">Dampak pada isu terpilih</p>
+              <p className="mt-1 text-badan font-semibold">{terpilih.kategori} · {terpilih.kecamatan}</p>
+              <p className="angka mt-2 text-lead text-tinta">
+                #{resmi.find((r) => r.id === terpilih.id)?.peringkat} → #{terpilih.peringkat}
+                <span className="ml-3"><TandaGeser n={selisih[terpilih.id]} /></span>
+              </p>
+              <p className="mt-1 text-kecil text-lembut">Acuan → pilihanmu · skor {formatPoin(terpilih.skor)} / 100</p>
+            </div>
+          )}
 
           <button
             type="button"
@@ -202,7 +225,9 @@ export default function Simulator({
             <Ikon nama={sliderTerbuka ? 'naik' : 'turun'} className="size-5" />
           </button>
 
-          <ul id="daftar-slider" className={`mt-5 gap-3 lg:grid ${sliderTerbuka ? 'grid' : 'hidden'}`}>
+          <div className="slider-panel" data-terbuka={sliderTerbuka}>
+          <div className="min-h-0 overflow-hidden">
+          <ul id="daftar-slider" className="mt-5 grid gap-3">
             {FAKTOR.map((f) => {
               const berubah = Math.abs(bobot[f] - bobotResmi[f]) >= 0.005;
               return (
@@ -236,6 +261,8 @@ export default function Simulator({
               );
             })}
           </ul>
+          </div>
+          </div>
 
           {totalSlider === 0 && (
             <p role="alert" className="mt-3 bg-tinta px-3 py-2 text-kecil text-kertas">
@@ -283,8 +310,12 @@ export default function Simulator({
         </div>
 
         {/* Peta + isu terpilih */}
-        <div className="grid gap-8 md:grid-cols-2">
-          <figure>
+        <div className="grid gap-6 lg:grid-cols-2">
+          <button type="button" className="flex min-h-11 items-center justify-between text-badan font-medium text-tinta lg:hidden" aria-expanded={petaTerbuka} aria-controls="peta-prioritas" onClick={() => setPetaTerbuka((x) => !x)}>
+            {petaTerbuka ? 'Tutup peta wilayah' : 'Lihat sebaran di peta'}
+            <Ikon nama={petaTerbuka ? 'naik' : 'turun'} className="size-4" />
+          </button>
+          <figure id="peta-prioritas" className={petaTerbuka ? 'block' : 'hidden lg:block'}>
             <PetaKecamatan
               skor={skorKecamatan}
               keterangan={keteranganKecamatan}
@@ -299,7 +330,7 @@ export default function Simulator({
           </figure>
 
           {terpilih && (
-            <section ref={panelIsu} aria-labelledby="judul-isu" aria-live="polite" className="kartu scroll-mt-24 p-5 sm:p-6">
+            <section aria-labelledby="judul-isu" className="kartu hidden content-start p-5 lg:grid">
               <p className="text-kecil text-lembut">
                 Peringkat {terpilih.peringkat} dari {simulasi.length}
                 {disimulasikan && (
@@ -316,9 +347,10 @@ export default function Simulator({
                 {terpilih.kota} · {terpilih.laporan_aktif} laporan aktif, {terpilih.laporan_terverifikasi} terverifikasi
               </p>
               <p className="mt-4 text-badan font-medium">{terpilih.penjelasan}</p>
-              <div className="mt-5">
+              <details className="mt-4">
+                <summary className="min-h-11 cursor-pointer py-2 text-badan font-medium text-tinta">Rincian enam faktor</summary>
                 <BarKontribusi isu={terpilih} bobot={bobot} />
-              </div>
+              </details>
             </section>
           )}
         </div>
@@ -333,7 +365,7 @@ export default function Simulator({
           </div>
           <ol ref={daftar} className="relative mt-4 grid gap-1">
             {tampil.map((s) => (
-              <li key={s.id} data-isu={s.id} className="relative will-change-transform">
+              <li key={s.id} data-isu={s.id} className="relative">
                 <button
                   type="button"
                   aria-pressed={s.id === terpilih?.id}
@@ -364,6 +396,15 @@ export default function Simulator({
                     {formatPoin(s.skor)}
                   </span>
                 </button>
+                {s.id === pilihId && (
+                  <div className="border-x border-b border-batas bg-permukaan p-4 lg:hidden">
+                    <p className="text-badan">{s.penjelasan}</p>
+                    <details className="mt-2">
+                      <summary className="min-h-11 cursor-pointer py-2 text-kecil font-semibold text-tinta">Rincian enam faktor</summary>
+                      <BarKontribusi isu={s} bobot={bobot} />
+                    </details>
+                  </div>
+                )}
               </li>
             ))}
           </ol>

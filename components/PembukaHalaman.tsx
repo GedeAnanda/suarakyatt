@@ -24,13 +24,13 @@ export default function PembukaHalaman({ children }: { children: ReactNode }) {
         if (rect.bottom <= 0 || rect.top >= window.innerHeight) continue;
         const jenis = node.dataset.pembuka;
         const hero = jenis === 'baris';
-        const delay = Number(node.dataset.jeda ?? (jenis === 'teks' ? 140 : jenis === 'aksi' ? 260 : 0));
+        const delay = Number(node.dataset.jeda ?? (jenis === 'teks' ? 80 : jenis === 'aksi' ? 120 : 0));
         const gerak = node.animate(
           [
-            { opacity: hero ? 0.15 : 0, transform: hero ? 'translateY(95%)' : 'translateY(22px)' },
+            { opacity: jenis === 'aksi' ? 1 : hero ? 0.15 : 0, transform: hero ? 'translateY(95%)' : 'translateY(14px)' },
             { opacity: 1, transform: 'translateY(0)' },
           ],
-          { duration: hero ? 1100 : 720, delay, easing: 'cubic-bezier(.22, 1, .36, 1)', fill: 'backwards' },
+          { duration: hero ? 760 : 440, delay, easing: 'cubic-bezier(.22, 1, .36, 1)', fill: 'backwards' },
         );
         animasi.add(gerak);
         gerak.finished.then(() => animasi.delete(gerak), () => animasi.delete(gerak));

@@ -10,6 +10,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useId, useRef, useState } from 'react';
 import { pesanError } from '@/lib/errors';
+import { drafLaporan } from '@/lib/draf-laporan';
 import { kompresFoto, TIPE_FOTO, UKURAN_MAKS } from '@/lib/foto';
 import { lalu } from '@/lib/format';
 import { cariKecamatan, muatKecamatan, type FiturKecamatan } from '@/lib/geo/titik';
@@ -110,7 +111,7 @@ function Langkah({
   );
 }
 
-export default function FormLaporan() {
+export default function FormLaporan({ uid }: { uid: string }) {
   const router = useRouter();
   const idInputFoto = useId();
   const inputFoto = useRef<HTMLInputElement>(null);
@@ -122,6 +123,7 @@ export default function FormLaporan() {
   const [mencariLokasi, setMencariLokasi] = useState(false);
   const [foto, setFoto] = useState<Foto[]>([]);
   const prosesFoto = useRef(false);
+  const urlFotoBaru = useRef(new Set<string>());
   const [fotoMemproses, setFotoMemproses] = useState(false);
   const [fotoGalat, setFotoGalat] = useState<string | null>(null);
   const [deskripsi, setDeskripsi] = useState('');
@@ -131,6 +133,77 @@ export default function FormLaporan() {
   const [galat, setGalat] = useState<string | null>(null);
   const [cobaKirim, setCobaKirim] = useState(false);
   const ringkasan = useRef<HTMLDivElement>(null);
+  const [drafSiap, setDrafSiap] = useState(false);
+  const [statusDraf, setStatusDraf] = useState('Membuka draf lokal…');
+  const [konfirmasiHapus, setKonfirmasiHapus] = useState(false);
+  const tersimpan = useRef(true);
+  const terkirim = useRef(false);
+  const versiDraf = useRef(0);
+
+  useEffect(() => {
+    const urls = urlFotoBaru.current;
+    return () => { urls.forEach((url) => URL.revokeObjectURL(url)); urls.clear(); };
+  }, []);
+
+  useEffect(() => {
+    let aktif = true;
+    const previews: string[] = [];
+    drafLaporan(uid, 'baca').then((draf) => {
+      if (!aktif) return;
+      if (draf?.versi === 1) {
+        setKategori(KATEGORI.some((k) => k.id === draf.kategori) ? draf.kategori : null);
+        if (draf.titik && Number.isFinite(draf.titik.lat) && Number.isFinite(draf.titik.lng)) setTitik(draf.titik);
+        setDeskripsi(typeof draf.deskripsi === 'string' ? draf.deskripsi.slice(0, 550) : '');
+        setFoto((draf.foto ?? []).filter((f) => f.blob instanceof Blob).slice(0, MAKS_FOTO).map((f) => {
+          const pratinjau = URL.createObjectURL(f.blob);
+          previews.push(pratinjau);
+          return { ...f, pratinjau };
+        }));
+      }
+      setStatusDraf(draf ? 'Draf dipulihkan, termasuk foto. Belum dikirim.' : 'Isian dan foto disimpan otomatis di browser ini.');
+    }).catch(() => { if (aktif) setStatusDraf('Penyimpanan lokal tidak tersedia. Tetap di halaman ini sampai laporan terkirim.'); })
+      .finally(() => { if (aktif) setDrafSiap(true); });
+    return () => { aktif = false; previews.forEach((url) => URL.revokeObjectURL(url)); };
+  }, [uid]);
+
+  useEffect(() => {
+    if (!drafSiap || terkirim.current) return;
+    const versi = ++versiDraf.current;
+    tersimpan.current = false;
+    const punyaIsi = Boolean(kategori || titik || deskripsi || foto.length);
+    const simpan = punyaIsi
+      ? drafLaporan(uid, 'tulis', { versi: 1, kategori, titik, deskripsi, foto: foto.map(({ id, blob, url }) => ({ id, blob, url })) })
+      : drafLaporan(uid, 'hapus');
+    simpan
+      .then(() => {
+        if (versi !== versiDraf.current) return;
+        tersimpan.current = true;
+        setStatusDraf(punyaIsi ? 'Draf tersimpan di browser ini, termasuk foto. Belum dikirim.' : 'Isian dan foto disimpan otomatis di browser ini.');
+      }).catch(() => {
+        if (versi === versiDraf.current) setStatusDraf('Draf belum tersimpan. Jangan tutup halaman sebelum laporan terkirim.');
+      });
+  }, [uid, drafSiap, kategori, titik, deskripsi, foto]);
+
+  useEffect(() => {
+    const keluar = (e: BeforeUnloadEvent) => {
+      if (!terkirim.current && !tersimpan.current) { e.preventDefault(); e.returnValue = ''; }
+    };
+    const navigasi = (e: MouseEvent) => {
+      if (!(e.target instanceof Element) || !e.target.closest('a[href]')) return;
+      if (!terkirim.current && !tersimpan.current && !window.confirm('Draf belum tersimpan. Tetap tinggalkan halaman?')) {
+        e.preventDefault(); e.stopPropagation();
+      }
+    };
+    window.addEventListener('beforeunload', keluar);
+    document.addEventListener('click', navigasi, true);
+    return () => { window.removeEventListener('beforeunload', keluar); document.removeEventListener('click', navigasi, true); };
+  }, []);
+
+  function kosongkanDraf() {
+    setKategori(null); setTitik(null); setDeskripsi('');
+    foto.forEach((f) => URL.revokeObjectURL(f.pratinjau));
+    setFoto([]); setCobaKirim(false); setGalat(null); setKonfirmasiHapus(false);
+  }
 
   useEffect(() => {
     muatKecamatan().then(setBatas, () => { setBatas([]); setLokasiGalat('Batas wilayah gagal dimuat. Muat ulang halaman untuk mencoba lagi.'); });
@@ -196,7 +269,9 @@ export default function FormLaporan() {
     for (const f of dipilih) {
       try {
         const blob = await kompresFoto(f);
-        baru.push({ id: crypto.randomUUID(), blob, pratinjau: URL.createObjectURL(blob) });
+        const pratinjau = URL.createObjectURL(blob);
+        urlFotoBaru.current.add(pratinjau);
+        baru.push({ id: crypto.randomUUID(), blob, pratinjau });
       } catch (e) {
         setFotoGalat(PESAN_FOTO[e instanceof Error ? e.message : ''] ?? PESAN_FOTO.KOMPRES_GAGAL);
       }
@@ -266,6 +341,8 @@ export default function FormLaporan() {
         p_lng: titik.lng,
       });
       if (error) throw error;
+      terkirim.current = true;
+      await drafLaporan(uid, 'hapus').catch(() => {});
       router.push(`/laporan/${(data as { kode: string }).kode}?baru=1`);
     } catch (err) {
       setGalat(pesanError(err));
@@ -276,8 +353,14 @@ export default function FormLaporan() {
   const sibuk = tahap !== 'isi';
 
   return (
-    <form onSubmit={kirim} noValidate className="grid gap-14">
-      <fieldset disabled={sibuk || fotoMemproses} className="contents">
+    <form onSubmit={kirim} noValidate className="grid gap-6 sm:gap-8">
+      <div className="flex flex-wrap items-center justify-between gap-3 text-kecil">
+        <p role="status">{statusDraf} <span className="text-lembut">Draf mengikuti akun yang sedang masuk.</span></p>
+        {drafSiap && (kategori || titik || foto.length || deskripsi) ? <div className="flex items-center gap-2">
+          {konfirmasiHapus ? <><Tombol varian="bahaya" onClick={kosongkanDraf} disabled={sibuk}>Ya, hapus draf</Tombol><Tombol varian="garis" onClick={() => setKonfirmasiHapus(false)}>Batal</Tombol></> : <Tombol varian="garis" onClick={() => setKonfirmasiHapus(true)} disabled={sibuk}>Hapus draf</Tombol>}
+        </div> : null}
+      </div>
+      <fieldset disabled={!drafSiap || sibuk || fotoMemproses} className="contents">
       <legend className="sr-only">Isi laporan masalah</legend>
       <Langkah n={1} selesai={lengkap.includes(1)} galat={galatLangkah(1)} judul="Masalahnya apa?" petunjuk="Urgensi dan dinas penanggung jawab ditentukan dari kategori, bukan dipilih pelapor.">
         <fieldset>

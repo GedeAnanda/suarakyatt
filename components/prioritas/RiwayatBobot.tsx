@@ -13,8 +13,8 @@ export default function RiwayatBobot({ riwayat }: { riwayat: Riwayat[] }) {
   if (riwayat.length === 0) {
     return (
       <p className="kartu p-5 text-badan">
-        Belum ada perubahan bobot. Bobot yang berlaku masih bobot awal dari PRD; perubahan pertama oleh Perencana akan
-        tercatat di sini beserta alasannya.
+        Belum ada perubahan bobot acuan yang disimpan. Bobot yang berlaku masih bobot awal model; perubahan pertama oleh Perencana akan
+        tercatat di sini beserta alasannya. Percobaan preset pengunjung tidak mengubah bobot acuan.
       </p>
     );
   }

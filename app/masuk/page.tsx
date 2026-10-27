@@ -20,21 +20,17 @@ async function Isi({ searchParams }: { searchParams: PageProps<'/masuk'>['search
 
 export default function MasukPage({ searchParams }: PageProps<'/masuk'>) {
   return (
-    <div className="bingkai grid gap-14 pt-12 pb-24 sm:pt-16 lg:grid-cols-12 lg:gap-8">
+    <div className="bingkai grid gap-8 pt-12 pb-24 sm:pt-16 lg:grid-cols-12 lg:gap-8">
       <div className="lg:col-span-6">
         <h1 data-pembuka="judul" className="text-judul">Masuk untuk melapor</h1>
         <p data-pembuka="teks" className="mt-4 max-w-[52ch] text-badan">
           Melihat peta, rapor, dan dashboard prioritas tidak perlu akun. Akun warga dengan email terverifikasi dibutuhkan
           untuk melapor, mendukung laporan warga lain, dan memberi rating.
         </p>
-        <div className="mt-10">
-          <Suspense fallback={<div className="kerangka h-80 max-w-md" />}>
-            <Isi searchParams={searchParams} />
-          </Suspense>
-        </div>
+
       </div>
 
-      <aside className="lg:col-span-5 lg:col-start-8">
+      <aside className="lg:col-span-5 lg:col-start-8 lg:row-span-2">
         <div className="di-medan rounded-(--radius-kartu) bg-medan p-6 text-medan-tinta shadow-[0_24px_48px_-24px_rgb(125_12_20/0.6)] sm:p-8">
           <h2 className="text-lead font-medium tracking-tight">Coba tanpa daftar</h2>
           <p className="mt-3 text-badan text-medan-lembut">
@@ -48,6 +44,9 @@ export default function MasukPage({ searchParams }: PageProps<'/masuk'>) {
           ke instansi resmi.
         </p>
       </aside>
+      <section aria-label="Masuk atau daftar akun warga" className="lg:col-span-6 lg:col-start-1 lg:row-start-2">
+        <Suspense fallback={<div className="kerangka h-80 max-w-md" />}><Isi searchParams={searchParams} /></Suspense>
+      </section>
     </div>
   );
 }

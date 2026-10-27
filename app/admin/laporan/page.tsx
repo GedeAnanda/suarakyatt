@@ -7,13 +7,17 @@ import TabelLaporanAdmin from '@/components/admin/TabelLaporanAdmin';
 import LabelSumber from '@/components/ui/LabelSumber';
 import { ambilLaporanAdmin } from '@/lib/data/admin';
 import { ambilSesi } from '@/lib/data/sesi';
-import { KATEGORI } from '@/lib/konten';
+import { createClient } from '@/lib/supabase/server';
 
 export const metadata: Metadata = { title: 'Laporan instansi' };
 
 async function Isi() {
-  const [{ sumber, laporan, sekarang }, sesi] = await Promise.all([ambilLaporanAdmin(), ambilSesi()]);
-  const instansi = KATEGORI.find((k) => k.id === sesi?.instansiId)?.instansi ?? (sumber === 'contoh' ? KATEGORI[0].instansi : null);
+  const sesi = await ambilSesi();
+  const supabase = await createClient();
+  const [{ sumber, laporan, sekarang }, { data: instansi }] = await Promise.all([
+    ambilLaporanAdmin(sesi),
+    supabase.from('agencies').select('nama').eq('id', sesi?.instansiId ?? -1).maybeSingle(),
+  ]);
   const aktif = laporan.filter((l) => ['menunggu', 'diverifikasi', 'diproses'].includes(l.status));
   const angka = [
     { nilai: aktif.length, label: 'laporan perlu ditangani' },
@@ -24,7 +28,7 @@ async function Isi() {
   return (
     <>
       <div className="flex flex-wrap items-center gap-3">
-        {instansi && <p className="text-lead font-medium tracking-tight">{instansi}</p>}
+        {instansi && <p className="text-lead font-medium tracking-tight">{instansi.nama}</p>}
         <LabelSumber sumber={sumber} />
         {sesi?.demo && <span className="rounded-full bg-lapis px-2.5 py-0.5 text-kecil">Akun demo: hanya bisa mengubah laporan simulasi</span>}
       </div>
