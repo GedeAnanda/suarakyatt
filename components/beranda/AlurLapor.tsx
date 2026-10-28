@@ -132,7 +132,7 @@ export default function AlurLapor({ rapor, kodeContoh }: { rapor: RaporInstansi[
         terakhir
       >
         <div className="panel flex items-center justify-between gap-3 p-4">
-          <span className="flex gap-0.5 text-tinta" aria-label="4 dari 5 bintang">
+          <span role="img" className="flex gap-0.5 text-tinta" aria-label="4 dari 5 bintang">
             {[1, 2, 3, 4, 5].map((n) => (
               <Ikon key={n} nama="bintang" isi={n <= 4} className="size-5" />
             ))}

@@ -286,7 +286,8 @@ export default function FormLaporan() {
             {KATEGORI.map((k) => (
               <label
                 key={k.id}
-                className="kartu kartu-klik grid cursor-pointer gap-1 p-4 transition-[box-shadow,transform,border-color,background-color,color,scale] duration-200 active:scale-[0.98] has-checked:border-tinta has-checked:bg-tinta has-checked:text-white has-focus-visible:outline-3 has-focus-visible:outline-tinta"
+                // Pilihan berada di dalam kartu putih, jadi latarnya satu nada lebih gelap (kertas) supaya terlihat bisa diklik.
+                className="grid cursor-pointer gap-1 rounded-(--radius-kartu) bg-kertas p-4 transition-[background-color,color,scale] duration-200 hover:bg-lapis active:scale-[0.98] has-checked:bg-tinta has-checked:text-white has-focus-visible:outline-3 has-focus-visible:outline-tinta"
               >
                 <input type="radio" name="kategori" value={k.id} checked={kategori === k.id} onChange={() => setKategori(k.id)} className="sr-only" />
                 <span className="text-lead font-medium tracking-tight">{k.nama}</span>

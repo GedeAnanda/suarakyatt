@@ -58,7 +58,7 @@ async function Isi({ params }: { params: PageProps<'/admin/laporan/[kode]'>['par
         </section>
       </div>
 
-      <aside className="grid content-start gap-4 lg:col-span-5" data-awal>
+      <aside className="grid content-start gap-4 lg:sticky lg:top-24 lg:col-span-5 lg:self-start" data-awal>
         <h2 className="text-lead font-medium tracking-tight">Tindak lanjut</h2>
         {!milikInstansi && (
           <p className="panel p-4 text-kecil">

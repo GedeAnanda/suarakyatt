@@ -761,7 +761,8 @@ input[type="range"].slider::-moz-range-thumb {
 @supports (animation-timeline: view()) {
   @media (prefers-reduced-motion: no-preference) {
     .tinta-isi > span {
-      color: color-mix(in oklab, var(--color-teks) 32%, transparent);
+      /* Mulai di 64% (kontras ±5:1, lolos WCAG AA) supaya kalimat tetap terbaca sebelum tinta penuh. */
+      color: color-mix(in oklab, var(--color-teks) 64%, transparent);
       animation: tinta-isi linear both;
       animation-timeline: view();
       animation-range: cover 15% cover 42%;

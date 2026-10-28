@@ -25,7 +25,7 @@ export default function Galeri({ laporan }: { laporan: Pick<LaporanPublik, 'foto
     <div className={`grid gap-3 ${selesai ? 'sm:grid-cols-2' : ''}`}>
       <figure>
         {utama ? (
-          <Image src={utama} alt={laporan.is_simulated ? 'Lampiran ilustrasi simulasi, bukan foto lapangan' : 'Foto dari pelapor'} width={960} height={720} className="aspect-4/3 w-full rounded-(--radius-kartu) bg-lapis object-cover" />
+          <Image src={utama} loading="eager" fetchPriority="high" alt={laporan.is_simulated ? 'Lampiran ilustrasi simulasi, bukan foto lapangan' : 'Foto dari pelapor'} width={960} height={720} className="aspect-4/3 w-full rounded-(--radius-kartu) bg-lapis object-cover" />
         ) : (
           <Kosong teks={laporan.is_simulated ? 'Laporan simulasi ini tidak punya foto.' : 'Foto tidak tersedia.'} />
         )}

@@ -8,6 +8,7 @@
   - Skor beranda menurut penilaian sendiri naik dari 7,0 ke **7,7**, sudah masuk rentang Site of the Day (7,5–8,0).
   - Dengan aturan ketat skill, skor tetap dibatasi 6,0, karena meter masih melaporkan FAIL palsu dari `AngkaGulir`.
   - Rinciannya ada di bagian [Hasil rombak](#hasil-rombak-28-oktober-putaran-23).
+- **Putaran 4 (celah yang dilihat juri):** 9 celah diperbaiki, termasuk pilihan kategori di form Lapor yang tidak terlihat bisa diklik, tombol peta yang melompati angka 9, OG image untuk pratinjau link, dan kontras teks. Aksesibilitas Lighthouse di beranda kini 100. Lihat [Putaran 4](#putaran-4-celah-yang-dilihat-juri).
 
 Temuan audit awal (sebelum rombak):
 
@@ -219,6 +220,47 @@ Skor 7,7 adalah penilaian sendiri, bukan nilai juri.
 - **Video.** Belum ada klip bergerak (WARN). Kalau ada klip berlisensi yang jujur, misalnya hujan atau banjir di Jakarta, klip itu bisa dipakai sebagai loop di arsip.
 - **Penanda baris terpilih.** Baris terpilih di Simulator masih memakai bayangan inset 4 px. Ini berfungsi sebagai indikator, jadi boleh dipertahankan.
 - **Halaman `/lapor` dan `/admin/*`** belum diaudit karena butuh login.
+
+## Putaran 4: celah yang dilihat juri
+
+Putaran ini fokus ke hal yang benar-benar dilihat dan dicoba juri WIA, termasuk alur yang butuh login (`/lapor`, `/admin/*`, panel "Kenapa belum?"). Alur itu dibuka dengan login demo lewat Chrome (playwright-core di scratchpad, bukan dependensi proyek). Tidak ada form yang dikirim, dan tidak ada error JavaScript di semua alur.
+
+### Celah yang ditemukan dan sudah diperbaiki
+
+| Celah | Kenapa penting untuk lomba | Perbaikan |
+|---|---|---|
+| Pilihan kategori di form Lapor tidak terlihat bisa diklik (opsi putih di atas kartu putih, regresi dari putaran 2) | Juri yang mencoba "Coba sebagai warga demo" bisa tidak menyadari bahwa itu pilihan | Opsi diberi latar `bg-kertas` (satu nada lebih gelap dari kartu), `hover:bg-lapis`, dan berwarna merah saat dipilih (`components/lapor/FormLaporan.tsx`) |
+| Tombol peta di beranda bernomor "1 … 8, 10, 11", angka 9 hilang | Terlihat seperti bug di bagian yang menonjol | Tombol diberi nomor urut kecamatan 1–10; peringkat isu global disebut di kalimat (`components/beranda/SorotKecamatan.tsx`) |
+| Detail laporan: kolom kanan habis di tengah halaman, menyisakan area kosong sekitar 900 px | Fitur khas "Kenapa belum?" tertimbun di bawah | Panel "Kenapa belum?" dipindah ke atas kolom kanan, tepat di samping foto. Dukungan, batas waktu, dan riwayat menyusul di bawahnya. Urutan di ponsel tidak berubah (`app/laporan/[kode]/page.tsx`) |
+| Admin ubah status: form "Tindak lanjut" habis di tengah halaman | Area kosong besar di alur admin | Kolom form dibuat sticky di layar lebar, jadi tombol simpan selalu terlihat (`app/admin/laporan/[kode]/page.tsx`) |
+| Belum ada pratinjau link (OG image) | Link yang dibagikan di WhatsApp, Drive, atau deskripsi YouTube tampil tanpa gambar | `app/opengraph-image.png` dan `twitter-image.png` (1200×630) dibuat dari layar pertama beranda yang sebenarnya, lengkap dengan alt text |
+| Kontras efek tinta di pernyataan intro hanya 2,02:1 sebelum digulir | Gagal WCAG AA; Lighthouse Aksesibilitas 93 | Warna awal dinaikkan dari 32% ke 64% (kontras sekitar 5:1) |
+| `aria-label` pada `<span>` rating bintang | Atribut ARIA yang tidak sah | Ditambah `role="img"` (`components/beranda/AlurLapor.tsx`) |
+| Halaman laporan tanpa meta description sendiri | Pratinjau link laporan tidak menjelaskan isinya | `generateMetadata` kini mengisi description |
+| Foto utama laporan dimuat lazy padahal ada di atas lipatan | LCP lebih lambat | `loading="eager"` dan `fetchPriority="high"` (Next 16 tidak lagi memakai `priority`) |
+
+### Lighthouse (ponsel, build produksi lokal)
+
+| Halaman | Performa | Aksesibilitas | Best practices | SEO |
+|---|---|---|---|---|
+| Beranda | 94 | 100 (sebelumnya 93) | 100 | 100 |
+| Prioritas | 90 | 100 | 100 | 100 |
+| Rapor | 92 | 96 | 100 | 100 |
+| Peta | 88 | 100 | 100 | 100 |
+| Detail laporan | 79 | 100 | 96 | 91 |
+
+Ada beberapa angka yang bukan masalah nyata:
+
+- **Rapor, Aksesibilitas 96.** Kontras diukur saat animasi `data-muncul` masih berjalan, terlihat dari warna `#d5d1d3` yang sebenarnya teks gelap pada opasitas rendah.
+- **Detail laporan, SEO 91.** Next 16 mengirim metadata halaman dinamis lewat streaming ke `<body>` untuk browser biasa. Untuk WhatsApp dan bot pratinjau lain, description dan OG image sudah ada di `<head>` (dicek dengan user-agent WhatsApp).
+- **Detail laporan, Best practices 96.** Penyebabnya ubin peta OpenStreetMap berukuran 256 px, dari pihak ketiga.
+- **Detail laporan, Performa 79.** LCP-nya 5,5 detik di server lokal, dan sebagian besar waktunya habis untuk mengoptimasi gambar Supabase pertama kali (cold cache). Di Vercel, cache CDN seharusnya mempercepat ini. Ukur ulang di URL produksi sebelum hari H.
+
+### Dicek dan aman
+
+- Layar laptop 1366×768 dan 1280×720: judul, kalimat, dan tombol "Uji bobot prioritas" muat di layar pertama.
+- Login warga demo dan admin demo mengembalikan 200, dan semua halaman yang butuh login terbuka.
+- Daftar laporan admin: tabel rapi, yang terlambat di atas, label "Terlambat N hari" jelas.
 
 ## Cara mengulang audit
 

@@ -27,7 +27,11 @@ import type { KenapaBelum } from '@/lib/types';
 
 export async function generateMetadata({ params }: PageProps<'/laporan/[kode]'>): Promise<Metadata> {
   const { kode } = await params;
-  return { title: `Laporan ${decodeURIComponent(kode)}` };
+  const k = decodeURIComponent(kode);
+  return {
+    title: `Laporan ${k}`,
+    description: `Status, riwayat penanganan, batas waktu, dan posisi laporan ${k} di daftar prioritas suaRAkyat, termasuk jawaban "Kenapa belum?".`,
+  };
 }
 
 async function Isi({ params, searchParams }: Pick<PageProps<'/laporan/[kode]'>, 'params' | 'searchParams'>) {
@@ -140,20 +144,12 @@ async function Isi({ params, searchParams }: Pick<PageProps<'/laporan/[kode]'>, 
               {l.deskripsi === null ? 'Isi laporan ini disembunyikan karena ditolak dengan alasan konten melanggar.' : `“${l.deskripsi}”`}
             </p>
           </section>
-
-          {aktif && <PanelKenapaBelum data={jelas} isu={{ kategori: l.kategori, kecamatan: l.kecamatan }} idIsu={idIsu} />}
-
-          <section aria-labelledby="judul-riwayat">
-            <h2 id="judul-riwayat" className="text-lead font-medium tracking-tight">
-              Riwayat penanganan
-            </h2>
-            <div className="mt-6">
-              <Timeline item={timeline} berjalan={aktif} />
-            </div>
-          </section>
         </div>
 
+        {/* Kiri: isi laporan. Kanan: "Kenapa belum?" paling atas (fitur khas, langsung di samping foto), lalu
+            dukungan, batas waktu, dan riwayat penanganan. Di ponsel urutannya tetap foto → kutipan → Kenapa belum. */}
         <aside className="grid content-start gap-6 lg:col-span-5" data-muncul>
+          {aktif && <PanelKenapaBelum data={jelas} isu={{ kategori: l.kategori, kecamatan: l.kecamatan }} idIsu={idIsu} />}
           <TombolDukung
             kode={l.kode}
             jumlahAwal={l.jumlah_upvote}
@@ -180,6 +176,14 @@ async function Isi({ params, searchParams }: Pick<PageProps<'/laporan/[kode]'>, 
               .
             </p>
           </div>
+          <section aria-labelledby="judul-riwayat" className="mt-6">
+            <h2 id="judul-riwayat" className="text-lead font-medium tracking-tight">
+              Riwayat penanganan
+            </h2>
+            <div className="mt-6">
+              <Timeline item={timeline} berjalan={aktif} />
+            </div>
+          </section>
         </aside>
       </div>
     </>

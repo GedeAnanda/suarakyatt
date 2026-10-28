@@ -70,14 +70,16 @@ export default function SorotKecamatan({
         {nyala && (
           <p key={nyala.kode_wilayah + nyala.kategori} className="ganti mt-8 text-badan" aria-live="off">
             <span className="angka mr-3 inline-block min-w-[3ch] bg-medan-tinta px-2 text-center font-semibold text-tinta">
-              {nyala.peringkat}
+              {indeks + 1}
             </span>
-            {nyala.kategori} di {nyala.kecamatan}, {nyala.kota}. Skor {formatPoin(nyala.skor)}.
+            {nyala.kategori} di {nyala.kecamatan}, {nyala.kota}. Skor {formatPoin(nyala.skor)}, peringkat {nyala.peringkat} dari
+            semua isu.
           </p>
         )}
         <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-kecil text-medan-lembut">
+          {/* Satu kecamatan satu tombol, jadi nomornya urutan kecamatan (1–10), bukan peringkat isu yang bisa loncat. */}
           <span className="angka">
-            Isu teratas {indeks + 1} dari {teratas.length}
+            Kecamatan teratas {indeks + 1} dari {teratas.length}
           </span>
           {teratas.length > 1 && (
             <button
@@ -89,20 +91,20 @@ export default function SorotKecamatan({
             </button>
           )}
         </div>
-        <div className="mt-3 flex flex-wrap gap-2" role="group" aria-label="Pilih isu teratas untuk disorot">
+        <div className="mt-3 flex flex-wrap gap-2" role="group" aria-label="Pilih kecamatan teratas untuk disorot">
           {teratas.map((t, i) => (
             <button
               key={t.kode_wilayah + t.kategori}
               type="button"
               aria-pressed={i === indeks}
-              aria-label={`Peringkat ${t.peringkat}: ${t.kategori} di ${t.kecamatan}`}
+              aria-label={`${i + 1}. ${t.kecamatan}: ${t.kategori}, peringkat isu ${t.peringkat}`}
               onClick={() => {
                 setIndeks(i);
                 setKunci(true);
               }}
               className="angka size-11 rounded-(--radius-kontrol) bg-tinta-tua text-kecil text-medan-lembut transition-[background-color,color,scale] duration-200 hover:text-medan-tinta active:scale-90 aria-pressed:bg-medan-tinta aria-pressed:text-tinta"
             >
-              {t.peringkat}
+              {i + 1}
             </button>
           ))}
         </div>
