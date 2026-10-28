@@ -48,8 +48,9 @@ try {
   await c.query('set local role anon');
   cek((await c.query("select jsonb_array_length(priority_factors()->'isu')>0 ok")).rows[0].ok,true,'Agregasi prioritas dapat dibaca pengunjung');
   await c.query('reset role');
+  const jumlahSeed=(await c.query('select count(*)::int n from seed.reports')).rows[0].n;
   const reset=(await c.query('select reset_demo_data() data')).rows[0].data;
-  cek(reset.disalin,520,'Reset demo dapat memulihkan snapshot seed');
+  cek(reset.disalin,jumlahSeed,'Reset demo dapat memulihkan snapshot seed');
   console.log(`${checks} pemeriksaan integrasi lulus; semua perubahan uji dibatalkan.`);
 } catch(e){ console.error('Verifikasi gagal:',e.code??e.message);process.exitCode=1; }
 finally {await c.query('rollback').catch(()=>{});await c.end();}
