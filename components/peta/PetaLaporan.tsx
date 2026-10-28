@@ -5,14 +5,13 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { useSearchParams } from 'next/navigation';
 import { useMemo, useState } from 'react';
-import { bacaPilihan, tulisPilihan } from '@/lib/pilihan-url';
 import type { TitikLaporan } from '@/lib/data/laporan';
 import { KATEGORI } from '@/lib/konten';
 import type { StatusLaporan } from '@/lib/types';
 import { IkonStatus, LABEL_STATUS, WARNA_TITIK } from '../BadgeStatus';
 import KartuLaporan from '../KartuLaporan';
+import AngkaGulir from '../ui/AngkaGulir';
 import { Tombol } from '../ui/Tombol';
 
 const KlasterLaporan = dynamic(() => import('./KlasterLaporan'), {
@@ -22,27 +21,29 @@ const KlasterLaporan = dynamic(() => import('./KlasterLaporan'), {
 
 export const STATUS_PUBLIK: StatusLaporan[] = ['menunggu', 'diverifikasi', 'diproses', 'selesai', 'ditolak'];
 const PER_HALAMAN = 12;
-const KODE_KATEGORI = KATEGORI.map((k) => String(k.id));
 
 function simpanKeUrl(kategori: number[], status: StatusLaporan[]) {
   const url = new URL(window.location.href);
-  tulisPilihan(url.searchParams, 'kategori', kategori.map(String), KODE_KATEGORI);
-  tulisPilihan(url.searchParams, 'status', status, STATUS_PUBLIK);
+  if (kategori.length && kategori.length < KATEGORI.length) url.searchParams.set('kategori', kategori.join(','));
+  else url.searchParams.delete('kategori');
+  if (status.length && status.length < STATUS_PUBLIK.length) url.searchParams.set('status', status.join(','));
+  else url.searchParams.delete('status');
   window.history.replaceState(null, '', url);
 }
 
 export default function PetaLaporan({
   laporan,
   sekarang,
+  kategoriAwal,
+  statusAwal,
 }: {
   laporan: TitikLaporan[];
   sekarang: number;
+  kategoriAwal: number[];
+  statusAwal: StatusLaporan[];
 }) {
-  const params = useSearchParams();
-  const kategoriUrl = params.get('kategori');
-  const statusUrl = params.get('status');
-  const kategori = useMemo(() => bacaPilihan(kategoriUrl, KODE_KATEGORI).map(Number), [kategoriUrl]);
-  const status = useMemo(() => bacaPilihan(statusUrl, STATUS_PUBLIK), [statusUrl]);
+  const [kategori, setKategori] = useState<number[]>(kategoriAwal.length ? kategoriAwal : KATEGORI.map((k) => k.id));
+  const [status, setStatus] = useState<StatusLaporan[]>(statusAwal.length ? statusAwal : STATUS_PUBLIK);
   const [jumlah, setJumlah] = useState(PER_HALAMAN);
 
   const namaKategori = useMemo(() => new Set<string>(KATEGORI.filter((k) => kategori.includes(k.id)).map((k) => k.nama)), [kategori]);
@@ -61,18 +62,20 @@ export default function PetaLaporan({
 
   function ubahKategori(id: number) {
     const baru = kategori.includes(id) ? kategori.filter((k) => k !== id) : [...kategori, id].sort();
+    setKategori(baru);
     setJumlah(PER_HALAMAN);
     simpanKeUrl(baru, status);
   }
   function ubahStatus(s: StatusLaporan) {
     const baru = status.includes(s) ? status.filter((x) => x !== s) : STATUS_PUBLIK.filter((x) => x === s || status.includes(x));
+    setStatus(baru);
     setJumlah(PER_HALAMAN);
     simpanKeUrl(kategori, baru);
   }
 
   return (
-    <div className="grid gap-5" data-ui>
-      <div className="grid gap-5 lg:grid-cols-2 lg:gap-8">
+    <div className="grid gap-8" data-muncul>
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-2 lg:gap-8">
         <fieldset>
           <legend className="text-kecil text-lembut">Kategori</legend>
           <div className="mt-2 flex flex-wrap gap-2">
@@ -82,7 +85,7 @@ export default function PetaLaporan({
                 type="button"
                 aria-pressed={kategori.includes(k.id)}
                 onClick={() => ubahKategori(k.id)}
-                className="min-h-11 rounded-full bg-permukaan px-4 py-1.5 text-kecil font-medium ring-1 ring-batas ring-inset transition-colors hover:bg-terang aria-pressed:ring-tinta active:translate-y-px aria-pressed:bg-tinta aria-pressed:text-kertas"
+                className="min-h-11 rounded-full bg-permukaan px-4 py-1.5 text-kecil font-medium ring-1 ring-batas ring-inset transition-[background-color,color,scale] duration-200 hover:bg-terang active:scale-95 aria-pressed:bg-tinta aria-pressed:text-kertas aria-pressed:ring-tinta"
               >
                 {k.nama}
               </button>
@@ -98,11 +101,11 @@ export default function PetaLaporan({
                 type="button"
                 aria-pressed={status.includes(s)}
                 onClick={() => ubahStatus(s)}
-                className="flex min-h-11 items-center gap-1.5 rounded-full bg-permukaan px-4 py-1.5 text-kecil font-medium ring-1 ring-batas ring-inset transition-colors hover:bg-terang aria-pressed:ring-tinta active:translate-y-px aria-pressed:bg-tinta aria-pressed:text-kertas"
+                className="flex min-h-11 items-center gap-1.5 rounded-full bg-permukaan px-4 py-1.5 text-kecil font-medium ring-1 ring-batas ring-inset transition-[background-color,color,scale] duration-200 hover:bg-terang active:scale-95 aria-pressed:bg-tinta aria-pressed:text-kertas aria-pressed:ring-tinta"
               >
                 <IkonStatus status={s} className="size-3.5" />
                 {LABEL_STATUS[s]}
-                <span className="angka opacity-75">{hitungStatus[s]}</span>
+                <AngkaGulir className="angka opacity-75" nilai={String(hitungStatus[s])} />
               </button>
             ))}
           </div>
@@ -110,7 +113,7 @@ export default function PetaLaporan({
       </div>
 
       <div>
-        <div className="peta isolate overflow-hidden bg-lapis">
+        <div className="peta peta-buka isolate overflow-hidden bg-lapis">
           <KlasterLaporan laporan={tersaring} className="h-[min(72svh,44rem)] min-h-96" />
         </div>
         <div className="mt-3 flex flex-wrap items-start justify-between gap-x-8 gap-y-3">
@@ -123,11 +126,15 @@ export default function PetaLaporan({
             ))}
             <li className="flex items-center gap-1.5">
               <span aria-hidden="true" className="size-3.5 rounded-full bg-tinta" />
-              Lingkaran berangka: kumpulan laporan berdekatan
+              Kotak berangka: kumpulan laporan berdekatan
             </li>
           </ul>
           <p className="text-kecil text-lembut" aria-live="polite">
-            {tersaring.length} laporan tampil. Pilih lingkaran untuk memperbesar atau titik untuk membuka laporan.
+            {/* Hitungannya berganti dengan gerak singkat; wadah live region tetap sama supaya tetap dibacakan. */}
+            <span key={tersaring.length} className="ganti inline-block">
+              {tersaring.length} laporan tampil.
+            </span>{' '}
+            Klik kotak untuk memperbesar; klik titik untuk membuka ringkasannya.
           </p>
         </div>
       </div>
@@ -137,15 +144,12 @@ export default function PetaLaporan({
           Laporan terbaru sesuai saringan
         </h2>
         {tersaring.length === 0 ? (
-          <div className="panel mt-4 grid justify-items-start gap-3 p-5">
-            <p className="text-badan">Tidak ada laporan dengan saringan ini. Pilih kategori atau status lain.</p>
-            <Tombol varian="kedua" onClick={() => simpanKeUrl(KATEGORI.map((k) => k.id), STATUS_PUBLIK)}>
-              Tampilkan semua laporan
-            </Tombol>
-          </div>
+          <p className="kartu mt-4 p-5 text-badan">
+            Tidak ada laporan dengan saringan ini. Pilih kategori atau status lain di atas.
+          </p>
         ) : (
           <>
-            <ul className="mt-4 grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
+            <ul className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3" data-muncul>
               {tersaring.slice(0, jumlah).map((l) => (
                 <li key={l.kode}>
                   <KartuLaporan laporan={l} sekarang={sekarang} />

@@ -4,6 +4,7 @@
 
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import AngkaGulir from '@/components/ui/AngkaGulir';
 import { kelasTautan } from '@/components/ui/Tombol';
 import { desimal } from '@/lib/format';
 import { DEFINISI_RAPOR, INFO_KOMPONEN, KOMPONEN } from '@/lib/konten-rapor';
@@ -36,23 +37,23 @@ const HURUF = [
 export default function CaraMenilaiPage() {
   return (
     <div className="bingkai pt-12 pb-24 sm:pt-16">
-      <div className="grid gap-6 lg:grid-cols-12">
-        <h1 data-pembuka="judul" className="text-judul lg:col-span-6">Cara menilai instansi</h1>
-        <p data-pembuka="teks" className="max-w-[60ch] text-badan lg:col-span-6">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-12" data-awal>
+        <h1 className="text-judul lg:col-span-6">Cara menilai instansi</h1>
+        <p className="max-w-[60ch] text-badan lg:col-span-6">
           Setiap instansi mendapat nilai 0–100 dan huruf A sampai E dari empat komponen. Laporan yang belum disentuh ikut
           dihitung, sehingga instansi yang mengabaikan laporan tidak terlihat bagus. Semua instansi dihitung dengan susunan
           bobot yang sama.
         </p>
       </div>
 
-      <section aria-labelledby="judul-rumus" className="kartu mt-16 p-6 sm:mt-20 sm:p-10">
+      <section aria-labelledby="judul-rumus" className="kartu mt-16 p-6 sm:mt-20 sm:p-10" data-awal>
         <h2 id="judul-rumus" className="sr-only">
           Rumus
         </h2>
         <p className="text-tinta angka text-[clamp(1.75rem,1rem+3.4vw,4rem)] leading-tight font-medium tracking-[-0.04em]">
           Nilai = 100 × (0,3 R + 0,3 S + 0,2 P + 0,2 K)
         </p>
-        <dl className="mt-10 grid gap-x-10 gap-y-8 md:grid-cols-2">
+        <dl className="mt-10 grid grid-cols-1 gap-x-10 gap-y-8 md:grid-cols-2" data-muncul>
           {KOMPONEN.map((k) => (
             <div key={k} className="grid grid-cols-[3rem_1fr] gap-x-4">
               <dt className="text-tinta text-judul leading-none font-semibold">{k}</dt>
@@ -67,7 +68,7 @@ export default function CaraMenilaiPage() {
         </dl>
       </section>
 
-      <section aria-labelledby="judul-huruf" className="mt-20 grid gap-8 lg:grid-cols-12">
+      <section aria-labelledby="judul-huruf" className="mt-20 grid grid-cols-1 gap-8 lg:grid-cols-12">
         <div className="lg:col-span-4">
           <h2 id="judul-huruf" className="text-judul">
             Dari nilai ke huruf
@@ -76,10 +77,10 @@ export default function CaraMenilaiPage() {
             Instansi dengan kurang dari 10 laporan yang bisa dinilai ditulis &ldquo;Data belum cukup&rdquo;, tanpa huruf.
           </p>
         </div>
-        <ul className="grid grid-cols-5 gap-2 lg:col-span-8">
+        <ul className="grid grid-cols-5 gap-2 lg:col-span-8" data-muncul>
           {HURUF.map((h) => (
-            <li key={h.h} className="kartu p-4">
-              <p className="text-tinta text-[clamp(3rem,2rem+4vw,6rem)] leading-none font-semibold tracking-[-0.05em]">{h.h}</p>
+            <li key={h.h} className="kartu overflow-hidden p-4">
+              <p className="cap text-tinta text-[clamp(3rem,2rem+4vw,6rem)] leading-none font-semibold tracking-[-0.05em]">{h.h}</p>
               <p className="mt-2 text-kecil">{h.rentang}</p>
             </li>
           ))}
@@ -95,7 +96,7 @@ export default function CaraMenilaiPage() {
             Dinas Kebersihan (simulasi) menerima 100 laporan, 10 di antaranya ditolak &ldquo;Tidak valid&rdquo;.
           </p>
         </div>
-        <ol className="mt-10 grid gap-2">
+        <ol className="mt-10 grid grid-cols-1 gap-2" data-muncul>
           {CONTOH.map((c) => (
             <li key={c.k} className="kartu grid gap-3 p-5 sm:grid-cols-[3rem_1fr_9rem_5rem] sm:items-baseline sm:gap-6">
               <span className="text-tinta text-judul leading-none font-semibold">{c.k}</span>
@@ -111,12 +112,12 @@ export default function CaraMenilaiPage() {
             {desimal(dua(CONTOH[2].nilai), 2)} + 0,2 × {desimal(dua(CONTOH[3].nilai), 2)})
           </p>
           <p className="angka text-judul font-medium tracking-[-0.04em]">
-            {desimal(NILAI_CONTOH)} · {hurufDari(NILAI_CONTOH)}
+            <AngkaGulir nilai={desimal(NILAI_CONTOH)} /> · {hurufDari(NILAI_CONTOH)}
           </p>
         </div>
       </section>
 
-      <section aria-labelledby="judul-penolakan" className="mt-24 grid gap-8 lg:grid-cols-12">
+      <section aria-labelledby="judul-penolakan" className="mt-24 grid grid-cols-1 gap-8 lg:grid-cols-12" data-muncul>
         <div className="lg:col-span-5">
           <h2 id="judul-penolakan" className="text-judul">
             Menolak boleh, menolak diam-diam tidak
@@ -164,7 +165,7 @@ export default function CaraMenilaiPage() {
         </div>
       </section>
 
-      <section aria-labelledby="judul-lain" className="mt-24 grid gap-8 lg:grid-cols-12">
+      <section aria-labelledby="judul-lain" className="mt-24 grid grid-cols-1 gap-8 lg:grid-cols-12" data-muncul>
         <h2 id="judul-lain" className="text-judul lg:col-span-4">
           Yang tampil tapi tidak dinilai
         </h2>

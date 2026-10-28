@@ -36,15 +36,15 @@ async function Isi() {
       </div>
       <BannerSimulasi sumber={sumber} className="mt-4" />
       <nav aria-label="Ringkasan rapor" className="mt-10">
-        <ul className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <ul className="grid grid-cols-2 gap-3 sm:grid-cols-4" data-muncul>
           {urut.map((i) => (
             <li key={i.id}>
               <a
                 href={`#instansi-${i.id}`}
-                className="kartu kartu-klik flex h-full items-center gap-3 p-3 sm:p-4"
+                className="kartu kartu-klik group flex h-full items-center gap-3 p-3 sm:p-4"
               >
                 <span
-                  className={`text-[2.75rem] leading-none font-semibold tracking-[-0.05em] ${i.huruf ? 'text-tinta' : 'text-lembut'}`}
+                  className={`text-[2.75rem] leading-none font-semibold tracking-[-0.05em] transition-transform duration-300 ease-(--ease-pegas) group-hover:-rotate-6 group-hover:scale-110 ${i.huruf ? 'text-tinta' : 'text-lembut'}`}
                 >
                   {i.huruf ?? '–'}
                 </span>
@@ -60,7 +60,7 @@ async function Isi() {
           ))}
         </ul>
       </nav>
-      <div className="mt-6 grid gap-6 lg:grid-cols-2">
+      <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2" data-muncul>
         {urut.map((i) => (
           <KartuRapor key={i.id} i={i} kategoriId={KATEGORI.find((k) => k.instansi === i.nama)?.id} />
         ))}
@@ -72,14 +72,14 @@ async function Isi() {
 export default function RaporPage() {
   return (
     <div className="bingkai pt-12 pb-24 sm:pt-16">
-      <div className="grid gap-6 lg:grid-cols-12">
-        <h1 data-pembuka="judul" className="text-judul lg:col-span-6">Rapor instansi</h1>
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-12" data-awal>
+        <h1 className="text-judul lg:col-span-6">Rapor instansi</h1>
         <div className="lg:col-span-6">
-          <p data-pembuka="teks" className="max-w-[60ch] text-badan">
+          <p className="max-w-[60ch] text-badan">
             Nilai tiap instansi dalam merespons dan menyelesaikan laporan warga. Laporan yang diabaikan ikut dihitung, dan
             huruf selalu tampil bersama tingkat penolakannya: nilai bagus hasil membuang laporan langsung terlihat.
           </p>
-
+          <p className="text-tinta mt-4 angka text-lead font-medium tracking-tight">Nilai = 100 × (0,3 R + 0,3 S + 0,2 P + 0,2 K)</p>
           <p className="mt-3 text-badan">
             <Link href="/rapor/cara-menilai" className={kelasTautan}>
               Cara menilai, lengkap dengan contoh hitungan
@@ -88,7 +88,7 @@ export default function RaporPage() {
         </div>
       </div>
 
-      <div className="mt-6">
+      <div className="mt-12">
         <Suspense
           fallback={
             <div aria-hidden="true" className="grid gap-6 lg:grid-cols-2">

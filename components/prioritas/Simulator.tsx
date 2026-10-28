@@ -168,7 +168,7 @@ export default function Simulator({
             </h2>
             <span
               aria-live="polite"
-              className={`text-kecil font-medium transition-colors ${disimulasikan ? 'bg-tinta px-2 py-0.5 text-kertas' : 'text-lembut'}`}
+              className={`text-kecil font-medium transition-colors ${disimulasikan ? 'rounded-full bg-tinta px-2.5 py-0.5 text-kertas' : 'text-lembut'}`}
             >
               {disimulasikan ? 'Mode simulasi' : 'Bobot acuan'}
             </span>
@@ -184,7 +184,7 @@ export default function Simulator({
                 type="button"
                 aria-pressed={presetAktif === p}
                 onClick={() => setSlider(keSlider(PRESET[p]))}
-                className="min-h-11 rounded-full bg-lapis px-4 py-1.5 text-kecil font-medium transition-colors hover:bg-lapis-2 active:translate-y-px aria-pressed:bg-tinta aria-pressed:text-kertas"
+                className="min-h-11 rounded-full bg-lapis px-4 py-1.5 text-kecil font-medium transition-[background-color,color,scale] duration-200 hover:bg-lapis-2 active:scale-95 aria-pressed:bg-tinta aria-pressed:text-kertas"
               >
                 {LABEL_PRESET[p]}
               </button>
@@ -270,13 +270,13 @@ export default function Simulator({
                   ubahParameter({ kategori: k.id === null ? null : String(k.id), isu: null });
                   setSemua(false);
                 }}
-                className="min-h-11 rounded-full bg-permukaan px-4 py-1.5 text-kecil font-medium ring-1 ring-batas ring-inset transition-colors hover:bg-terang aria-pressed:ring-tinta active:translate-y-px aria-pressed:bg-tinta aria-pressed:text-kertas"
+                className="min-h-11 rounded-full bg-permukaan px-4 py-1.5 text-kecil font-medium ring-1 ring-batas ring-inset transition-[background-color,color,scale] duration-200 hover:bg-terang active:scale-95 aria-pressed:bg-tinta aria-pressed:text-kertas aria-pressed:ring-tinta"
               >
                 {k.nama}
               </button>
             ))}
           </div>
-          <p className={`min-h-[1.55em] text-pernyataan tracking-[-0.02em] ${disimulasikan ? 'text-tinta' : ''}`} aria-live="polite">
+          <p className={`min-h-[1.55em] text-pernyataan tracking-[-0.02em] transition-colors ${disimulasikan ? 'text-tinta' : ''}`} aria-live="polite">
             {konsekuensi ??
               `${simulasi.length} isu wilayah dinilai${kategori ? ` untuk kategori ${KATEGORI[kategori - 1].nama.toLowerCase()}` : ''}. Geser bobot dan lihat urutannya bergeser.`}
           </p>

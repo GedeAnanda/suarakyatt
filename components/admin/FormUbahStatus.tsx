@@ -48,8 +48,8 @@ export default function FormUbahStatus({ kode, status, aktif }: { kode: string; 
   if (pilihan.length === 0) {
     return (
       <p className="kartu p-5 text-badan">
-        Status {LABEL_STATUS[status].toLowerCase()} bersifat final. Perubahan berikutnya hanya lewat Keberatan Warga yang
-        diputuskan Perencana.
+        Status {LABEL_STATUS[status].toLowerCase()} bersifat final. Status ini tidak bisa diubah dari halaman ini. Hubungi Perencana
+        bila ada keputusan yang perlu ditinjau.
       </p>
     );
   }
@@ -151,7 +151,7 @@ export default function FormUbahStatus({ kode, status, aktif }: { kode: string; 
             {alasan === 'duplikat' && (
               <label className="mt-2 grid gap-1.5 text-kecil">
                 Kode laporan rujukan
-                <input value={rujukan} onChange={(e) => setRujukan(e.target.value)} placeholder="SR-XXXXXX" className={`${kelasIsian} uppercase`} />
+                <input value={rujukan} onChange={(e) => setRujukan(e.target.value)} placeholder="SR-K7W3PA" className={`${kelasIsian} font-kode uppercase`} />
               </label>
             )}
           </fieldset>

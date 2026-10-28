@@ -16,6 +16,7 @@ import Timeline from '@/components/laporan/Timeline';
 import TitikTunggal from '@/components/peta/TitikTunggal';
 import Ikon from '@/components/ui/Ikon';
 import LabelSumber from '@/components/ui/LabelSumber';
+import TeksRakit from '@/components/ui/TeksRakit';
 import { kelasTautan } from '@/components/ui/Tombol';
 import { ambilDetailLaporan, ambilHubungan } from '@/lib/data/laporan';
 import { ambilDataPrioritas } from '@/lib/data/prioritas';
@@ -26,12 +27,12 @@ import type { KenapaBelum } from '@/lib/types';
 
 export async function generateMetadata({ params }: PageProps<'/laporan/[kode]'>): Promise<Metadata> {
   const { kode } = await params;
-  return { title: `Laporan ${kode}` };
+  return { title: `Laporan ${decodeURIComponent(kode)}` };
 }
 
 async function Isi({ params, searchParams }: Pick<PageProps<'/laporan/[kode]'>, 'params' | 'searchParams'>) {
   const [{ kode: mentah }, sp] = await Promise.all([params, searchParams]);
-  const kode = mentah.toUpperCase();
+  const kode = decodeURIComponent(mentah).toUpperCase();
   const detail = await ambilDetailLaporan(kode);
   if (!detail) notFound();
 
@@ -57,7 +58,7 @@ async function Isi({ params, searchParams }: Pick<PageProps<'/laporan/[kode]'>, 
   return (
     <>
       {baru && (
-        <div role="status" className="di-medan mb-10 rounded-(--radius-kartu) bg-medan p-5 text-medan-tinta sm:p-6">
+        <div role="status" className="di-medan pop mb-10 rounded-(--radius-kartu) bg-medan p-5 text-medan-tinta sm:p-6">
           <p className="text-lead font-medium">Laporan terkirim. Simpan kode {l.kode} untuk melacaknya.</p>
           <p className="mt-2 max-w-[70ch] text-badan text-medan-lembut">
             Laporan di suaRAkyat tidak diteruskan ke instansi. Untuk pengaduan resmi, kirim juga lewat{' '}
@@ -74,17 +75,25 @@ async function Isi({ params, searchParams }: Pick<PageProps<'/laporan/[kode]'>, 
         </div>
       )}
 
-      <div className="grid gap-10 lg:grid-cols-12 lg:gap-8">
-        <div className="lg:col-span-7">
+      <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-8">
+        <div className="lg:col-span-7" data-awal>
           <div className="flex flex-wrap items-center gap-3">
             <BadgeStatus status={l.status} besar />
             {(l.is_simulated || sumber === 'contoh') && <LabelSumber sumber={sumber} />}
           </div>
-          <h1 data-pembuka="judul" className="mt-5 text-judul">{l.kategori} di {l.kecamatan}</h1>
-          <p data-pembuka="teks" className="mt-3 text-badan text-lembut">{l.kota} · Kode <span className="angka font-semibold text-teks">{l.kode}</span></p>
-          <div className="mt-4" data-ui>
+          {/* Kode dirakit huruf demi huruf, seperti judul Beranda; pembaca layar membaca kodenya utuh. */}
+          <h1 className="font-kode angka mt-5 text-[clamp(3rem,1.6rem+6vw,7rem)] leading-[0.9] font-semibold tracking-[-0.05em]">
+            <span className="sr-only">{l.kode}</span>
+            <span aria-hidden="true">
+              <TeksRakit teks={l.kode} sebar={0.6} jeda={150} />
+            </span>
+          </h1>
+          <div className="mt-4">
             <SalinKode kode={l.kode} />
           </div>
+          <p className="mt-5 text-pernyataan tracking-[-0.02em]">
+            {l.kategori} di {l.kecamatan}, {l.kota}
+          </p>
           <p className="mt-2 text-kecil text-lembut">
             Dilaporkan {tanggalJam(l.created_at)} oleh {l.inisial_pelapor || 'warga'} · ditangani {l.instansi}
           </p>
@@ -100,7 +109,7 @@ async function Isi({ params, searchParams }: Pick<PageProps<'/laporan/[kode]'>, 
             </p>
           )}
         </div>
-        <div className="lg:col-span-5">
+        <div className="lg:col-span-5" data-awal>
           <TitikTunggal lat={l.lat} lng={l.lng} warna={WARNA_TITIK[l.status]} label={`Lokasi ${l.kode}`} />
           <p className="mt-2 text-kecil text-lembut">Yang tampil publik hanya lokasi masalah, bukan identitas pelapor.</p>
         </div>
@@ -120,8 +129,8 @@ async function Isi({ params, searchParams }: Pick<PageProps<'/laporan/[kode]'>, 
         </section>
       )}
 
-      <div className="mt-14 grid gap-12 lg:grid-cols-12 lg:gap-8">
-        <div className="grid content-start gap-12 lg:col-span-7">
+      <div className="mt-14 grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-8">
+        <div className="grid content-start gap-12 lg:col-span-7" data-muncul>
           <section aria-labelledby="judul-isi">
             <h2 id="judul-isi" className="sr-only">
               Isi laporan
@@ -138,24 +147,20 @@ async function Isi({ params, searchParams }: Pick<PageProps<'/laporan/[kode]'>, 
             <h2 id="judul-riwayat" className="text-lead font-medium tracking-tight">
               Riwayat penanganan
             </h2>
-            <p className="mt-2 max-w-[65ch] text-badan text-lembut">
-              Catatan di bawah berasal dari tindakan pelapor dan instansi dalam simulasi ini.
-              {aktif && !timeline.some((t) => t.status_baru !== 'menunggu' && t.catatan) &&
-                ' Belum ada penjelasan instansi tentang tindak lanjut atau kendala penanganan.'}
-            </p>
             <div className="mt-6">
-              <Timeline item={timeline} />
+              <Timeline item={timeline} berjalan={aktif} />
             </div>
           </section>
         </div>
 
-        <aside className="grid content-start gap-6 lg:col-span-5">
+        <aside className="grid content-start gap-6 lg:col-span-5" data-muncul>
           <TombolDukung
             kode={l.kode}
             jumlahAwal={l.jumlah_upvote}
             status={l.status}
             login={hubungan.login}
-            pemilik={hubungan.pemilik || sumber === 'contoh'}
+            pemilik={hubungan.pemilik}
+            contoh={sumber === 'contoh'}
           />
           {hubungan.pemilik && l.status === 'menunggu' && <TombolBatalkan kode={l.kode} />}
           {hubungan.pemilik && l.status === 'selesai' && !hubungan.sudahRating && <FormRating kode={l.kode} />}

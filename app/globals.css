@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Ponsel diputar miring: layar pendek dan lebar, butuh tata letak sendiri (bukan versi tablet). */
+@custom-variant pendek (@media (orientation: landscape) and (max-height: 540px));
+
 /*
  * Sistem desain suaRAkyat (pemilik: A)
  * Halaman abu-abu sangat terang, kartu putih membulat dengan garis tipis dan bayangan lembut.
@@ -25,7 +28,7 @@
 
   --radius-kartu: 1rem;
   --radius-kontrol: 0.625rem;
-  --shadow-kartu: none;
+  --shadow-kartu: 0 1px 2px rgb(42 19 22 / 0.05), 0 14px 32px -22px rgb(42 19 22 / 0.28);
   --shadow-angkat: 0 2px 4px rgb(42 19 22 / 0.06), 0 22px 44px -24px rgb(42 19 22 / 0.38);
   --color-medan: #7d0c14;
   --color-medan-tinta: #f4eeee;
@@ -52,10 +55,13 @@
   --color-k4: #922f39;
   --color-k5: #5c0710;
 
-  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-author), ui-sans-serif, system-ui, sans-serif;
+  /* Satoshi: wordmark (kelas font-wordmark) dan kode laporan (kelas font-kode), supaya huruf dan angka kode rata. */
+  --font-wordmark: var(--font-satoshi), ui-sans-serif, system-ui, sans-serif;
+  --font-kode: var(--font-satoshi), ui-sans-serif, system-ui, sans-serif;
 
   /* Lima langkah ukuran; tidak ada yang lain. */
-  --text-kecil: 1rem;
+  --text-kecil: clamp(0.875rem, 0.85rem + 0.1vw, 0.9375rem);
   --text-kecil--line-height: 1.5;
   --text-badan: clamp(1rem, 0.96rem + 0.2vw, 1.125rem);
   --text-badan--line-height: 1.55;
@@ -82,6 +88,28 @@
   html {
     background: var(--color-kertas);
     -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /*
+   * Layar lebar (MacBook Pro, monitor 1920/2560): seluruh tata letak 1440 px diskalakan proporsional
+   * dengan membesarkan ukuran dasar rem (16 px di 1440, ±19 px di 1728, ±21 px di 1920, maks. 28 px).
+   * Isi mengisi layar alih-alih menyisakan sisi kosong. Persen, jadi pengaturan ukuran huruf pengguna
+   * tetap dihormati; titik henti Tailwind tidak ikut berubah karena media query memakai rem awal.
+   */
+  @media (min-width: 90rem) {
+    html {
+      font-size: clamp(100%, 1.1112vw, 175%);
+    }
+  }
+
+  /* iOS Safari memperbesar halaman saat isian di bawah 16 px disentuh; di layar sentuh minimal 16 px. */
+  @media (pointer: coarse) {
+    input:not([type="range"], [type="radio"], [type="checkbox"]),
+    select,
+    textarea {
+      font-size: max(1rem, 1em);
+    }
   }
 
   body {
@@ -92,6 +120,14 @@
     line-height: 1.55;
     letter-spacing: -0.005em;
     font-feature-settings: "ss01" 0;
+    /* Author memakai angka gaya lama (3, 7, 9 turun di bawah garis dasar); di seluruh situs angka dibuat sejajar. */
+    font-variant-numeric: lining-nums;
+  }
+
+  input,
+  input::placeholder,
+  textarea {
+    font-variant-numeric: lining-nums;
   }
 
   h1,
@@ -212,7 +248,8 @@
 
 /* Halaman: satu pasang tepi untuk semua. */
 .bingkai {
-  padding-inline: var(--tepi);
+  /* Di iPhone miring, tepi isi tidak boleh masuk ke area poni / Dynamic Island. */
+  padding-inline: max(var(--tepi), env(safe-area-inset-left)) max(var(--tepi), env(safe-area-inset-right));
   margin-inline: auto;
   width: 100%;
   max-width: 90rem;
@@ -267,8 +304,8 @@
 }
 
 @keyframes muncul {
-  from { transform: translateY(20px); }
-  to { transform: translateY(0); }
+  from { opacity: 0; transform: translateY(28px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -314,9 +351,6 @@
   overflow: hidden;
   min-height: 0;
 }
-
-/* Lapisan judul selalu terbaca; animasi pembuka dipicu setelah halaman terpasang. */
-.baris-naik > span { display: block; }
 
 @keyframes timbul {
   from { opacity: 0; transform: translateY(12px); }
@@ -461,107 +495,447 @@ input[type="range"].slider::-moz-range-thumb {
   box-shadow: 0 1px 4px rgb(42 19 22 / 0.4);
 }
 
-/* Hero dua bidang: judul dan tindakan tetap berdekatan pada ponsel. */
-.hero-prioritas { padding-top: clamp(2.25rem, 5vw, 5rem); }
-.hero-judul.bingkai { max-width: none; padding-inline: 0; }
-.hero-kalimat {
-  margin: 0;
-  text-align: center;
-  font-size: clamp(3.75rem, 15.5vw, 13rem);
-  line-height: .94;
-  letter-spacing: -.055em;
-  font-weight: 600;
-}
-.hero-kalimat > .baris-naik { display: block; overflow: hidden; padding: .04em var(--tepi) .1em; }
-.hero-kalimat > .baris-naik:nth-child(2) { background: var(--color-medan); color: var(--color-medan-tinta); padding-bottom: .15em; }
-.hero-ajakan { display: flex; flex-direction: column; gap: 1.25rem; padding-block: 1.25rem 2rem; }
-@media (min-width: 1024px) {
-  .hero-ajakan { flex-direction: row; align-items: end; justify-content: space-between; gap: 3rem; padding-block: 2rem 3rem; }
-}
+/*
+ * ===== Lapisan gerak (pemilik: A) =====
+ * Aturan: scroll tetap milik pengguna (tanpa scroll-jacking), isi tidak pernah menunggu JavaScript,
+ * hanya transform dan opacity (kecuali clip-path foto Beranda), dan semua gerak hilang untuk
+ * pengguna yang meminta gerak dikurangi: mereka langsung melihat keadaan akhir.
+ */
 
-/* Jangkar dan fokus tetap terlihat di bawah navigasi. */
-html { scroll-padding-top: 6rem; }
-[id] { scroll-margin-top: 6rem; }
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { scroll-behavior: auto !important; }
+/* --- Hero Beranda: "KENAPA BELUM?" dirakit huruf demi huruf, lalu garis prioritas naik. --- */
+@property --garis-muat {
+  syntax: "<percentage>";
+  inherits: true;
+  initial-value: 0%;
 }
-
-/* Interaksi singkat: gerak mengikuti tindakan pengguna, tanpa putaran otomatis. */
-.angka-beralih {
+/* Kemajuan gulir hero, 0 di puncak halaman sampai 1 setelah digulir 60svh. */
+@property --gulir {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+/*
+ * Ukuran judul hero: tinta KENAPA (3,1265em) selebar hero dikurangi tepi kiri-kanan, tapi tidak lebih besar
+ * dari yang muat secara vertikal. Tinggi tinta dua baris = 0,76em (jarak baris) + 0,594em (tinggi kapital
+ * Author) = 1,354em, ditambah --ruang di atas dan bawah. cqw/cqh mengacu ke section hero
+ * (container-type: size), jadi scrollbar dan header tidak ikut terhitung.
+ * Garis merah berhenti di tengah tinta baris kedua: 50% + (0,76 / 2 + 0,018 − 0,02) × ukuran judul
+ * (0,02em = koreksi posisi judul di HeroGaris.tsx).
+ *
+ * Saat digulir, judul turun --kejar di dalam hero (jadi bergerak lebih lambat dari halaman) sampai kalimat
+ * pendukung di bawah hero menempel 2rem di bawahnya: --kejar = jarak dari dasar tinta BELUM?
+ * (50% + 0,675em) ke dasar hero, dikurangi 2rem. Di ponsel tegak celah ini besar; di layar lanskap hampir
+ * nol. Garis merah ikut turun bersama judul, sambil naik 1,1em relatif ke huruf supaya judul tenggelam.
+ */
+.hero-isi {
+  --ruang: 2.5rem;
+  --judul: min(calc((100cqw - 2 * var(--tepi)) / 3.1265), calc((100cqh - 2 * var(--ruang)) / 1.354));
+  --kejar: max(0px, calc(50cqh - 0.675 * var(--judul) - 2rem));
+  --garis: calc(50% + 0.378 * var(--judul) + var(--garis-muat) + var(--gulir) * (var(--kejar) - 1.1 * var(--judul)));
+}
+/* Ponsel miring: layar pendek, ruang atas-bawah dikurangi supaya judul tetap lebar. */
+@media (orientation: landscape) and (max-height: 540px) {
+  .hero-isi {
+    --ruang: 1rem;
+  }
+}
+.judul-garis {
+  font-size: var(--judul);
+  transform: translateY(calc(var(--gulir) * var(--kejar)));
+}
+/* Satu huruf: datang dari posisi acak (--x, --y, --r dari components/ui/TeksRakit.tsx) ke tempatnya. */
+.rakit {
   display: inline-block;
-  vertical-align: top;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .rakit {
+    animation: rakit 1150ms cubic-bezier(0.2, 1.22, 0.36, 1) both;
+    animation-delay: calc(var(--urut, 0) * 55ms + var(--jeda, 0ms));
+  }
+  /* Tanda tanya menengok sekali setelah semua huruf terpasang. */
+  .rakit-tanya {
+    animation:
+      rakit 1150ms cubic-bezier(0.2, 1.22, 0.36, 1) both,
+      tanya 900ms ease-in-out 1 normal none;
+    animation-delay: calc(var(--urut, 0) * 55ms + var(--jeda, 0ms)), calc(var(--urut, 0) * 55ms + var(--jeda, 0ms) + 1250ms);
+    transform-origin: 50% 80%;
+  }
+  .hero-garis {
+    animation: garis-muat 1300ms var(--ease-keluar) 450ms both;
+  }
+  @supports (animation-timeline: view()) {
+    .hero-garis {
+      animation:
+        garis-muat 1300ms var(--ease-keluar) 450ms both,
+        garis-gulir linear both;
+      /* Timeline gulir halaman (bukan view()): efek tenggelam dan garis merah naik mulai di piksel gulir
+         pertama. Dengan view(), efeknya baru jalan setelah hero melewati tinggi header, jadi terasa tertunda. */
+      animation-timeline: auto, scroll(root);
+      animation-range: normal, 0 60svh;
+    }
+  }
+}
+@keyframes rakit {
+  0% {
+    opacity: 0;
+    transform: translate(var(--x, 0), var(--y, 0)) rotate(var(--r, 0deg)) scale(0.5);
+  }
+  30% { opacity: 1; }
+  100% { opacity: 1; transform: none; }
+}
+@keyframes tanya {
+  0%, 100% { transform: none; }
+  30% { transform: rotate(-14deg); }
+  62% { transform: rotate(7deg); }
+}
+@keyframes garis-muat {
+  from { --garis-muat: 50%; }
+  to { --garis-muat: 0%; }
+}
+@keyframes garis-gulir {
+  from { --gulir: 0; }
+  to { --gulir: 1; }
+}
+
+/* --- Kepala tiap halaman: judul, lalu kalimat pengantar, lalu sisanya, naik bergantian saat halaman dibuka. --- */
+@media (prefers-reduced-motion: no-preference) {
+  [data-awal] > * {
+    animation: naik 760ms var(--ease-keluar) both;
+  }
+  [data-awal] > :nth-child(2) { animation-delay: 90ms; }
+  [data-awal] > :nth-child(3) { animation-delay: 180ms; }
+  [data-awal] > :nth-child(4) { animation-delay: 260ms; }
+  [data-awal] > :nth-child(n + 5) { animation-delay: 330ms; }
+}
+@keyframes naik {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* --- Bar navigasi: bayangan muncul setelah halaman digulir; garis bawah tautan tumbuh dari kiri. --- */
+@supports (animation-timeline: scroll()) {
+  .kepala {
+    animation: kepala-bayang linear both;
+    animation-timeline: scroll();
+    animation-range: 0 140px;
+  }
+}
+@keyframes kepala-bayang {
+  from { box-shadow: 0 0 0 transparent; }
+  to { box-shadow: 0 10px 28px -18px rgb(42 19 22 / 0.35); }
+}
+.tautan-nav {
+  position: relative;
+}
+.tautan-nav::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0.75rem;
+  bottom: 0.3rem;
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 320ms var(--ease-keluar);
+}
+.tautan-nav:hover::after,
+.tautan-nav[aria-current="page"]::after {
+  transform: scaleX(1);
+}
+
+/* Menu ponsel dan panel tarik-turun: membuka dengan turun sedikit, isinya menyusul. */
+@media (prefers-reduced-motion: no-preference) {
+  .menu-buka:not([hidden]) {
+    animation: menu-buka 300ms var(--ease-keluar) both;
+  }
+  .menu-buka:not([hidden]) li {
+    animation: naik 420ms var(--ease-keluar) both;
+  }
+  .menu-buka:not([hidden]) li:nth-child(2) { animation-delay: 40ms; }
+  .menu-buka:not([hidden]) li:nth-child(3) { animation-delay: 80ms; }
+  .menu-buka:not([hidden]) li:nth-child(4) { animation-delay: 120ms; }
+  details[open] > .turun-panel {
+    animation: turun-buka 220ms var(--ease-keluar) both;
+  }
+}
+@keyframes menu-buka {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes turun-buka {
+  from { opacity: 0; transform: translateY(-6px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+
+/* --- Umpan balik kecil: ikon centang yang muncul, foto yang ditambahkan, peringatan yang menggeleng. --- */
+@media (prefers-reduced-motion: no-preference) {
+  .pop {
+    animation: pop 460ms var(--ease-pegas) both;
+  }
+  .goyang {
+    animation:
+      timbul 320ms var(--ease-keluar) both,
+      goyang 460ms ease-in-out 320ms 1 normal none;
+  }
+}
+@keyframes pop {
+  from { opacity: 0; transform: scale(0.6); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes goyang {
+  20% { transform: translateX(-7px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(2px); }
+}
+
+/* --- Rapor: huruf dicap saat kartunya masuk layar. --- */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .cap {
+      animation: cap linear both;
+      animation-timeline: view();
+      animation-range: entry 10% cover 32%;
+    }
+  }
+}
+@keyframes cap {
+  from { opacity: 0; transform: scale(1.7) rotate(-12deg); }
+  60% { opacity: 1; transform: scale(0.94) rotate(1deg); }
+  to { opacity: 1; transform: none; }
+}
+
+/* --- Riwayat: status terakhir laporan yang masih berjalan memancarkan cincin tiga kali. --- */
+@media (prefers-reduced-motion: no-preference) {
+  .cincin::after {
+    content: "";
+    position: absolute;
+    inset: -3px;
+    border-radius: 999px;
+    border: 2px solid currentColor;
+    animation: cincin 1800ms var(--ease-keluar) 700ms 3 both;
+    pointer-events: none;
+  }
+}
+@keyframes cincin {
+  from { opacity: 0.75; transform: scale(0.85); }
+  to { opacity: 0; transform: scale(1.7); }
+}
+
+/* --- Footer: nama besar naik dari bawah saat penutup halaman terlihat. --- */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .kaki-nama {
+      animation: kaki-nama linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 100%;
+    }
+  }
+}
+@keyframes kaki-nama {
+  from { transform: translateY(45%); }
+  to { transform: none; }
+}
+
+/* --- Garis memuat di atas layar saat pindah halaman (app/loading.tsx). --- */
+.muat-garis {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 1500;
+  height: 3px;
+  overflow: hidden;
+}
+.muat-garis::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--color-tinta);
+  transform-origin: left;
+  transform: scaleX(0.35);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .muat-garis::before {
+    animation: muat-garis 1300ms var(--ease-keluar) infinite;
+  }
+}
+@keyframes muat-garis {
+  from { transform: translateX(-100%) scaleX(0.4); }
+  to { transform: translateX(100%) scaleX(0.7); }
+}
+
+/* --- Pernyataan pembuka Beranda: tinta mengisi kalimat kata demi kata saat dibaca. --- */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .tinta-isi > span {
+      color: color-mix(in oklab, var(--color-teks) 32%, transparent);
+      animation: tinta-isi linear both;
+      animation-timeline: view();
+      animation-range: cover 15% cover 42%;
+    }
+  }
+}
+@keyframes tinta-isi {
+  to { color: var(--color-teks); }
+}
+
+/* --- Foto Batavia: jendela kecil yang terbuka penuh saat masuk layar. Tidak sticky dan setinggi
+   setengah layar, jadi keterangan di bawahnya tidak pernah tertutup. --- */
+.jendela-panggung {
+  height: 50svh;
+  min-height: 18rem;
   overflow: clip;
 }
-.angka-lapisan {
-  display: inline-grid;
-  min-width: 2ch;
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .jendela-panggung {
+      animation: jendela-buka linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 45%;
+    }
+    .jendela-panggung img {
+      animation: jendela-mendekat linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 45%;
+    }
+  }
 }
-.angka-lapisan > span { grid-area: 1 / 1; }
-.angka-sebelum { display: none; }
+@media (max-width: 700px) {
+  .jendela { --jendela-y: 18%; --jendela-x: 8%; }
+}
+@keyframes jendela-buka {
+  from { clip-path: inset(var(--jendela-y, 20%) var(--jendela-x, 27%) round var(--radius-kartu)); }
+  to { clip-path: inset(0 round 0); }
+}
+@keyframes jendela-mendekat {
+  from { transform: scale(1.15); }
+  to { transform: none; }
+}
 
+/* --- Angka bergulir (components/ui/AngkaGulir.tsx): tiap digit kolom 0–9 digeser ke nilainya. --- */
+.gulir-kolom {
+  display: inline-block;
+  height: 1em;
+  overflow: clip;
+  vertical-align: top;
+}
+.gulir-strip {
+  display: flex;
+  flex-direction: column;
+  transform: translateY(calc(var(--d, 0) * -1em));
+}
+.gulir-strip > span {
+  height: 1em;
+  line-height: 1em;
+}
 @media (prefers-reduced-motion: no-preference) {
-  .tombol-gerak {
-    transition: background-color 180ms ease, color 180ms ease,
-      translate 220ms var(--ease-keluar), scale 160ms var(--ease-keluar);
+  .gulir-strip {
+    transition: transform 1000ms var(--ease-keluar) calc(var(--i, 0) * 70ms);
   }
-  .tombol-gerak:active:not(:disabled), .pilihan-gerak:active {
-    translate: 0 0;
-    scale: .98;
+  [data-gulir-tahan] .gulir-strip {
+    transform: none;
   }
-  .pilihan-gerak {
-    transition: background-color 220ms ease, color 220ms ease, scale 160ms var(--ease-keluar);
-  }
-  @media (hover: hover) and (pointer: fine) {
-    .tombol-gerak:hover:not(:disabled) { translate: 0 -2px; }
-  }
-
-  /* Tidak menganimasikan hitungan antara: angka yang tampil selalu hasil model. */
-  .angka-lapisan[data-berubah="true"] { --geser-angka: .45em; }
-  .angka-lapisan[data-arah="turun"] { --geser-angka: -.45em; }
-  .angka-lapisan[data-berubah="true"] > .angka-sebelum {
-    display: block;
-    animation: angka-keluar 360ms var(--ease-keluar) both;
-  }
-  .angka-lapisan[data-berubah="true"] > .angka-sekarang {
-    animation: angka-masuk 420ms var(--ease-keluar) both;
-  }
-
-  #menu-ponsel:not([hidden]), details[open] > .menu-gerak {
-    transform-origin: top center;
-    animation: menu-masuk 240ms var(--ease-keluar) both;
-  }
-  .foto-pilihan {
-    transition: opacity 320ms ease, transform 650ms var(--ease-keluar);
-  }
-  .foto-pilihan[aria-hidden="true"] { transform: scale(1.025); }
-  .foto-pilihan[aria-hidden="false"] { transform: scale(1); }
-  .sorot-peta { animation: sorot-masuk 320ms ease-out both; }
 }
 
-@keyframes angka-masuk {
-  from { opacity: 0; transform: translateY(var(--geser-angka)); }
-  to { opacity: 1; transform: translateY(0); }
+/* --- Bar yang terisi dari kiri saat masuk layar. Tanpa dukungan: langsung penuh. --- */
+.bar-isi {
+  transform-origin: left;
+  transform: scaleX(var(--isi, 1));
 }
-@keyframes angka-keluar {
-  from { opacity: 1; transform: translateY(0); }
-  to { opacity: 0; transform: translateY(calc(0px - var(--geser-angka))); }
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .bar-isi {
+      animation: bar-isi linear both;
+      animation-timeline: view();
+      animation-range: entry 30% cover 45%;
+    }
+  }
 }
-@keyframes menu-masuk {
-  from { opacity: 0; transform: translateY(-6px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-@keyframes sorot-masuk {
-  from { opacity: .25; }
-  to { opacity: 1; }
+@keyframes bar-isi {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(var(--isi, 1)); }
 }
 
-/* Termasuk transisi utilitas lama: pilihan aksesibilitas berlaku di seluruh UI. */
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation: none !important;
-    transition-duration: 0s !important;
-    transition-delay: 0s !important;
+/* Penanda yang bergeser di jalur peringkat dan sapuan foto kategori di Beranda. */
+@media (prefers-reduced-motion: no-preference) {
+  .geser-halus {
+    transition: left 700ms var(--ease-keluar), width 700ms var(--ease-keluar);
   }
-  .kartu-klik:hover { transform: none; }
-  .tombol-gerak, .pilihan-gerak { translate: none; scale: none; }
+  .sapu {
+    transition:
+      clip-path 750ms var(--ease-keluar),
+      transform 1200ms var(--ease-keluar);
+  }
+}
+
+/*
+ * Bayangan tipis (hitam 70%) untuk teks terang di atas merah, supaya hurufnya lebih tegas.
+ * text-shadow diwariskan, jadi cukup dipasang di wadah merah; elemen terang di dalamnya (tombol putih,
+ * chip yang dipilih, kolom isian) dikembalikan tanpa bayangan supaya teks gelapnya tetap bersih.
+ */
+.di-medan,
+.bg-medan:is(.text-white, .text-kertas, .text-medan-tinta),
+.bg-tinta:is(.text-white, .text-kertas),
+.aria-pressed\:bg-tinta[aria-pressed="true"],
+.has-checked\:bg-tinta:has(:checked) {
+  text-shadow: 0 1px 2px rgb(0 0 0 / 0.7);
+}
+.di-medan :is(.bg-white, .bg-permukaan, .bg-medan-tinta, .bg-terang, .bg-kertas, .bg-lapis, .bg-lapis-2, .wordmark-ra, input, textarea),
+.di-medan .aria-pressed\:bg-medan-tinta[aria-pressed="true"] {
+  text-shadow: none;
+}
+/* Kotak peringkat di Beranda hanya merah di ponsel; di layar lebar latarnya putih. */
+@media (min-width: 40rem) {
+  .di-medan.sm\:bg-transparent {
+    text-shadow: none;
+  }
+}
+/* Judul hero sangat besar: bayangan ikut skala huruf (em dihitung di elemen judul, bukan di wadahnya). */
+.bayang-judul p {
+  text-shadow: 0 0.012em 0.035em rgb(0 0 0 / 0.7);
+}
+
+/* --- Isi panel lipat menyusul satu per satu setiap kali panel dibuka (PanelKenapaBelum). --- */
+@media (prefers-reduced-motion: no-preference) {
+  .lipat[data-buka="true"] [data-susul] > * {
+    animation: naik 560ms var(--ease-keluar) 120ms both;
+  }
+  .lipat[data-buka="true"] [data-susul] > :nth-child(2) { animation-delay: 190ms; }
+  .lipat[data-buka="true"] [data-susul] > :nth-child(3) { animation-delay: 260ms; }
+  .lipat[data-buka="true"] [data-susul] > :nth-child(n + 4) { animation-delay: 330ms; }
+}
+
+/* --- Peta laporan: bingkai peta terbuka penuh saat masuk layar, penanda muncul dengan pegas. --- */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .peta-buka {
+      animation: peta-buka linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 35%;
+    }
+  }
+}
+@keyframes peta-buka {
+  from { clip-path: inset(14% 10% round var(--radius-kartu)); }
+  to { clip-path: inset(0 round var(--radius-kartu)); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .peta .titik,
+  .peta .klaster {
+    animation: pop 420ms var(--ease-pegas) both;
+  }
+}
+
+/* --- Tabel desktop: baris naik bergantian saat tabel masuk layar. --- */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .tabel-masuk tbody tr {
+      animation: naik linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 70%;
+    }
+    .tabel-masuk tbody tr:nth-child(2) { animation-range: entry 6% entry 76%; }
+    .tabel-masuk tbody tr:nth-child(3) { animation-range: entry 12% entry 82%; }
+    .tabel-masuk tbody tr:nth-child(n + 4) { animation-range: entry 18% entry 88%; }
+  }
 }

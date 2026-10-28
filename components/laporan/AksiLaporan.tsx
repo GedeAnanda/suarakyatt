@@ -10,6 +10,7 @@ import { pesanError } from '@/lib/errors';
 import { createClient } from '@/lib/supabase/client';
 import type { StatusLaporan } from '@/lib/types';
 import { umumkan } from '../Pengumuman';
+import AngkaGulir from '../ui/AngkaGulir';
 import Ikon from '../ui/Ikon';
 import { kelasTombol, Tombol } from '../ui/Tombol';
 
@@ -21,19 +22,22 @@ export function TombolDukung({
   status,
   login,
   pemilik,
+  contoh = false,
 }: {
   kode: string;
   jumlahAwal: number;
   status: StatusLaporan;
   login: boolean;
   pemilik: boolean;
+  /** Laporan dari data contoh: tidak ada di database, jadi dukungan tidak ditawarkan. */
+  contoh?: boolean;
 }) {
   const router = useRouter();
   const [jumlah, setJumlah] = useState(jumlahAwal);
   const [didukung, setDidukung] = useState<boolean | null>(null);
   const [memuat, setMemuat] = useState(false);
   const [galat, setGalat] = useState<string | null>(null);
-  const aktif = AKTIF.includes(status);
+  const aktif = AKTIF.includes(status) && !contoh;
 
   async function dukung() {
     setMemuat(true);
@@ -52,12 +56,12 @@ export function TombolDukung({
     <div className="grid gap-2">
       <div className="flex flex-wrap items-center gap-4">
         <p className="text-tinta angka text-judul leading-none font-medium tracking-[-0.04em]">
-          {jumlah}
+          <AngkaGulir nilai={String(jumlah)} />
           <span className="ml-2 text-badan tracking-normal text-lembut">warga mendukung</span>
         </p>
         {aktif && !pemilik && login && (
           <Tombol varian={didukung ? 'kedua' : 'utama'} onClick={dukung} disabled={memuat} aria-pressed={didukung ?? undefined}>
-            <Ikon nama="dukung" className="size-4" isi={Boolean(didukung)} />
+            <Ikon key={String(didukung)} nama="dukung" className="pop size-4" isi={Boolean(didukung)} />
             {memuat ? 'Menyimpan…' : didukung ? 'Batal dukung' : 'Dukung laporan ini'}
           </Tombol>
         )}
@@ -158,9 +162,13 @@ export function FormRating({ kode }: { kode: string }) {
         <p className="text-kecil text-lembut">Rating hanya bisa diberikan sekali, oleh pelapor, setelah laporan selesai.</p>
         <div className="mt-3 flex gap-1">
           {[1, 2, 3, 4, 5].map((n) => (
-            <label key={n} className="cursor-pointer p-1.5 has-focus-visible:outline-3 has-focus-visible:outline-tinta">
+            <label
+              key={n}
+              className="flex size-11 cursor-pointer items-center justify-center rounded-full text-tinta transition-[scale,background-color] duration-200 hover:scale-110 hover:bg-tinta-muda active:scale-95 has-focus-visible:outline-3 has-focus-visible:outline-tinta"
+            >
               <input type="radio" name="nilai" value={n} checked={nilai === n} onChange={() => setNilai(n)} className="sr-only" />
-              <Ikon nama="bintang" isi={n <= nilai} className="size-8" />
+              {/* Bintang yang baru terisi muncul dengan pegas. */}
+              <Ikon key={String(n <= nilai)} nama="bintang" isi={n <= nilai} className={n <= nilai ? 'pop size-8' : 'size-8'} />
               <span className="sr-only">{n} bintang</span>
             </label>
           ))}

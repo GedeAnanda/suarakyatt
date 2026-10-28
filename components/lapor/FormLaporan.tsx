@@ -83,7 +83,7 @@ function Langkah({
               selesai ? 'bg-st-selesai text-white' : galat.length ? 'bg-tinta text-white' : 'bg-lapis text-teks'
             }`}
           >
-            {selesai ? <Ikon nama="centang" className="size-5" /> : n}
+            {selesai ? <Ikon key="centang" nama="centang" className="pop size-5" /> : n}
             <span className="sr-only">{selesai ? ', lengkap' : ', belum lengkap'}</span>
           </span>
           {judul}
@@ -286,7 +286,7 @@ export default function FormLaporan() {
             {KATEGORI.map((k) => (
               <label
                 key={k.id}
-                className="kartu kartu-klik grid cursor-pointer gap-1 p-4 has-checked:border-tinta has-checked:bg-tinta has-checked:text-white has-focus-visible:outline-3 has-focus-visible:outline-tinta"
+                className="kartu kartu-klik grid cursor-pointer gap-1 p-4 transition-[box-shadow,transform,border-color,background-color,color,scale] duration-200 active:scale-[0.98] has-checked:border-tinta has-checked:bg-tinta has-checked:text-white has-focus-visible:outline-3 has-focus-visible:outline-tinta"
               >
                 <input type="radio" name="kategori" value={k.id} checked={kategori === k.id} onChange={() => setKategori(k.id)} className="sr-only" />
                 <span className="text-lead font-medium tracking-tight">{k.nama}</span>
@@ -337,7 +337,7 @@ export default function FormLaporan() {
         </p>
         <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
           {foto.map((f, i) => (
-            <figure key={f.id} className="relative">
+            <figure key={f.id} className="pop relative">
               {/* eslint-disable-next-line @next/next/no-img-element -- pratinjau blob lokal */}
               <img src={f.pratinjau} alt={`Foto ${i + 1} yang dipilih`} className="aspect-square w-full rounded-(--radius-kontrol) bg-lapis object-cover" />
               <button
@@ -403,7 +403,7 @@ export default function FormLaporan() {
       </Langkah>
 
       {serupa && serupa.length > 0 && (
-        <section aria-labelledby="judul-serupa" className="di-medan rounded-(--radius-kartu) bg-medan p-5 text-medan-tinta sm:p-8">
+        <section aria-labelledby="judul-serupa" className="di-medan ganti rounded-(--radius-kartu) bg-medan p-5 text-medan-tinta sm:p-8">
           <h2 id="judul-serupa" className="text-lead font-medium tracking-tight">
             Sudah ada {serupa.length} laporan serupa dalam 100 meter
           </h2>
@@ -416,7 +416,7 @@ export default function FormLaporan() {
               <li key={s.kode} className="flex flex-wrap items-center gap-x-5 gap-y-3 rounded-(--radius-kontrol) bg-permukaan p-4 text-teks">
                 <div className="min-w-0 flex-1">
                   <p className="flex flex-wrap items-center gap-3">
-                    <Link href={`/laporan/${s.kode}`} target="_blank" className="angka font-semibold underline-offset-4 hover:underline">
+                    <Link href={`/laporan/${s.kode}`} target="_blank" className="font-kode angka font-semibold underline-offset-4 hover:underline">
                       {s.kode}
                     </Link>
                     <BadgeStatus status={s.status} />
@@ -462,7 +462,10 @@ export default function FormLaporan() {
                 <span className="angka">{lengkap.length} dari 4 langkah lengkap</span>
                 <span aria-hidden="true" className="flex gap-1">
                   {[1, 2, 3, 4].map((n) => (
-                    <span key={n} className={`h-1.5 w-6 rounded-full transition-colors ${lengkap.includes(n) ? 'bg-st-selesai' : 'bg-lapis-2'}`} />
+                    <span
+                      key={n}
+                      className={`h-1.5 w-6 rounded-full transition-[background-color,scale] duration-300 ${lengkap.includes(n) ? 'scale-y-150 bg-st-selesai' : 'bg-lapis-2'}`}
+                    />
                   ))}
                 </span>
               </p>

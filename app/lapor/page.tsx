@@ -12,15 +12,15 @@ export const metadata: Metadata = { title: 'Lapor masalah' };
 export default function LaporPage() {
   return (
     <div className="bingkai pt-12 pb-24 sm:pt-16">
-      <div className="grid gap-6 lg:grid-cols-12">
-        <h1 data-pembuka="judul" className="text-judul lg:col-span-6">Lapor masalah</h1>
-        <p data-pembuka="teks" className="max-w-[60ch] text-badan lg:col-span-6">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-12" data-awal>
+        <h1 className="text-judul lg:col-span-6">Lapor masalah</h1>
+        <p className="max-w-[60ch] text-badan lg:col-span-6">
           Laporkan masalah kota dengan foto dan titik lokasi. Anda akan mendapat kode untuk melacak penanganannya, dan
           laporan Anda ikut menentukan posisi isu wilayahnya di daftar prioritas.
         </p>
       </div>
 
-      <aside role="note" className="mt-10 flex gap-3 rounded-(--radius-kartu) bg-st-ditolak-bg p-4 text-badan text-st-ditolak sm:p-5">
+      <aside role="note" data-awal className="mt-10 flex gap-3 rounded-(--radius-kartu) bg-st-ditolak-bg p-4 text-badan text-st-ditolak sm:p-5">
         <Ikon nama="info" className="mt-1 size-5" />
         <p>
           <strong className="font-semibold">suaRAkyat bukan kanal pengaduan resmi.</strong> Laporan di sini tidak diteruskan
