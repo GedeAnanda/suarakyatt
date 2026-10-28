@@ -8,11 +8,10 @@ import type { ComponentProps } from 'react';
 export type VarianTombol = 'utama' | 'kedua' | 'medan' | 'medan-garis' | 'bahaya' | 'garis';
 
 const DASAR =
-  'inline-flex min-h-11 items-center justify-center gap-2 rounded-(--radius-kontrol) px-5 py-2.5 text-badan font-semibold leading-tight transition-[background-color,color,box-shadow,scale,translate] duration-150 motion-safe:hover:-translate-y-px active:scale-[0.98] active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 disabled:active:scale-100';
+  'inline-flex min-h-11 items-center justify-center gap-2 rounded-(--radius-kontrol) px-5 py-2.5 text-badan font-semibold leading-tight transition-[background-color,color,scale,translate] duration-150 motion-safe:hover:-translate-y-px active:scale-[0.98] active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 disabled:active:scale-100';
 
 const VARIAN: Record<VarianTombol, string> = {
-  utama:
-    'bg-tinta text-white shadow-[0_1px_2px_rgb(42_19_22/0.25)] hover:bg-tinta-tua hover:shadow-[0_8px_18px_-8px_rgb(125_12_20/0.65)]',
+  utama: 'bg-tinta text-white hover:bg-tinta-tua',
   kedua: 'bg-lapis text-teks hover:bg-lapis-2',
   garis: 'bg-permukaan text-teks ring-1 ring-batas ring-inset hover:bg-terang hover:ring-lapis-2',
   medan: 'bg-white text-tinta hover:bg-tinta-muda',

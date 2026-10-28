@@ -11,7 +11,7 @@ const Isi = dynamic(() => import('./TitikTunggalLeaflet'), {
 
 export default function TitikTunggal(props: { lat: number; lng: number; warna: string; label: string }) {
   return (
-    <div className="peta isolate overflow-hidden bg-lapis">
+    <div className="peta isolate overflow-hidden bg-lapis" data-ui>
       <Isi {...props} />
     </div>
   );

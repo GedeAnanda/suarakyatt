@@ -300,7 +300,7 @@ export default function FormLaporan() {
       </Langkah>
 
       <Langkah n={2} selesai={lengkap.includes(2)} galat={galatLangkah(2)} judul="Di mana tepatnya?" petunjuk="Ketuk peta untuk menaruh titik, lalu geser titiknya kalau perlu. Kecamatan dan instansi ditentukan otomatis.">
-        <div className="peta isolate overflow-hidden bg-lapis">
+        <div className="peta isolate overflow-hidden bg-lapis" data-ui>
           <PetaPin titik={titik} onPilih={setTitik} />
         </div>
         <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
@@ -344,7 +344,7 @@ export default function FormLaporan() {
                 type="button"
                 onClick={() => hapusFoto(f.id)}
                 disabled={sibuk}
-                className="absolute top-2 right-2 flex size-11 items-center justify-center rounded-full bg-tinta shadow-md text-kertas hover:bg-tinta-tua"
+                className="absolute top-2 right-2 flex size-11 items-center justify-center rounded-full bg-tinta text-kertas hover:bg-tinta-tua"
                 aria-label={`Hapus foto ${i + 1}`}
               >
                 <Ikon nama="tutup" className="size-4" />

@@ -73,7 +73,7 @@ export default function KartuRapor({ i, kategoriId }: { i: RaporInstansi; katego
         </div>
       </div>
 
-      <dl className="grid grid-cols-2 gap-x-6 gap-y-4 border-t border-batas bg-terang p-5 text-kecil sm:grid-cols-4 sm:p-6">
+      <dl className="grid grid-cols-2 gap-x-6 gap-y-4 bg-terang p-5 text-kecil sm:grid-cols-4 sm:p-6">
         <div>
           <dt>
             <Istilah id={`istilah-${i.id}-tolak`} judul="Tingkat penolakan" definisi={DEFINISI_RAPOR.penolakan}>
@@ -112,7 +112,7 @@ export default function KartuRapor({ i, kategoriId }: { i: RaporInstansi; katego
         </div>
       </dl>
 
-      <details className="group border-t border-batas px-5 py-4 sm:px-6">
+      <details className="group px-5 py-4 sm:px-6">
         <summary className="flex min-h-11 cursor-pointer list-none items-center gap-2 text-kecil font-medium marker:hidden [&::-webkit-details-marker]:hidden">
           <Ikon nama="turun" className="size-4 transition-transform duration-300 group-open:rotate-180" />
           <span className="underline decoration-2 underline-offset-4 group-open:no-underline">Rincian per kategori</span>

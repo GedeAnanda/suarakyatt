@@ -35,7 +35,7 @@ export default function MasukPage({ searchParams }: PageProps<'/masuk'>) {
       </div>
 
       <aside className="lg:col-span-5 lg:col-start-8">
-        <div className="di-medan rounded-(--radius-kartu) bg-medan p-6 text-medan-tinta shadow-[0_24px_48px_-24px_rgb(125_12_20/0.6)] sm:p-8">
+        <div className="di-medan rounded-(--radius-kartu) bg-medan p-6 text-medan-tinta sm:p-8">
           <h2 className="text-lead font-medium tracking-tight">Coba tanpa daftar</h2>
           <p className="mt-3 text-badan text-medan-lembut">
             Akun demo bersama untuk juri dan pengunjung. Warga demo bisa melapor dan mendukung laporan; admin demo mengelola

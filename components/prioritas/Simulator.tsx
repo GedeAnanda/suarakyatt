@@ -158,7 +158,7 @@ export default function Simulator({
   }
 
   return (
-    <div className="grid gap-6 lg:grid-cols-12 lg:gap-8" data-ui>
+    <div className="grid gap-6 lg:grid-cols-12 lg:gap-8">
       {/* Panel bobot */}
       <section aria-labelledby="judul-bobot" className="lg:col-span-4">
         <div className="kartu p-5 sm:p-6 lg:sticky lg:top-24">
@@ -196,7 +196,7 @@ export default function Simulator({
             aria-expanded={sliderTerbuka}
             aria-controls="daftar-slider"
             onClick={() => setSliderTerbuka((b) => !b)}
-            className="mt-4 flex min-h-11 w-full items-center justify-between gap-2 border-b border-batas text-badan font-semibold lg:hidden"
+            className="mt-4 flex min-h-11 w-full items-center justify-between gap-2 text-badan font-semibold lg:hidden"
           >
             Atur keenam bobot sendiri
             <Ikon nama={sliderTerbuka ? 'naik' : 'turun'} className="size-5" />
@@ -270,7 +270,7 @@ export default function Simulator({
                   ubahParameter({ kategori: k.id === null ? null : String(k.id), isu: null });
                   setSemua(false);
                 }}
-                className="min-h-11 rounded-full bg-permukaan px-4 py-1.5 text-kecil font-medium ring-1 ring-batas ring-inset transition-[background-color,color,scale] duration-200 hover:bg-terang active:scale-95 aria-pressed:bg-tinta aria-pressed:text-kertas aria-pressed:ring-tinta"
+                className="min-h-11 rounded-full bg-permukaan px-4 py-1.5 text-kecil font-medium transition-[background-color,color,scale] duration-200 hover:bg-terang active:scale-95 aria-pressed:bg-tinta aria-pressed:text-kertas"
               >
                 {k.nama}
               </button>
@@ -338,7 +338,7 @@ export default function Simulator({
                   type="button"
                   aria-pressed={s.id === terpilih?.id}
                   onClick={() => pilihIsu(s.id)}
-                  className="grid w-full grid-cols-[2.5rem_1fr_auto] items-center gap-x-3 gap-y-2 rounded-(--radius-kontrol) border border-batas bg-permukaan px-3 py-3 text-left transition-colors hover:border-lapis-2 hover:bg-terang aria-pressed:border-tinta aria-pressed:bg-tinta-muda/50 aria-pressed:shadow-[inset_4px_0_0_var(--color-tinta)] sm:grid-cols-[2.75rem_3rem_1fr_minmax(8rem,14rem)_3.5rem] sm:px-4"
+                  className="grid w-full grid-cols-[2.5rem_1fr_auto] items-center gap-x-3 gap-y-2 rounded-(--radius-kontrol) bg-permukaan px-3 py-3 text-left transition-colors hover:bg-terang aria-pressed:bg-tinta-muda/50 aria-pressed:shadow-[inset_4px_0_0_var(--color-tinta)] sm:grid-cols-[2.75rem_3rem_1fr_minmax(8rem,14rem)_3.5rem] sm:px-4"
                 >
                   <span className="angka text-lead font-semibold tracking-tight text-tinta">{s.peringkat}</span>
                   <span className="hidden sm:block">{disimulasikan && <TandaGeser n={selisih[s.id]} />}</span>

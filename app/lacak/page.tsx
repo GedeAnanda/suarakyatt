@@ -36,10 +36,10 @@ async function Isi({ searchParams }: { searchParams: PageProps<'/lacak'>['search
 // Yang tampil di halaman detail setelah kode dimasukkan; mengisi kolom kanan di layar lebar
 // dan turun ke bawah form di ponsel dan tablet.
 const ISI_LACAK = [
-  { ikon: 'centang', judul: 'Status sekarang', isi: 'Menunggu, diverifikasi, diproses, selesai, atau ditolak beserta alasannya.' },
-  { ikon: 'jam', judul: 'Riwayat dan batas waktu', isi: 'Setiap perubahan status tercatat dengan waktu dan instansinya.' },
-  { ikon: 'grafik', judul: 'Posisi di daftar prioritas', isi: 'Peringkat isunya dan faktor yang mendorong atau menahannya.' },
-  { ikon: 'warga', judul: 'Dukungan warga', isi: 'Warga lain di sekitar lokasi bisa ikut mendukung laporan yang sama.' },
+  { judul: 'Status sekarang', isi: 'Menunggu, diverifikasi, diproses, selesai, atau ditolak beserta alasannya.' },
+  { judul: 'Riwayat dan batas waktu', isi: 'Setiap perubahan status tercatat dengan waktu dan instansinya.' },
+  { judul: 'Posisi di daftar prioritas', isi: 'Peringkat isunya dan faktor yang mendorong atau menahannya.' },
+  { judul: 'Dukungan warga', isi: 'Warga lain di sekitar lokasi bisa ikut mendukung laporan yang sama.' },
 ] as const;
 
 export default function LacakPage({ searchParams }: PageProps<'/lacak'>) {
@@ -59,19 +59,14 @@ export default function LacakPage({ searchParams }: PageProps<'/lacak'>) {
 
       <aside aria-labelledby="judul-isi-lacak" className="lg:col-span-5 lg:col-start-8">
         <h2 id="judul-isi-lacak" className="text-lead font-medium tracking-tight">Yang Anda lihat setelah melacak</h2>
-        <ul className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-1" data-muncul>
+        <dl className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-1" data-muncul>
           {ISI_LACAK.map((b) => (
-            <li key={b.judul} className="kartu flex gap-4 p-5">
-              <span aria-hidden="true" className="flex size-10 shrink-0 items-center justify-center rounded-(--radius-kontrol) bg-tinta-muda text-tinta">
-                <Ikon nama={b.ikon} className="size-5" />
-              </span>
-              <div>
-                <p className="text-badan font-semibold">{b.judul}</p>
-                <p className="mt-1 text-kecil text-lembut">{b.isi}</p>
-              </div>
-            </li>
+            <div key={b.judul}>
+              <dt className="text-lead leading-tight font-semibold tracking-tight text-tinta">{b.judul}</dt>
+              <dd className="mt-1 text-badan">{b.isi}</dd>
+            </div>
           ))}
-        </ul>
+        </dl>
       </aside>
     </div>
   );

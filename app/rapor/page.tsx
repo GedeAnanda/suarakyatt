@@ -7,7 +7,6 @@ import Link from 'next/link';
 import { Suspense } from 'react';
 import BannerSimulasi from '@/components/BannerSimulasi';
 import KartuRapor from '@/components/rapor/KartuRapor';
-import LabelSumber from '@/components/ui/LabelSumber';
 import { kelasTautan } from '@/components/ui/Tombol';
 import { ambilRapor } from '@/lib/data/prioritas';
 import Ikon from '@/components/ui/Ikon';
@@ -28,20 +27,17 @@ async function Isi() {
   );
   return (
     <>
-      <div className="flex flex-wrap items-center gap-3">
-        <LabelSumber sumber={sumber} />
-        <span className="text-kecil text-lembut">
-          Periode {tanggal(rapor.periode.dari)} sampai {tanggal(rapor.periode.sampai)} · semua laporan kecuali yang dibatalkan
-        </span>
-      </div>
-      <BannerSimulasi sumber={sumber} className="mt-4" />
+      <BannerSimulasi
+        sumber={sumber}
+        keterangan={`Periode ${tanggal(rapor.periode.dari)} sampai ${tanggal(rapor.periode.sampai)} · semua laporan kecuali yang dibatalkan`}
+      />
       <nav aria-label="Ringkasan rapor" className="mt-10">
         <ul className="grid grid-cols-2 gap-3 sm:grid-cols-4" data-muncul>
           {urut.map((i) => (
             <li key={i.id}>
               <a
                 href={`#instansi-${i.id}`}
-                className="kartu kartu-klik group flex h-full items-center gap-3 p-3 sm:p-4"
+                className="group flex h-full items-center gap-3 rounded-(--radius-kartu) p-3 transition-colors duration-200 hover:bg-permukaan sm:p-4"
               >
                 <span
                   className={`text-[2.75rem] leading-none font-semibold tracking-[-0.05em] transition-transform duration-300 ease-(--ease-pegas) group-hover:-rotate-6 group-hover:scale-110 ${i.huruf ? 'text-tinta' : 'text-lembut'}`}

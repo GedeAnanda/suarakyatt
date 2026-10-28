@@ -5,7 +5,6 @@ import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import BannerSimulasi from '@/components/BannerSimulasi';
 import PetaLaporan, { STATUS_PUBLIK } from '@/components/peta/PetaLaporan';
-import LabelSumber from '@/components/ui/LabelSumber';
 import { ambilTitikLaporan } from '@/lib/data/laporan';
 import type { StatusLaporan } from '@/lib/types';
 
@@ -22,11 +21,7 @@ async function Isi({ searchParams }: { searchParams: PageProps<'/peta'>['searchP
   const statusAwal = daftar(sp.status).filter((s): s is StatusLaporan => (STATUS_PUBLIK as string[]).includes(s));
   return (
     <>
-      <div className="flex flex-wrap items-center gap-3">
-        <LabelSumber sumber={sumber} />
-        <span className="text-kecil text-lembut">{laporan.length} laporan, tanpa yang dibatalkan pelapor</span>
-      </div>
-      <BannerSimulasi sumber={sumber} className="mt-4" />
+      <BannerSimulasi sumber={sumber} keterangan={`${laporan.length} laporan, tanpa yang dibatalkan pelapor`} />
       <div className="mt-8">
         <PetaLaporan laporan={laporan} sekarang={sekarang} kategoriAwal={kategoriAwal} statusAwal={statusAwal} />
       </div>

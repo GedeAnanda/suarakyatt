@@ -107,6 +107,16 @@ export const FOTO = {
     lisensi: 'CC BY-SA 4.0',
     url: 'https://commons.wikimedia.org/w/index.php?curid=151891901',
   },
+  banjirTanjungDuren: {
+    src: '/foto/banjir-tanjung-duren-2020.jpg',
+    lebar: 1920,
+    tinggi: 2560,
+    alt: 'Taman bermain perumahan di Tanjung Duren terendam banjir cokelat pada 1 Januari 2020; ayunan dan papan "Jagalah kebersihan" berdiri di dalam air.',
+    judul: 'Banjir Jakarta Perumahan di Tanjung Duren 1 Januari 2020',
+    pembuat: 'Cun Cun',
+    lisensi: 'CC BY-SA 4.0',
+    url: 'https://commons.wikimedia.org/wiki/File:Banjir_Jakarta_Perumahan_di_Tanjung_Duren_1_Januari_2020.jpg',
+  },
   trotoar: {
     src: '/foto/trotoar-jakarta.jpg',
     lebar: 1024,

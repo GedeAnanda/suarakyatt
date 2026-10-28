@@ -154,7 +154,7 @@ export default function FormAuth({
               setMode(MODE[tujuan]);
               document.getElementById(`tab-${MODE[tujuan]}`)?.focus();
             }}
-            className="min-h-11 rounded-[0.5rem] px-5 text-badan font-semibold text-lembut transition-colors hover:text-teks aria-selected:bg-permukaan aria-selected:text-tinta aria-selected:shadow-[0_1px_3px_rgb(42_19_22/0.15)]"
+            className="min-h-11 rounded-[0.5rem] px-5 text-badan font-semibold text-lembut transition-colors hover:text-teks aria-selected:bg-permukaan aria-selected:text-tinta"
           >
             {m === 'masuk' ? 'Masuk' : 'Daftar akun warga'}
           </button>

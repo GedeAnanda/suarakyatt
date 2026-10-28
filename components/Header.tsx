@@ -76,7 +76,7 @@ async function AkunPonsel() {
 
 export default function Header() {
   return (
-    <header className="kepala sticky top-0 z-1000 border-b border-batas bg-kertas/85 backdrop-blur-md supports-[backdrop-filter]:bg-kertas/75">
+    <header className="kepala sticky top-0 z-1000 bg-kertas">
       <nav aria-label="Navigasi utama" className="bingkai flex h-16 items-center gap-3 sm:h-18 pendek:h-14">
         <Link
           href="/"

@@ -113,7 +113,7 @@ export default function PetaLaporan({
       </div>
 
       <div>
-        <div className="peta peta-buka isolate overflow-hidden bg-lapis">
+        <div className="peta peta-buka isolate overflow-hidden bg-lapis" data-ui>
           <KlasterLaporan laporan={tersaring} className="h-[min(72svh,44rem)] min-h-96" />
         </div>
         <div className="mt-3 flex flex-wrap items-start justify-between gap-x-8 gap-y-3">

@@ -14,7 +14,6 @@ import SorotKecamatan, { type IsuTeratas } from '@/components/beranda/SorotKecam
 import TeksTinta from '@/components/beranda/TeksTinta';
 import TombolDemo from '@/components/TombolDemo';
 import AngkaGulir from '@/components/ui/AngkaGulir';
-import Ikon from '@/components/ui/Ikon';
 import LabelSumber from '@/components/ui/LabelSumber';
 import { kodeLaporanUntukIsu, ambilStatistik } from '@/lib/data/laporan';
 import { ambilDataPrioritas, ambilRapor } from '@/lib/data/prioritas';
@@ -128,7 +127,7 @@ function AngkaMusrenbang() {
       <div className="bingkai grid gap-12 lg:grid-cols-12 lg:items-center" data-muncul>
         <div className="lg:col-span-5">
           <h2 id="judul-musrenbang" className="text-judul">
-            <span className="block text-lembut">Usulan warga,</span>
+            <span className="block">Usulan warga,</span>
             nasibnya gelap
           </h2>
           <p className="mt-6 max-w-[44ch] text-badan">
@@ -186,41 +185,57 @@ export default function BerandaPage() {
       <section aria-label="Tentang suaRAkyat" className="py-24 sm:py-32">
         <div className="bingkai">
           <TeksTinta
-            className="max-w-[58ch] text-pernyataan tracking-[-0.02em]"
-            teks="Warga Jakarta sudah bisa melapor dan melacak status laporannya. Yang belum terbuka adalah lapis kedua: kenapa jalan di satu kecamatan diperbaiki lebih dulu, dinas mana yang lambat, dan apa yang berubah kalau prioritasnya diganti."
+            className="max-w-[64ch] text-pernyataan tracking-[-0.02em]"
+            teks="Warga Jakarta sudah bisa melapor dan melacak laporannya. Yang belum terbuka adalah lapis kedua: kenapa satu jalan diperbaiki lebih dulu, dinas mana yang lambat, dan apa yang berubah kalau prioritas diganti."
           />
-          <ul className="mt-14 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:mt-16 lg:grid-cols-4" data-muncul>
-            {[
-              {
-                ikon: 'warga' as const,
-                judul: 'Untuk warga',
-                isi: 'Lihat posisi isu wilayahmu di antara semua isu yang dinilai, faktor yang mendorong dan menahannya, lalu lacak laporanmu dengan kode SR.',
-              },
-              {
-                ikon: 'grafik' as const,
-                judul: 'Untuk perencana',
-                isi: 'Bobot enam faktor diatur Perencana. Setiap perubahan wajib beralasan dan tercatat publik: siapa, kapan, dari berapa ke berapa.',
-              },
-              {
-                ikon: 'mata' as const,
-                judul: 'Untuk pengawas',
-                isi: 'Jurnalis, DPRD, dan komunitas membaca Rapor Instansi A sampai E, selalu bersama tingkat penolakan, sampel, dan periodenya.',
-              },
-              {
-                ikon: 'perisai' as const,
-                judul: 'Bukan kanal resmi',
-                isi: 'Laporan di sini tidak diteruskan ke instansi. Wilayah studinya DKI Jakarta daratan: lima kota administrasi, 42 kecamatan.',
-              },
-            ].map((k) => (
-              <li key={k.judul} className="kartu group p-5 transition-[border-color,box-shadow] duration-300 hover:border-lapis-2 hover:shadow-(--shadow-angkat) sm:p-6">
-                <span className="flex size-11 items-center justify-center rounded-(--radius-kontrol) bg-tinta-muda text-tinta transition-transform duration-300 ease-(--ease-pegas) group-hover:-rotate-6 group-hover:scale-110">
-                  <Ikon nama={k.ikon} className="size-5" />
-                </span>
-                <h3 className="mt-4 text-lead leading-tight font-semibold tracking-tight">{k.judul}</h3>
-                <p className="mt-2 text-badan text-lembut">{k.isi}</p>
-              </li>
-            ))}
-          </ul>
+        </div>
+        <div className="bingkai mt-12 grid grid-cols-1 gap-12 sm:mt-16 lg:grid-cols-12 lg:gap-8">
+          <div className="lg:col-span-7 lg:self-center">
+            {/* Siapa memakai apa: daftar dua kolom tanpa kotak, peran sebagai judul baris. */}
+            <dl className="grid gap-8" data-muncul>
+              {[
+                {
+                  judul: 'Warga',
+                  isi: 'Lihat posisi isu wilayahmu di antara semua isu yang dinilai, faktor yang mendorong dan menahannya, lalu lacak laporanmu dengan kode SR.',
+                },
+                {
+                  judul: 'Perencana',
+                  isi: 'Bobot enam faktor diatur Perencana. Setiap perubahan wajib beralasan dan tercatat publik: siapa, kapan, dari berapa ke berapa.',
+                },
+                {
+                  judul: 'Pengawas',
+                  isi: 'Jurnalis, DPRD, dan komunitas membaca Rapor Instansi A sampai E, selalu bersama tingkat penolakan, sampel, dan periodenya.',
+                },
+                {
+                  judul: 'Bukan kanal resmi',
+                  isi: 'Laporan di sini tidak diteruskan ke instansi. Wilayah studinya DKI Jakarta daratan: lima kota administrasi, 42 kecamatan.',
+                },
+              ].map((k) => (
+                <div key={k.judul} className="grid gap-2 sm:grid-cols-[minmax(0,4fr)_minmax(0,8fr)] sm:gap-8">
+                  <dt className="text-lead leading-tight font-semibold tracking-tight text-tinta">{k.judul}</dt>
+                  <dd className="text-badan">{k.isi}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+          <figure className="lg:col-span-4 lg:col-start-9" data-muncul>
+            <Image
+              src={FOTO.banjirTanjungDuren.src}
+              alt={FOTO.banjirTanjungDuren.alt}
+              width={FOTO.banjirTanjungDuren.lebar}
+              height={FOTO.banjirTanjungDuren.tinggi}
+              sizes="(min-width: 1024px) 30vw, 100vw"
+              className="aspect-4/3 w-full rounded-(--radius-kartu) object-cover grayscale-[0.9] contrast-[1.05] lg:aspect-3/4"
+            />
+            <figcaption className="mt-3 text-kecil text-lembut">
+              Tanjung Duren, Grogol Petamburan, 1 Januari 2020: salah satu dari 42 kecamatan yang dinilai. Foto &ldquo;
+              {FOTO.banjirTanjungDuren.judul}&rdquo; oleh {FOTO.banjirTanjungDuren.pembuat},{' '}
+              <a href={FOTO.banjirTanjungDuren.url} target="_blank" rel="noreferrer" className="underline">
+                {FOTO.banjirTanjungDuren.lisensi}
+              </a>
+              .
+            </figcaption>
+          </figure>
         </div>
       </section>
 
@@ -228,7 +243,7 @@ export default function BerandaPage() {
         <BagianPrioritas />
       </Suspense>
 
-      <section aria-labelledby="judul-masalah" className="py-24 sm:py-36">
+      <section aria-labelledby="judul-masalah" className="pt-24 pb-20 sm:pt-36 sm:pb-24">
         <div className="bingkai" data-muncul>
           <h2 id="judul-masalah" className="text-judul">
             Empat masalah, empat batas waktu
@@ -245,7 +260,7 @@ export default function BerandaPage() {
             <h2 id="judul-alur" className="text-judul lg:col-span-6">
               Dari mana datanya
             </h2>
-            <p className="max-w-[56ch] text-badan text-lembut lg:col-span-6">
+            <p className="max-w-[56ch] text-badan lg:col-span-6">
               Semua angka di dashboard prioritas dan rapor instansi berasal dari tiga langkah ini. Setiap langkah tercatat
               dan bisa dibuka siapa saja.
             </p>
@@ -256,7 +271,7 @@ export default function BerandaPage() {
             </Suspense>
           </div>
           <div
-            className="di-medan mt-10 grid gap-6 rounded-(--radius-kartu) bg-medan p-6 text-medan-tinta shadow-[0_28px_56px_-28px_rgb(125_12_20/0.7)] sm:p-10 lg:grid-cols-12 lg:items-center"
+            className="di-medan mt-10 grid gap-6 rounded-(--radius-kartu) bg-medan p-6 text-medan-tinta sm:p-10 lg:grid-cols-12 lg:items-center"
             data-muncul
           >
             <div className="lg:col-span-7">

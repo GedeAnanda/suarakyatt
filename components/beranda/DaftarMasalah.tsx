@@ -62,7 +62,7 @@ export default function DaftarMasalah() {
       </ul>
 
       <figure className="lg:col-span-5">
-        <div className="relative aspect-4/5 overflow-hidden rounded-(--radius-kartu) bg-lapis shadow-(--shadow-kartu)">
+        <div className="relative aspect-4/5 overflow-hidden rounded-(--radius-kartu) bg-lapis">
           {FOTO_KATEGORI.map((f, i) => (
             <Image
               key={f.src}

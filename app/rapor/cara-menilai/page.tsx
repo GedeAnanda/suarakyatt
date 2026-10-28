@@ -120,7 +120,7 @@ export default function CaraMenilaiPage() {
       <section aria-labelledby="judul-penolakan" className="mt-24 grid grid-cols-1 gap-8 lg:grid-cols-12" data-muncul>
         <div className="lg:col-span-5">
           <h2 id="judul-penolakan" className="text-judul">
-            Menolak boleh, menolak diam-diam tidak
+            Menolak boleh, diam-diam tidak
           </h2>
           <p className="mt-6 max-w-[48ch] text-badan">{DEFINISI_RAPOR.penolakan}</p>
           <p className="mt-4 max-w-[48ch] text-badan">

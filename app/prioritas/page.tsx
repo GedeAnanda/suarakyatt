@@ -8,7 +8,6 @@ import { Suspense } from 'react';
 import BannerSimulasi from '@/components/BannerSimulasi';
 import RiwayatBobot from '@/components/prioritas/RiwayatBobot';
 import Simulator from '@/components/prioritas/Simulator';
-import LabelSumber from '@/components/ui/LabelSumber';
 import { kelasTautan } from '@/components/ui/Tombol';
 import { ambilDataPrioritas } from '@/lib/data/prioritas';
 import { ambilSesi } from '@/lib/data/sesi';
@@ -25,14 +24,10 @@ async function Isi() {
   const [data, sesi] = await Promise.all([ambilDataPrioritas(), ambilSesi()]);
   return (
     <>
-      <div className="flex flex-wrap items-center gap-3">
-        <LabelSumber sumber={data.sumber} />
-        <span className="text-kecil text-lembut">
-          Bobot resmi berlaku{data.bobotDiperbarui ? ` sejak ${tanggal(data.bobotDiperbarui)}` : ''} · kerentanan dari data
-          kemiskinan level kota
-        </span>
-      </div>
-      <BannerSimulasi sumber={data.sumber} className="mt-4" />
+      <BannerSimulasi
+        sumber={data.sumber}
+        keterangan={`Bobot resmi berlaku${data.bobotDiperbarui ? ` sejak ${tanggal(data.bobotDiperbarui)}` : ''} · kerentanan dari data kemiskinan level kota`}
+      />
 
       <div className="mt-10">
         <Simulator isu={data.faktor.isu} bobotResmi={data.bobotResmi} perencana={Boolean(sesi?.perencana)} />
@@ -80,24 +75,6 @@ export default function PrioritasPage() {
           dijelaskan di bawah.
         </p>
       </div>
-
-      <ol aria-label="Cara membaca dashboard ini" className="mt-10 grid grid-cols-1 gap-3 sm:grid-cols-3" data-muncul>
-        {[
-          { judul: 'Pilih isu', isi: 'Klik kecamatan di peta atau baris di daftar peringkat.' },
-          { judul: 'Baca alasannya', isi: 'Lihat faktor yang mendorong skornya naik dan yang menahannya.' },
-          { judul: 'Uji bobot lain', isi: 'Pilih preset atau geser bobot; urutan bergeser dan tandanya ↑↓ muncul.' },
-        ].map((l, i) => (
-          <li key={l.judul} className="kartu flex gap-4 p-4 sm:p-5">
-            <span aria-hidden="true" className="angka flex size-9 shrink-0 items-center justify-center rounded-full bg-tinta text-badan font-semibold text-kertas">
-              {i + 1}
-            </span>
-            <p className="text-kecil">
-              <strong className="block text-badan font-semibold">{l.judul}</strong>
-              {l.isi}
-            </p>
-          </li>
-        ))}
-      </ol>
 
       <div className="mt-10">
         <Suspense fallback={<Kerangka />}>

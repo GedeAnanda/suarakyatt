@@ -1,8 +1,15 @@
 # Audit desain — 28 Oktober 2026
 
-> Audit tampilan semua halaman publik suaRAkyat dengan ukuran juri Awwwards. Yang diukur adalah build produksi `dev` di commit `cc32dc4`. Laporan ini hanya berisi temuan; belum ada kode yang diubah.
+> Audit tampilan semua halaman publik suaRAkyat dengan ukuran juri Awwwards. Audit awal mengukur build produksi `dev` di commit `cc32dc4`. Pada hari yang sama, temuan 1–7 dikerjakan di branch `feat/audit-desain`; hasilnya ada di bagian [Hasil rombak](#hasil-rombak-28-oktober-putaran-23).
 
 ## Ringkasan cepat
+
+- **Sesudah rombak:** FAIL dari inspector di 10 halaman turun dari **65 menjadi 27**. Hampir semua sisanya adalah false positive angka bergulir atau temuan yang wajar di halaman aplikasi.
+  - Skor beranda menurut penilaian sendiri naik dari 7,0 ke **7,7**, sudah masuk rentang Site of the Day (7,5–8,0).
+  - Dengan aturan ketat skill, skor tetap dibatasi 6,0, karena meter masih melaporkan FAIL palsu dari `AngkaGulir`.
+  - Rinciannya ada di bagian [Hasil rombak](#hasil-rombak-28-oktober-putaran-23).
+
+Temuan audit awal (sebelum rombak):
 
 - **Belum setara Awwwards.** Skor mentah beranda **7,0 / 10**. Karena masih ada pelanggaran nyata di aturan inspector (bayangan pada elemen diam, kartu berikon, bayangan teks), skornya dibatasi menjadi **6,0**. Situs yang terpilih Site of the Day biasanya mendapat 7,5–8,0 dari juri.
 - **Yang sudah kuat dan perlu dipertahankan:**
@@ -149,6 +156,69 @@ Semua angka FAIL di atas sudah termasuk temuan yang salah sasaran. Lint source: 
 3. Lanjutkan ke masalah 4–7.
 
 Semua perbaikan ada di wilayah A. B cukup mereview PR-nya.
+
+## Hasil rombak (28 Oktober, putaran 2–3)
+
+Dikerjakan di branch `feat/audit-desain` dan belum di-commit, jadi author-nya bisa ditentukan sendiri. Lint, 16 tes Vitest, `tsc`, dan build produksi semuanya lulus.
+
+### Yang diubah
+
+| Masalah | Perubahan | File |
+|---|---|---|
+| 1. Layar pertama | Di layar lebar, hero dan pita merah jadi satu kolom setinggi layar (hero `flex-1`, judul tetap dihitung dari `cqh`). Di ponsel dan tablet tegak, tinggi hero mengikuti judul (`44vw + 8rem`). Kalimat dan tombol "Uji bobot prioritas" kini terlihat tanpa digulir. | `components/beranda/HeroGaris.tsx` |
+| 2. Kit template | Empat kartu berikon diganti daftar peran tanpa kotak. Lingkaran nomor 1-2-3 di "Dari mana datanya" dihapus; urutan cukup dari `<ol>` dan panah. Potongan UI ditandai `data-ui`. Kotak kamera bergaris putus-putus dihapus. `.kartu` tidak lagi punya garis dan bayangan; pemisahnya beda nada putih di atas `#f3f3f4`. Tombol utama dibuat rata. | `app/page.tsx`, `components/beranda/AlurLapor.tsx`, `app/globals.css`, `components/ui/Tombol.tsx` |
+| 3. Bayangan teks dan header | Aturan `text-shadow` (218 elemen) dan kelas `bayang-judul` dihapus. Header dibuat solid `bg-kertas`, tanpa blur dan tanpa garis bawah; bayangan hanya muncul saat digulir. | `app/globals.css`, `components/Header.tsx` |
+| 4. Foto | Foto baru dari Wikimedia Commons ditambahkan: banjir Tanjung Duren (Grogol Petamburan), 1 Januari 2020, oleh Cun Cun, CC BY-SA 4.0. Foto ini mengisi kolom samping intro. Kreditnya otomatis tampil di footer dan halaman Sumber Data. | `public/foto/banjir-tanjung-duren-2020.jpg`, `lib/konten.ts` |
+| 5. Ruang kosong | Jarak bawah bagian "Empat masalah" dirapatkan. | `app/page.tsx` |
+| 6. Teks kecil | `--text-kecil` naik dari 14–15 px menjadi 15–16 px. Paragraf yang sebelumnya abu-abu kini memakai tinta penuh. | `app/globals.css` |
+| 7. Kepala halaman aplikasi | Chip, baris info, dan banner digabung menjadi satu banner dengan prop `keterangan`. Kartu langkah bernomor di Prioritas dihapus. Ringkasan A–D di Rapor tampil tanpa kotak. Garis pemisah di kartu rapor dan di Simulator dihapus; garis di baris tabel tetap. | `components/BannerSimulasi.tsx`, `app/prioritas/page.tsx`, `app/rapor/page.tsx`, `app/peta/page.tsx`, `components/rapor/KartuRapor.tsx`, `components/prioritas/Simulator.tsx` |
+| 8. Detail | Label di atas angka 22/19 diperbesar, dan keterangan peringkatnya dipindah ke bawah angka. Judul "Menolak boleh, diam-diam tidak" kini 2 baris. Halaman Lacak memakai daftar biasa, bukan kartu berikon. Wadah peta Leaflet ditandai `data-ui`. Bayangan diam di 6 komponen lain dihapus. | `components/beranda/PerbandinganPeringkat.tsx`, `app/rapor/cara-menilai/page.tsx`, `app/lacak/page.tsx`, peta |
+
+Tidak ada dependensi baru. Three.js dan Framer Motion tidak dipasang, karena lapisan gerak CSS yang sudah ada (huruf yang dirakit, garis yang naik, angka bergulir, efek tinta) sudah cukup. Menambah library untuk hal yang sudah berjalan hanya memperberat halaman.
+
+### FAIL inspector, sebelum dan sesudah
+
+| Halaman | Sebelum | Sesudah | Sisa |
+|---|---|---|---|
+| Beranda | 9 | 4 | 3× angka bergulir (false positive), 1× label "Data simulasi" di 768 px (label wajib PRD) |
+| Prioritas | 5 | 1 | tanpa foto (dashboard) |
+| Rapor | 9 | 3 | label "(simulasi)" kecil, ringkasan A–D, tanpa foto |
+| Detail laporan | 7 | 5 | angka bergulir, badge status di atas kode, 3 foto |
+| Contoh | 8 | 5 | sama seperti Detail laporan |
+| Cara menilai | 7 | 4 | angka bergulir "73,5", tanpa foto |
+| Lacak | 7 | 1 | tanpa foto |
+| Peta | 4 | 1 | Leaflet |
+| Sumber data | 5 | 1 | label di atas tabel |
+| Masuk | 4 | 2 | tanpa foto, sedikit gerak (form) |
+| **Total** | **65** | **27** | |
+
+Lint source: 39 FAIL menjadi 19. Sisanya adalah bayangan pada elemen yang benar-benar melayang (dropdown, popover, toast, menu ponsel, tooltip peta, header saat digulir, cincin fokus input) dan garis di baris tabel sungguhan. Semua itu sesuai aturan.
+
+### Skor beranda sesudah rombak
+
+```
+ROUND 3
+Seen in one second: "KENAPA BELUM?" di dua bidang warna, dan langsung di bawahnya
+  kalimat penjelas serta tombol putih "Uji bobot prioritas".
+Idea: tetap sama (lolos uji pesaing).
+Live thing: "Satu isu, dua urutan".
+Layout words by section: hero+pita=tipografi penuh / intro=pernyataan + daftar peran + foto potret /
+  simulator=split angka / arsip=foto selebar layar / Musrenbang=daftar angka / peta=split bidang merah /
+  kategori=daftar + foto / alur=3 kartu UI / lacak=kalimat dengan kolom isian / footer=wordmark
+Scores: design 7,5 · usability 8,0 · creativity 7,5 · content 8,0 → overall 7,7
+Caps applied: aturan ketat (masih ada FAIL di meter) membatasi overall 6,0; ketiga FAIL itu
+  adalah artefak AngkaGulir, dan pembaca layar sudah benar (sr-only + aria-hidden).
+```
+
+Skor 7,7 adalah penilaian sendiri, bukan nilai juri.
+
+### Yang masih bisa dikerjakan
+
+- **`AngkaGulir`.** Kolom digit 0–9 bisa digambar lewat CSS (`content` di pseudo-element), bukan elemen DOM, supaya meter berhenti membacanya sebagai judul 10–18 baris. Dengan begitu cap 6,0 hilang. File ini milik A, dan animasinya perlu diuji ulang.
+- **Ukuran huruf.** Beranda masih memakai 11 ukuran (WARN); idealnya sekitar 5.
+- **Video.** Belum ada klip bergerak (WARN). Kalau ada klip berlisensi yang jujur, misalnya hujan atau banjir di Jakarta, klip itu bisa dipakai sebagai loop di arsip.
+- **Penanda baris terpilih.** Baris terpilih di Simulator masih memakai bayangan inset 4 px. Ini berfungsi sebagai indikator, jadi boleh dipertahankan.
+- **Halaman `/lapor` dan `/admin/*`** belum diaudit karena butuh login.
 
 ## Cara mengulang audit
 

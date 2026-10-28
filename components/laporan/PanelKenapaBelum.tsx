@@ -43,7 +43,7 @@ export default function PanelKenapaBelum({
         aria-expanded={buka}
         aria-controls="isi-kenapa-belum"
         onClick={() => setBuka(!buka)}
-        className="flex w-full items-center justify-between gap-4 rounded-(--radius-kartu) bg-tinta px-5 py-4 text-left text-white shadow-[0_10px_30px_-14px_rgb(125_12_20/0.7)] transition-[border-radius,background-color] aria-expanded:rounded-b-none hover:bg-tinta-tua active:translate-y-px sm:px-6"
+        className="flex w-full items-center justify-between gap-4 rounded-(--radius-kartu) bg-tinta px-5 py-4 text-left text-white transition-[border-radius,background-color] aria-expanded:rounded-b-none hover:bg-tinta-tua active:translate-y-px sm:px-6"
       >
         <span>
           <span className="block text-[clamp(1.75rem,1.2rem+2.4vw,3rem)] leading-none font-semibold tracking-[-0.04em]">
@@ -58,7 +58,7 @@ export default function PanelKenapaBelum({
 
       <div className="lipat" data-buka={buka}>
         <div id="isi-kenapa-belum" inert={!buka}>
-          <div className="rounded-b-(--radius-kartu) border border-t-0 border-batas bg-permukaan p-5 shadow-(--shadow-kartu) sm:p-6">
+          <div className="rounded-b-(--radius-kartu) bg-permukaan p-5 sm:p-6">
             {!data ? (
               <p className="text-badan">
                 Isu {isu.kategori.toLowerCase()} di {isu.kecamatan} belum masuk daftar prioritas. Daftar hanya memuat isu wilayah

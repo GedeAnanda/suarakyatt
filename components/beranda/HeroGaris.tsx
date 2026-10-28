@@ -41,15 +41,17 @@ function Judul({ salinan = false }: { salinan?: boolean }) {
   );
 }
 
-// Layar pertama hanya berisi judul: tinggi hero = tinggi layar dikurangi header (h-16 / sm:h-18 /
-// pendek:h-14, plus garis bawah 1 px), jadi bagian lain baru terlihat setelah digulir. Kalimat pendukung
-// dan tombol ada di pita merah tepat di bawahnya, menyambung dengan medan merah hero.
+// Layar pertama menjawab dan mengajak: judul, kalimat pendukung, dan tombol terlihat tanpa digulir.
+// Layar lebar dan layar pendek: hero + pita merah setinggi layar dikurangi header (sm:h-18 / pendek:h-14);
+// hero mengisi sisa tinggi setelah pita, dan ukuran judul (cqh) menyesuaikan sendiri.
+// Ponsel dan tablet tegak: tinggi hero mengikuti lebar judul (sekitar 0,41 × lebar layar ditambah ruang),
+// bukan setinggi layar, supaya dua kata tidak dikelilingi medan kosong dan bagian berikutnya ikut mengintip.
 export default function HeroGaris() {
   return (
-    <>
+    <div className="flex flex-col lg:h-[calc(100svh-4.5rem)] lg:min-h-144 pendek:h-[calc(100svh-3.5rem)] pendek:min-h-0">
       <section
         aria-labelledby="judul-beranda"
-        className="hero-garis relative h-[calc(100svh-4rem-1px)] min-h-[20rem] overflow-hidden [container-type:size] sm:h-[calc(100svh-4.5rem-1px)] pendek:h-[calc(100svh-3.5rem-1px)]"
+        className="hero-garis relative h-[calc(44vw+8rem)] overflow-hidden [container-type:size] lg:h-auto lg:min-h-64 lg:flex-1 pendek:h-auto pendek:min-h-48 pendek:flex-1"
       >
         <h1 id="judul-beranda" className="sr-only">
           Kenapa belum? suaRAkyat membuka alasan di balik urutan penanganan masalah kota.
@@ -63,17 +65,14 @@ export default function HeroGaris() {
           <div className="absolute inset-0 text-tinta [clip-path:inset(0_0_calc(100%_-_var(--garis))_0)]">
             <Judul />
           </div>
-          <div className="bayang-judul absolute inset-0 text-medan-tinta [clip-path:inset(var(--garis)_0_0_0)]">
+          <div className="absolute inset-0 text-medan-tinta [clip-path:inset(var(--garis)_0_0_0)]">
             <Judul salinan />
           </div>
         </div>
       </section>
 
-      <div className="di-medan bg-medan text-medan-tinta">
-        <div
-          className="bingkai flex flex-col gap-6 pt-4 pb-14 sm:pb-16 lg:flex-row lg:items-end lg:justify-between pendek:flex-row pendek:items-end pendek:justify-between"
-          data-muncul
-        >
+      <div className="di-medan shrink-0 bg-medan text-medan-tinta">
+        <div className="bingkai flex flex-col gap-6 pt-4 pb-10 sm:pb-12 lg:flex-row lg:items-end lg:justify-between lg:pb-10 pendek:flex-row pendek:items-end pendek:justify-between pendek:pb-6">
           <p className="max-w-[46ch] text-badan sm:text-lead pendek:text-badan">
             Kanal pengaduan sudah melacak status laporan. suaRAkyat membuka alasan di balik urutannya: kenapa satu masalah
             di Jakarta didahulukan, dan bagaimana urutan itu berubah kalau bobotnya diganti.
@@ -88,6 +87,6 @@ export default function HeroGaris() {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }

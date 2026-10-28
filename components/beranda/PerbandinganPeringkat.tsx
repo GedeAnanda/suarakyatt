@@ -71,29 +71,28 @@ export default function PerbandinganPeringkat({
 
       <div className="bingkai mt-14 grid gap-0 sm:mt-20 sm:grid-cols-2 sm:gap-8">
         <figure className="relative">
-          <figcaption className="text-badan">
-            Bobot resmi
-            <span className="block text-kecil text-lembut">Peringkat {jelas.peringkat} dari {jelas.total}</span>
-          </figcaption>
-          <p aria-hidden="true" className="text-tinta angka mt-2 text-[24.8vw] leading-[0.8] font-medium tracking-[-0.06em] sm:text-[clamp(4.4rem,13.6vw,12.8rem)]">
+          <figcaption className="text-lead leading-tight font-semibold tracking-tight">Bobot resmi</figcaption>
+          <p aria-hidden="true" className="text-tinta angka mt-3 text-[24.8vw] leading-[0.8] font-medium tracking-[-0.06em] sm:text-[clamp(4.4rem,13.6vw,12.8rem)]">
             <AngkaGulir nilai={String(jelas.peringkat)} minDigit={digitTotal} />
+          </p>
+          {/* Keterangan di bawah angka, bukan di atasnya: angka besar dibaca dulu, lalu artinya. */}
+          <p className="mt-3 text-kecil text-lembut">
+            Peringkat {jelas.peringkat} dari {jelas.total}
           </p>
         </figure>
         <figure className="di-medan relative -mx-[var(--tepi)] bg-medan px-[var(--tepi)] pt-4 pb-6 text-medan-tinta sm:mx-0 sm:bg-transparent sm:px-0 sm:pt-0 sm:pb-0 sm:text-tinta">
-          <figcaption className="text-badan" aria-live="polite">
-            {LABEL_PRESET[preset]}
-            <span className="flex items-center gap-1 text-kecil opacity-80">
-              {geser !== 0 && <Ikon nama={geser > 0 ? 'naik' : 'turun'} className="size-3.5" />}
-              Peringkat {simulasi.peringkat} dari {jelas.total}
-              {geser > 0 ? `, naik ${geser}` : geser < 0 ? `, turun ${-geser}` : ', tidak bergeser'}
-            </span>
-          </figcaption>
+          <figcaption className="text-lead leading-tight font-semibold tracking-tight">{LABEL_PRESET[preset]}</figcaption>
           {/* Digit bergulir dari peringkat lama ke yang baru setiap preset diganti. */}
           <p
             aria-hidden="true"
-            className="angka mt-2 text-[24.8vw] leading-[0.8] font-medium tracking-[-0.06em] sm:text-[clamp(4.4rem,13.6vw,12.8rem)]"
+            className="angka mt-3 text-[24.8vw] leading-[0.8] font-medium tracking-[-0.06em] sm:text-[clamp(4.4rem,13.6vw,12.8rem)]"
           >
             <AngkaGulir nilai={String(simulasi.peringkat)} minDigit={digitTotal} />
+          </p>
+          <p className="mt-3 flex items-center gap-1 text-kecil opacity-80" aria-live="polite">
+            {geser !== 0 && <Ikon nama={geser > 0 ? 'naik' : 'turun'} className="size-3.5" />}
+            Peringkat {simulasi.peringkat} dari {jelas.total}
+            {geser > 0 ? `, naik ${geser}` : geser < 0 ? `, turun ${-geser}` : ', tidak bergeser'}
           </p>
         </figure>
       </div>
@@ -113,7 +112,7 @@ export default function PerbandinganPeringkat({
             style={{ left: `${posisi(jelas.peringkat)}%` }}
           />
           <span
-            className="geser-halus absolute top-1/2 size-5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-tinta shadow-[0_0_0_4px_rgb(125_12_20/0.18)]"
+            className="geser-halus absolute top-1/2 size-5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-tinta"
             style={{ left: `${posisi(simulasi.peringkat)}%` }}
           />
         </div>

@@ -8,14 +8,15 @@ import type { RaporInstansi } from '@/lib/types';
 import BadgeStatus from '../BadgeStatus';
 import Ikon from '../ui/Ikon';
 
+// Urutan langkah dibawa <ol> dan posisinya (kiri ke kanan, panah di antaranya), tanpa lingkaran nomor.
+// Potongan antarmuka di tiap kartu ditandai data-ui: itu tampilan aplikasi sungguhan, jadi garis dan
+// badge-nya mengikuti aplikasi, bukan aturan halaman.
 function Langkah({
-  nomor,
   judul,
   isi,
   children,
   terakhir = false,
 }: {
-  nomor: number;
   judul: string;
   isi: string;
   children: ReactNode;
@@ -24,19 +25,16 @@ function Langkah({
   return (
     <li className="relative flex">
       <article className="kartu flex flex-1 flex-col p-5 sm:p-6">
-        <div className="flex items-center gap-3">
-          <span className="angka flex size-9 shrink-0 items-center justify-center rounded-full bg-tinta text-badan font-semibold text-white">
-            {nomor}
-          </span>
-          <h3 className="text-lead leading-tight font-semibold tracking-tight">{judul}</h3>
+        <h3 className="text-lead leading-tight font-semibold tracking-tight text-tinta">{judul}</h3>
+        <p className="mt-3 text-badan">{isi}</p>
+        <div className="mt-6 flex-1" data-ui>
+          {children}
         </div>
-        <p className="mt-3 text-badan text-lembut">{isi}</p>
-        <div className="mt-6 flex-1">{children}</div>
       </article>
       {!terakhir && (
         <span
           aria-hidden="true"
-          className="absolute top-1/2 -right-5 z-10 hidden size-8 -translate-y-1/2 items-center justify-center rounded-full border border-batas bg-permukaan text-tinta shadow-(--shadow-kartu) lg:flex"
+          className="absolute top-1/2 -right-5 z-10 hidden size-8 -translate-y-1/2 items-center justify-center rounded-full bg-tinta text-white lg:flex"
         >
           <Ikon nama="naik" className="size-4 rotate-90" />
         </span>
@@ -49,7 +47,7 @@ function BarisRapor({ i }: { i: RaporInstansi }) {
   const tertahan = i.huruf !== i.huruf_asli;
   return (
     <div className="panel flex items-center gap-4 p-3">
-      <span className="flex size-12 shrink-0 items-center justify-center rounded-(--radius-kontrol) bg-permukaan text-[1.75rem] leading-none font-bold text-tinta shadow-(--shadow-kartu)">
+      <span className="flex size-12 shrink-0 items-center justify-center rounded-(--radius-kontrol) bg-permukaan text-[1.75rem] leading-none font-bold text-tinta">
         {i.huruf ?? '–'}
       </span>
       <div className="min-w-0 text-kecil leading-snug">
@@ -74,7 +72,7 @@ export default function AlurLapor({ rapor, kodeContoh }: { rapor: RaporInstansi[
 
   return (
     <ol className="grid grid-cols-1 gap-6 lg:grid-cols-3 lg:gap-10" data-muncul>
-      <Langkah nomor={1} judul="Warga melapor" isi="Foto, titik di peta, dan cerita singkat. Kecamatan dan dinasnya ditentukan otomatis.">
+      <Langkah judul="Warga melapor" isi="Foto, titik di peta, dan cerita singkat. Kecamatan dan dinasnya ditentukan otomatis.">
         <div className="panel grid gap-3 p-4">
           <div className="flex flex-wrap items-center gap-2">
             <span className="rounded-full bg-tinta px-3 py-1 text-kecil font-semibold text-white">Jalan rusak</span>
@@ -84,16 +82,9 @@ export default function AlurLapor({ rapor, kodeContoh }: { rapor: RaporInstansi[
             </span>
           </div>
           <p className="text-kecil">&ldquo;Lubang besar di lajur kiri, motor sering oleng saat malam.&rdquo;</p>
-          <div className="flex gap-2">
-            {[0, 1].map((n) => (
-              <span
-                key={n}
-                className="flex size-14 items-center justify-center rounded-(--radius-kontrol) border border-dashed border-lapis-2 bg-permukaan text-lembut"
-              >
-                <Ikon nama="kamera" className="size-5" />
-              </span>
-            ))}
-          </div>
+          <p className="inline-flex items-center gap-1.5 text-kecil text-lembut">
+            <Ikon nama="kamera" className="size-4" />2 foto terlampir
+          </p>
         </div>
         <div className="mt-3 flex items-center justify-between gap-3 rounded-(--radius-kontrol) border border-batas p-4">
           <div>
@@ -104,7 +95,7 @@ export default function AlurLapor({ rapor, kodeContoh }: { rapor: RaporInstansi[
         </div>
       </Langkah>
 
-      <Langkah nomor={2} judul="Dinas menjawab terbuka" isi="Setiap perubahan status tercatat publik. Laporan yang ditolak tetap tampil, lengkap dengan alasannya.">
+      <Langkah judul="Dinas menjawab terbuka" isi="Setiap perubahan status tercatat publik. Laporan yang ditolak tetap tampil, lengkap dengan alasannya.">
         <ol className="panel grid gap-0 p-4">
           {[
             { status: 'menunggu' as const, waktu: 'Senin 08.12', siapa: 'Pelapor' },
@@ -136,7 +127,6 @@ export default function AlurLapor({ rapor, kodeContoh }: { rapor: RaporInstansi[
       </Langkah>
 
       <Langkah
-        nomor={3}
         judul="Warga menilai, rapor berubah"
         isi="Rating, ketepatan waktu, dan tingkat penolakan menjadi Rapor Instansi A–E."
         terakhir

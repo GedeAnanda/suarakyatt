@@ -14,7 +14,7 @@ const PetaDasarLeaflet = dynamic(() => import('./PetaDasarLeaflet'), {
 export default function PetaDasar(props: PetaDasarProps) {
   // `isolate` menjaga z-index panel Leaflet tetap di dalam kotak peta.
   return (
-    <div className="peta isolate overflow-hidden bg-lapis">
+    <div className="peta isolate overflow-hidden bg-lapis" data-ui>
       <PetaDasarLeaflet {...props} />
     </div>
   );
