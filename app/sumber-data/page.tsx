@@ -1,6 +1,6 @@
 // app/sumber-data/page.tsx — Sumber Data (SDD 9), pemilik: A (isi dari C)
 // Daftar dataset, sumber, tahun, lisensi, dan skenario data simulasi (FR-G3, SDD 10).
-// C: perbarui baris "Menyusul" saat data BPS dan dataset CRM DKI sudah dimuat.
+// C: atribusi foto seed bersumber dari data/processed/foto_seed.csv; perbarui FOTO_SEED bila berkas itu berubah.
 
 import type { Metadata } from 'next';
 import Image from 'next/image';
@@ -15,7 +15,7 @@ const DATA_TERBUKA = [
   {
     nama: 'Batas kecamatan DKI Jakarta',
     dipakai: 'Peta kecamatan, choropleth prioritas, penentuan kecamatan dari titik laporan',
-    sumber: 'HDX Indonesia Subnational Administrative Boundaries (COD-AB), dipotong ke 42 kecamatan DKI daratan dan disederhanakan (scripts/01_wilayah.py)',
+    sumber: 'HDX, Indonesia – Subnational Administrative Boundaries (COD-AB, sumber BPS), v01, berlaku 1 April 2020. Dipotong ke 42 kecamatan DKI daratan; Kepulauan Seribu dan Danau Sunter tidak dipakai. Peta di browser disederhanakan (toleransi 15 m)',
     lisensi: 'CC BY-IGO',
     url: 'https://data.humdata.org/dataset/cod-ab-idn',
     status: 'Dipakai',
@@ -30,27 +30,27 @@ const DATA_TERBUKA = [
   },
   {
     nama: 'Penduduk dan luas kecamatan',
-    dipakai: 'Faktor volume, dukungan warga, dan kepadatan penduduk',
-    sumber: 'BPS, publikasi "Dalam Angka" tingkat kota dan kecamatan (tahun terbaru yang tersedia)',
-    lisensi: 'Ketentuan penggunaan data BPS',
+    dipakai: 'Faktor volume, dukungan warga, dan kepadatan penduduk (penduduk ÷ luas, dihitung sendiri)',
+    sumber: 'BPS Kota Jakarta Selatan, Timur, Pusat, Barat, dan Utara, "Dalam Angka 2026": Tabel 3.1.1 (penduduk, data Dukcapil) dan Tabel 1.1.1 (luas). Total 42 kecamatan, 10,96 juta jiwa',
+    lisensi: 'Ketentuan penggunaan data BPS (non-komersial, wajib menyebut sumber)',
     url: 'https://jakarta.bps.go.id',
-    status: 'Menyusul',
+    status: 'Dipakai',
   },
   {
     nama: 'Persentase penduduk miskin per kota administrasi',
-    dipakai: 'Faktor kerentanan wilayah (level kota, ditulis terbuka di penjelasan skor)',
-    sumber: 'BPS (WebAPI atau tabel bps.go.id)',
-    lisensi: 'Ketentuan penggunaan data BPS',
-    url: 'https://www.bps.go.id',
-    status: 'Menyusul',
+    dipakai: 'Faktor kerentanan wilayah, level kota',
+    sumber: 'BPS Provinsi DKI Jakarta, Tabel 13.10, Maret 2025: Jakarta Selatan 3,23%; Jakarta Timur 3,94%; Jakarta Pusat 4,70%; Jakarta Barat 3,91%; Jakarta Utara 6,33%',
+    lisensi: 'Ketentuan penggunaan data BPS (non-komersial, wajib menyebut sumber)',
+    url: 'https://jakarta.bps.go.id',
+    status: 'Dipakai',
   },
   {
-    nama: 'Pengaduan masyarakat DKI Jakarta',
-    dipakai: 'Kandidat sumber dashboard prioritas jika punya kolom wilayah, kategori, dan tanggal',
-    sumber: 'Portal Satu Data Indonesia (katalog.data.go.id), CRM Pemprov DKI',
+    nama: 'Pengaduan masyarakat DKI Jakarta (CRM)',
+    dipakai: 'Dicek sebagai sumber dashboard prioritas; tidak dipakai',
+    sumber: 'katalog.data.go.id "Cepat Respon Masyarakat (CRM)" 2025 hanya berisi rekap per kategori tanpa wilayah dan tanggal; data.jakarta.go.id per laporan hanya mencakup Jakarta Barat dan Jakarta Pusat 2019–2021. Dashboard prioritas memakai laporan simulasi',
     lisensi: 'Sesuai katalog',
     url: 'https://katalog.data.go.id',
-    status: 'Sedang dicek',
+    status: 'Tidak dipakai',
   },
   {
     nama: 'Angka e-Musrenbang di Beranda',
@@ -63,16 +63,43 @@ const DATA_TERBUKA = [
 ];
 
 const PROFIL = [
-  { instansi: 'Dinas Bina Jalan', tolak: '5%', respons: '90%', selesai: '80%', rating: '4,2', peran: 'Contoh dinas yang baik' },
-  { instansi: 'Dinas Kebersihan', tolak: '10%', respons: '84%', selesai: '63%', rating: '3,8', peran: 'Mendekati contoh hitungan di Cara Menilai' },
-  { instansi: 'Dinas Tata Air', tolak: '6%', respons: '50%', selesai: '35%', rating: '2,8', peran: 'Nilai D, sering terlambat' },
-  { instansi: 'Dinas Penerangan Jalan', tolak: '32%', respons: '95%', selesai: '90%', rating: '4,5', peran: 'Angka setara A, huruf ditahan C karena penolakan' },
+  { instansi: 'Dinas Bina Jalan', tolak: '5%', respons: '90%', selesai: '80%', rating: '4,2', peran: 'Contoh dinas yang baik (rapor A)' },
+  { instansi: 'Dinas Kebersihan', tolak: '8%', respons: '84%', selesai: '63%', rating: '3,8', peran: 'Mendekati contoh hitungan di Cara Menilai (rapor B)' },
+  { instansi: 'Dinas Tata Air', tolak: '6%', respons: '50%', selesai: '35%', rating: '2,8', peran: 'Sering terlambat (rapor D)' },
+  { instansi: 'Dinas Penerangan Jalan', tolak: '36%', respons: '95%', selesai: '90%', rating: '4,5', peran: 'Angka setara A, huruf ditahan C karena penolakan tinggi' },
+];
+
+// Foto pada laporan simulasi dan bukti penyelesaiannya (Wikimedia Commons). Lisensi CC wajib diatribusikan.
+const FOTO_SEED = [
+  { kategori: 'Jalan rusak', jenis: 'laporan', judul: 'Pothole on Huntington Creek Road', pembuat: 'Jakec', lisensi: 'CC BY-SA 4.0', urlLisensi: 'https://creativecommons.org/licenses/by-sa/4.0', url: 'https://commons.wikimedia.org/wiki/File:Pothole_on_Huntington_Creek_Road.JPG' },
+  { kategori: 'Jalan rusak', jenis: 'laporan', judul: 'A Road filled with potholes', pembuat: 'Adakaibe', lisensi: 'CC BY-SA 4.0', urlLisensi: 'https://creativecommons.org/licenses/by-sa/4.0', url: 'https://commons.wikimedia.org/wiki/File:A_Road_filled_with_potholes.jpg' },
+  { kategori: 'Jalan rusak', jenis: 'laporan', judul: 'A mud filled pothole on a road in Lagos, Nigeria', pembuat: 'Àìná - TheSymbyat', lisensi: 'CC BY-SA 4.0', urlLisensi: 'https://creativecommons.org/licenses/by-sa/4.0', url: 'https://commons.wikimedia.org/wiki/File:A_mud_filled_pothole_on_a_road_in_Lagos,_Nigeria.jpg' },
+  { kategori: 'Jalan rusak', jenis: 'laporan', judul: 'Ubud-Jalan Raya-Pothole-2009', pembuat: 'Jack Merridew', lisensi: 'Domain publik', urlLisensi: null, url: 'https://commons.wikimedia.org/wiki/File:Ubud-Jalan_Raya-Pothole-2009.jpeg' },
+  { kategori: 'Jalan rusak', jenis: 'bukti', judul: 'Asphalt paving', pembuat: 'Sammya Nig Ltd', lisensi: 'CC BY-SA 4.0', urlLisensi: 'https://creativecommons.org/licenses/by-sa/4.0', url: 'https://commons.wikimedia.org/wiki/File:Asphalt_paving.jpg' },
+  { kategori: 'Jalan rusak', jenis: 'bukti', judul: 'Asphalt base', pembuat: 'Estr4ng3d', lisensi: 'CC BY-SA 3.0', urlLisensi: 'https://creativecommons.org/licenses/by-sa/3.0', url: 'https://commons.wikimedia.org/wiki/File:Asphalt_base.jpg' },
+  { kategori: 'Saluran tersumbat', jenis: 'laporan', judul: 'Vegetation clogged drain - geograph.org.uk - 7006184', pembuat: 'N Chadwick', lisensi: 'CC BY-SA 2.0', urlLisensi: 'https://creativecommons.org/licenses/by-sa/2.0', url: 'https://commons.wikimedia.org/wiki/File:Vegetation_clogged_drain_-_geograph.org.uk_-_7006184.jpg' },
+  { kategori: 'Saluran tersumbat', jenis: 'laporan', judul: 'Drain clogged with bulrushes - geograph.org.uk - 6246355', pembuat: 'Jonathan Thacker', lisensi: 'CC BY-SA 2.0', urlLisensi: 'https://creativecommons.org/licenses/by-sa/2.0', url: 'https://commons.wikimedia.org/wiki/File:Drain_clogged_with_bulrushes_-_geograph.org.uk_-_6246355.jpg' },
+  { kategori: 'Saluran tersumbat', jenis: 'laporan', judul: 'Clogged drains - geograph.org.uk - 4703773', pembuat: 'Jonathan Thacker', lisensi: 'CC BY-SA 2.0', urlLisensi: 'https://creativecommons.org/licenses/by-sa/2.0', url: 'https://commons.wikimedia.org/wiki/File:Clogged_drains_-_geograph.org.uk_-_4703773.jpg' },
+  { kategori: 'Saluran tersumbat', jenis: 'laporan', judul: 'Handyman heavy duty drain cleaning machine', pembuat: 'Tomwsulcer', lisensi: 'Domain publik', urlLisensi: null, url: 'https://commons.wikimedia.org/wiki/File:Handyman_heavy_duty_drain_cleaning_machine.jpg' },
+  { kategori: 'Saluran tersumbat', jenis: 'bukti', judul: 'Drainage channel with concrete banks', pembuat: 'EST blueprint', lisensi: 'CC BY-SA 4.0', urlLisensi: 'https://creativecommons.org/licenses/by-sa/4.0', url: 'https://commons.wikimedia.org/wiki/File:Drainage_channel_with_concrete_banks.jpg' },
+  { kategori: 'Saluran tersumbat', jenis: 'bukti', judul: 'Seawall and drainage channel - geograph.org.uk - 350030', pembuat: 'Deb Turnbull', lisensi: 'CC BY-SA 2.0', urlLisensi: 'https://creativecommons.org/licenses/by-sa/2.0', url: 'https://commons.wikimedia.org/wiki/File:Seawall_and_drainage_channel_-_geograph.org.uk_-_350030.jpg' },
+  { kategori: 'Sampah menumpuk', jenis: 'laporan', judul: 'Jakarta slumhome 2', pembuat: 'Jonathan McIntosh', lisensi: 'CC BY 2.0', urlLisensi: 'https://creativecommons.org/licenses/by/2.0', url: 'https://commons.wikimedia.org/wiki/File:Jakarta_slumhome_2.jpg' },
+  { kategori: 'Sampah menumpuk', jenis: 'laporan', judul: 'Bangau di Teluk jakarta', pembuat: 'Arie Basuki', lisensi: 'CC BY-SA 4.0', urlLisensi: 'https://creativecommons.org/licenses/by-sa/4.0', url: 'https://commons.wikimedia.org/wiki/File:Bangau_di_Teluk_jakarta.jpg' },
+  { kategori: 'Sampah menumpuk', jenis: 'laporan', judul: 'Bangau di Teluk Jakarta', pembuat: 'Arie Basuki', lisensi: 'CC BY-SA 4.0', urlLisensi: 'https://creativecommons.org/licenses/by-sa/4.0', url: 'https://commons.wikimedia.org/wiki/File:Bangau_di_Teluk_Jakarta.jpg' },
+  { kategori: 'Sampah menumpuk', jenis: 'laporan', judul: 'Garbage, Suara Indonesia 22 Jan 1954 p1', pembuat: 'Tanpa nama', lisensi: 'Domain publik', urlLisensi: null, url: 'https://commons.wikimedia.org/wiki/File:Garbage_Suara_Indonesia_22_Jan_1954_p1.jpg' },
+  { kategori: 'Sampah menumpuk', jenis: 'bukti', judul: 'Annual cleaning of sidewalks Quebec City', pembuat: 'Marc-Lautenbacher', lisensi: 'CC BY-SA 4.0', urlLisensi: 'https://creativecommons.org/licenses/by-sa/4.0', url: 'https://commons.wikimedia.org/wiki/File:Annual_cleaning_of_sidewalks_Quebec_City.jpg' },
+  { kategori: 'Sampah menumpuk', jenis: 'bukti', judul: 'At least there is money for a clean sidewalk...as fares are due to increase (1409420646)', pembuat: 'Jax House', lisensi: 'CC BY-SA 2.0', urlLisensi: 'https://creativecommons.org/licenses/by-sa/2.0', url: 'https://commons.wikimedia.org/wiki/File:At_least_there_is_money_for_a_clean_sidewalk...as_fares_are_due_to_increase_(1409420646).jpg' },
+  { kategori: 'Lampu jalan mati', jenis: 'laporan', judul: '2013 Street lamp', pembuat: 'Kreuzschnabel', lisensi: 'CC BY-SA 3.0', urlLisensi: 'https://creativecommons.org/licenses/by-sa/3.0', url: 'https://commons.wikimedia.org/wiki/File:2013_Street_lamp.jpg' },
+  { kategori: 'Lampu jalan mati', jenis: 'laporan', judul: 'Niasviž Light Pole 2023-07-02 6080', pembuat: 'Mike1979 Russia', lisensi: 'CC BY-SA 3.0', urlLisensi: 'https://creativecommons.org/licenses/by-sa/3.0', url: 'https://commons.wikimedia.org/wiki/File:Niasvi%C5%BE_Light_Pole_2023-07-02_6080.jpg' },
+  { kategori: 'Lampu jalan mati', jenis: 'laporan', judul: 'Lamp Post Incorporating Former Hand Pump', pembuat: 'Jwslubbock', lisensi: 'CC BY-SA 4.0', urlLisensi: 'https://creativecommons.org/licenses/by-sa/4.0', url: 'https://commons.wikimedia.org/wiki/File:Lamp_Post_Incorporating_Former_Hand_Pump.jpg' },
+  { kategori: 'Lampu jalan mati', jenis: 'laporan', judul: 'Dülmen, Hausdülmen, Straßenschild -- 2014 -- 3178', pembuat: 'Dietmar Rabich', lisensi: 'CC BY-SA 4.0', urlLisensi: 'https://creativecommons.org/licenses/by-sa/4.0', url: 'https://commons.wikimedia.org/wiki/File:D%C3%BClmen,_Hausd%C3%BClmen,_Stra%C3%9Fenschild_--_2014_--_3178.jpg' },
+  { kategori: 'Lampu jalan mati', jenis: 'bukti', judul: 'Esztergom by night 01 - Simor János utca', pembuat: 'Pudelek', lisensi: 'CC BY-SA 4.0', urlLisensi: 'https://creativecommons.org/licenses/by-sa/4.0', url: 'https://commons.wikimedia.org/wiki/File:Esztergom_by_night_01_-_Simor_J%C3%A1nos_utca.jpg' },
+  { kategori: 'Lampu jalan mati', jenis: 'bukti', judul: 'Albert Bridge at night, London, UK', pembuat: 'Diliff', lisensi: 'CC BY-SA 3.0', urlLisensi: 'https://creativecommons.org/licenses/by-sa/3.0', url: 'https://commons.wikimedia.org/wiki/File:Albert_Bridge_at_night,_London,_UK_-_Diliff.jpg' },
 ];
 
 const warnaStatus: Record<string, string> = {
   Dipakai: 'bg-st-selesai-bg text-st-selesai',
-  Menyusul: 'bg-st-menunggu-bg text-st-menunggu',
-  'Sedang dicek': 'bg-st-diverifikasi-bg text-st-diverifikasi',
+  'Tidak dipakai': 'bg-lapis-2 text-teks',
 };
 
 export default function SumberDataPage() {
@@ -137,7 +164,7 @@ export default function SumberDataPage() {
                       d.sumber
                     )}
                   </td>
-                  <td className="p-4 text-kecil whitespace-nowrap">{d.lisensi}</td>
+                  <td className="min-w-[10rem] p-4 text-kecil">{d.lisensi}</td>
                   <td className="p-4">
                     <span className={`rounded-full px-2.5 py-0.5 text-kecil font-semibold whitespace-nowrap ${warnaStatus[d.status]}`}>{d.status}</span>
                   </td>
@@ -146,11 +173,18 @@ export default function SumberDataPage() {
             </tbody>
           </table>
         </div>
-        <p className="mt-3 max-w-[75ch] text-kecil text-lembut">
-          Data wilayah digabung memakai kode wilayah, bukan nama, dan salinan lokal setiap dataset disimpan di repositori
-          (folder data/) karena portal bisa berubah. Selama data BPS belum dimuat, penduduk, luas, dan persen miskin di data
-          contoh adalah angka contoh.
-        </p>
+        <div className="mt-3 grid max-w-[75ch] gap-3 text-kecil text-lembut">
+          <p>
+            Data wilayah digabung memakai kode wilayah BPS (mis. 31.71.010), bukan nama, dan salinan lokal setiap dataset
+            disimpan di repositori (folder data/) karena portal bisa berubah. Luas memakai angka tabel BPS; untuk tiga
+            kecamatan (Sawah Besar, Taman Sari, Penjaringan) angka ini berbeda lebih dari 10% dari luas poligon peta.
+          </p>
+          <p>
+            <strong className="font-semibold text-teks">Kerentanan dihitung per kota, bukan per kecamatan.</strong> BPS
+            tidak menerbitkan persentase penduduk miskin per kecamatan, jadi semua kecamatan dalam satu kota administrasi
+            mendapat angka yang sama. Faktor ini hanya membedakan kecamatan antarkota, tidak di dalam satu kota.
+          </p>
+        </div>
       </section>
 
       <section id="simulasi" aria-labelledby="judul-simulasi" className="mt-24 scroll-mt-6" data-muncul>
@@ -160,9 +194,12 @@ export default function SumberDataPage() {
           </h2>
           <div className="grid gap-4 text-badan lg:col-span-6">
             <p>
-              Laporan, status, dukungan, dan rating dibuat oleh generator dengan random seed tetap: 800–1.000 laporan dalam
-              enam bulan terakhir, titiknya diambil acak di dalam poligon kecamatan sebanding jumlah penduduk. Reset data
-              selalu menghasilkan angka yang sama, jadi angka di video dan proposal konsisten.
+              Laporan, status, dukungan, dan rating dibuat oleh generator (scripts/05_seed.py) dengan random seed tetap
+              2026: 900 laporan dari 40 akun warga simulasi, tersebar dalam 180 hari sebelum titik acuan dengan porsi lebih
+              besar di 60 hari terakhir. Kecamatan dipilih sebanding jumlah penduduk dan titiknya diambil acak di dalam
+              poligon kecamatan. Proporsi kategori: jalan rusak 35%, sampah 30%, saluran 20%, lampu jalan 15%. Hasilnya
+              3.011 riwayat status, 2.167 dukungan, dan 338 rating; sekitar seperempat laporan masih aktif. Reset data
+              menggeser semua waktu ke hari ini, jadi angka di video dan proposal tetap sama.
             </p>
             <p>
               Nama instansi sengaja generik dan bertanda simulasi supaya tidak terbaca sebagai kinerja dinas sungguhan. Rapor
@@ -288,6 +325,46 @@ export default function SumberDataPage() {
             </li>
           ))}
         </ul>
+      </section>
+
+      <section id="foto-simulasi" aria-labelledby="judul-foto-simulasi" className="mt-24 scroll-mt-6" data-muncul>
+        <h2 id="judul-foto-simulasi" className="text-judul">
+          Foto laporan simulasi
+        </h2>
+        <p className="mt-4 max-w-[70ch] text-badan">
+          Foto pada laporan simulasi dan bukti penyelesaiannya diambil dari Wikimedia Commons, bukan foto dari Jakarta pada
+          tanggal laporan. Semua foto diperkecil untuk aplikasi; isinya tidak diubah. Foto berlisensi CC BY-SA tetap
+          berlisensi sama.
+        </p>
+        <div className="mt-10 grid grid-cols-1 gap-x-10 gap-y-12 lg:grid-cols-2">
+          {KATEGORI.map((k) => (
+            <div key={k.id}>
+              <h3 className="text-lead font-medium tracking-tight">{k.nama}</h3>
+              <ul className="mt-4 grid text-kecil">
+                {FOTO_SEED.filter((f) => f.kategori === k.nama).map((f) => (
+                  <li key={f.url} className="grid gap-1 border-t border-batas py-3 sm:grid-cols-[7.5rem_1fr] sm:gap-4">
+                    <span className="font-medium text-lembut">{f.jenis === 'bukti' ? 'Bukti selesai' : 'Laporan'}</span>
+                    <p>
+                      &ldquo;{f.judul}&rdquo; · {f.pembuat} ·{' '}
+                      {f.urlLisensi ? (
+                        <a href={f.urlLisensi} target="_blank" rel="noreferrer" className="whitespace-nowrap underline underline-offset-4">
+                          {f.lisensi}
+                        </a>
+                      ) : (
+                        <span className="whitespace-nowrap">{f.lisensi}</span>
+                      )}{' '}
+                      ·{' '}
+                      <a href={f.url} target="_blank" rel="noreferrer" className="underline underline-offset-4">
+                        Wikimedia Commons
+                      </a>{' '}
+                      · diperkecil
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
       </section>
     </div>
   );
