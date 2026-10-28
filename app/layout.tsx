@@ -1,32 +1,54 @@
-import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
+import type { Metadata, Viewport } from 'next';
+import localFont from 'next/font/local';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
+import Pengumuman from '@/components/Pengumuman';
 import './globals.css';
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
+// Author: huruf utama seluruh situs. Satoshi: wordmark dan kode laporan (SR-K7W3PA).
+// Keduanya dari Fontshare (ITF Free Font License, app/fonts/LICENSE-FFL.txt), di-host sendiri.
+const author = localFont({
+  src: './fonts/Author-Variable.woff2',
+  variable: '--font-author',
+  weight: '200 700',
+  display: 'swap',
 });
 
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
+const satoshi = localFont({
+  src: './fonts/Satoshi-Variable.woff2',
+  variable: '--font-satoshi',
+  weight: '300 900',
+  display: 'swap',
 });
 
 export const metadata: Metadata = {
-  title: { default: 'suaRAkyat', template: '%s · suaRAkyat' },
+  title: { default: 'suaRAkyat · Kenapa belum?', template: '%s · suaRAkyat' },
   description:
-    'Platform transparansi keputusan publik: lapor masalah kota, lacak penanganannya, dan uji kenapa sebuah masalah didahulukan.',
+    'Kanal pengaduan sudah melacak laporan. suaRAkyat membuka alasan di balik keputusan: kenapa satu masalah kota didahulukan, dan siapa saja bisa mengujinya.',
+};
+
+export const viewport: Viewport = {
+  themeColor: '#ececeb',
+  // Isi sampai tepi layar iPhone; tepi teks dijaga lewat env(safe-area-inset-*) di .bingkai dan footer.
+  viewportFit: 'cover',
 };
 
 export default function RootLayout({ children }: LayoutProps<'/'>) {
   return (
-    <html lang="id" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
-      <body className="flex min-h-full flex-col">
+    <html lang="id" className={`${author.variable} ${satoshi.variable} h-full antialiased`}>
+      <body className="flex min-h-full flex-col" suppressHydrationWarning>
+        <a
+          href="#isi"
+          className="sr-only z-2000 bg-tinta px-4 py-3 text-kertas focus:not-sr-only focus:fixed focus:top-2 focus:left-2"
+        >
+          Lewati ke isi
+        </a>
         <Header />
-        <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8">{children}</main>
+        <main id="isi" className="flex-1">
+          {children}
+        </main>
         <Footer />
+        <Pengumuman />
       </body>
     </html>
   );

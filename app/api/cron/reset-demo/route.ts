@@ -39,6 +39,11 @@ export async function GET(request: NextRequest) {
         { status: 501 },
       );
     }
+    // P0001: error yang sengaja dilempar RPC, misalnya SEED_BELUM_ADA sebelum seed dimuat.
+    if (error.code === 'P0001') {
+      console.error(`[reset-demo] ${error.message}`);
+      return NextResponse.json({ error: error.message }, { status: 409 });
+    }
     console.error(`[reset-demo] RPC gagal: ${error.code} ${error.message}`);
     return NextResponse.json({ error: 'RESET_GAGAL', kode: error.code }, { status: 500 });
   }

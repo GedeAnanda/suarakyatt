@@ -1,75 +1,110 @@
 // app/prioritas/page.tsx — Dashboard Prioritas (SDD 9), pemilik: A
-// TODO(A): PetaChoropleth (5 kelas tetap), DaftarPeringkat, BarKontribusi, PanelSimulator, RiwayatBobot,
-// FormSimpanBobot (khusus Perencana). Tabel di bawah hanya bukti alur data.
-// Operasi SDD 6: R9 priority_factors, Q5 priority_weights, Q6 v_riwayat_bobot, F1 /data/kecamatan.geojson,
-// R10 save_weights, L1 lib/scoring. Sampai RPC siap, faktor mentah diambil dari lib/mocks/prioritas.json
-// dan bobot dari BOBOT_AWAL. Saat PanelSimulator dibuat, pindahkan hitungSkor ke Client Component
-// supaya skor dihitung ulang di browser setiap slider digeser (SDD 2.1 dan 8.3).
+// Operasi SDD 6: R9 priority_factors, Q5 priority_weights, Q6 v_riwayat_bobot, R10 save_weights (Perencana),
+// L1 lib/scoring (di browser, lewat Simulator). Peta memakai lib/geo (dari public/data/kecamatan.geojson).
 
 import type { Metadata } from 'next';
+import Link from 'next/link';
+import { Suspense } from 'react';
 import BannerSimulasi from '@/components/BannerSimulasi';
-import contoh from '@/lib/mocks/prioritas.json';
-import { BOBOT_AWAL, FAKTOR, LABEL_FAKTOR, formatPoin, hitungSkor } from '@/lib/scoring';
-import type { PriorityFactorsResponse } from '@/lib/types';
+import RiwayatBobot from '@/components/prioritas/RiwayatBobot';
+import Simulator from '@/components/prioritas/Simulator';
+import { kelasTautan } from '@/components/ui/Tombol';
+import { ambilDataPrioritas } from '@/lib/data/prioritas';
+import { ambilSesi } from '@/lib/data/sesi';
+import { tanggal } from '@/lib/format';
+import { DEFINISI_FAKTOR, NAMA_FAKTOR } from '@/lib/konten';
+import { FAKTOR } from '@/lib/scoring';
 
-export const metadata: Metadata = { title: 'Prioritas' };
+export const metadata: Metadata = {
+  title: 'Dashboard prioritas',
+  description: 'Urutan isu wilayah Jakarta, alasan di balik setiap skor, dan simulator untuk menguji bobot lain.',
+};
 
-const data = contoh as PriorityFactorsResponse;
+async function Isi() {
+  const [data, sesi] = await Promise.all([ambilDataPrioritas(), ambilSesi()]);
+  return (
+    <>
+      <BannerSimulasi
+        sumber={data.sumber}
+        keterangan={`Bobot resmi berlaku${data.bobotDiperbarui ? ` sejak ${tanggal(data.bobotDiperbarui)}` : ''} · kerentanan dari data kemiskinan level kota`}
+      />
+
+      <div className="mt-10">
+        <Simulator isu={data.faktor.isu} bobotResmi={data.bobotResmi} perencana={Boolean(sesi?.perencana)} />
+      </div>
+
+      <section aria-labelledby="judul-riwayat" className="mt-24 grid grid-cols-1 gap-8 lg:grid-cols-12" data-muncul>
+        <div className="lg:col-span-4">
+          <h2 id="judul-riwayat" className="text-judul">
+            Riwayat keputusan
+          </h2>
+          <p className="mt-4 max-w-[42ch] text-badan">
+            Setiap perubahan bobot resmi oleh Perencana tercatat di sini: siapa, kapan, dari berapa ke berapa, dan alasannya.
+            Tidak ada bobot yang objektif; karena itu bobot dibuat terbuka.
+          </p>
+        </div>
+        <div className="lg:col-span-8">
+          <RiwayatBobot riwayat={data.riwayat} />
+        </div>
+      </section>
+    </>
+  );
+}
+
+function Kerangka() {
+  return (
+    <div aria-hidden="true" className="grid gap-8 lg:grid-cols-12">
+      <div className="kerangka h-[36rem] lg:col-span-4" />
+      <div className="grid content-start gap-6 lg:col-span-8">
+        <div className="kerangka h-10 w-2/3" />
+        <div className="kerangka h-80" />
+        <div className="kerangka h-96" />
+      </div>
+    </div>
+  );
+}
 
 export default function PrioritasPage() {
-  const hasil = hitungSkor(data.isu, BOBOT_AWAL);
-
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Dashboard Prioritas</h1>
-        <p className="mt-2 text-neutral-600">
-          Urutan isu wilayah yang didahulukan, alasan di balik setiap skor, dan simulator untuk menguji bobot
-          lain.
+    <div className="bingkai pt-12 pb-24 sm:pt-16">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-12" data-awal>
+        <h1 className="text-judul lg:col-span-6">Dashboard prioritas</h1>
+        <p className="max-w-[60ch] text-badan lg:col-span-6">
+          Setiap isu wilayah (satu kecamatan × satu kategori yang punya laporan aktif) mendapat skor 0–100 dari enam
+          faktor. Pilih isu untuk melihat faktor yang mendorong dan menahannya, atau geser bobotnya sendiri. Hitungannya
+          dijelaskan di bawah.
         </p>
       </div>
-      <BannerSimulasi />
 
-      <section className="space-y-3">
-        <div className="flex flex-wrap items-center gap-2 text-sm">
-          <span className="rounded-full border border-dashed border-neutral-400 px-2.5 py-0.5 text-xs font-medium text-neutral-700">
-            Data contoh
-          </span>
-          <span className="text-neutral-600">Dihitung dengan lib/scoring memakai bobot awal.</span>
+      <div className="mt-10">
+        <Suspense fallback={<Kerangka />}>
+          <Isi />
+        </Suspense>
+      </div>
+
+      <section aria-labelledby="judul-faktor" className="mt-24 grid grid-cols-1 gap-8 lg:grid-cols-12" data-muncul>
+        <div className="lg:col-span-4">
+          <h2 id="judul-faktor" className="text-judul">
+            Enam faktor
+          </h2>
+          <p className="mt-4 max-w-[42ch] text-badan">
+            Skor = 100 × jumlah (bobot × nilai faktor). Nilai faktor diubah ke skala 0–1; kontribusi semua faktor selalu
+            berjumlah sama dengan skornya. Isu tanpa laporan aktif tidak diberi peringkat.
+          </p>
+          <p className="mt-4 text-badan">
+            <Link href="/sumber-data" className={kelasTautan}>
+              Sumber data setiap faktor
+            </Link>
+          </p>
         </div>
-        <div className="overflow-x-auto rounded-lg border border-neutral-200">
-          <table className="w-full text-left text-sm">
-            <thead className="bg-neutral-50 text-neutral-600">
-              <tr>
-                <th scope="col" className="px-3 py-2 text-right font-medium">#</th>
-                <th scope="col" className="px-3 py-2 font-medium">Isu wilayah</th>
-                <th scope="col" className="px-3 py-2 font-medium">Kategori</th>
-                <th scope="col" className="px-3 py-2 text-right font-medium">Laporan aktif</th>
-                <th scope="col" className="px-3 py-2 text-right font-medium">Skor</th>
-                <th scope="col" className="px-3 py-2 font-medium">Penjelasan</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-neutral-200">
-              {hasil.map((s) => (
-                <tr key={s.id}>
-                  <td className="px-3 py-2 text-right tabular-nums">{s.peringkat}</td>
-                  <th scope="row" className="px-3 py-2 font-medium whitespace-nowrap">
-                    {s.kecamatan}
-                    <span className="block text-xs font-normal text-neutral-500">{s.kota}</span>
-                  </th>
-                  <td className="px-3 py-2 whitespace-nowrap">{s.kategori}</td>
-                  <td className="px-3 py-2 text-right tabular-nums">{s.laporan_aktif}</td>
-                  <td className="px-3 py-2 text-right font-medium tabular-nums">{formatPoin(s.skor)}</td>
-                  <td className="min-w-72 px-3 py-2 text-neutral-600">{s.penjelasan}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        <p className="text-xs text-neutral-500">
-          Bobot awal:{' '}
-          {FAKTOR.map((f) => `${LABEL_FAKTOR[f]} ${Math.round(BOBOT_AWAL[f] * 100)}%`).join(', ')}.
-        </p>
+        <dl className="grid gap-x-8 gap-y-6 sm:grid-cols-2 lg:col-span-8">
+          {FAKTOR.map((f) => (
+            <div key={f}>
+              <dt className="text-badan font-semibold">{NAMA_FAKTOR[f]}</dt>
+              <dd className="mt-1 text-badan">{DEFINISI_FAKTOR[f]}</dd>
+            </div>
+          ))}
+        </dl>
       </section>
     </div>
   );

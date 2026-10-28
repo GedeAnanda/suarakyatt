@@ -2,18 +2,21 @@
 // Mengikuti pola resmi @supabase/ssr untuk App Router.
 
 import { createServerClient } from '@supabase/ssr';
-import type { JwtPayload } from '@supabase/supabase-js';
+import type { JwtPayload, SupabaseClient } from '@supabase/supabase-js';
 import { NextResponse, type NextRequest } from 'next/server';
 import { envSupabase } from './env';
 
-/** Segarkan token sesi dari cookie. `claims` bernilai null jika tamu (atau env Supabase belum diisi). */
+/**
+ * Segarkan token sesi dari cookie. `claims` bernilai null jika tamu (atau env Supabase belum diisi).
+ * `supabase` dikembalikan supaya proxy.ts bisa memeriksa peran tanpa membuat client kedua.
+ */
 export async function updateSession(
   request: NextRequest,
-): Promise<{ response: NextResponse; claims: JwtPayload | null }> {
+): Promise<{ response: NextResponse; claims: JwtPayload | null; supabase: SupabaseClient | null }> {
   let response = NextResponse.next({ request });
 
   const env = envSupabase();
-  if (!env) return { response, claims: null };
+  if (!env) return { response, claims: null, supabase: null };
 
   const supabase = createServerClient(env.url, env.anonKey, {
     cookies: {
@@ -33,9 +36,9 @@ export async function updateSession(
   // Jangan sisipkan kode di antara createServerClient dan getClaims (anjuran resmi Supabase).
   try {
     const { data } = await supabase.auth.getClaims();
-    return { response, claims: data?.claims ?? null };
+    return { response, claims: data?.claims ?? null, supabase };
   } catch {
     // Supabase tidak terjangkau: perlakukan sebagai tamu daripada membuat semua halaman error.
-    return { response, claims: null };
+    return { response, claims: null, supabase };
   }
 }

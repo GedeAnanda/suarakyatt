@@ -1,30 +1,35 @@
 // components/BannerSimulasi.tsx — pemberitahuan data simulasi (SDD 9, 9.1), pemilik: A
+// Tidak bisa ditutup (PRD 11). Satu-satunya label sumber di kepala halaman: keterangan halaman (periode,
+// jumlah laporan, bobot yang berlaku) ikut di dalamnya, bukan di chip terpisah.
 
 import Link from 'next/link';
+import type { Sumber } from '@/lib/data/laporan';
+import Ikon from './ui/Ikon';
+import { kelasTautan } from './ui/Tombol';
 
-export default function BannerSimulasi() {
+export default function BannerSimulasi({
+  sumber,
+  keterangan,
+  className = '',
+}: {
+  sumber?: Sumber;
+  keterangan?: string;
+  className?: string;
+}) {
   return (
-    <aside role="note" className="flex gap-3 rounded-lg border border-neutral-300 bg-neutral-50 px-4 py-3 text-sm text-neutral-700">
-      <svg
-        viewBox="0 0 24 24"
-        className="mt-0.5 size-4 shrink-0"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth={2}
-        strokeLinecap="round"
-        aria-hidden="true"
-      >
-        <circle cx="12" cy="12" r="9" />
-        <path d="M12 11v5M12 8h.01" />
-      </svg>
-      <p>
-        <strong className="font-semibold text-neutral-900">Data simulasi.</strong> Sebagian laporan, instansi, dan angka
-        di aplikasi ini dibuat untuk keperluan lomba dan bukan data resmi pemerintah.{' '}
-        <Link href="/sumber-data" className="underline underline-offset-2 hover:text-neutral-900">
-          Lihat sumber data
-        </Link>
-        .
-      </p>
+    <aside role="note" className={`flex gap-3 rounded-(--radius-kontrol) bg-tinta-muda/70 px-4 py-3 text-kecil text-teks ${className}`}>
+      <Ikon nama="info" className="mt-0.5 size-4 shrink-0" />
+      <div>
+        <p>
+          <strong className="font-semibold">{sumber === 'contoh' ? 'Data contoh.' : 'Data simulasi.'}</strong> Laporan,
+          instansi, dan angka kinerja di halaman ini dibuat untuk lomba dan bukan data resmi pemerintah.
+          {sumber === 'contoh' && ' Sementara ini halaman memakai data contoh bawaan aplikasi.'}{' '}
+          <Link href="/sumber-data" className={kelasTautan}>
+            Lihat sumber data
+          </Link>
+        </p>
+        {keterangan && <p className="mt-1 text-lembut">{keterangan}</p>}
+      </div>
     </aside>
   );
 }

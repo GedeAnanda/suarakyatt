@@ -8,17 +8,13 @@ import type { PetaDasarProps } from './PetaDasarLeaflet';
 
 const PetaDasarLeaflet = dynamic(() => import('./PetaDasarLeaflet'), {
   ssr: false,
-  loading: () => (
-    <div className="flex h-80 w-full items-center justify-center bg-neutral-100 text-sm text-neutral-500 sm:h-112">
-      Memuat peta…
-    </div>
-  ),
+  loading: () => <div className="kerangka flex h-full min-h-80 w-full items-center justify-center text-kecil">Memuat peta…</div>,
 });
 
 export default function PetaDasar(props: PetaDasarProps) {
   // `isolate` menjaga z-index panel Leaflet tetap di dalam kotak peta.
   return (
-    <div className="isolate overflow-hidden rounded-lg border border-neutral-200">
+    <div className="peta isolate overflow-hidden bg-lapis" data-ui>
       <PetaDasarLeaflet {...props} />
     </div>
   );

@@ -1,27 +1,44 @@
-# Skrip data (pemilik: C)
+# Data dan database demo
 
-Acuan: SDD v1.0 bagian 10. Jalankan berurutan dari folder root repo.
+Jalankan dari root aplikasi. Rahasia dibaca dari `.env.local`; jangan commit file itu.
 
-| Urutan | Skrip | Fungsi | Keluaran |
-| --- | --- | --- | --- |
-| 1 | `01_wilayah.py` | Saring kecamatan DKI daratan, sederhanakan bentuk | `public/data/kecamatan.geojson`, `data/processed/regions.csv` |
-| 2 | `02_bps.py` | Gabungkan penduduk, luas, kemiskinan via kode wilayah | Data wilayah siap muat |
-| 3 | `03_cek_crm.py` | Cek kelayakan dataset CRM DKI (paling lambat 27 Okt) | Ringkasan untuk tim, `crm_agregat.csv` jika layak |
-| 4 | `04_akun.py` | Buat akun admin, Perencana, demo, warga simulasi | Akun di Supabase Auth |
-| 5 | `05_seed.py` | Generator laporan simulasi (deterministik) | `supabase/seed/seed.sql` |
+## Demo fungsional
 
-## Persiapan
+1. Terapkan migrasi `supabase/migrations/0001` sampai `0007` berurutan pada proyek Supabase.
+2. Siapkan akun demo warga dan admin, beserta profil `is_demo = true`. Admin demo menangani instansi 1. Isi variabel `DEMO_*` di `.env.local`.
+3. Isi `DATABASE_URL`, kemudian jalankan:
+
+```bash
+npm run demo:setup             # pemeriksaan tanpa mengubah data
+npm run demo:setup -- --apply  # hanya menerima database wilayah/laporan/seed yang kosong
+npm run test:db               # integrasi RPC; semua mutasi uji di-rollback
+```
+
+Bootstrap memasukkan 42 wilayah dan 520 laporan simulasi, timeline, rating, serta snapshot untuk reset demo. Proses bersifat transaksional: jika gagal, seluruh perubahan dibatalkan. Data atau akun yang sudah ada tidak dihapus dan peran akun tidak diubah. Skrip menolak pengisian ulang database yang telah berisi data.
+
+Batas wilayah memakai HDX COD-AB. Penduduk, luas statistik, dan persentase kemiskinan adalah **asumsi simulasi**, bukan BPS. Laporan awal dimiliki akun admin demo agar akun warga demo bisa mendukungnya. Catatan seed tidak berpura-pura berasal dari petugas; lampiran SVG diberi label ilustrasi, bukan foto lapangan. Dukungan baru berasal dari interaksi pengguna. Snapshot disiapkan untuk RPC `reset_demo_data`, yang memang memulihkan data simulasi dan menghapus interaksi akun demo.
+
+`0007_agregasi_demo.sql` mengisi fungsi `priority_factors` dan `agency_report_card` yang belum diimplementasikan dalam placeholder `0004`/`0005`. Angka dashboard dihitung dari laporan yang sama dengan peta, bukan dari JSON terpisah. Migrasi juga menandai laporan dari akun demo sebagai simulasi.
+
+## Data lokal dan peta
+
+| Skrip | Fungsi |
+| --- | --- |
+| `00_potong_dki.py` | Memotong batas HDX nasional menjadi DKI |
+| `01_wilayah.py` | Menyiapkan 42 kecamatan, GeoJSON web/detail, dan CSV wilayah |
+| `buat-jalur-svg.mjs` | Menghasilkan jalur SVG untuk peta kecamatan |
+| `buat-data-contoh.mjs` | Menghasilkan fallback frontend deterministik, 520 laporan |
+| `siapkan-demo.mjs` | Mengisi database demo kosong beserta snapshot |
+| `verifikasi-demo.mjs` | Menguji agregasi, alur warga–admin, dan reset dalam transaksi rollback |
+
+Skrip BPS, integrasi CRM, dan pembuatan akun otomatis belum tersedia. Jangan menganggap dataset tersebut sudah dimuat. Halaman `/sumber-data` mencatat status dan atribusi setiap sumber.
+
+Untuk mengolah geometri lokal:
 
 ```bash
 python -m venv .venv
-source .venv/bin/activate        # Windows: .venv\Scripts\activate
+source .venv/bin/activate
 pip install -r scripts/requirements.txt
+python scripts/00_potong_dki.py
+python scripts/01_wilayah.py
 ```
-
-Skrip membaca `DATABASE_URL`, `NEXT_PUBLIC_SUPABASE_URL`, dan `SUPABASE_SERVICE_ROLE_KEY` dari `.env.local`.
-
-## Aturan
-
-- Simpan salinan asli setiap dataset di `data/raw/` dan catat sumber serta lisensinya untuk halaman Sumber Data.
-- Gabungkan data selalu dengan kode wilayah, bukan nama.
-- Generator seed memakai `numpy.random.default_rng(2026)` agar hasilnya selalu sama.

@@ -32,3 +32,4 @@ venv/
 # Supabase CLI lokal
 supabase/.temp/
 supabase/.branches/
+.taste-skill/
