@@ -4,7 +4,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import Ikon from './ui/Ikon';
 
 export const NAVIGASI = [
@@ -51,7 +51,7 @@ export function MenuPonselStatis() {
     <div className="xl:hidden">
       <span className="flex h-11 items-center gap-2 rounded-(--radius-kontrol) bg-lapis px-3 text-kecil font-medium">
         <Ikon nama="menu" className="size-4" />
-        <span className="hidden sm:inline">Menu</span>
+        Menu
       </span>
     </div>
   );
@@ -60,7 +60,6 @@ export function MenuPonselStatis() {
 /** Menu layar kecil: panel penuh lebar di bawah bar, tertutup otomatis saat pindah halaman. */
 export function MenuPonsel({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-  const tombol = useRef<HTMLButtonElement>(null);
   const [buka, setBuka] = useState(false);
   const [halamanTerakhir, setHalamanTerakhir] = useState(pathname);
   if (pathname !== halamanTerakhir) {
@@ -70,9 +69,7 @@ export function MenuPonsel({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!buka) return;
-    const tutup = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') { setBuka(false); tombol.current?.focus(); }
-    };
+    const tutup = (e: KeyboardEvent) => e.key === 'Escape' && setBuka(false);
     window.addEventListener('keydown', tutup);
     return () => window.removeEventListener('keydown', tutup);
   }, [buka]);
@@ -81,20 +78,18 @@ export function MenuPonsel({ children }: { children: ReactNode }) {
     <div className="xl:hidden">
       <button
         type="button"
-        ref={tombol}
-        aria-label={buka ? 'Tutup menu' : 'Buka menu'}
         aria-expanded={buka}
         aria-controls="menu-ponsel"
         onClick={() => setBuka((b) => !b)}
         className="flex h-11 items-center gap-2 rounded-(--radius-kontrol) bg-lapis px-3 text-kecil font-medium transition-[background-color,scale] duration-150 hover:bg-lapis-2 active:scale-95"
       >
-        <Ikon nama={buka ? 'tutup' : 'menu'} className="size-4" />
-        <span className="hidden sm:inline">Menu</span>
+        <Ikon key={buka ? 'tutup' : 'menu'} nama={buka ? 'tutup' : 'menu'} className="pop size-4" />
+        Menu
       </button>
       <div
         id="menu-ponsel"
         hidden={!buka}
-        className="menu-gerak absolute inset-x-0 top-full z-1000 max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain bg-kertas px-[var(--tepi)] pt-2 pb-8 shadow-[0_24px_40px_rgb(60_10_14/0.14)]"
+        className="menu-buka absolute inset-x-0 top-full z-1000 bg-kertas px-[var(--tepi)] pt-2 pb-8 shadow-[0_24px_40px_rgb(60_10_14/0.14)]"
       >
         <ul className="grid">
           {NAVIGASI.map((item) => (

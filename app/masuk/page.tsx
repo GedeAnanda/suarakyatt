@@ -22,8 +22,8 @@ export default function MasukPage({ searchParams }: PageProps<'/masuk'>) {
   return (
     <div className="bingkai grid grid-cols-1 gap-14 pt-12 pb-24 sm:pt-16 lg:grid-cols-12 lg:gap-8" data-awal>
       <div className="lg:col-span-6">
-        <h1 data-pembuka="judul" className="text-judul">Masuk untuk melapor</h1>
-        <p data-pembuka="teks" className="mt-4 max-w-[52ch] text-badan">
+        <h1 className="text-judul">Masuk untuk melapor</h1>
+        <p className="mt-4 max-w-[52ch] text-badan">
           Melihat peta, rapor, dan dashboard prioritas tidak perlu akun. Akun warga dengan email terverifikasi dibutuhkan
           untuk melapor, mendukung laporan warga lain, dan memberi rating.
         </p>

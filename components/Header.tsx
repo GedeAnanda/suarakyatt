@@ -76,8 +76,8 @@ async function AkunPonsel() {
 
 export default function Header() {
   return (
-    <header className="sticky top-0 z-1000 bg-kertas">
-      <nav aria-label="Navigasi utama" className="bingkai flex h-16 items-center gap-3 sm:h-18">
+    <header className="kepala sticky top-0 z-1000 border-b border-batas bg-kertas/85 backdrop-blur-md supports-[backdrop-filter]:bg-kertas/75">
+      <nav aria-label="Navigasi utama" className="bingkai flex h-16 items-center gap-3 sm:h-18 pendek:h-14">
         <Link
           href="/"
           className="mr-auto text-[1.375rem] transition-[scale] duration-200 hover:scale-[1.03] active:scale-[0.97] xl:mr-4"
@@ -97,15 +97,17 @@ export default function Header() {
               </>
             }
           >
-            <p className="mb-3 text-kecil">Masukkan kode SR yang Anda terima, atau buka laporan contoh di halaman lacak.</p>
+            <p className="mb-3 text-kecil">Masukkan kode laporan, misalnya SR-K7W3PA.</p>
             <CariKode id="cari-kode-header" className="[&_input]:w-full" />
           </Turun>
           <Suspense fallback={<span className="w-16" />}>
             <Akun />
           </Suspense>
         </div>
-        <Link href="/lapor" className={kelasTombol('utama', 'min-h-11 px-4 text-kecil sm:text-badan')}>
-          <span className="sm:hidden">Lapor</span><span className="hidden sm:inline">Lapor masalah</span>
+        <Link href="/lapor" className={kelasTombol('utama', 'min-h-11 shrink-0 px-4 text-kecil sm:text-badan')}>
+          {/* Ponsel sangat sempit (iPhone SE 320 px): cukup "Lapor" supaya tombol tidak terlipat dua baris. */}
+          <span className="max-[359px]:hidden">Lapor masalah</span>
+          <span className="hidden max-[359px]:inline">Lapor</span>
         </Link>
         <Suspense fallback={<MenuPonselStatis />}>
           <MenuPonsel>

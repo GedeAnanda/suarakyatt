@@ -29,6 +29,8 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: '#ececeb',
+  // Isi sampai tepi layar iPhone; tepi teks dijaga lewat env(safe-area-inset-*) di .bingkai dan footer.
+  viewportFit: 'cover',
 };
 
 export default function RootLayout({ children }: LayoutProps<'/'>) {

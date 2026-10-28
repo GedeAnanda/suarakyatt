@@ -33,18 +33,46 @@ async function Isi({ searchParams }: { searchParams: PageProps<'/lacak'>['search
   );
 }
 
+// Yang tampil di halaman detail setelah kode dimasukkan; mengisi kolom kanan di layar lebar
+// dan turun ke bawah form di ponsel dan tablet.
+const ISI_LACAK = [
+  { ikon: 'centang', judul: 'Status sekarang', isi: 'Menunggu, diverifikasi, diproses, selesai, atau ditolak beserta alasannya.' },
+  { ikon: 'jam', judul: 'Riwayat dan batas waktu', isi: 'Setiap perubahan status tercatat dengan waktu dan instansinya.' },
+  { ikon: 'grafik', judul: 'Posisi di daftar prioritas', isi: 'Peringkat isunya dan faktor yang mendorong atau menahannya.' },
+  { ikon: 'warga', judul: 'Dukungan warga', isi: 'Warga lain di sekitar lokasi bisa ikut mendukung laporan yang sama.' },
+] as const;
+
 export default function LacakPage({ searchParams }: PageProps<'/lacak'>) {
   return (
-    <div className="bingkai py-16 sm:py-24">
-      <h1 data-pembuka="judul" className="text-judul">Lacak laporan</h1>
-      <p data-pembuka="teks" className="mt-4 max-w-[52ch] text-badan">
-        Masukkan kode yang Anda terima saat laporan terkirim. Halaman lacak terbuka untuk siapa saja: status, riwayat
-        penanganan, batas waktu, dan posisi isunya di daftar prioritas.
-      </p>
-      <Suspense fallback={<CariKode id="kode-lacak" besar className="mt-8 max-w-xl" />}>
-        <Isi searchParams={searchParams} />
-      </Suspense>
-      <p className="mt-6 text-badan text-lembut">Belum punya kode? <Link href="/contoh" className="font-medium text-tinta underline underline-offset-4">Buka laporan contoh</Link> untuk mencoba alurnya.</p>
+    <div className="bingkai grid grid-cols-1 gap-12 py-16 sm:py-24 lg:grid-cols-12 lg:items-center lg:gap-8">
+      <div className="lg:col-span-6">
+        <h1 data-pembuka="judul" className="text-judul">Lacak laporan</h1>
+        <p data-pembuka="teks" className="mt-4 max-w-[52ch] text-badan">
+          Masukkan kode yang Anda terima saat laporan terkirim. Halaman lacak terbuka untuk siapa saja: status, riwayat
+          penanganan, batas waktu, dan posisi isunya di daftar prioritas.
+        </p>
+        <Suspense fallback={<CariKode id="kode-lacak" besar className="mt-8 max-w-xl" />}>
+          <Isi searchParams={searchParams} />
+        </Suspense>
+        <p className="mt-6 text-badan text-lembut">Belum punya kode? <Link href="/contoh" className="font-medium text-tinta underline underline-offset-4">Buka laporan contoh</Link> untuk mencoba alurnya.</p>
+      </div>
+
+      <aside aria-labelledby="judul-isi-lacak" className="lg:col-span-5 lg:col-start-8">
+        <h2 id="judul-isi-lacak" className="text-lead font-medium tracking-tight">Yang Anda lihat setelah melacak</h2>
+        <ul className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-1" data-muncul>
+          {ISI_LACAK.map((b) => (
+            <li key={b.judul} className="kartu flex gap-4 p-5">
+              <span aria-hidden="true" className="flex size-10 shrink-0 items-center justify-center rounded-(--radius-kontrol) bg-tinta-muda text-tinta">
+                <Ikon nama={b.ikon} className="size-5" />
+              </span>
+              <div>
+                <p className="text-badan font-semibold">{b.judul}</p>
+                <p className="mt-1 text-kecil text-lembut">{b.isi}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </aside>
     </div>
   );
 }

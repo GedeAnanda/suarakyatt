@@ -34,7 +34,7 @@ const KOLOM = [
 
 export default function Footer() {
   return (
-    <footer className="di-medan mt-auto overflow-hidden bg-medan text-medan-tinta">
+    <footer className="di-medan mt-auto overflow-hidden bg-medan pb-[env(safe-area-inset-bottom)] text-medan-tinta">
       <div className="bingkai pt-16 sm:pt-24">
         <p className="text-lead text-medan-lembut sm:max-w-[34ch]">
           Kanal pengaduan sudah melacak laporan. suaRAkyat membuka alasan di balik keputusan.
@@ -79,7 +79,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-16 grid max-w-[60ch] gap-2 text-kecil text-medan-lembut sm:mt-24">
+        <div className="mt-16 grid max-w-[75ch] gap-2 text-kecil text-medan-lembut sm:mt-24">
           <p>
             Peta dasar ©{' '}
             <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer" className="underline">

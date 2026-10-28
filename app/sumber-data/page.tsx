@@ -4,7 +4,6 @@
 
 import type { Metadata } from 'next';
 import Image from 'next/image';
-import { SUMBER_MUSRENBANG } from '@/lib/sumber';
 import { FOTO, KATEGORI } from '@/lib/konten';
 
 export const metadata: Metadata = {
@@ -35,7 +34,7 @@ const DATA_TERBUKA = [
     sumber: 'BPS, publikasi "Dalam Angka" tingkat kota dan kecamatan (tahun terbaru yang tersedia)',
     lisensi: 'Ketentuan penggunaan data BPS',
     url: 'https://jakarta.bps.go.id',
-    status: 'Belum digunakan',
+    status: 'Menyusul',
   },
   {
     nama: 'Persentase penduduk miskin per kota administrasi',
@@ -43,7 +42,7 @@ const DATA_TERBUKA = [
     sumber: 'BPS (WebAPI atau tabel bps.go.id)',
     lisensi: 'Ketentuan penggunaan data BPS',
     url: 'https://www.bps.go.id',
-    status: 'Belum digunakan',
+    status: 'Menyusul',
   },
   {
     nama: 'Pengaduan masyarakat DKI Jakarta',
@@ -51,22 +50,14 @@ const DATA_TERBUKA = [
     sumber: 'Portal Satu Data Indonesia (katalog.data.go.id), CRM Pemprov DKI',
     lisensi: 'Sesuai katalog',
     url: 'https://katalog.data.go.id',
-    status: 'Belum digunakan',
+    status: 'Sedang dicek',
   },
   {
-    nama: 'Realisasi e-Musrenbang 2019',
-    dipakai: 'Konteks historis: 18.221 usulan langsung, 254 terealisasi; bukan bukti alasan penundaan',
-    sumber: SUMBER_MUSRENBANG.studi2019.label,
-    lisensi: 'Rujukan publikasi',
-    url: SUMBER_MUSRENBANG.studi2019.url,
-    status: 'Dipakai',
-  },
-  {
-    nama: 'Aspirasi RKPD 2027',
-    dipakai: 'Konteks: 61.174 aspirasi dari Musrenbang, usulan langsung, dan reses DPRD',
-    sumber: SUMBER_MUSRENBANG.rkpd2027.label,
-    lisensi: 'Rujukan siaran pers',
-    url: SUMBER_MUSRENBANG.rkpd2027.url,
+    nama: 'Angka e-Musrenbang di Beranda',
+    dipakai: '18.221 usulan (2019), 254 terealisasi; 61.174 usulan Musrenbang RKPD 2027',
+    sumber: 'Jurnal Universitas Diponegoro tentang e-Musrenbang DKI; Metro TV, April 2026',
+    lisensi: 'Kutipan dengan sumber',
+    url: null,
     status: 'Dipakai',
   },
 ];
@@ -80,18 +71,19 @@ const PROFIL = [
 
 const warnaStatus: Record<string, string> = {
   Dipakai: 'bg-st-selesai-bg text-st-selesai',
-  'Belum digunakan': 'bg-st-menunggu-bg text-st-menunggu',
+  Menyusul: 'bg-st-menunggu-bg text-st-menunggu',
   'Sedang dicek': 'bg-st-diverifikasi-bg text-st-diverifikasi',
 };
 
 export default function SumberDataPage() {
   return (
     <div className="bingkai pt-12 pb-24 sm:pt-16">
-      <div className="grid gap-6 lg:grid-cols-12">
-        <h1 data-pembuka="judul" className="text-judul lg:col-span-6">Sumber data</h1>
-        <p data-pembuka="teks" className="max-w-[60ch] text-badan lg:col-span-6">
-          Batas wilayah berasal dari data terbuka. Laporan, profil instansi, penduduk, dan kemiskinan untuk perhitungan
-          adalah simulasi. Angka Musrenbang hanya menjadi konteks publik dan tidak masuk ke skor prioritas.
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-12" data-awal>
+        <h1 className="text-judul lg:col-span-6">Sumber data</h1>
+        <p className="max-w-[60ch] text-badan lg:col-span-6">
+          Data nyata dipakai untuk wilayah dan statistik yang didukung sumber; data simulasi hanya untuk memperagakan
+          mekanisme lapor, rapor, dan prioritas. Keduanya tidak pernah dicampur dalam satu angka, dan setiap halaman
+          menandai sumber angkanya.
         </p>
       </div>
 
@@ -157,7 +149,7 @@ export default function SumberDataPage() {
         <p className="mt-3 max-w-[75ch] text-kecil text-lembut">
           Data wilayah digabung memakai kode wilayah, bukan nama, dan salinan lokal setiap dataset disimpan di repositori
           (folder data/) karena portal bisa berubah. Selama data BPS belum dimuat, penduduk, luas, dan persen miskin di data
-          simulasi adalah asumsi, termasuk saat dibaca dari database.
+          contoh adalah angka contoh.
         </p>
       </section>
 
@@ -168,19 +160,18 @@ export default function SumberDataPage() {
           </h2>
           <div className="grid gap-4 text-badan lg:col-span-6">
             <p>
-              Dataset awal berisi 520 laporan simulasi dari generator deterministik, dengan titik di dalam 42 poligon
-              kecamatan. Status dan rating dibuat sebagai contoh; dukungan dapat ditambahkan saat mencoba aplikasi.
-              Reset memulihkan snapshot dan menggeser waktunya. Interaksi selama demo dapat mengubah skor dan jumlah laporan.
+              Laporan, status, dukungan, dan rating dibuat oleh generator dengan random seed tetap: 800–1.000 laporan dalam
+              enam bulan terakhir, titiknya diambil acak di dalam poligon kecamatan sebanding jumlah penduduk. Reset data
+              selalu menghasilkan angka yang sama, jadi angka di video dan proposal konsisten.
             </p>
             <p>
               Nama instansi sengaja generik dan bertanda simulasi supaya tidak terbaca sebagai kinerja dinas sungguhan. Rapor
-              Instansi bukan penilaian dinas sungguhan. Tabel berikut adalah target rancangan generator, bukan hasil rapor
-              aktual. Hasil aktual dihitung dari laporan yang tersimpan, termasuk interaksi selama demo.
+              Instansi tidak pernah memakai data nyata. Setiap instansi diberi profil kinerja berikut, dan rating dibuat
+              berkorelasi dengan ketepatan waktu penyelesaian.
             </p>
           </div>
         </div>
-        <p className="mt-6 text-badan">Lampiran seed berupa ilustrasi berlabel simulasi; tidak menjadi bukti kejadian atau penyelesaian nyata.</p>
-        <ul className="mt-10 grid gap-3 sm:hidden">
+        <ul className="mt-10 grid gap-3 sm:hidden" data-muncul>
           {PROFIL.map((p) => (
             <li key={p.instansi} className="kartu p-4">
               <p className="font-semibold">{p.instansi} (simulasi)</p>

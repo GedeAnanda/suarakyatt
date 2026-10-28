@@ -59,9 +59,9 @@ async function Isi() {
 export default function AdminLaporanPage() {
   return (
     <div className="bingkai pt-12 pb-24 sm:pt-16">
-      <div className="grid gap-6 lg:grid-cols-12">
-        <h1 data-pembuka="judul" className="text-judul lg:col-span-6">Laporan instansi</h1>
-        <p data-pembuka="teks" className="max-w-[60ch] text-badan lg:col-span-6">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-12" data-awal>
+        <h1 className="text-judul lg:col-span-6">Laporan instansi</h1>
+        <p className="max-w-[60ch] text-badan lg:col-span-6">
           Laporan untuk instansi Anda. Yang melewati batas waktu ada di urutan teratas. Setiap perubahan status tercatat
           publik di halaman lacak, lengkap dengan nama instansi dan catatannya.
         </p>
