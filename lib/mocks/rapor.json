@@ -1,111 +1,111 @@
 {
   "periode": {
-    "dari": "2026-05-05",
-    "sampai": "2026-11-01"
+    "dari": "2026-05-01",
+    "sampai": "2026-10-28"
   },
   "is_simulated": true,
   "instansi": [
     {
       "id": 1,
       "nama": "Dinas Bina Jalan (simulasi)",
-      "sampel": 118,
-      "R": 0.95,
-      "S": 0.85,
-      "P": 0.86,
-      "K": 0.84,
-      "nilai": 88,
+      "sampel": 301,
+      "R": 0.9402,
+      "S": 0.9014,
+      "P": 0.9306,
+      "K": 0.8167,
+      "nilai": 90.2,
       "huruf_asli": "A",
       "huruf": "A",
-      "tingkat_penolakan": 0.05,
+      "tingkat_penolakan": 0.0368,
       "peringatan_penolakan": false,
-      "median_respons_jam": 6.5,
-      "terlambat_aktif": 4,
+      "median_respons_jam": 14.6,
+      "terlambat_aktif": 16,
       "keberatan_diterima": 0,
       "per_kategori": [
         {
           "kategori": "Jalan rusak",
-          "sampel": 118,
-          "R": 0.95,
-          "S": 0.85,
-          "P": 0.86
+          "sampel": 301,
+          "R": 0.9402,
+          "S": 0.9014,
+          "P": 0.9306
         }
       ]
     },
     {
       "id": 2,
       "nama": "Dinas Tata Air (simulasi)",
-      "sampel": 74,
-      "R": 0.52,
-      "S": 0.36,
-      "P": 0.58,
-      "K": 0.57,
-      "nilai": 49.4,
+      "sampel": 185,
+      "R": 0.4973,
+      "S": 0.3294,
+      "P": 0.3829,
+      "K": 0.5739,
+      "nilai": 43.9,
       "huruf_asli": "D",
       "huruf": "D",
-      "tingkat_penolakan": 0.06,
+      "tingkat_penolakan": 0.0591,
       "peringatan_penolakan": false,
-      "median_respons_jam": 31,
-      "terlambat_aktif": 27,
+      "median_respons_jam": 22.7,
+      "terlambat_aktif": 105,
       "keberatan_diterima": 0,
       "per_kategori": [
         {
           "kategori": "Saluran tersumbat",
-          "sampel": 74,
-          "R": 0.52,
-          "S": 0.36,
-          "P": 0.58
+          "sampel": 185,
+          "R": 0.4973,
+          "S": 0.3294,
+          "P": 0.3829
         }
       ]
     },
     {
       "id": 3,
       "nama": "Dinas Kebersihan (simulasi)",
-      "sampel": 95,
-      "R": 0.84,
-      "S": 0.63,
-      "P": 0.72,
-      "K": 0.75,
-      "nilai": 73.5,
+      "sampel": 252,
+      "R": 0.873,
+      "S": 0.6147,
+      "P": 0.634,
+      "K": 0.7892,
+      "nilai": 73.1,
       "huruf_asli": "B",
       "huruf": "B",
-      "tingkat_penolakan": 0.1,
+      "tingkat_penolakan": 0.0524,
       "peringatan_penolakan": false,
-      "median_respons_jam": 9.5,
-      "terlambat_aktif": 12,
+      "median_respons_jam": 15,
+      "terlambat_aktif": 83,
       "keberatan_diterima": 0,
       "per_kategori": [
         {
           "kategori": "Sampah menumpuk",
-          "sampel": 95,
-          "R": 0.84,
-          "S": 0.63,
-          "P": 0.72
+          "sampel": 252,
+          "R": 0.873,
+          "S": 0.6147,
+          "P": 0.634
         }
       ]
     },
     {
       "id": 4,
       "nama": "Dinas Penerangan Jalan (simulasi)",
-      "sampel": 41,
-      "R": 0.96,
-      "S": 0.9,
-      "P": 0.88,
-      "K": 0.89,
-      "nilai": 91.2,
+      "sampel": 134,
+      "R": 0.9478,
+      "S": 0.8684,
+      "P": 0.8272,
+      "K": 0.8471,
+      "nilai": 88,
       "huruf_asli": "A",
       "huruf": "C",
-      "tingkat_penolakan": 0.32,
+      "tingkat_penolakan": 0.3468,
       "peringatan_penolakan": true,
-      "median_respons_jam": 4,
-      "terlambat_aktif": 1,
+      "median_respons_jam": 27,
+      "terlambat_aktif": 9,
       "keberatan_diterima": 0,
       "per_kategori": [
         {
           "kategori": "Lampu jalan mati",
-          "sampel": 41,
-          "R": 0.96,
-          "S": 0.9,
-          "P": 0.88
+          "sampel": 134,
+          "R": 0.9478,
+          "S": 0.8684,
+          "P": 0.8272
         }
       ]
     }
