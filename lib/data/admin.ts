@@ -4,7 +4,7 @@
 
 import 'server-only';
 import { connection } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createClient } from './klien';
 import type { LaporanPublik, TimelineItem } from '@/lib/types';
 import { ambilDetailLaporan, ambilTitikLaporan, terlambat, type Sumber } from './laporan';
 

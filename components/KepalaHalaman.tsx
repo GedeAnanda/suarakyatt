@@ -1,9 +1,10 @@
 // components/KepalaHalaman.tsx — kepala halaman aplikasi: jejak, judul, pengantar, aksi (pemilik: A)
-// Seperti halaman daftar di situs travel: jejak "Beranda › …" kecil di atas, judul tebal,
+// Seperti halaman daftar di situs travel: tombol Kembali dan jejak "Beranda › …" di atas, judul tebal,
 // satu paragraf pengantar, dan aksi di kanan (turun ke bawah di layar sempit).
 
 import Link from 'next/link';
 import type { ReactNode } from 'react';
+import TombolKembali from './TombolKembali';
 import Ikon from './ui/Ikon';
 
 export interface Jejak {
@@ -28,6 +29,8 @@ export default function KepalaHalaman({
   return (
     <div className={`flex flex-wrap items-end justify-between gap-x-8 gap-y-4 ${className}`}>
       <div className="min-w-0 max-w-[72ch]">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+        <TombolKembali cadangan={[...jejak].reverse().find((j) => j.href)?.href ?? '/'} />
         <nav aria-label="Jejak halaman">
           <ol className="flex flex-wrap items-center gap-1 text-kecil text-lembut">
             {[{ href: '/', label: 'Beranda' }, ...jejak].map((j) => (
@@ -47,7 +50,8 @@ export default function KepalaHalaman({
             </li>
           </ol>
         </nav>
-        <h1 className="mt-2 text-judul font-bold">{judul}</h1>
+        </div>
+        <h1 className="mt-3 text-judul font-bold">{judul}</h1>
         {children && <div className="mt-2 text-badan text-lembut">{children}</div>}
       </div>
       {aksi && <div className="flex flex-wrap items-center gap-2">{aksi}</div>}

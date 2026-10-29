@@ -13,6 +13,7 @@ import { IkonStatus, LABEL_STATUS, WARNA_TITIK } from '../BadgeStatus';
 import KartuLaporan from '../KartuLaporan';
 import AngkaGulir from '../ui/AngkaGulir';
 import Ikon from '../ui/Ikon';
+import IkonKategori from '../ui/IkonKategori';
 import { Tombol } from '../ui/Tombol';
 
 const KlasterLaporan = dynamic(() => import('./KlasterLaporan'), {
@@ -82,9 +83,10 @@ export default function PetaLaporan({
           <legend className="text-kecil font-bold">Kategori</legend>
           <div className="mt-2 flex flex-wrap gap-2">
             {KATEGORI.map((k) => (
-              <button key={k.id} type="button" aria-pressed={kategori.includes(k.id)} onClick={() => ubahKategori(k.id)} className="chip">
-                {kategori.includes(k.id) && <Ikon nama="centang" className="size-3.5" />}
+              <button key={k.id} type="button" aria-pressed={kategori.includes(k.id)} onClick={() => ubahKategori(k.id)} className="chip pl-1.5">
+                <IkonKategori nama={k.nama} ukuran="kecil" />
                 {k.nama}
+                {kategori.includes(k.id) && <Ikon nama="centang" className="size-3.5" />}
               </button>
             ))}
           </div>
@@ -127,7 +129,7 @@ export default function PetaLaporan({
             <span key={tersaring.length} className="ganti inline-block font-bold text-teks">
               {tersaring.length} laporan tampil.
             </span>{' '}
-            Klik lingkaran untuk memperbesar; klik titik untuk membuka ringkasannya.
+            Zoom dengan cubit dua jari (touchpad atau layar sentuh) atau Ctrl + gulir. Klik lingkaran untuk memperbesar; klik titik untuk membuka ringkasannya.
           </p>
         </div>
       </div>

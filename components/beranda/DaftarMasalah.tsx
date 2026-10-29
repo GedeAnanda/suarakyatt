@@ -9,6 +9,7 @@ import Link from 'next/link';
 import { useState, type CSSProperties } from 'react';
 import { FOTO, KATEGORI, type FotoTerbuka } from '@/lib/konten';
 import Ikon from '../ui/Ikon';
+import IkonKategori from '../ui/IkonKategori';
 
 const FOTO_KATEGORI: FotoTerbuka[] = [FOTO.jalan1975, FOTO.kanalTimur, FOTO.ciliwung, FOTO.lampuJalan];
 
@@ -26,7 +27,8 @@ export default function DaftarMasalah() {
     <div>
       <div className="flex flex-wrap gap-2" role="group" aria-label="Pilih kategori laporan">
         {KATEGORI.map((x, i) => (
-          <button key={x.id} type="button" aria-pressed={i === pilih} onClick={() => setPilih(i)} className="chip">
+          <button key={x.id} type="button" aria-pressed={i === pilih} onClick={() => setPilih(i)} className="chip pl-1.5">
+            <IkonKategori nama={x.nama} ukuran="kecil" />
             {x.nama}
           </button>
         ))}
@@ -72,7 +74,10 @@ export default function DaftarMasalah() {
             </span>
             <span className="text-kecil text-lembut">ditentukan dari kategori, bukan dipilih pelapor</span>
           </div>
-          <h3 className="mt-3 text-seksi font-bold">{k.nama}</h3>
+          <h3 className="mt-4 flex items-center gap-3 text-seksi font-bold">
+            <IkonKategori nama={k.nama} ukuran="besar" />
+            {k.nama}
+          </h3>
           <p className="mt-1 flex items-center gap-2 text-badan text-lembut">
             <Ikon nama="gedung" className="size-4.5" />
             {k.instansi}

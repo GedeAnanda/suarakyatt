@@ -7,7 +7,7 @@ import 'server-only';
 import { connection } from 'next/server';
 import { cache } from 'react';
 import contoh from '@/lib/mocks/contoh-laporan.json';
-import { createClient } from '@/lib/supabase/server';
+import { createClient } from './klien';
 import type { LaporanPublik, StatusLaporan, TimelineItem } from '@/lib/types';
 
 export type Sumber = 'db' | 'contoh';

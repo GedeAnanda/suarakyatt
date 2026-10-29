@@ -6,6 +6,7 @@ import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import FormAuth from '@/components/FormAuth';
 import TombolDemo from '@/components/TombolDemo';
+import TombolKembali from '@/components/TombolKembali';
 import Ikon from '@/components/ui/Ikon';
 import Wordmark from '@/components/Wordmark';
 import { tujuanAman } from '@/lib/tujuan-aman';
@@ -22,7 +23,10 @@ async function Isi({ searchParams }: { searchParams: PageProps<'/masuk'>['search
 
 export default function MasukPage({ searchParams }: PageProps<'/masuk'>) {
   return (
-    <div className="bingkai pt-6 pb-4 sm:pt-10">
+    <div className="bingkai pt-6 pb-4 sm:pt-8">
+      <div className="mx-auto mb-4 max-w-5xl">
+        <TombolKembali />
+      </div>
       <div className="mx-auto grid max-w-5xl overflow-hidden rounded-besar border border-garis bg-permukaan shadow-kartu lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
         <div className="p-6 sm:p-10">
           <h1 className="text-judul font-bold">Masuk untuk melapor</h1>

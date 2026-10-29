@@ -11,6 +11,7 @@ import BadgeStatus from '@/components/BadgeStatus';
 import IndikatorSLA from '@/components/IndikatorSLA';
 import Galeri from '@/components/laporan/Galeri';
 import Timeline from '@/components/laporan/Timeline';
+import TombolKembali from '@/components/TombolKembali';
 import Ikon from '@/components/ui/Ikon';
 import LabelSumber from '@/components/ui/LabelSumber';
 import { kelasTautan } from '@/components/ui/Tombol';
@@ -93,7 +94,9 @@ async function Isi({ params }: { params: PageProps<'/admin/laporan/[kode]'>['par
 export default function AdminDetailLaporanPage({ params }: PageProps<'/admin/laporan/[kode]'>) {
   return (
     <div className="bingkai pt-6 pb-4 sm:pt-8">
-      <nav aria-label="Jejak halaman" className="mb-4">
+      <div className="mb-4 flex flex-wrap items-center gap-x-4 gap-y-2">
+      <TombolKembali cadangan="/admin/laporan" />
+      <nav aria-label="Jejak halaman">
         <ol className="flex flex-wrap items-center gap-1 text-kecil text-lembut">
           <li className="flex items-center gap-1">
             <Link href="/" className="hover:text-biru-tua hover:underline">
@@ -112,6 +115,7 @@ export default function AdminDetailLaporanPage({ params }: PageProps<'/admin/lap
           </li>
         </ol>
       </nav>
+      </div>
       <Suspense fallback={<div aria-hidden="true" className="kerangka h-[36rem]" />}>
         <Isi params={params} />
       </Suspense>

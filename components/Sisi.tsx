@@ -1,16 +1,17 @@
 // components/Sisi.tsx — menu samping berikon (pemilik: A)
 // Seperti menu kiri situs travel: kelompok halaman utama, lalu laporan, lalu halaman penjelas, lalu kanal
-// pengaduan resmi. Layar lebar: kolom tetap yang bisa diciutkan jadi deret ikon (TombolMenu).
-// Layar kecil: laci yang tertutup sendiri saat pindah halaman, saat Esc ditekan, atau saat tirai diketuk.
-// usePathname wajib di dalam <Suspense>; SisiNavStatis adalah fallback tanpa penanda halaman aktif.
+// pengaduan resmi. Layar lebar: deret ikon; tombol menu (TombolMenu) membuka panel lebar di atas halaman.
+// Layar kecil: laci. Panel dan laci tertutup sendiri begitu halaman dipilih, saat Esc ditekan, atau saat
+// pengguna mengklik di luarnya, supaya tidak menghalangi halaman yang dituju.
+// usePathname/useSearchParams wajib di dalam <Suspense>; SisiNavStatis adalah fallback tanpa penanda aktif.
 
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { useEffect, useSyncExternalStore } from 'react';
 import { KANAL_RESMI } from '@/lib/konten';
-import { aturLaci, laciBuka, layarLebar, pantauSisi } from '@/lib/sisi';
+import { laciBuka, layarLebar, pantauSisi, sisiTerbuka, tutupMenu } from '@/lib/sisi';
 import Ikon, { type NamaIkon } from './ui/Ikon';
 
 const MENU: { label: string; item: { href: string; label: string; ikon: NamaIkon }[] }[] = [
@@ -40,15 +41,16 @@ const MENU: { label: string; item: { href: string; label: string; ikon: NamaIkon
 ];
 
 /** Satu tautan aktif: href terpanjang yang cocok, jadi /rapor/cara-menilai tidak ikut menyalakan Rapor. */
-function hrefAktif(pathname: string): string | undefined {
+function hrefAktif(pathname: string, lanjut: string | null): string | undefined {
   if (pathname.startsWith('/laporan/') || pathname === '/contoh') return '/lacak';
+  // Tamu yang memilih Lapor masalah diarahkan proxy.ts ke /masuk?lanjut=/lapor: Lapor tetap tersorot.
+  if (pathname === '/masuk' && lanjut?.startsWith('/lapor')) return '/lapor';
   return MENU.flatMap((g) => g.item)
     .filter((i) => (i.href === '/' ? pathname === '/' : pathname === i.href || pathname.startsWith(`${i.href}/`)))
     .sort((a, b) => b.href.length - a.href.length)[0]?.href;
 }
 
-function IsiSisi({ pathname }: { pathname: string }) {
-  const aktif = hrefAktif(pathname);
+function IsiSisi({ aktif }: { aktif?: string }) {
   return (
     <>
       <nav id="sisi" aria-label="Menu utama" className="sisi">
@@ -61,6 +63,7 @@ function IsiSisi({ pathname }: { pathname: string }) {
                     href={it.href}
                     aria-current={aktif === it.href ? 'page' : undefined}
                     title={it.label}
+                    onClick={tutupMenu}
                     className={`flex h-11 items-center gap-3 rounded-kontrol px-3 text-badan transition-colors hover:bg-lapis aria-[current=page]:bg-biru-muda aria-[current=page]:text-biru-tua rel:justify-center rel:px-0 ${
                       i === 0 ? 'font-semibold' : 'font-medium'
                     }`}
@@ -101,35 +104,49 @@ function IsiSisi({ pathname }: { pathname: string }) {
           </p>
         </div>
       </nav>
-      <div className="tirai" aria-hidden="true" onClick={() => aturLaci(false)} />
+      <div className="tirai" aria-hidden="true" onClick={tutupMenu} />
     </>
   );
 }
 
 /** Tanpa penanda halaman aktif: fallback <Suspense> saat prerender. */
 export function SisiNavStatis() {
-  return <IsiSisi pathname="" />;
+  return <IsiSisi />;
 }
 
 export function SisiNav() {
   const pathname = usePathname();
+  const lanjut = useSearchParams().get('lanjut');
   const laci = useSyncExternalStore(pantauSisi, () => !layarLebar() && laciBuka(), () => false);
+  const panel = useSyncExternalStore(pantauSisi, () => layarLebar() && sisiTerbuka(), () => false);
 
-  // Pindah halaman menutup laci.
-  useEffect(() => aturLaci(false), [pathname]);
+  // Pindah halaman menutup laci dan panel.
+  useEffect(() => tutupMenu(), [pathname]);
 
-  // Laci terbuka: fokus ke tautan pertama; Esc menutup laci dan mengembalikan fokus ke tombol menu.
+  // Laci terbuka: fokus ke tautan pertama.
   useEffect(() => {
-    if (!laci) return;
-    document.querySelector<HTMLElement>('#sisi a')?.focus();
-    const tombol = (e: KeyboardEvent) => {
-      if (e.key !== 'Escape') return;
-      aturLaci(false);
-      document.getElementById('tombol-menu')?.focus();
-    };
-    window.addEventListener('keydown', tombol);
-    return () => window.removeEventListener('keydown', tombol);
+    if (laci) document.querySelector<HTMLElement>('#sisi a')?.focus();
   }, [laci]);
 
-  return <IsiSisi pathname={pathname} />;
+  // Laci atau panel terbuka: Esc dan klik di luar menu menutupnya.
+  useEffect(() => {
+    if (!laci && !panel) return;
+    const tombol = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return;
+      tutupMenu();
+      document.getElementById('tombol-menu')?.focus();
+    };
+    const klik = (e: PointerEvent) => {
+      const t = e.target as Element;
+      if (!t.closest('#sisi, #tombol-menu')) tutupMenu();
+    };
+    window.addEventListener('keydown', tombol);
+    document.addEventListener('pointerdown', klik);
+    return () => {
+      window.removeEventListener('keydown', tombol);
+      document.removeEventListener('pointerdown', klik);
+    };
+  }, [laci, panel]);
+
+  return <IsiSisi aktif={hrefAktif(pathname, lanjut)} />;
 }

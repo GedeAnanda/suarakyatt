@@ -61,6 +61,8 @@ function Lapisan({ laporan, onPilih }: { laporan: TitikLaporan[]; onPilih?: (kod
          <p>${lindungi(l.kategori)} · <strong>${LABEL_STATUS[l.status]}</strong></p>
          <p style="color:var(--color-lembut)">${lindungi(l.kecamatan)}, ${lindungi(l.kota)}</p>
          <p style="margin-top:.5rem"><a href="/laporan/${encodeURIComponent(l.kode)}" style="color:var(--color-biru-tua);font-weight:700">Buka laporan →</a></p>`,
+        // Lebar minimal supaya kode dan kalimat tidak terpotong per kata.
+        { minWidth: 260, maxWidth: 320 },
       );
       if (onPilih) m.on('click', () => onPilih(l.kode));
       return m;

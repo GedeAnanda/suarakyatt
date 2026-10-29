@@ -5,7 +5,7 @@
 
 import 'leaflet/dist/leaflet.css';
 import { useEffect, useState, type ReactNode } from 'react';
-import { MapContainer, TileLayer } from 'react-leaflet';
+import { MapContainer, TileLayer, useMap } from 'react-leaflet';
 
 export const PUSAT_JAKARTA: [number, number] = [-6.2, 106.85];
 const ZOOM_AWAL = 11;
@@ -24,6 +24,42 @@ export interface PetaDasarProps {
   zoom?: number;
   /** Gulir roda tetikus untuk zoom; mati secara bawaan supaya halaman tetap bisa digulir. */
   zoomGulir?: boolean;
+}
+
+/**
+ * Zoom dengan cubit dua jari di touchpad laptop dan Mac, seperti di ponsel. Chrome, Edge, dan Firefox mengirim
+ * cubitan sebagai wheel + ctrlKey (sama dengan Ctrl + gulir), jadi zoom roda Leaflet dinyalakan tetapi gulir
+ * biasa disaring sebelum sampai ke Leaflet, sehingga halaman tetap bisa digulir. Safari mengirim gesture event.
+ */
+function ZoomCubit({ gulirBiasa }: { gulirBiasa: boolean }) {
+  const map = useMap();
+  useEffect(() => {
+    const el = map.getContainer();
+    const saring = (e: WheelEvent) => {
+      if (!gulirBiasa && !e.ctrlKey) e.stopImmediatePropagation();
+    };
+    type Gestur = Event & { scale: number; clientX: number; clientY: number };
+    let awal = map.getZoom();
+    const mulai = (e: Event) => {
+      e.preventDefault();
+      awal = map.getZoom();
+    };
+    const ubah = (e: Event) => {
+      e.preventDefault();
+      const g = e as Gestur;
+      const titik = map.mouseEventToContainerPoint(g as unknown as MouseEvent);
+      map.setZoomAround(titik, awal + Math.log2(g.scale), { animate: false });
+    };
+    el.addEventListener('wheel', saring, { capture: true });
+    el.addEventListener('gesturestart', mulai);
+    el.addEventListener('gesturechange', ubah);
+    return () => {
+      el.removeEventListener('wheel', saring, { capture: true });
+      el.removeEventListener('gesturestart', mulai);
+      el.removeEventListener('gesturechange', ubah);
+    };
+  }, [map, gulirBiasa]);
+  return null;
 }
 
 export default function PetaDasarLeaflet({
@@ -46,7 +82,7 @@ export default function PetaDasarLeaflet({
       {...(pusat ? { center: pusat, zoom } : { bounds: BATAS_JAKARTA })}
       minZoom={10}
       zoomSnap={0.25}
-      scrollWheelZoom={zoomGulir}
+      scrollWheelZoom
       className={`w-full ${className}`}
     >
       <TileLayer
@@ -54,6 +90,7 @@ export default function PetaDasarLeaflet({
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         maxZoom={19}
       />
+      <ZoomCubit gulirBiasa={zoomGulir} />
       {children}
     </MapContainer>
   );

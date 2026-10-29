@@ -1,5 +1,5 @@
 // components/TombolMenu.tsx — tombol garis tiga di ujung kiri header (pemilik: A)
-// Layar ≥ 1024 px: menciutkan menu samping menjadi deret ikon atau membukanya lagi (diingat di localStorage).
+// Layar ≥ 1024 px: membuka atau menutup panel menu lebar di atas deret ikon.
 // Layar kecil: membuka atau menutup laci menu. Statusnya dibaca dari atribut <html> (lib/sisi.ts).
 
 'use client';
@@ -9,11 +9,11 @@ import { aturLaci, aturSisi, laciBuka, layarLebar, pantauSisi, sisiTerbuka } fro
 import Ikon from './ui/Ikon';
 
 export default function TombolMenu() {
-  // Di server: anggap layar lebar dengan menu terbuka, sama dengan HTML awal.
+  // Di server: menu tertutup, sama dengan HTML awal.
   const terbuka = useSyncExternalStore(
     pantauSisi,
     () => (layarLebar() ? sisiTerbuka() : laciBuka()),
-    () => true,
+    () => false,
   );
   const laci = useSyncExternalStore(pantauSisi, () => !layarLebar() && laciBuka(), () => false);
 

@@ -1,17 +1,11 @@
 @import "tailwindcss";
 
-/* `rel:` = menu samping sedang berupa deret ikon. Di layar ≥ 1280 px itu terjadi kalau pengguna menciutkannya
-   (data-sisi="ciut"); di 1024–1279 px (iPad miring, laptop kecil) itu bawaannya, kecuali pengguna melebarkannya
-   (data-sisi="lebar"). Atributnya ada di <html>, diatur components/TombolMenu.tsx dan lib/sisi.ts.
-   Di bawah 1024 px menu berupa laci, jadi varian ini tidak berlaku. */
+/* `rel:` = menu samping sedang berupa deret ikon (layar ≥ 1024 px, panel lebar tidak dibuka).
+   Panel lebar dibuka lewat tombol menu (data-sisi="buka" di <html>, lib/sisi.ts) dan menumpang di atas halaman,
+   lalu tertutup lagi begitu halaman dipilih. Di bawah 1024 px menu berupa laci, jadi varian ini tidak berlaku. */
 @custom-variant rel {
   @media (min-width: 64rem) {
-    html[data-sisi="ciut"] & {
-      @slot;
-    }
-  }
-  @media (min-width: 64rem) and (max-width: 79.99rem) {
-    html:not([data-sisi="lebar"]) & {
+    html:not([data-sisi="buka"]) & {
       @slot;
     }
   }
@@ -65,6 +59,17 @@
   --color-st-dibatalkan: #455873;
   --color-st-dibatalkan-bg: #eef1f5;
 
+  /* Identitas kategori masalah: warna teks/ikon di atas latar mudanya, kontras ≥ 4,5:1.
+     Sengaja tidak memakai rona status (biru, teal, hijau tua) supaya kategori dan status tidak tertukar. */
+  --color-kt-jalan: #c2410c;
+  --color-kt-jalan-bg: #fff1e8;
+  --color-kt-saluran: #0b7285;
+  --color-kt-saluran-bg: #e6f7fa;
+  --color-kt-sampah: #4d7c0f;
+  --color-kt-sampah-bg: #f0f8e4;
+  --color-kt-lampu: #a16207;
+  --color-kt-lampu-bg: #fef6d8;
+
   /* Lima kelas tetap choropleth (SDD 9.1): 0–20, 20–40, 40–60, 60–80, 80–100. Satu rona biru, muda ke tua. */
   --color-k1: #dbe5ff;
   --color-k2: #a8c0ff;
@@ -108,7 +113,6 @@
 
 :root {
   --tinggi-kepala: 4rem;
-  --lebar-sisi: 14rem;
   --tepi: 1rem;
   color-scheme: light;
 }
@@ -117,10 +121,6 @@
 }
 @media (min-width: 64rem) {
   :root { --tepi: 2rem; }
-  html[data-sisi="ciut"] { --lebar-sisi: 4.75rem; }
-}
-@media (min-width: 64rem) and (max-width: 79.99rem) {
-  html:not([data-sisi="lebar"]) { --lebar-sisi: 4.75rem; }
 }
 /* Ponsel diputar miring: layar pendek, header dibuat lebih rendah supaya isi tidak terhimpit. */
 @media (orientation: landscape) and (max-height: 540px) {
@@ -385,7 +385,7 @@
 
 /*
  * Menu samping. Layar kecil: laci dari kiri, di bawah header, dengan tirai gelap; tersembunyi (visibility)
- * saat tertutup supaya keluar dari urutan Tab. Layar lebar (≥ 1024 px): kolom tetap selebar --lebar-sisi
+ * saat tertutup supaya keluar dari urutan Tab. Layar lebar (≥ 1024 px): deret ikon selebar 4,75rem
  * yang menempel di bawah header, bisa diciutkan menjadi deret ikon.
  */
 .sisi {
@@ -439,14 +439,34 @@ html[data-laci="buka"] .tirai {
     position: sticky;
     z-index: 900;
     flex-shrink: 0;
-    width: var(--lebar-sisi);
+    width: 4.75rem;
     height: calc(100dvh - var(--tinggi-kepala));
     transform: none;
     visibility: visible;
-    transition: width 220ms var(--ease-keluar);
+    transition:
+      width 220ms var(--ease-keluar),
+      margin 220ms var(--ease-keluar),
+      box-shadow 220ms;
   }
+  /* Panel lebar menumpang di atas halaman: margin negatif membuatnya tetap memakai ruang 4,75rem,
+     jadi isi halaman tidak bergeser saat menu dibuka. */
+  html[data-sisi="buka"] .sisi {
+    z-index: 950;
+    width: 15rem;
+    margin-right: -10.25rem;
+    box-shadow: var(--shadow-angkat);
+  }
+  /* Tirai tipis di belakang panel: menandai bahwa panel menumpang, dan klik di situ menutupnya. */
   .tirai {
+    background: rgb(15 41 77 / 0.18);
+  }
+  html:not([data-sisi="buka"]) .tirai {
     display: none;
+  }
+  html[data-sisi="buka"] .tirai {
+    opacity: 1;
+    visibility: visible;
+    transition-delay: 0s;
   }
 }
 @media (prefers-reduced-motion: reduce) {

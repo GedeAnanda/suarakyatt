@@ -16,6 +16,7 @@ import SalinKode from '@/components/laporan/SalinKode';
 import PanelKenapaBelum from '@/components/laporan/PanelKenapaBelum';
 import Timeline from '@/components/laporan/Timeline';
 import TitikTunggal from '@/components/peta/TitikTunggal';
+import TombolKembali from '@/components/TombolKembali';
 import Ikon from '@/components/ui/Ikon';
 import LabelSumber from '@/components/ui/LabelSumber';
 import { kelasTautan } from '@/components/ui/Tombol';
@@ -211,7 +212,9 @@ function Kerangka() {
 export default function DetailLaporanPage({ params, searchParams }: PageProps<'/laporan/[kode]'>) {
   return (
     <div className="bingkai pt-6 pb-4 sm:pt-8">
-      <nav aria-label="Jejak halaman" className="mb-4">
+      <div className="mb-4 flex flex-wrap items-center gap-x-4 gap-y-2">
+      <TombolKembali cadangan="/peta" />
+      <nav aria-label="Jejak halaman">
         <ol className="flex flex-wrap items-center gap-1 text-kecil text-lembut">
           <li className="flex items-center gap-1">
             <Link href="/" className="hover:text-biru-tua hover:underline">
@@ -230,6 +233,7 @@ export default function DetailLaporanPage({ params, searchParams }: PageProps<'/
           </li>
         </ol>
       </nav>
+      </div>
       <Suspense fallback={<Kerangka />}>
         <Isi params={params} searchParams={searchParams} />
       </Suspense>

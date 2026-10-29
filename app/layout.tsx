@@ -6,7 +6,6 @@ import Header from '@/components/Header';
 import Pengumuman from '@/components/Pengumuman';
 import { SisiNav, SisiNavStatis } from '@/components/Sisi';
 import TombolMelayang from '@/components/TombolMelayang';
-import { SKRIP_SISI } from '@/lib/sisi';
 import './globals.css';
 
 // Satoshi: huruf seluruh situs (UI, judul, wordmark, kode laporan). Dari Fontshare (ITF Free Font License,
@@ -31,14 +30,10 @@ export const viewport: Viewport = {
 };
 
 // Kerangka seperti situs travel: header putih di atas, menu samping berikon di kiri, isi dan footer di kanan.
-// Pilihan "ciutkan menu" disimpan di localStorage dan dipasang skrip di <head> sebelum halaman digambar,
-// jadi menu tidak melompat saat dimuat (atribut data-sisi di <html>, karena itu suppressHydrationWarning).
+// Status menu ada di atribut <html> (data-sisi, data-laci) yang diubah di browser, karena itu suppressHydrationWarning.
 export default function RootLayout({ children }: LayoutProps<'/'>) {
   return (
     <html lang="id" className={`${satoshi.variable} antialiased`} suppressHydrationWarning>
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: SKRIP_SISI }} />
-      </head>
       <body suppressHydrationWarning>
         <a
           href="#isi"
