@@ -110,7 +110,7 @@ suarakyat/
 |---|---|
 | Branch | `main` = produksi. Fitur di `feat/<peran>-<fitur>`, misalnya `feat/c-rapor`. Perbaikan di `fix/<topik>`. |
 | Pull request | Setiap PR dicek minimal satu anggota lain. Vercel otomatis membuat preview per PR. |
-| Commit | Format `feat:`, `fix:`, `docs:`, `data:` + kalimat singkat bahasa Indonesia. |
+| Commit | Format `feat:`, `fix:`, `docs:`, `data:` + kalimat singkat bahasa Indonesia. Tanpa trailer `Co-Authored-By` AI; `.claude/settings.json` mematikannya untuk Claude Code. |
 | Migrasi | File SQL baru selalu ditambahkan dengan nomor berikutnya; file yang sudah di-merge tidak diedit. |
 | Penamaan | Tabel dan kolom `snake_case` bahasa Indonesia sesuai PRD; komponen React `PascalCase`; fungsi TypeScript `camelCase`. |
 | Kontrak | Perubahan `lib/types.ts` atau bentuk output RPC wajib diumumkan di grup dan disetujui pemilik kedua sisi. |
