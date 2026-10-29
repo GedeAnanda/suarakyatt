@@ -38,14 +38,14 @@ function KepalaUrut({
 }) {
   const aktif = urut.kolom === kolom;
   return (
-    <th scope="col" aria-sort={aktif ? (urut.naik ? 'ascending' : 'descending') : 'none'} className="p-0 font-medium">
+    <th scope="col" aria-sort={aktif ? (urut.naik ? 'ascending' : 'descending') : 'none'} className="p-0 font-semibold">
       <button
         type="button"
         onClick={() => onUrut(kolom)}
-        className="flex min-h-11 w-full items-center gap-1.5 px-4 py-3 text-left transition-colors hover:bg-lapis"
+        className="flex min-h-11 w-full items-center gap-1.5 px-4 py-3 text-left transition-colors hover:bg-lapis hover:text-teks"
       >
         {children}
-        <Ikon nama={aktif && !urut.naik ? 'turun' : 'naik'} className={`size-3.5 ${aktif ? '' : 'opacity-35'}`} />
+        <Ikon nama={aktif && !urut.naik ? 'turun' : 'naik'} className={`size-3.5 ${aktif ? 'text-biru' : 'opacity-35'}`} />
         <span className="sr-only">, urutkan</span>
       </button>
     </th>
@@ -74,31 +74,25 @@ export default function TabelLaporanAdmin({ laporan, sekarang }: { laporan: Lapo
     <div>
       <div className="flex flex-wrap items-center gap-2">
         {FILTER.map((f) => (
-          <button
-            key={f.id}
-            type="button"
-            aria-pressed={filter === f.id}
-            onClick={() => setFilter(f.id)}
-            className="flex min-h-11 items-center gap-1.5 rounded-full bg-permukaan px-4 py-1.5 text-kecil font-medium ring-1 ring-batas ring-inset transition-[background-color,color,scale] duration-200 hover:bg-terang active:scale-95 aria-pressed:bg-tinta aria-pressed:text-kertas aria-pressed:ring-tinta"
-          >
+          <button key={f.id} type="button" aria-pressed={filter === f.id} onClick={() => setFilter(f.id)} className="chip">
             {f.id !== 'aktif' && f.id !== 'semua' && <IkonStatus status={f.id} className="size-3.5" />}
             {f.label}
           </button>
         ))}
-        <label className="ml-auto flex min-h-11 cursor-pointer items-center gap-2 rounded-full bg-permukaan px-4 text-kecil font-medium ring-1 ring-batas ring-inset has-checked:bg-tinta has-checked:text-kertas">
-          <input type="checkbox" checked={hanyaTerlambat} onChange={(e) => setHanyaTerlambat(e.target.checked)} className="size-4 accent-current" />
+        <label className="chip ml-auto">
+          <input type="checkbox" checked={hanyaTerlambat} onChange={(e) => setHanyaTerlambat(e.target.checked)} className="size-4" />
           Hanya yang terlambat
         </label>
       </div>
 
-      <div className="kartu mt-4 relative overflow-x-auto">
+      <div className="kartu relative mt-4 overflow-x-auto">
         <table className="w-full min-w-[52rem] text-left text-badan">
           <caption className="sr-only">Laporan instansi, terlambat paling atas</caption>
-          <thead className="bg-terang text-kecil">
+          <thead className="bg-latar text-kecil text-lembut">
             <tr>
-              <th scope="col" className="px-4 py-3 font-medium">Kode</th>
-              <th scope="col" className="px-4 py-3 font-medium">Status</th>
-              <th scope="col" className="px-4 py-3 font-medium">Lokasi</th>
+              <th scope="col" className="px-4 py-3 font-semibold">Kode</th>
+              <th scope="col" className="px-4 py-3 font-semibold">Status</th>
+              <th scope="col" className="px-4 py-3 font-semibold">Lokasi</th>
               <KepalaUrut kolom="masuk" urut={urut} onUrut={ubahUrut}>
                 Masuk
               </KepalaUrut>
@@ -109,9 +103,12 @@ export default function TabelLaporanAdmin({ laporan, sekarang }: { laporan: Lapo
           </thead>
           <tbody>
             {tampil.map((l) => (
-              <tr key={l.kode} className={`border-t border-batas ${l.terlambat ? 'bg-tinta-muda/60' : ''} transition-colors hover:bg-terang`}>
+              <tr
+                key={l.kode}
+                className={`border-t border-garis transition-colors hover:bg-biru-pudar ${l.terlambat ? 'bg-merah-muda/50 shadow-[inset_3px_0_0_var(--color-merah)]' : ''}`}
+              >
                 <th scope="row" className="px-4 py-3 font-semibold whitespace-nowrap">
-                  <Link href={`/admin/laporan/${l.kode}`} className="font-kode angka underline decoration-2 underline-offset-4 hover:decoration-transparent">
+                  <Link href={`/admin/laporan/${l.kode}`} className="font-kode angka font-bold text-biru-tua hover:underline">
                     {l.kode}
                   </Link>
                   <span className="block text-kecil font-normal text-lembut">{l.kategori}</span>
@@ -131,9 +128,7 @@ export default function TabelLaporanAdmin({ laporan, sekarang }: { laporan: Lapo
             ))}
           </tbody>
         </table>
-        {tampil.length === 0 && (
-          <p className="p-5 text-badan">Tidak ada laporan dengan saringan ini.</p>
-        )}
+        {tampil.length === 0 && <p className="p-5 text-badan text-lembut">Tidak ada laporan dengan saringan ini.</p>}
       </div>
     </div>
   );

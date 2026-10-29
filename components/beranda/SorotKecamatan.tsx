@@ -7,7 +7,8 @@
 import { useEffect, useState } from 'react';
 import { KECAMATAN } from '@/lib/geo/kecamatan-svg';
 import { formatPoin } from '@/lib/scoring';
-import PetaKecamatan from '../PetaKecamatan';
+import PetaKecamatan, { KeteranganKelas } from '../PetaKecamatan';
+import Ikon from '../ui/Ikon';
 
 export interface IsuTeratas {
   kode_wilayah: string;
@@ -45,53 +46,32 @@ export default function SorotKecamatan({
 
   return (
     <div
-      className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-8"
+      className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:gap-10"
       onMouseEnter={() => setDisentuh(true)}
       onMouseLeave={() => setDisentuh(false)}
       onFocus={() => setDisentuh(true)}
       onBlur={(e) => !e.currentTarget.contains(e.relatedTarget) && setDisentuh(false)}
     >
-      <div className="lg:col-span-7">
-        <p className="text-lead text-medan-lembut">
-          <span className="text-medan-tinta">Isu wilayah dinilai di 42 kecamatan: </span>
-          {NAMA_URUT.map((k, i) => (
-            <span key={k.kode_wilayah}>
-              <span
-                className={`transition-colors duration-[400ms] ${
-                  k.kode_wilayah === nyala?.kode_wilayah ? 'text-medan-tinta underline decoration-2 underline-offset-4' : ''
-                }`}
-              >
-                {k.kecamatan}
-              </span>
-              {i < NAMA_URUT.length - 1 ? ', ' : '.'}
-            </span>
-          ))}
-        </p>
+      <div>
         {nyala && (
-          <p key={nyala.kode_wilayah + nyala.kategori} className="ganti mt-8 text-badan" aria-live="off">
-            <span className="angka mr-3 inline-block min-w-[3ch] bg-medan-tinta px-2 text-center font-semibold text-tinta">
+          <div key={nyala.kode_wilayah + nyala.kategori} className="ganti flex items-start gap-3 rounded-kartu bg-biru-pudar p-4" aria-live="off">
+            <span className="angka flex size-10 shrink-0 items-center justify-center rounded-kontrol bg-biru text-badan font-bold text-white">
               {indeks + 1}
             </span>
-            {nyala.kategori} di {nyala.kecamatan}, {nyala.kota}. Skor {formatPoin(nyala.skor)}, peringkat {nyala.peringkat} dari
-            semua isu.
-          </p>
+            <p className="text-badan">
+              <strong className="font-bold">
+                {nyala.kategori} di {nyala.kecamatan}
+              </strong>
+              , {nyala.kota}.{' '}
+              <span className="text-lembut">
+                Skor {formatPoin(nyala.skor)}, peringkat {nyala.peringkat} dari semua isu.
+              </span>
+            </p>
+          </div>
         )}
-        <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-kecil text-medan-lembut">
+
+        <div className="mt-4 flex flex-wrap items-center gap-2" role="group" aria-label="Pilih kecamatan teratas untuk disorot">
           {/* Satu kecamatan satu tombol, jadi nomornya urutan kecamatan (1–10), bukan peringkat isu yang bisa loncat. */}
-          <span className="angka">
-            Kecamatan teratas {indeks + 1} dari {teratas.length}
-          </span>
-          {teratas.length > 1 && (
-            <button
-              type="button"
-              onClick={() => setKunci(!kunci)}
-              className="inline-flex min-h-11 items-center gap-2 rounded-full px-3 text-medan-tinta underline decoration-2 underline-offset-4 hover:decoration-transparent"
-            >
-              {kunci ? 'Jalankan pergantian otomatis' : 'Hentikan pergantian otomatis'}
-            </button>
-          )}
-        </div>
-        <div className="mt-3 flex flex-wrap gap-2" role="group" aria-label="Pilih kecamatan teratas untuk disorot">
           {teratas.map((t, i) => (
             <button
               key={t.kode_wilayah + t.kategori}
@@ -102,20 +82,50 @@ export default function SorotKecamatan({
                 setIndeks(i);
                 setKunci(true);
               }}
-              className="angka size-11 rounded-(--radius-kontrol) bg-tinta-tua text-kecil text-medan-lembut transition-[background-color,color,scale] duration-200 hover:text-medan-tinta active:scale-90 aria-pressed:bg-medan-tinta aria-pressed:text-tinta"
+              className="angka size-10 rounded-kontrol border border-garis bg-permukaan text-kecil font-bold transition-[background-color,color,border-color,scale] hover:border-biru hover:text-biru-tua active:scale-90 aria-pressed:border-biru aria-pressed:bg-biru aria-pressed:text-white"
             >
               {i + 1}
             </button>
           ))}
+          {teratas.length > 1 && (
+            <button
+              type="button"
+              onClick={() => setKunci(!kunci)}
+              className="ml-1 inline-flex min-h-10 items-center gap-1.5 rounded-kontrol px-2 text-kecil font-semibold text-biru-tua hover:bg-biru-muda"
+            >
+              <Ikon nama={kunci ? 'putar' : 'jeda'} className="size-4" />
+              {kunci ? 'Jalankan pergantian otomatis' : 'Hentikan pergantian otomatis'}
+            </button>
+          )}
         </div>
+
+        <p className="mt-6 text-kecil leading-relaxed text-lembut">
+          <span className="font-semibold text-teks">Isu wilayah dinilai di 42 kecamatan: </span>
+          {NAMA_URUT.map((k, i) => (
+            <span key={k.kode_wilayah}>
+              <span
+                className={`transition-colors duration-[400ms] ${
+                  k.kode_wilayah === nyala?.kode_wilayah ? 'rounded-[0.25rem] bg-biru-muda px-1 font-bold text-biru-tua' : ''
+                }`}
+              >
+                {k.kecamatan}
+              </span>
+              {i < NAMA_URUT.length - 1 ? ', ' : '.'}
+            </span>
+          ))}
+        </p>
       </div>
-      <div className="lg:col-span-5">
+
+      <figure>
         <PetaKecamatan
           skor={skorPerKecamatan}
           sorot={nyala?.kode_wilayah}
           judul="Peta DKI Jakarta per kecamatan, diwarnai menurut skor prioritas tertinggi"
         />
-      </div>
+        <figcaption className="mt-3">
+          <KeteranganKelas />
+        </figcaption>
+      </figure>
     </div>
   );
 }

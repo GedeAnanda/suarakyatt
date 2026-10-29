@@ -1,5 +1,6 @@
 // components/BadgeStatus.tsx — status laporan sebagai teks + ikon (SDD 9.1), pemilik: A
-// Warna hanya pelengkap; status selalu terbaca dari teks dan bentuk ikonnya.
+// Label kecil bersudut seperti tag di situs travel. Warna hanya pelengkap; status selalu terbaca
+// dari teks dan bentuk ikonnya.
 
 import type { ReactNode } from 'react';
 import type { StatusLaporan } from '@/lib/types';
@@ -22,14 +23,14 @@ export const GAYA_STATUS: Record<StatusLaporan, string> = {
   dibatalkan: 'bg-st-dibatalkan-bg text-st-dibatalkan',
 };
 
-/** Warna titik di peta, sama dengan teks badge. */
+/** Warna titik di peta, senada dengan badge. */
 export const WARNA_TITIK: Record<StatusLaporan, string> = {
-  menunggu: '#9a6a00',
-  diverifikasi: '#12476b',
-  diproses: '#0e4d4b',
-  selesai: '#22521e',
-  ditolak: '#3b3536',
-  dibatalkan: '#4d4848',
+  menunggu: '#c77700',
+  diverifikasi: '#3264ff',
+  diproses: '#00838f',
+  selesai: '#18864b',
+  ditolak: '#0f294d',
+  dibatalkan: '#8592a6',
 };
 
 export const IKON_STATUS: Record<StatusLaporan, ReactNode> = {
@@ -105,11 +106,11 @@ export default function BadgeStatus({
 }) {
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-full font-semibold whitespace-nowrap ${
-        besar ? 'px-3.5 py-1.5 text-badan' : 'px-2.5 py-0.5 text-kecil'
+      className={`inline-flex items-center gap-1.5 rounded-[0.375rem] font-semibold whitespace-nowrap ${
+        besar ? 'px-3 py-1.5 text-kecil' : 'px-2 py-0.5 text-mini'
       } ${GAYA_STATUS[status]} ${className}`}
     >
-      <IkonStatus status={status} className={besar ? 'size-5' : 'size-3.5'} />
+      <IkonStatus status={status} className={besar ? 'size-4' : 'size-3.5'} />
       {LABEL_STATUS[status]}
     </span>
   );

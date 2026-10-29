@@ -57,10 +57,10 @@ function Lapisan({ laporan, onPilih }: { laporan: TitikLaporan[]; onPilih?: (kod
         keyboard: true,
       });
       m.bindPopup(
-        `<p style="font-weight:600;font-size:1rem;font-family:var(--font-kode)">${lindungi(l.kode)}</p>
+        `<p style="font-weight:700;font-size:1rem;font-family:var(--font-kode);color:var(--color-biru-tua)">${lindungi(l.kode)}</p>
          <p>${lindungi(l.kategori)} · <strong>${LABEL_STATUS[l.status]}</strong></p>
          <p style="color:var(--color-lembut)">${lindungi(l.kecamatan)}, ${lindungi(l.kota)}</p>
-         <p style="margin-top:.5rem"><a href="/laporan/${encodeURIComponent(l.kode)}" style="color:var(--color-tinta);font-weight:600;text-decoration:underline">Buka laporan</a></p>`,
+         <p style="margin-top:.5rem"><a href="/laporan/${encodeURIComponent(l.kode)}" style="color:var(--color-biru-tua);font-weight:700">Buka laporan →</a></p>`,
       );
       if (onPilih) m.on('click', () => onPilih(l.kode));
       return m;

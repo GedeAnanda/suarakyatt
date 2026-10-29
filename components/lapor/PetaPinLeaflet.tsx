@@ -25,7 +25,7 @@ function Pengendali({ titik, onPilih }: { titik: Titik | null; onPilih: (t: Titi
   const ikon = useMemo(
     () =>
       L.divIcon({
-        html: '<span class="titik" style="width:26px;height:26px;background:var(--color-tinta)"></span>',
+        html: '<span class="titik" style="width:26px;height:26px;background:var(--color-biru)"></span>',
         className: '',
         iconSize: [26, 26],
       }),

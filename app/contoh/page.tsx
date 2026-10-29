@@ -9,7 +9,7 @@ async function BukaContoh() {
 
 export default function ContohPage() {
   return (
-    <Suspense fallback={<p role="status" className="bingkai py-16">Membuka laporan contoh…</p>}>
+    <Suspense fallback={<p role="status" className="bingkai py-16 text-badan text-lembut">Membuka laporan contoh…</p>}>
       <BukaContoh />
     </Suspense>
   );

@@ -1,19 +1,16 @@
 import type { Metadata, Viewport } from 'next';
 import localFont from 'next/font/local';
+import { Suspense } from 'react';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import Pengumuman from '@/components/Pengumuman';
+import { SisiNav, SisiNavStatis } from '@/components/Sisi';
+import TombolMelayang from '@/components/TombolMelayang';
+import { SKRIP_SISI } from '@/lib/sisi';
 import './globals.css';
 
-// Author: huruf utama seluruh situs. Satoshi: wordmark dan kode laporan (SR-K7W3PA).
-// Keduanya dari Fontshare (ITF Free Font License, app/fonts/LICENSE-FFL.txt), di-host sendiri.
-const author = localFont({
-  src: './fonts/Author-Variable.woff2',
-  variable: '--font-author',
-  weight: '200 700',
-  display: 'swap',
-});
-
+// Satoshi: huruf seluruh situs (UI, judul, wordmark, kode laporan). Dari Fontshare (ITF Free Font License,
+// app/fonts/LICENSE-FFL.txt), di-host sendiri.
 const satoshi = localFont({
   src: './fonts/Satoshi-Variable.woff2',
   variable: '--font-satoshi',
@@ -28,26 +25,40 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#ececeb',
+  themeColor: '#ffffff',
   // Isi sampai tepi layar iPhone; tepi teks dijaga lewat env(safe-area-inset-*) di .bingkai dan footer.
   viewportFit: 'cover',
 };
 
+// Kerangka seperti situs travel: header putih di atas, menu samping berikon di kiri, isi dan footer di kanan.
+// Pilihan "ciutkan menu" disimpan di localStorage dan dipasang skrip di <head> sebelum halaman digambar,
+// jadi menu tidak melompat saat dimuat (atribut data-sisi di <html>, karena itu suppressHydrationWarning).
 export default function RootLayout({ children }: LayoutProps<'/'>) {
   return (
-    <html lang="id" className={`${author.variable} ${satoshi.variable} h-full antialiased`}>
-      <body className="flex min-h-full flex-col" suppressHydrationWarning>
+    <html lang="id" className={`${satoshi.variable} antialiased`} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: SKRIP_SISI }} />
+      </head>
+      <body suppressHydrationWarning>
         <a
           href="#isi"
-          className="sr-only z-2000 bg-tinta px-4 py-3 text-kertas focus:not-sr-only focus:fixed focus:top-2 focus:left-2"
+          className="sr-only z-2000 rounded-kontrol bg-biru px-4 py-3 font-semibold text-white focus:not-sr-only focus:fixed focus:top-2 focus:left-2"
         >
           Lewati ke isi
         </a>
         <Header />
-        <main id="isi" className="flex-1">
-          {children}
-        </main>
-        <Footer />
+        <div className="rangka">
+          <Suspense fallback={<SisiNavStatis />}>
+            <SisiNav />
+          </Suspense>
+          <div className="rangka-isi">
+            <main id="isi" className="flex-1">
+              {children}
+            </main>
+            <Footer />
+          </div>
+        </div>
+        <TombolMelayang />
         <Pengumuman />
       </body>
     </html>

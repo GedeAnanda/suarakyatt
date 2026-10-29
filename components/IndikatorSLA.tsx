@@ -1,5 +1,5 @@
 // components/IndikatorSLA.tsx — "Sisa 18 jam" atau "Terlambat 2 hari" (PRD 11), pemilik: A
-// Bahasa awam di layar; istilah SLA hanya di keterangan.
+// Bahasa awam di layar; istilah SLA hanya di keterangan. Terlambat: tag merah.
 
 import { durasi } from '@/lib/format';
 import type { LaporanPublik } from '@/lib/types';
@@ -52,11 +52,11 @@ export default function IndikatorSLA({
       title="Batas waktu layanan (SLA) per kategori. Angkanya ilustrasi dan tercantum di halaman Sumber Data."
     >
       <span
-        className={`inline-flex items-center gap-1.5 font-medium whitespace-nowrap ${
-          sla.terlambat ? 'rounded-full bg-tinta px-2.5 py-0.5 text-white' : 'text-teks'
-        } ${ringkas ? 'text-kecil' : 'text-badan'}`}
+        className={`inline-flex items-center gap-1.5 font-semibold whitespace-nowrap ${
+          sla.terlambat ? 'rounded-[0.375rem] bg-merah-muda px-2 py-0.5 text-merah-tua' : sla.selesai ? 'text-hijau' : 'text-teks'
+        } ${ringkas ? 'text-mini' : 'text-kecil'}`}
       >
-        <Ikon nama={sla.terlambat ? 'peringatan' : 'jam'} className={ringkas ? 'size-3.5' : 'size-4'} />
+        <Ikon nama={sla.terlambat ? 'peringatan' : sla.selesai ? 'centang' : 'jam'} className={ringkas ? 'size-3.5' : 'size-4'} />
         {sla.teks}
       </span>
       {!ringkas && <span className="text-kecil text-lembut">{sla.keterangan}</span>}

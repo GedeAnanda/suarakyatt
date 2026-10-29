@@ -1,22 +1,23 @@
 // components/ui/Tombol.tsx — satu bentuk tombol untuk seluruh aplikasi (pemilik: A)
-// Sudut 10px, satu warna isi. Disorot: sedikit lebih gelap dan terangkat 1px; ditekan: mengecil 2%
-// (umpan balik < 100 ms). Gerak angkat hilang untuk pengguna yang meminta gerak dikurangi.
+// Sudut 8px. Utama: biru penuh; kedua: biru muda; garis: putih bertepi. Ditekan: mengecil 2%
+// (umpan balik < 100 ms). Di layar sentuh tinggi minimal 44px.
 
 import Link from 'next/link';
 import type { ComponentProps } from 'react';
 
-export type VarianTombol = 'utama' | 'kedua' | 'medan' | 'medan-garis' | 'bahaya' | 'garis';
+export type VarianTombol = 'utama' | 'kedua' | 'garis' | 'terang' | 'terang-garis' | 'bahaya' | 'teks';
 
 const DASAR =
-  'inline-flex min-h-11 items-center justify-center gap-2 rounded-(--radius-kontrol) px-5 py-2.5 text-badan font-semibold leading-tight transition-[background-color,color,scale,translate] duration-150 motion-safe:hover:-translate-y-px active:scale-[0.98] active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 disabled:active:scale-100';
+  'inline-flex min-h-10 items-center justify-center gap-2 rounded-kontrol px-4 py-2 text-badan font-semibold leading-tight transition-[background-color,color,border-color,scale] duration-150 active:scale-[0.98] pointer-coarse:min-h-11 disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100';
 
 const VARIAN: Record<VarianTombol, string> = {
-  utama: 'bg-tinta text-white hover:bg-tinta-tua',
-  kedua: 'bg-lapis text-teks hover:bg-lapis-2',
-  garis: 'bg-permukaan text-teks ring-1 ring-batas ring-inset hover:bg-terang hover:ring-lapis-2',
-  medan: 'bg-white text-tinta hover:bg-tinta-muda',
-  'medan-garis': 'bg-transparent text-white ring-1 ring-white/60 ring-inset hover:bg-white/10',
-  bahaya: 'bg-st-ditolak-bg text-st-ditolak hover:bg-black',
+  utama: 'bg-biru text-white hover:bg-biru-tua',
+  kedua: 'bg-biru-muda text-biru-tua hover:bg-[#dce5ff]',
+  garis: 'border border-garis-isian bg-permukaan text-teks hover:border-biru hover:text-biru-tua',
+  terang: 'bg-white text-biru-tua hover:bg-biru-muda',
+  'terang-garis': 'border border-white/70 bg-transparent text-white hover:bg-white/12',
+  bahaya: 'bg-merah text-white hover:bg-merah-tua',
+  teks: 'px-2 text-biru-tua hover:bg-biru-muda',
 };
 
 export function kelasTombol(varian: VarianTombol = 'utama', tambahan = '') {
@@ -40,6 +41,6 @@ export function TautanTombol({
   return <Link className={kelasTombol(varian, className)} {...props} />;
 }
 
-/** Tautan teks biasa: garis bawah tebal yang menipis saat disorot. */
+/** Tautan teks biasa: biru, bergaris bawah saat disorot. */
 export const kelasTautan =
-  'text-tinta [.di-medan_&]:text-medan-tinta underline decoration-2 underline-offset-4 decoration-current/40 hover:decoration-current transition-[text-decoration-color]';
+  'font-semibold text-biru-tua underline-offset-4 hover:underline [.di-gelap_&]:text-white [.di-gelap_&]:underline';

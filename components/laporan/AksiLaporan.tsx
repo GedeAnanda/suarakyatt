@@ -53,11 +53,18 @@ export function TombolDukung({
   }
 
   return (
-    <div className="grid gap-2">
-      <div className="flex flex-wrap items-center gap-4">
-        <p className="text-tinta angka text-judul leading-none font-medium tracking-[-0.04em]">
-          <AngkaGulir nilai={String(jumlah)} />
-          <span className="ml-2 text-badan tracking-normal text-lembut">warga mendukung</span>
+    <div className="kartu grid gap-3 p-5">
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <p className="flex items-center gap-3">
+          <span className="flex size-11 items-center justify-center rounded-full bg-biru-muda text-biru-tua">
+            <Ikon nama="dukung" className="size-5" />
+          </span>
+          <span>
+            <span className="angka block text-judul leading-none font-bold">
+              <AngkaGulir nilai={String(jumlah)} />
+            </span>
+            <span className="text-kecil text-lembut">warga mendukung</span>
+          </span>
         </p>
         {aktif && !pemilik && login && (
           <Tombol varian={didukung ? 'kedua' : 'utama'} onClick={dukung} disabled={memuat} aria-pressed={didukung ?? undefined}>
@@ -76,7 +83,7 @@ export function TombolDukung({
         ditampilkan.
       </p>
       {galat && (
-        <p role="alert" className="text-kecil font-medium">
+        <p role="alert" className="text-kecil font-semibold text-merah-tua">
           {galat}
         </p>
       )}
@@ -102,13 +109,13 @@ export function TombolBatalkan({ kode }: { kode: string }) {
 
   return (
     <div className="kartu p-5">
-      <p className="text-badan font-medium">Laporan Anda masih menunggu verifikasi.</p>
-      <p className="mt-1 text-kecil">
+      <p className="text-badan font-bold">Laporan Anda masih menunggu verifikasi.</p>
+      <p className="mt-1 text-kecil text-lembut">
         Selama status masih Menunggu, Anda bisa membatalkannya, misalnya karena salah kategori atau salah titik. Laporan
         yang dibatalkan tidak dihitung di rapor maupun skor prioritas.
       </p>
       {!konfirmasi ? (
-        <Tombol varian="kedua" className="mt-4" onClick={() => setKonfirmasi(true)}>
+        <Tombol varian="garis" className="mt-4" onClick={() => setKonfirmasi(true)}>
           Batalkan laporan
         </Tombol>
       ) : (
@@ -116,13 +123,13 @@ export function TombolBatalkan({ kode }: { kode: string }) {
           <Tombol varian="bahaya" onClick={batalkan} disabled={memuat}>
             {memuat ? 'Membatalkan…' : `Ya, batalkan ${kode}`}
           </Tombol>
-          <Tombol varian="kedua" onClick={() => setKonfirmasi(false)} disabled={memuat}>
+          <Tombol varian="garis" onClick={() => setKonfirmasi(false)} disabled={memuat}>
             Tidak jadi
           </Tombol>
         </div>
       )}
       {galat && (
-        <p role="alert" className="mt-3 text-kecil font-medium">
+        <p role="alert" className="mt-3 text-kecil font-semibold text-merah-tua">
           {galat}
         </p>
       )}
@@ -152,19 +159,24 @@ export function FormRating({ kode }: { kode: string }) {
   }
 
   if (terkirim) {
-    return <p className="kartu p-5 text-badan font-medium">Terima kasih. Rating Anda ikut menghitung nilai kepuasan di Rapor Instansi.</p>;
+    return (
+      <p className="flex gap-2 rounded-kartu bg-hijau-muda p-5 text-badan font-semibold text-hijau">
+        <Ikon nama="centang" className="mt-0.5 size-5 shrink-0" />
+        Terima kasih. Rating Anda ikut menghitung nilai kepuasan di Rapor Instansi.
+      </p>
+    );
   }
 
   return (
     <form onSubmit={kirim} className="kartu grid gap-4 p-5">
       <fieldset>
-        <legend className="text-badan font-medium">Seberapa baik penanganannya?</legend>
+        <legend className="text-badan font-bold">Seberapa baik penanganannya?</legend>
         <p className="text-kecil text-lembut">Rating hanya bisa diberikan sekali, oleh pelapor, setelah laporan selesai.</p>
         <div className="mt-3 flex gap-1">
           {[1, 2, 3, 4, 5].map((n) => (
             <label
               key={n}
-              className="flex size-11 cursor-pointer items-center justify-center rounded-full text-tinta transition-[scale,background-color] duration-200 hover:scale-110 hover:bg-tinta-muda active:scale-95 has-focus-visible:outline-3 has-focus-visible:outline-tinta"
+              className="flex size-11 cursor-pointer items-center justify-center rounded-full text-oranye transition-[scale,background-color] duration-200 hover:scale-110 hover:bg-oranye-muda active:scale-95 has-focus-visible:outline-2 has-focus-visible:outline-biru"
             >
               <input type="radio" name="nilai" value={n} checked={nilai === n} onChange={() => setNilai(n)} className="sr-only" />
               {/* Bintang yang baru terisi muncul dengan pegas. */}
@@ -174,21 +186,21 @@ export function FormRating({ kode }: { kode: string }) {
           ))}
         </div>
       </fieldset>
-      <label className="grid gap-1.5 text-kecil">
+      <label className="grid gap-1.5 text-kecil font-semibold">
         Komentar (opsional)
         <textarea
           value={komentar}
           onChange={(e) => setKomentar(e.target.value)}
           maxLength={300}
           rows={3}
-          className="p-3 text-badan"
+          className="p-3 text-badan font-normal"
         />
       </label>
       <Tombol type="submit" disabled={!nilai || memuat} className="justify-self-start">
         {memuat ? 'Mengirim…' : 'Kirim rating'}
       </Tombol>
       {galat && (
-        <p role="alert" className="text-kecil font-medium">
+        <p role="alert" className="text-kecil font-semibold text-merah-tua">
           {galat}
         </p>
       )}

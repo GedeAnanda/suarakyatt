@@ -58,7 +58,7 @@ export default function PetaKecamatan({
       <svg viewBox={VIEWBOX} role={interaktif ? 'group' : 'img'} aria-label={judul} className="block h-auto w-full">
         <defs>
           <pattern id="arsir-kosong" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-            <rect width="10" height="10" fill="var(--color-terang)" />
+            <rect width="10" height="10" fill="var(--color-latar)" />
             <path d="M0 0v10" stroke="var(--color-lapis-2)" strokeWidth="3" />
           </pattern>
         </defs>
@@ -72,7 +72,7 @@ export default function PetaKecamatan({
               key={k.kode_wilayah}
               d={k.d}
               fill={warnaSkor(nilai)}
-              stroke="var(--color-kertas)"
+              stroke="var(--color-permukaan)"
               strokeWidth={aktif?.kode === k.kode_wilayah ? 5 : 2}
               strokeLinejoin="round"
               className={`transition-[fill,stroke-width] duration-500 ${interaktif ? 'cursor-pointer outline-none hover:brightness-110' : ''}`}
@@ -104,11 +104,10 @@ export default function PetaKecamatan({
               key={`sorot-${k.kode_wilayah}`}
               d={k.d}
               fill="none"
-              stroke="var(--color-teks)"
+              stroke="var(--color-oranye)"
               strokeWidth={7}
               strokeLinejoin="round"
               pointerEvents="none"
-              className="sorot-peta [.di-medan_&]:stroke-(--color-medan-tinta)"
             />
           ))}
       </svg>
@@ -116,18 +115,18 @@ export default function PetaKecamatan({
       {kecamatanAktif && (
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute z-10 w-max max-w-56 bg-teks px-3 py-2 text-kecil text-kertas shadow-[0_8px_24px_rgb(42_19_22/0.25)]"
+          className="pointer-events-none absolute z-10 w-max max-w-56 rounded-kontrol bg-navy px-3 py-2 text-kecil text-white shadow-angkat"
           style={{
             left: `${Math.min(82, Math.max(18, aktif.x))}%`,
             top: `${aktif.y}%`,
             transform: 'translate(-50%, calc(-100% - 14px))',
           }}
         >
-          <p className="font-semibold">{kecamatanAktif.kecamatan}</p>
-          <p className="opacity-85">
+          <p className="font-bold">{kecamatanAktif.kecamatan}</p>
+          <p className="opacity-90">
             {skor[aktif.kode] === undefined ? 'Tidak ada laporan aktif' : `Skor tertinggi ${formatPoin(skor[aktif.kode])}`}
           </p>
-          {keterangan?.[aktif.kode] && <p className="opacity-85">{keterangan[aktif.kode]}</p>}
+          {keterangan?.[aktif.kode] && <p className="opacity-90">{keterangan[aktif.kode]}</p>}
         </div>
       )}
     </div>
@@ -137,17 +136,17 @@ export default function PetaKecamatan({
 export function KeteranganKelas({ className = '' }: { className?: string }) {
   return (
     <div className={`text-kecil ${className}`}>
-      <p className="mb-2">Skor prioritas tertinggi di kecamatan</p>
-      <ul className="flex flex-wrap gap-x-4 gap-y-2">
+      <p className="mb-2 font-semibold">Skor prioritas tertinggi di kecamatan</p>
+      <ul className="flex flex-wrap gap-x-4 gap-y-2 text-lembut">
         {KELAS.map((k) => (
           <li key={k.dari} className="angka flex items-center gap-1.5">
-            <span aria-hidden="true" className="size-3.5" style={{ background: k.warna }} />
+            <span aria-hidden="true" className="size-3.5 rounded-[0.2rem]" style={{ background: k.warna }} />
             {k.dari}–{k.sampai}
           </li>
         ))}
         <li className="flex items-center gap-1.5">
-          <svg aria-hidden="true" className="size-3.5" viewBox="0 0 14 14">
-            <rect width="14" height="14" fill="var(--color-terang)" />
+          <svg aria-hidden="true" className="size-3.5 rounded-[0.2rem]" viewBox="0 0 14 14">
+            <rect width="14" height="14" fill="var(--color-latar)" />
             <path d="M-2 6 6 -2M0 14 14 0M8 16 16 8" stroke="var(--color-lapis-2)" strokeWidth="2.5" />
           </svg>
           Tidak ada laporan aktif

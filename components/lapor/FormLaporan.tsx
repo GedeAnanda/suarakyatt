@@ -2,6 +2,7 @@
 // Urutan: kategori → titik di peta → foto → deskripsi → cek laporan serupa → kirim.
 // Operasi SDD 6: S1 unggah foto (lib/supabase/unggah.ts), R2 similar_reports, R4 toggle_upvote, R3 create_report.
 // Isian tidak hilang kalau unggah atau kirim gagal; foto yang sudah terunggah tidak diunggah ulang.
+// Tata letak seperti form pemesanan: langkah bernomor di kiri, ringkasan dan tombol kirim menempel di kanan.
 
 'use client';
 
@@ -72,33 +73,35 @@ function Langkah({
     <section
       id={`bagian-langkah-${n}`}
       aria-labelledby={`langkah-${n}`}
-      className={`kartu grid scroll-mt-6 gap-4 p-5 transition-colors sm:p-6 lg:grid-cols-12 lg:gap-8 ${
-        galat.length ? 'border-tinta ring-2 ring-tinta/15' : selesai ? 'border-st-selesai/50' : ''
+      className={`kartu scroll-mt-24 p-5 transition-[border-color,box-shadow] sm:p-6 ${
+        galat.length ? 'border-merah shadow-[0_0_0_3px_rgb(217_35_48/0.12)]' : ''
       }`}
     >
-      <div className="lg:col-span-4">
-        <h2 id={`langkah-${n}`} className="flex items-center gap-3 text-lead font-medium tracking-tight text-teks">
-          <span
-            className={`angka flex size-9 shrink-0 items-center justify-center rounded-full text-badan font-semibold transition-colors ${
-              selesai ? 'bg-st-selesai text-white' : galat.length ? 'bg-tinta text-white' : 'bg-lapis text-teks'
-            }`}
-          >
-            {selesai ? <Ikon key="centang" nama="centang" className="pop size-5" /> : n}
-            <span className="sr-only">{selesai ? ', lengkap' : ', belum lengkap'}</span>
-          </span>
-          {judul}
-          <span className="text-kecil font-normal text-tinta" aria-hidden="true">
-            *
-          </span>
-        </h2>
-        {petunjuk && <p className="mt-2 max-w-[40ch] text-kecil text-lembut">{petunjuk}</p>}
+      <div className="flex items-start gap-3">
+        <span
+          className={`angka flex size-8 shrink-0 items-center justify-center rounded-full text-kecil font-bold text-white transition-colors ${
+            selesai ? 'bg-hijau' : galat.length ? 'bg-merah' : 'bg-biru'
+          }`}
+        >
+          {selesai ? <Ikon key="centang" nama="centang" className="pop size-4.5" /> : n}
+          <span className="sr-only">{selesai ? ', lengkap' : ', belum lengkap'}</span>
+        </span>
+        <div className="min-w-0">
+          <h2 id={`langkah-${n}`} className="text-lead font-bold">
+            {judul}{' '}
+            <span className="text-merah" aria-hidden="true">
+              *
+            </span>
+          </h2>
+          {petunjuk && <p className="mt-0.5 text-kecil text-lembut">{petunjuk}</p>}
+        </div>
       </div>
-      <div className="min-w-0 lg:col-span-8">
+      <div className="mt-4 min-w-0">
         {children}
         {galat.length > 0 && (
           <ul id={`galat-langkah-${n}`} className="mt-3 grid gap-1">
             {galat.map((t) => (
-              <li key={t} className="flex items-center gap-2 text-badan font-medium text-tinta">
+              <li key={t} className="flex items-center gap-2 text-kecil font-semibold text-merah-tua">
                 <Ikon nama="peringatan" className="size-4" />
                 {t}
               </li>
@@ -274,24 +277,33 @@ export default function FormLaporan() {
   }
 
   const sibuk = tahap !== 'isi';
+  const ISI_RINGKAS = [
+    { n: 1, label: 'Kategori', isi: KATEGORI.find((k) => k.id === kategori)?.nama },
+    { n: 2, label: 'Lokasi', isi: wilayah ? `Kec. ${wilayah.kecamatan}` : undefined },
+    { n: 3, label: 'Foto', isi: foto.length ? `${foto.length} foto` : undefined },
+    { n: 4, label: 'Cerita', isi: panjang ? `${panjang} karakter` : undefined },
+  ];
 
   return (
-    <form onSubmit={kirim} noValidate className="grid gap-14">
+    <form onSubmit={kirim} noValidate className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_19rem] lg:items-start xl:grid-cols-[minmax(0,1fr)_21rem]">
       <fieldset disabled={sibuk || fotoMemproses} className="contents">
       <legend className="sr-only">Isi laporan masalah</legend>
+      <div className="grid min-w-0 gap-5">
       <Langkah n={1} selesai={lengkap.includes(1)} galat={galatLangkah(1)} judul="Masalahnya apa?" petunjuk="Urgensi dan dinas penanggung jawab ditentukan dari kategori, bukan dipilih pelapor.">
         <fieldset>
           <legend className="sr-only">Kategori</legend>
-          <div className="grid gap-2 sm:grid-cols-2">
+          <div className="grid gap-3 sm:grid-cols-2">
             {KATEGORI.map((k) => (
               <label
                 key={k.id}
-                // Pilihan berada di dalam kartu putih, jadi latarnya satu nada lebih gelap (kertas) supaya terlihat bisa diklik.
-                className="grid cursor-pointer gap-1 rounded-(--radius-kartu) bg-kertas p-4 transition-[background-color,color,scale] duration-200 hover:bg-lapis active:scale-[0.98] has-checked:bg-tinta has-checked:text-white has-focus-visible:outline-3 has-focus-visible:outline-tinta"
+                className="group grid cursor-pointer grid-cols-[1.25rem_1fr] gap-x-3 gap-y-1 rounded-kartu border border-garis bg-permukaan p-4 transition-[background-color,border-color,scale] duration-200 hover:border-biru active:scale-[0.99] has-checked:border-biru has-checked:bg-biru-muda has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-biru"
               >
                 <input type="radio" name="kategori" value={k.id} checked={kategori === k.id} onChange={() => setKategori(k.id)} className="sr-only" />
-                <span className="text-lead font-medium tracking-tight">{k.nama}</span>
-                <span className="text-kecil opacity-85">
+                <span aria-hidden="true" className="mt-1 flex size-5 items-center justify-center rounded-full border-2 border-garis-isian bg-permukaan group-has-[:checked]:border-biru">
+                  <span className="size-2.5 rounded-full bg-biru opacity-0 transition-opacity group-has-[:checked]:opacity-100" />
+                </span>
+                <span className="text-lead font-bold">{k.nama}</span>
+                <span className="col-start-2 text-kecil text-lembut">
                   {k.instansi} · urgensi {k.urgensi.toLowerCase()} · respons {k.respons} jam, selesai {k.selesai / 24} hari
                 </span>
               </label>
@@ -309,43 +321,43 @@ export default function FormLaporan() {
             {!titik ? (
               <span className="text-lembut">Belum ada titik.</span>
             ) : diLuar ? (
-              <span className="font-semibold">Titik ini di luar DKI Jakarta daratan. Pindahkan ke wilayah layanan.</span>
+              <span className="font-bold text-merah-tua">Titik ini di luar DKI Jakarta daratan. Pindahkan ke wilayah layanan.</span>
             ) : wilayah ? (
-              <span className="inline-flex items-center gap-1.5">
-                <Ikon nama="lokasi" className="size-4" />
+              <span className="inline-flex items-center gap-1.5 font-semibold">
+                <Ikon nama="lokasi" className="size-4 text-biru" />
                 Kecamatan {wilayah.kecamatan}, {wilayah.kota}
               </span>
             ) : (
               <span className="text-lembut">Memeriksa wilayah…</span>
             )}
           </p>
-          <Tombol varian="kedua" onClick={pakaiLokasiSaya} disabled={mencariLokasi}>
+          <Tombol varian="garis" onClick={pakaiLokasiSaya} disabled={mencariLokasi}>
             <Ikon nama="lokasi" className="size-4" />
             {mencariLokasi ? 'Membaca lokasi…' : 'Pakai lokasi saya'}
           </Tombol>
         </div>
         {lokasiGalat && (
-          <p role="alert" className="mt-2 text-kecil font-medium">
+          <p role="alert" className="mt-2 text-kecil font-semibold text-merah-tua">
             {lokasiGalat}
           </p>
         )}
       </Langkah>
 
       <Langkah n={3} selesai={lengkap.includes(3)} galat={galatLangkah(3)} judul="Foto masalahnya" petunjuk="1–3 foto JPG, PNG, atau WebP, maksimal 5 MB. Foto dikecilkan dan data lokasi di dalam file dibuang sebelum diunggah.">
-        <p className="flex gap-2 rounded-(--radius-kontrol) bg-st-menunggu-bg p-3 text-kecil text-st-menunggu">
-          <Ikon nama="peringatan" className="mt-0.5 size-4" />
+        <p className="flex gap-2 rounded-kontrol bg-oranye-muda p-3 text-kecil text-st-menunggu">
+          <Ikon nama="peringatan" className="mt-0.5 size-4 shrink-0" />
           Jangan memotret wajah atau plat nomor orang lain. Foto tampil publik.
         </p>
         <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
           {foto.map((f, i) => (
             <figure key={f.id} className="pop relative">
               {/* eslint-disable-next-line @next/next/no-img-element -- pratinjau blob lokal */}
-              <img src={f.pratinjau} alt={`Foto ${i + 1} yang dipilih`} className="aspect-square w-full rounded-(--radius-kontrol) bg-lapis object-cover" />
+              <img src={f.pratinjau} alt={`Foto ${i + 1} yang dipilih`} className="aspect-square w-full rounded-kartu bg-lapis object-cover" />
               <button
                 type="button"
                 onClick={() => hapusFoto(f.id)}
                 disabled={sibuk}
-                className="absolute top-2 right-2 flex size-11 items-center justify-center rounded-full bg-tinta text-kertas hover:bg-tinta-tua"
+                className="absolute top-2 right-2 flex size-10 items-center justify-center rounded-full bg-navy/85 text-white hover:bg-navy"
                 aria-label={`Hapus foto ${i + 1}`}
               >
                 <Ikon nama="tutup" className="size-4" />
@@ -355,11 +367,11 @@ export default function FormLaporan() {
           {foto.length < MAKS_FOTO && (
             <label
               htmlFor={idInputFoto}
-              className="flex aspect-square cursor-pointer flex-col items-center justify-center gap-2 rounded-(--radius-kontrol) border-2 border-dashed border-lapis-2 bg-permukaan p-4 text-center text-kecil font-medium transition-colors hover:border-tinta hover:bg-tinta-muda/40 has-focus-visible:outline-3 has-focus-visible:outline-tinta"
+              className="flex aspect-square cursor-pointer flex-col items-center justify-center gap-2 rounded-kartu border-2 border-dashed border-garis-isian bg-latar p-4 text-center text-kecil font-semibold transition-colors hover:border-biru hover:bg-biru-pudar hover:text-biru-tua has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-biru"
             >
               <Ikon nama="kamera" className="size-7" />
               Tambah foto
-              <span className="text-lembut">
+              <span className="font-normal text-lembut">
                 {foto.length} dari {MAKS_FOTO}
               </span>
               <input
@@ -377,7 +389,7 @@ export default function FormLaporan() {
           )}
         </div>
         {fotoGalat && (
-          <p role="alert" className="mt-2 text-kecil font-medium">
+          <p role="alert" className="mt-2 text-kecil font-semibold text-merah-tua">
             {fotoGalat}
           </p>
         )}
@@ -398,26 +410,27 @@ export default function FormLaporan() {
           className="w-full p-4 text-badan"
           placeholder="Contoh: Lubang besar di lajur kiri dekat halte, motor sering oleng saat malam karena lampu jalan mati."
         />
-        <p id="hitung-deskripsi" className={`angka mt-1 text-kecil ${panjang > MAKS_DESKRIPSI ? 'font-semibold' : 'text-lembut'}`}>
+        <p id="hitung-deskripsi" className={`angka mt-1 text-kecil ${panjang > MAKS_DESKRIPSI ? 'font-bold text-merah-tua' : 'text-lembut'}`}>
           {panjang} / {MAKS_DESKRIPSI} karakter{panjang < MIN_DESKRIPSI ? `, minimal ${MIN_DESKRIPSI}` : ''}
         </p>
       </Langkah>
 
       {serupa && serupa.length > 0 && (
-        <section aria-labelledby="judul-serupa" className="di-medan ganti rounded-(--radius-kartu) bg-medan p-5 text-medan-tinta sm:p-8">
-          <h2 id="judul-serupa" className="text-lead font-medium tracking-tight">
+        <section aria-labelledby="judul-serupa" className="ganti kartu border-biru bg-biru-pudar p-5 sm:p-6">
+          <h2 id="judul-serupa" className="flex items-center gap-2 text-lead font-bold text-biru-tua">
+            <Ikon nama="info" className="size-5" />
             Sudah ada {serupa.length} laporan serupa dalam 100 meter
           </h2>
-          <p className="mt-2 max-w-[60ch] text-badan text-medan-lembut">
+          <p className="mt-1.5 max-w-[60ch] text-kecil text-lembut">
             Dukung laporan yang sudah ada supaya suaranya terkumpul di satu tempat. Kalau masalahnya memang berbeda, tetap
-            kirim laporan baru di bawah.
+            kirim laporan baru.
           </p>
-          <ul className="mt-6 grid gap-2">
+          <ul className="mt-4 grid gap-2">
             {serupa.map((s) => (
-              <li key={s.kode} className="flex flex-wrap items-center gap-x-5 gap-y-3 rounded-(--radius-kontrol) bg-permukaan p-4 text-teks">
+              <li key={s.kode} className="flex flex-wrap items-center gap-x-5 gap-y-3 rounded-kontrol border border-garis bg-permukaan p-4">
                 <div className="min-w-0 flex-1">
                   <p className="flex flex-wrap items-center gap-3">
-                    <Link href={`/laporan/${s.kode}`} target="_blank" className="font-kode angka font-semibold underline-offset-4 hover:underline">
+                    <Link href={`/laporan/${s.kode}`} target="_blank" className="font-kode angka font-bold text-biru-tua underline-offset-4 hover:underline">
                       {s.kode}
                     </Link>
                     <BadgeStatus status={s.status} />
@@ -435,51 +448,71 @@ export default function FormLaporan() {
           </ul>
         </section>
       )}
+      </div>
 
-      <div className="kartu grid gap-4 p-5 sm:p-6 lg:grid-cols-12 lg:items-center lg:gap-8">
-        <div className="lg:col-span-8">
-          {cobaKirim && masalah.length > 0 ? (
-            <div ref={ringkasan} tabIndex={-1} role="alert" className="outline-none focus-visible:outline-3 focus-visible:outline-tinta">
-              <p className="text-badan font-semibold text-tinta">
-                Belum bisa dikirim: {masalah.length} hal perlu dilengkapi
-              </p>
-              <ul className="mt-2 grid gap-1">
-                {masalah.map((m) => (
-                  <li key={m.teks}>
-                    <a href={`#bagian-langkah-${m.langkah}`} className="text-badan underline decoration-2 underline-offset-4">
-                      Langkah {m.langkah}: {m.teks}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : galat ? (
-            <p role="alert" className="text-badan font-semibold">
-              {galat} Isian Anda masih tersimpan; tekan tombol kirim untuk mencoba lagi.
-            </p>
-          ) : (
-            <div>
-              <p className="flex items-center gap-3 text-badan font-semibold">
-                <span className="angka">{lengkap.length} dari 4 langkah lengkap</span>
-                <span aria-hidden="true" className="flex gap-1">
-                  {[1, 2, 3, 4].map((n) => (
+      {/* Ringkasan: seperti ringkasan pesanan, menempel di kanan selama form digulir. */}
+      <aside aria-labelledby="judul-ringkasan" className="lg:sticky lg:top-20">
+        <div className="kartu p-5">
+          <h2 id="judul-ringkasan" className="text-lead font-bold">
+            Ringkasan laporan
+          </h2>
+          <ul className="mt-4 grid gap-2.5">
+            {ISI_RINGKAS.map((r) => {
+              const ok = lengkap.includes(r.n);
+              return (
+                <li key={r.n} className="flex items-center justify-between gap-3 text-kecil">
+                  <span className="flex items-center gap-2">
                     <span
-                      key={n}
-                      className={`h-1.5 w-6 rounded-full transition-[background-color,scale] duration-300 ${lengkap.includes(n) ? 'scale-y-150 bg-st-selesai' : 'bg-lapis-2'}`}
-                    />
+                      aria-hidden="true"
+                      className={`flex size-5 items-center justify-center rounded-full text-mini font-bold ${ok ? 'bg-hijau text-white' : 'bg-lapis text-lembut'}`}
+                    >
+                      {ok ? <Ikon nama="centang" className="size-3" /> : r.n}
+                    </span>
+                    {r.label}
+                  </span>
+                  <span className={`truncate text-right ${ok ? 'font-semibold' : 'text-lembut'}`}>{r.isi ?? 'Belum diisi'}</span>
+                </li>
+              );
+            })}
+          </ul>
+          <p className="mt-4 flex items-center gap-3 border-t border-garis pt-4 text-kecil font-bold">
+            <span className="angka">{lengkap.length} dari 4 langkah lengkap</span>
+            <span aria-hidden="true" className="flex flex-1 gap-1">
+              {[1, 2, 3, 4].map((n) => (
+                <span key={n} className={`h-1.5 flex-1 rounded-full transition-colors duration-300 ${lengkap.includes(n) ? 'bg-hijau' : 'bg-lapis-2'}`} />
+              ))}
+            </span>
+          </p>
+
+          <div className="mt-4">
+            {cobaKirim && masalah.length > 0 ? (
+              <div ref={ringkasan} tabIndex={-1} role="alert" className="rounded-kontrol bg-merah-muda p-3 outline-none focus-visible:outline-2 focus-visible:outline-merah">
+                <p className="text-kecil font-bold text-merah-tua">Belum bisa dikirim: {masalah.length} hal perlu dilengkapi</p>
+                <ul className="mt-2 grid gap-1">
+                  {masalah.map((m) => (
+                    <li key={m.teks}>
+                      <a href={`#bagian-langkah-${m.langkah}`} className="text-kecil text-merah-tua underline underline-offset-4">
+                        Langkah {m.langkah}: {m.teks}
+                      </a>
+                    </li>
                   ))}
-                </span>
+                </ul>
+              </div>
+            ) : galat ? (
+              <p role="alert" className="rounded-kontrol bg-merah-muda p-3 text-kecil font-bold text-merah-tua">
+                {galat} Isian Anda masih tersimpan; tekan tombol kirim untuk mencoba lagi.
               </p>
-              <p className="mt-1 text-kecil">
+            ) : (
+              <p className="text-kecil text-lembut">
                 Setelah terkirim Anda mendapat kode SR untuk melacak laporan. Status awalnya Menunggu sampai dinas merespons.
               </p>
-            </div>
-          )}
+            )}
+          </div>
+          <Tombol type="submit" disabled={sibuk} className="mt-4 min-h-12 w-full text-lead">
+            {tahap === 'mengunggah' ? 'Mengunggah foto…' : tahap === 'mengirim' ? 'Mengirim laporan…' : galat ? 'Coba kirim lagi' : 'Kirim laporan'}
+          </Tombol>
         </div>
-        <Tombol type="submit" disabled={sibuk} className="min-h-12 lg:col-span-4 lg:justify-self-end">
-          {tahap === 'mengunggah' ? 'Mengunggah foto…' : tahap === 'mengirim' ? 'Mengirim laporan…' : galat ? 'Coba kirim lagi' : 'Kirim laporan'}
-        </Tombol>
-      </div>
+      </aside>
       </fieldset>
     </form>
   );

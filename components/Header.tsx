@@ -1,123 +1,149 @@
-// components/Header.tsx — bar navigasi utama (pemilik: A)
-// Nama di kiri, empat tautan, cari kode, akun, dan satu aksi: Lapor masalah.
-// Di bawah 1280 px semuanya pindah ke menu supaya bar tidak pernah terlipat.
+// components/Header.tsx — bar atas (pemilik: A)
+// Seperti header situs travel: tombol menu, nama, kolom cari (lacak kode laporan), tautan utilitas
+// berikon, lalu Masuk/Daftar atau menu akun. Tautan yang tidak muat pindah ke menu samping.
 
 import Link from 'next/link';
-import { Suspense } from 'react';
+import { Suspense, type ReactNode } from 'react';
 import { ambilSesi } from '@/lib/data/sesi';
 import { keluar } from '@/lib/supabase/aksi-auth';
 import CariKode from './CariKode';
-import { MenuPonsel, MenuPonselStatis, TautanNav, TautanNavStatis } from './NavUtama';
+import TombolMenu from './TombolMenu';
 import Turun from './Turun';
-import Ikon from './ui/Ikon';
+import Ikon, { type NamaIkon } from './ui/Ikon';
 import { kelasTombol } from './ui/Tombol';
 import Wordmark from './Wordmark';
 
-const peranTeks = (s: NonNullable<Awaited<ReturnType<typeof ambilSesi>>>) =>
+type Sesi = NonNullable<Awaited<ReturnType<typeof ambilSesi>>>;
+
+const peranTeks = (s: Sesi) =>
   `${s.perencana ? 'Perencana' : s.peran === 'admin' ? 'Admin instansi' : 'Warga'}${s.demo ? ' · akun demo' : ''}`;
+
+/** Dua huruf awal nama untuk lingkaran akun, misalnya "Ani Suryani" → "AS". */
+const inisial = (nama: string) =>
+  nama
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((k) => k[0]!.toUpperCase())
+    .join('') || '?';
+
+function TautanUtilitas({
+  href,
+  ikon,
+  children,
+  className = '',
+  ringkas = false,
+}: {
+  href: string;
+  ikon: NamaIkon;
+  children: ReactNode;
+  className?: string;
+  /** Hanya ikon; teksnya tetap dibaca pembaca layar. */
+  ringkas?: boolean;
+}) {
+  return (
+    <Link
+      href={href}
+      title={ringkas ? String(children) : undefined}
+      className={`h-10 shrink-0 items-center gap-1.5 rounded-kontrol px-2.5 text-kecil font-semibold whitespace-nowrap text-teks transition-colors hover:bg-lapis hover:text-biru-tua ${className}`}
+    >
+      <Ikon nama={ikon} className={ringkas ? 'size-5' : 'size-4.5'} />
+      <span className={ringkas ? 'sr-only' : ''}>{children}</span>
+    </Link>
+  );
+}
 
 async function Akun() {
   const sesi = await ambilSesi();
   if (!sesi) {
     return (
-      <Link href="/masuk" className="flex h-11 items-center rounded-(--radius-kontrol) px-3 text-badan font-medium hover:bg-lapis">
-        Masuk
+      <Link href="/masuk" className={kelasTombol('utama', 'ml-1 min-h-9 shrink-0 px-3.5 text-kecil sm:px-4')}>
+        <span className="sm:hidden">Masuk</span>
+        <span className="hidden sm:inline">Masuk / Daftar</span>
       </Link>
     );
   }
   return (
-    <Turun label={<span className="max-w-40 truncate">{sesi.nama}</span>}>
-      <p className="text-badan font-medium">{sesi.nama}</p>
+    <Turun
+      className="ml-1"
+      label={
+        <>
+          <span
+            aria-hidden="true"
+            className="flex size-8 items-center justify-center rounded-full bg-biru text-mini font-bold text-white"
+          >
+            {inisial(sesi.nama)}
+          </span>
+          <span className="hidden max-w-36 truncate md:inline">{sesi.nama}</span>
+          <span className="sr-only md:hidden">Akun {sesi.nama}</span>
+        </>
+      }
+    >
+      <p className="text-badan font-bold">{sesi.nama}</p>
       <p className="text-kecil text-lembut">{peranTeks(sesi)}</p>
-      <div className="mt-4 grid gap-2">
+      <ul className="mt-3 grid gap-1 border-t border-garis pt-3">
         {sesi.peran === 'admin' && (
-          <Link href="/admin/laporan" className={kelasTombol('kedua', 'w-full')}>
-            Laporan instansi
-          </Link>
+          <li>
+            <Link href="/admin/laporan" className="flex h-10 items-center gap-2.5 rounded-kontrol px-2 text-badan font-medium hover:bg-lapis">
+              <Ikon nama="koper" className="size-4.5" />
+              Laporan instansi
+            </Link>
+          </li>
         )}
-        <form action={keluar}>
-          <button type="submit" className={kelasTombol('kedua', 'w-full')}>
-            Keluar
-          </button>
-        </form>
-      </div>
+        <li>
+          <Link href="/lapor" className="flex h-10 items-center gap-2.5 rounded-kontrol px-2 text-badan font-medium hover:bg-lapis">
+            <Ikon nama="tambah" className="size-4.5" />
+            Lapor masalah
+          </Link>
+        </li>
+        <li>
+          <form action={keluar}>
+            <button type="submit" className="flex h-10 w-full items-center gap-2.5 rounded-kontrol px-2 text-left text-badan font-medium hover:bg-lapis">
+              <Ikon nama="keluar" className="size-4.5" />
+              Keluar
+            </button>
+          </form>
+        </li>
+      </ul>
     </Turun>
-  );
-}
-
-async function AkunPonsel() {
-  const sesi = await ambilSesi();
-  if (!sesi) {
-    return (
-      <Link href="/masuk" className={kelasTombol('kedua', 'w-full')}>
-        Masuk
-      </Link>
-    );
-  }
-  return (
-    <div className="panel grid gap-3 p-4">
-      <p className="text-badan font-medium">
-        {sesi.nama}
-        <span className="block text-kecil font-normal text-lembut">{peranTeks(sesi)}</span>
-      </p>
-      {sesi.peran === 'admin' && (
-        <Link href="/admin/laporan" className={kelasTombol('utama', 'w-full')}>
-          Laporan instansi
-        </Link>
-      )}
-      <form action={keluar}>
-        <button type="submit" className={kelasTombol('kedua', 'w-full bg-kertas')}>
-          Keluar
-        </button>
-      </form>
-    </div>
   );
 }
 
 export default function Header() {
   return (
-    <header className="kepala sticky top-0 z-1000 bg-kertas">
-      <nav aria-label="Navigasi utama" className="bingkai flex h-16 items-center gap-3 sm:h-18 pendek:h-14">
+    <header className="sticky top-0 z-1000 h-(--tinggi-kepala) border-b border-garis bg-permukaan">
+      {/* Tepi kiri-kanan memakai env(safe-area-inset-*) supaya tombol tidak masuk ke area poni iPhone yang dimiringkan. */}
+      <div className="flex h-full items-center gap-1.5 pr-[max(0.75rem,env(safe-area-inset-right))] pl-[max(0.5rem,env(safe-area-inset-left))] sm:gap-2 sm:pr-[max(1rem,env(safe-area-inset-right))] lg:pr-6 lg:pl-3">
+        <TombolMenu />
         <Link
           href="/"
-          className="mr-auto text-[1.375rem] transition-[scale] duration-200 hover:scale-[1.03] active:scale-[0.97] xl:mr-4"
           aria-label="suaRAkyat, ke Beranda"
+          className="shrink-0 rounded-kontrol px-1 text-[1.3125rem] text-teks sm:text-[1.4375rem]"
         >
           <Wordmark />
         </Link>
-        <Suspense fallback={<TautanNavStatis />}>
-          <TautanNav />
-        </Suspense>
-        <div className="ml-auto hidden items-center gap-1 xl:flex">
-          <Turun
-            label={
-              <>
-                <Ikon nama="cari" className="size-4" />
-                Lacak kode
-              </>
-            }
-          >
-            <p className="mb-3 text-kecil">Masukkan kode laporan, misalnya SR-K7W3PA.</p>
-            <CariKode id="cari-kode-header" className="[&_input]:w-full" />
-          </Turun>
-          <Suspense fallback={<span className="w-16" />}>
+        {/* Di Beranda kolom ini muncul setelah kotak cari hero tergulir lewat (globals.css, .cari-kepala). */}
+        <CariKode id="cari-kode-header" varian="kepala" className="cari-kepala ml-3 hidden max-w-[27rem] flex-1 md:flex lg:ml-8" />
+        {/* Urutan seperti tautan utilitas situs travel: Daftarkan Properti → Bantuan → Login. "Lacak laporan" hanya
+            berupa ikon di ponsel, karena di layar lebar kolom cari sudah melayani hal yang sama. */}
+        <nav aria-label="Tautan cepat" className="ml-auto flex items-center gap-0.5">
+          <TautanUtilitas href="/sumber-data" ikon="data" className="hidden 2xl:flex">
+            Sumber data
+          </TautanUtilitas>
+          <TautanUtilitas href="/lapor" ikon="tambah" className="hidden sm:flex">
+            Lapor masalah
+          </TautanUtilitas>
+          <TautanUtilitas href="/rapor/cara-menilai" ikon="bantuan" className="hidden xl:flex">
+            Cara menilai
+          </TautanUtilitas>
+          <TautanUtilitas href="/lacak" ikon="lacak" ringkas className="cari-kepala flex md:hidden">
+            Lacak laporan
+          </TautanUtilitas>
+          <Suspense fallback={<span aria-hidden="true" className="ml-1 h-9 w-20 sm:w-32" />}>
             <Akun />
           </Suspense>
-        </div>
-        <Link href="/lapor" className={kelasTombol('utama', 'min-h-11 shrink-0 px-4 text-kecil sm:text-badan')}>
-          {/* Ponsel sangat sempit (iPhone SE 320 px): cukup "Lapor" supaya tombol tidak terlipat dua baris. */}
-          <span className="max-[359px]:hidden">Lapor masalah</span>
-          <span className="hidden max-[359px]:inline">Lapor</span>
-        </Link>
-        <Suspense fallback={<MenuPonselStatis />}>
-          <MenuPonsel>
-            <CariKode id="cari-kode-menu" besar />
-            <Suspense fallback={null}>
-              <AkunPonsel />
-            </Suspense>
-          </MenuPonsel>
-        </Suspense>
-      </nav>
+        </nav>
+      </div>
     </header>
   );
 }

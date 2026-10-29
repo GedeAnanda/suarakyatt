@@ -22,22 +22,22 @@ export default function Istilah({
       <button
         type="button"
         popoverTarget={id}
-        className={`cursor-help underline decoration-dotted decoration-2 underline-offset-4 hover:decoration-solid ${className}`}
+        className={`cursor-help text-left underline decoration-samar decoration-dotted decoration-2 underline-offset-4 hover:decoration-biru hover:decoration-solid ${className}`}
       >
         {children}
       </button>
       <div
         id={id}
         popover="auto"
-        className="kartu m-auto max-w-[min(32rem,calc(100vw-2rem))] p-6 text-teks shadow-(--shadow-angkat) backdrop:bg-tinta/20"
+        className="m-auto max-w-[min(32rem,calc(100vw-2rem))] rounded-besar border border-garis bg-permukaan p-6 text-teks shadow-angkat backdrop:bg-navy/30"
       >
-        <p className="text-lead font-medium tracking-tight">{judul}</p>
-        <div className="mt-2 text-badan">{definisi}</div>
+        <p className="text-lead font-bold">{judul}</p>
+        <div className="mt-2 text-badan text-lembut">{definisi}</div>
         <button
           type="button"
           popoverTarget={id}
           popoverTargetAction="hide"
-          className="mt-5 rounded-(--radius-kontrol) bg-lapis px-4 py-2 text-kecil font-semibold hover:bg-lapis-2"
+          className="mt-5 min-h-10 rounded-kontrol bg-biru-muda px-4 text-kecil font-semibold text-biru-tua hover:bg-[#dce5ff]"
         >
           Tutup
         </button>

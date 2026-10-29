@@ -33,16 +33,14 @@ export default function SalinKode({ kode }: { kode: string }) {
     }
   }
 
-  const kelas =
-    'inline-flex min-h-11 items-center gap-2 rounded-full bg-permukaan px-4 text-kecil font-semibold ring-1 ring-batas ring-inset transition-colors hover:bg-terang active:scale-[0.98]';
   return (
     <div className="flex flex-wrap gap-2">
-      <button type="button" onClick={salin} className={kelas}>
+      <button type="button" onClick={salin} className="chip">
         <Ikon nama="salin" className="size-4" />
         Salin kode
       </button>
       {adaShare && (
-        <button type="button" onClick={bagikan} className={kelas}>
+        <button type="button" onClick={bagikan} className="chip">
           <Ikon nama="bagikan" className="size-4" />
           Bagikan
         </button>

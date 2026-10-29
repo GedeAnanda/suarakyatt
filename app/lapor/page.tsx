@@ -3,6 +3,7 @@
 // R3 create_report. Semua ada di components/lapor/FormLaporan.tsx.
 
 import type { Metadata } from 'next';
+import KepalaHalaman from '@/components/KepalaHalaman';
 import FormLaporan from '@/components/lapor/FormLaporan';
 import Ikon from '@/components/ui/Ikon';
 import { KANAL_RESMI } from '@/lib/konten';
@@ -11,24 +12,21 @@ export const metadata: Metadata = { title: 'Lapor masalah' };
 
 export default function LaporPage() {
   return (
-    <div className="bingkai pt-12 pb-24 sm:pt-16">
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-12" data-awal>
-        <h1 className="text-judul lg:col-span-6">Lapor masalah</h1>
-        <p className="max-w-[60ch] text-badan lg:col-span-6">
-          Laporkan masalah kota dengan foto dan titik lokasi. Anda akan mendapat kode untuk melacak penanganannya, dan
-          laporan Anda ikut menentukan posisi isu wilayahnya di daftar prioritas.
-        </p>
-      </div>
+    <div className="bingkai pt-6 pb-4 sm:pt-8">
+      <KepalaHalaman judul="Lapor masalah">
+        Laporkan masalah kota dengan foto dan titik lokasi. Anda akan mendapat kode untuk melacak penanganannya, dan laporan
+        Anda ikut menentukan posisi isu wilayahnya di daftar prioritas.
+      </KepalaHalaman>
 
-      <aside role="note" data-awal className="mt-10 flex gap-3 rounded-(--radius-kartu) bg-st-ditolak-bg p-4 text-badan text-st-ditolak sm:p-5">
-        <Ikon nama="info" className="mt-1 size-5" />
+      <aside role="note" className="mt-5 flex gap-3 rounded-kartu border border-garis bg-permukaan px-4 py-3 text-kecil sm:text-badan">
+        <Ikon nama="info" className="mt-0.5 size-5 shrink-0 text-biru" />
         <p>
-          <strong className="font-semibold">suaRAkyat bukan kanal pengaduan resmi.</strong> Laporan di sini tidak diteruskan
-          ke instansi. Untuk pengaduan resmi ke Pemprov DKI Jakarta, gunakan{' '}
+          <strong className="font-bold">suaRAkyat bukan kanal pengaduan resmi.</strong> Laporan di sini tidak diteruskan ke
+          instansi. Untuk pengaduan resmi ke Pemprov DKI Jakarta, gunakan{' '}
           {KANAL_RESMI.map((k, i) => (
             <span key={k.nama}>
               {i > 0 && ' atau '}
-              <a href={k.url} target="_blank" rel="noreferrer" className="font-semibold underline underline-offset-4">
+              <a href={k.url} target="_blank" rel="noreferrer" className="font-bold text-biru-tua underline underline-offset-4">
                 {k.nama}
               </a>
             </span>
@@ -37,7 +35,7 @@ export default function LaporPage() {
         </p>
       </aside>
 
-      <div className="mt-14">
+      <div className="mt-6">
         <FormLaporan />
       </div>
     </div>

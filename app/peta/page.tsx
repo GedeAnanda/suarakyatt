@@ -4,6 +4,7 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import BannerSimulasi from '@/components/BannerSimulasi';
+import KepalaHalaman from '@/components/KepalaHalaman';
 import PetaLaporan, { STATUS_PUBLIK } from '@/components/peta/PetaLaporan';
 import { ambilTitikLaporan } from '@/lib/data/laporan';
 import type { StatusLaporan } from '@/lib/types';
@@ -22,7 +23,7 @@ async function Isi({ searchParams }: { searchParams: PageProps<'/peta'>['searchP
   return (
     <>
       <BannerSimulasi sumber={sumber} keterangan={`${laporan.length} laporan, tanpa yang dibatalkan pelapor`} />
-      <div className="mt-8">
+      <div className="mt-6">
         <PetaLaporan laporan={laporan} sekarang={sekarang} kategoriAwal={kategoriAwal} statusAwal={statusAwal} />
       </div>
     </>
@@ -31,18 +32,15 @@ async function Isi({ searchParams }: { searchParams: PageProps<'/peta'>['searchP
 
 export default function PetaPage({ searchParams }: PageProps<'/peta'>) {
   return (
-    <div className="bingkai pt-12 pb-24 sm:pt-16">
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-12" data-awal>
-        <h1 className="text-judul lg:col-span-6">Peta laporan</h1>
-        <p className="max-w-[60ch] text-badan lg:col-span-6">
-          Semua laporan warga di DKI Jakarta daratan beserta statusnya. Saring menurut kategori dan status, lalu buka
-          laporannya untuk melihat riwayat penanganan dan posisinya di daftar prioritas.
-        </p>
-      </div>
-      <div className="mt-10">
+    <div className="bingkai pt-6 pb-4 sm:pt-8">
+      <KepalaHalaman judul="Peta laporan">
+        Semua laporan warga di DKI Jakarta daratan beserta statusnya. Saring menurut kategori dan status, lalu buka
+        laporannya untuk melihat riwayat penanganan dan posisinya di daftar prioritas.
+      </KepalaHalaman>
+      <div className="mt-6">
         <Suspense
           fallback={
-            <div aria-hidden="true" className="grid gap-6">
+            <div aria-hidden="true" className="grid gap-5">
               <div className="kerangka h-12 w-2/3" />
               <div className="kerangka h-[min(72svh,44rem)]" />
             </div>
