@@ -4,6 +4,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { tujuanAman } from '@/lib/tujuan-aman';
 import { Tombol, type VarianTombol } from './ui/Tombol';
 
 type Peran = 'warga' | 'admin';
@@ -12,6 +13,17 @@ const PESAN: Record<string, string> = {
   DEMO_BELUM_DIATUR: 'Akun demo belum diatur di server. Hubungi tim.',
   LOGIN_DEMO_GAGAL: 'Akun demo sedang tidak bisa dipakai. Coba lagi sebentar lagi.',
 };
+
+/**
+ * Datang dari /masuk?lanjut=... (misalnya "Masuk untuk mendukung" di halaman laporan): kembali ke halaman itu,
+ * bukan ke tujuan bawaan peran (/lapor atau /admin/laporan). Rute admin hanya untuk admin demo.
+ */
+function tujuanSetelahDemo(peran: Peran, bawaan: string): string {
+  const lanjut = tujuanAman(new URLSearchParams(window.location.search).get('lanjut'), '');
+  if (!lanjut || lanjut === '/') return bawaan;
+  const keAdmin = lanjut === '/admin' || lanjut.startsWith('/admin/');
+  return keAdmin === (peran === 'admin') ? lanjut : bawaan;
+}
 
 export default function TombolDemo({
   varianWarga = 'utama',
@@ -37,7 +49,7 @@ export default function TombolDemo({
       });
       const hasil = (await res.json().catch(() => ({}))) as { redirect?: string; error?: string };
       if (!res.ok || !hasil.redirect) throw new Error(hasil.error ?? 'LOGIN_DEMO_GAGAL');
-      router.push(hasil.redirect);
+      router.push(tujuanSetelahDemo(peran, hasil.redirect));
       router.refresh();
     } catch (err) {
       setGalat(PESAN[err instanceof Error ? err.message : ''] ?? PESAN.LOGIN_DEMO_GAGAL);

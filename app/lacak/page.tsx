@@ -15,17 +15,19 @@ export const metadata: Metadata = { title: 'Lacak laporan' };
 
 async function Isi({ searchParams }: { searchParams: PageProps<'/lacak'>['searchParams'] }) {
   const { kode } = await searchParams;
-  const masukan = typeof kode === 'string' ? kode.trim() : '';
+  const masukan = typeof kode === 'string' ? kode.trim().slice(0, 64) : '';
   const sah = masukan ? normalisasiKode(masukan) : null;
   if (sah) redirect(`/laporan/${sah}`);
+  // Masukan panjang tanpa spasi (misalnya tempelan teks) dipendekkan supaya pesan tidak melebarkan layar ponsel.
+  const kutipan = masukan.length > 24 ? `${masukan.slice(0, 24)}…` : masukan;
 
   return (
     <>
       {masukan && (
         <p role="alert" className="goyang mb-4 flex gap-3 rounded-kontrol bg-merah-muda px-4 py-3 text-kecil text-merah-tua sm:text-badan">
           <Ikon nama="peringatan" className="mt-0.5 size-5 shrink-0" />
-          <span>
-            &ldquo;{masukan}&rdquo; bukan kode laporan. Kode berbentuk SR- diikuti 6 huruf atau angka, tanpa huruf O dan I serta
+          <span className="min-w-0 [overflow-wrap:anywhere]">
+            &ldquo;{kutipan}&rdquo; bukan kode laporan. Kode berbentuk SR- diikuti 6 huruf atau angka, tanpa huruf O dan I serta
             angka 0 dan 1.
           </span>
         </p>

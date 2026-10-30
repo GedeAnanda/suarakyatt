@@ -33,6 +33,26 @@ const MIN_DESKRIPSI = 20;
 const MAKS_DESKRIPSI = 500;
 const MAKS_FOTO = 3;
 
+// Draf disimpan di browser ini saja (bukan di server) supaya isian tidak hilang saat pengguna pindah halaman,
+// misalnya membuka laporan serupa lalu kembali. Foto tidak ikut disimpan.
+const KUNCI_DRAF = 'suarakyat:draf-laporan';
+const UMUR_DRAF = 7 * 24 * 3_600_000;
+
+interface Draf {
+  kategori: number | null;
+  titik: Titik | null;
+  deskripsi: string;
+  waktu: number;
+}
+
+function hapusDraf() {
+  try {
+    localStorage.removeItem(KUNCI_DRAF);
+  } catch {
+    // Penyimpanan browser diblokir: tidak ada draf yang perlu dihapus.
+  }
+}
+
 interface Foto {
   id: string;
   blob: Blob;
@@ -45,6 +65,8 @@ interface Serupa {
   jarak_m: number;
   status: StatusLaporan;
   jumlah_upvote: number;
+  /** Pengguna ini sudah mendukungnya (similar_reports, migrasi 0009). */
+  didukung?: boolean;
   foto: string | null;
   created_at: string;
 }
@@ -135,6 +157,49 @@ export default function FormLaporan() {
   const [galat, setGalat] = useState<string | null>(null);
   const [cobaKirim, setCobaKirim] = useState(false);
   const ringkasan = useRef<HTMLDivElement>(null);
+  const drafSiap = useRef(false);
+  const [drafDipulihkan, setDrafDipulihkan] = useState(false);
+
+  // Simpan draf setiap isian berubah. Efek ini sengaja ditulis sebelum efek pemulihan: saat pertama dipasang,
+  // drafSiap masih false sehingga isian kosong awal tidak menimpa draf yang belum sempat dipulihkan.
+  useEffect(() => {
+    if (!drafSiap.current) return;
+    try {
+      if (!kategori && !titik && !deskripsi.trim()) localStorage.removeItem(KUNCI_DRAF);
+      else localStorage.setItem(KUNCI_DRAF, JSON.stringify({ kategori, titik, deskripsi, waktu: Date.now() } satisfies Draf));
+    } catch {
+      // Penyimpanan penuh atau diblokir: formulir tetap jalan tanpa draf.
+    }
+  }, [kategori, titik, deskripsi]);
+
+  useEffect(() => {
+    try {
+      const d = JSON.parse(localStorage.getItem(KUNCI_DRAF) ?? 'null') as Partial<Draf> | null;
+      if (d && typeof d.waktu === 'number' && Date.now() - d.waktu < UMUR_DRAF) {
+        const k = KATEGORI.some((x) => x.id === d.kategori) ? (d.kategori as number) : null;
+        const t = d.titik && Number.isFinite(d.titik.lat) && Number.isFinite(d.titik.lng) ? d.titik : null;
+        const teks = typeof d.deskripsi === 'string' ? d.deskripsi.slice(0, MAKS_DESKRIPSI + 50) : '';
+        // Sekali saja setelah hidrasi: localStorage tidak ada di server, jadi draf tidak bisa jadi nilai awal state.
+        /* eslint-disable react-hooks/set-state-in-effect */
+        if (k) setKategori(k);
+        if (t) setTitik(t);
+        if (teks) setDeskripsi(teks);
+        if (k || t || teks.trim()) setDrafDipulihkan(true);
+        /* eslint-enable react-hooks/set-state-in-effect */
+      }
+    } catch {
+      // Draf rusak atau penyimpanan diblokir: mulai dari kosong.
+    }
+    drafSiap.current = true;
+  }, []);
+
+  function mulaiKosong() {
+    hapusDraf();
+    setKategori(null);
+    setTitik(null);
+    setDeskripsi('');
+    setDrafDipulihkan(false);
+  }
 
   useEffect(() => {
     muatKecamatan().then(setBatas, () => { setBatas([]); setLokasiGalat('Batas wilayah gagal dimuat. Muat ulang halaman untuk mencoba lagi.'); });
@@ -219,6 +284,9 @@ export default function FormLaporan() {
     });
   }
 
+  // Klik di halaman ini menang; sebelum ada klik, pakai status dari server.
+  const sudah = (s: Serupa) => didukung[s.kode] ?? s.didukung ?? false;
+
   async function dukung(kode: string) {
     const { data, error } = await createClient().rpc('toggle_upvote', { p_kode: kode });
     if (error) return setGalat(pesanError(error));
@@ -270,6 +338,8 @@ export default function FormLaporan() {
         p_lng: titik.lng,
       });
       if (error) throw error;
+      drafSiap.current = false;
+      hapusDraf();
       router.push(`/laporan/${(data as { kode: string }).kode}?baru=1`);
     } catch (err) {
       setGalat(pesanError(err));
@@ -290,6 +360,15 @@ export default function FormLaporan() {
       <fieldset disabled={sibuk || fotoMemproses} className="contents">
       <legend className="sr-only">Isi laporan masalah</legend>
       <div className="grid min-w-0 gap-5">
+      {drafDipulihkan && (
+        <div role="status" className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-kontrol bg-biru-muda px-4 py-3 text-kecil text-biru-tua sm:text-badan">
+          <Ikon nama="info" className="size-5 shrink-0" />
+          <span className="min-w-0 flex-1">Isian terakhir Anda dipulihkan. Foto perlu ditambahkan lagi.</span>
+          <button type="button" onClick={mulaiKosong} className="font-semibold underline underline-offset-2 hover:text-biru">
+            Mulai dari kosong
+          </button>
+        </div>
+      )}
       <Langkah n={1} selesai={lengkap.includes(1)} galat={galatLangkah(1)} judul="Masalahnya apa?" petunjuk="Urgensi dan dinas penanggung jawab ditentukan dari kategori, bukan dipilih pelapor.">
         <fieldset>
           <legend className="sr-only">Kategori</legend>
@@ -441,9 +520,9 @@ export default function FormLaporan() {
                     {s.jarak_m} m dari titik Anda · {lalu(s.created_at, hasilSerupa?.waktu ?? Date.parse(s.created_at))} · {s.jumlah_upvote} dukungan
                   </p>
                 </div>
-                <Tombol varian={didukung[s.kode] ? 'kedua' : 'utama'} onClick={() => dukung(s.kode)} aria-pressed={didukung[s.kode] ?? false}>
-                  <Ikon nama="dukung" className="size-4" isi={didukung[s.kode]} />
-                  {didukung[s.kode] ? 'Didukung' : 'Dukung'}
+                <Tombol varian={sudah(s) ? 'kedua' : 'utama'} onClick={() => dukung(s.kode)} aria-pressed={sudah(s)}>
+                  <Ikon nama="dukung" className="size-4" isi={sudah(s)} />
+                  {sudah(s) ? 'Didukung' : 'Dukung'}
                 </Tombol>
               </li>
             ))}

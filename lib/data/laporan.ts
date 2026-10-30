@@ -124,6 +124,8 @@ export interface HubunganLaporan {
   login: boolean;
   pemilik: boolean;
   sudahRating: boolean;
+  /** Pengguna ini sudah mendukung laporan (RPC sudah_dukung, migrasi 0009). */
+  sudahDukung: boolean;
 }
 
 export async function ambilHubungan(kode: string): Promise<HubunganLaporan> {
@@ -132,14 +134,17 @@ export async function ambilHubungan(kode: string): Promise<HubunganLaporan> {
     const supabase = await createClient();
     const { data: klaim } = await supabase.auth.getClaims();
     const uid = klaim?.claims.sub;
-    if (!uid) return { login: false, pemilik: false, sudahRating: false };
+    if (!uid) return { login: false, pemilik: false, sudahRating: false, sudahDukung: false };
     // RLS "pelapor baca miliknya": baris hanya kembali jika laporan ini milik pengguna.
     const { data: milik } = await supabase.from('reports').select('id').eq('kode', kode).eq('user_id', uid).maybeSingle();
-    if (!milik) return { login: true, pemilik: false, sudahRating: false };
+    if (!milik) {
+      const { data: dukung } = await supabase.rpc('sudah_dukung', { p_kode: kode });
+      return { login: true, pemilik: false, sudahRating: false, sudahDukung: dukung === true };
+    }
     const { count } = await supabase.from('ratings').select('report_id', { count: 'exact', head: true }).eq('report_id', milik.id);
-    return { login: true, pemilik: true, sudahRating: (count ?? 0) > 0 };
+    return { login: true, pemilik: true, sudahRating: (count ?? 0) > 0, sudahDukung: false };
   } catch {
-    return { login: false, pemilik: false, sudahRating: false };
+    return { login: false, pemilik: false, sudahRating: false, sudahDukung: false };
   }
 }
 

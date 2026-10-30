@@ -22,7 +22,7 @@ import LabelSumber from '@/components/ui/LabelSumber';
 import { kelasTautan } from '@/components/ui/Tombol';
 import { ambilDetailLaporan, ambilHubungan } from '@/lib/data/laporan';
 import { ambilDataPrioritas } from '@/lib/data/prioritas';
-import { tanggal, tanggalJam } from '@/lib/format';
+import { akhirHari, tanggal, tanggalJam } from '@/lib/format';
 import { KANAL_RESMI, LABEL_ALASAN, STATUS_AKTIF } from '@/lib/konten';
 import { kenapaBelum } from '@/lib/scoring';
 import type { KenapaBelum } from '@/lib/types';
@@ -45,7 +45,7 @@ async function Isi({ params, searchParams }: Pick<PageProps<'/laporan/[kode]'>, 
   const { laporan: l, timeline, sekarang, sumber } = detail;
   const aktif = STATUS_AKTIF.includes(l.status);
   const [hubungan, prioritas] = await Promise.all([
-    sumber === 'db' ? ambilHubungan(kode) : Promise.resolve({ login: false, pemilik: false, sudahRating: false }),
+    sumber === 'db' ? ambilHubungan(kode) : Promise.resolve({ login: false, pemilik: false, sudahRating: false, sudahDukung: false }),
     aktif ? ambilDataPrioritas() : Promise.resolve(null),
   ]);
 
@@ -109,7 +109,7 @@ async function Isi({ params, searchParams }: Pick<PageProps<'/laporan/[kode]'>, 
             {l.perkiraan_selesai && (
               <p className="mt-2 text-kecil">
                 Perkiraan selesai dari dinas: <strong className="font-bold">{tanggal(l.perkiraan_selesai)}</strong>
-                {aktif && sekarang > Date.parse(l.perkiraan_selesai) && (
+                {aktif && sekarang > akhirHari(l.perkiraan_selesai) && (
                   <span className="ml-2 rounded-[0.375rem] bg-merah-muda px-2 py-0.5 text-mini font-bold text-merah-tua">Melewati janji</span>
                 )}
               </p>
@@ -159,6 +159,7 @@ async function Isi({ params, searchParams }: Pick<PageProps<'/laporan/[kode]'>, 
             status={l.status}
             login={hubungan.login}
             pemilik={hubungan.pemilik}
+            didukungAwal={hubungan.sudahDukung}
             contoh={sumber === 'contoh'}
           />
           {hubungan.pemilik && l.status === 'menunggu' && <TombolBatalkan kode={l.kode} />}

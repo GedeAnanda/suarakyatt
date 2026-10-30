@@ -34,10 +34,18 @@ try {
   await c.query("insert into report_updates(report_id,status_baru,alasan_tolak,catatan) select id,'ditolak','tidak_valid','Catatan uji' from reports where category_id=$1 and status='ditolak'",[category]);
   rapor=(await c.query('select agency_report_card() data')).rows[0].data.instansi.find(i=>i.id===agency);
   cek([rapor.nilai,rapor.huruf_asli,rapor.tingkat_penolakan,rapor.peringatan_penolakan,rapor.huruf],[92,'A',.3,true,'C'],'Penolakan 30% menahan nilai A menjadi C');
+  // Foto laporan harus berkas yang benar-benar ada di bucket, di folder pelapor (migrasi 0009).
+  const namaFoto=`${warga}/${crypto.randomUUID()}.webp`;
+  await c.query("insert into storage.objects(bucket_id,name,metadata) values('foto-laporan',$1,$2::jsonb)",[namaFoto,JSON.stringify({mimetype:'image/webp',size:1024})]);
+  const urlFoto=`${process.env.NEXT_PUBLIC_SUPABASE_URL.replace(/\/$/,'')}/storage/v1/object/public/foto-laporan/${namaFoto}`;
   // Jalankan RPC sebagai pengguna, bukan sebagai pemilik database.
   await c.query('set local role authenticated');
   await c.query("select set_config('request.jwt.claim.sub',$1,true)",[warga]);
-  const dibuat=(await c.query("select create_report(1::smallint,'Uji alur laporan yang selalu di-rollback',array['/demo/lampiran-simulasi.svg'],$1,$2) data",[region.lat,region.lng])).rows[0].data;
+  await c.query('savepoint foto_palsu');
+  const galatFoto=await c.query("select create_report(1::smallint,'Uji alur laporan yang selalu di-rollback',array['/demo/lampiran-simulasi.svg'],$1,$2)",[region.lat,region.lng]).then(()=>null,(e)=>e.message);
+  await c.query('rollback to savepoint foto_palsu');
+  cek(galatFoto,'FOTO_TIDAK_VALID','Lampiran yang bukan foto di Storage ditolak');
+  const dibuat=(await c.query("select create_report(1::smallint,'Uji alur laporan yang selalu di-rollback',array[$3],$1,$2) data",[region.lat,region.lng,urlFoto])).rows[0].data;
   cek(Boolean(dibuat.kode?.startsWith('SR-')),true,'Warga dapat membuat laporan pada wilayah terpetakan');
   await c.query("select set_config('request.jwt.claim.sub',$1,true)",[admin]);
   await c.query("select update_report_status($1,'diverifikasi')",[dibuat.kode]);

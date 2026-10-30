@@ -28,6 +28,9 @@ export const PESAN_ERROR: Record<string, string> = {
   BATAS_EMAIL: 'Terlalu banyak permintaan email. Coba lagi beberapa menit lagi.',
   EMAIL_TIDAK_TERKIRIM: 'Email verifikasi belum bisa dikirim. Untuk mencoba, pakai tombol akun demo.',
   UNGGAH_GAGAL: 'Foto gagal diunggah. Coba lagi.',
+  FOTO_TIDAK_VALID: 'Foto tidak dikenali. Hapus lalu tambahkan fotonya lagi dari perangkat Anda.',
+  KARANTINA_GAGAL:
+    'Status sudah tersimpan, tetapi foto laporan belum berhasil disembunyikan dari publik. Hubungi tim.',
 };
 
 const PESAN_UMUM = 'Terjadi kesalahan. Coba lagi sebentar lagi.';

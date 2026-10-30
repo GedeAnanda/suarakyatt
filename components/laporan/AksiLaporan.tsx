@@ -22,6 +22,7 @@ export function TombolDukung({
   status,
   login,
   pemilik,
+  didukungAwal = false,
   contoh = false,
 }: {
   kode: string;
@@ -29,12 +30,14 @@ export function TombolDukung({
   status: StatusLaporan;
   login: boolean;
   pemilik: boolean;
+  /** Pengguna sudah mendukung sebelumnya, supaya tombol menawarkan "Batal dukung" sejak awal. */
+  didukungAwal?: boolean;
   /** Laporan dari data contoh: tidak ada di database, jadi dukungan tidak ditawarkan. */
   contoh?: boolean;
 }) {
   const router = useRouter();
   const [jumlah, setJumlah] = useState(jumlahAwal);
-  const [didukung, setDidukung] = useState<boolean | null>(null);
+  const [didukung, setDidukung] = useState(didukungAwal);
   const [memuat, setMemuat] = useState(false);
   const [galat, setGalat] = useState<string | null>(null);
   const aktif = AKTIF.includes(status) && !contoh;
@@ -67,8 +70,8 @@ export function TombolDukung({
           </span>
         </p>
         {aktif && !pemilik && login && (
-          <Tombol varian={didukung ? 'kedua' : 'utama'} onClick={dukung} disabled={memuat} aria-pressed={didukung ?? undefined}>
-            <Ikon key={String(didukung)} nama="dukung" className="pop size-4" isi={Boolean(didukung)} />
+          <Tombol varian={didukung ? 'kedua' : 'utama'} onClick={dukung} disabled={memuat} aria-pressed={didukung}>
+            <Ikon key={String(didukung)} nama="dukung" className="pop size-4" isi={didukung} />
             {memuat ? 'Menyimpan…' : didukung ? 'Batal dukung' : 'Dukung laporan ini'}
           </Tombol>
         )}

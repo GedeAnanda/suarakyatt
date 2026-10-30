@@ -14,12 +14,13 @@ export const metadata: Metadata = {
   description: 'Semua laporan warga di DKI Jakarta beserta statusnya, termasuk yang ditolak.',
 };
 
-const daftar = (x: string | string[] | undefined) => (typeof x === 'string' ? x.split(',').filter(Boolean) : []);
+// null = parameter tidak ada (tampilkan semua); daftar kosong = semua pilihan sengaja dimatikan.
+const daftar = (x: string | string[] | undefined) => (typeof x === 'string' ? x.split(',').filter(Boolean) : null);
 
 async function Isi({ searchParams }: { searchParams: PageProps<'/peta'>['searchParams'] }) {
   const [sp, { sumber, laporan, sekarang }] = await Promise.all([searchParams, ambilTitikLaporan()]);
-  const kategoriAwal = daftar(sp.kategori).map(Number).filter((n) => n >= 1 && n <= 4);
-  const statusAwal = daftar(sp.status).filter((s): s is StatusLaporan => (STATUS_PUBLIK as string[]).includes(s));
+  const kategoriAwal = daftar(sp.kategori)?.map(Number).filter((n) => n >= 1 && n <= 4) ?? null;
+  const statusAwal = daftar(sp.status)?.filter((s): s is StatusLaporan => (STATUS_PUBLIK as string[]).includes(s)) ?? null;
   return (
     <>
       <BannerSimulasi sumber={sumber} keterangan={`${laporan.length} laporan, tanpa yang dibatalkan pelapor`} />

@@ -10,7 +10,7 @@ import { pesanError } from '@/lib/errors';
 import { kompresFoto, TIPE_FOTO } from '@/lib/foto';
 import { normalisasiKode } from '@/lib/format';
 import { LABEL_ALASAN } from '@/lib/konten';
-import { createClient } from '@/lib/supabase/client';
+import { ubahStatusLaporan } from '@/lib/supabase/aksi-status';
 import { unggahFoto } from '@/lib/supabase/unggah';
 import type { AlasanTolak, StatusLaporan } from '@/lib/types';
 import { IkonStatus, LABEL_STATUS } from '../BadgeStatus';
@@ -87,7 +87,8 @@ export default function FormUbahStatus({ kode, status, aktif }: { kode: string; 
         buktiUrl = bukti.url ?? (await unggahFoto('bukti', bukti.blob));
         setBukti({ ...bukti, url: buktiUrl });
       }
-      const { error } = await createClient().rpc('update_report_status', {
+      // Lewat Server Action supaya foto laporan yang ditolak karena konten melanggar ikut dikarantina di server.
+      const hasil = await ubahStatusLaporan({
         p_kode: kode,
         p_status: baru,
         p_catatan: catatan.trim() || null,
@@ -96,7 +97,11 @@ export default function FormUbahStatus({ kode, status, aktif }: { kode: string; 
         p_duplikat_kode: baru === 'ditolak' && alasan === 'duplikat' ? normalisasiKode(rujukan) : null,
         p_perkiraan: baru === 'diverifikasi' && perkiraan ? perkiraan : null,
       });
-      if (error) throw error;
+      if ('error' in hasil) {
+        // Status sudah berubah walaupun karantina foto gagal: muat ulang supaya halaman tidak menampilkan status lama.
+        if (hasil.error === 'KARANTINA_GAGAL') router.refresh();
+        throw new Error(hasil.error);
+      }
       setBerhasil(`Status ${kode} sekarang ${LABEL_STATUS[baru]}. Perubahan ini tampil di riwayat publik.`);
       umumkan(`Status ${kode} diubah menjadi ${LABEL_STATUS[baru]}.`);
       router.refresh();

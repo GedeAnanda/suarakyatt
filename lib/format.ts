@@ -17,6 +17,12 @@ export const persen = (x: number) => `${Math.round(x * 100)}%`;
 export const tanggal = (iso: string) =>
   new Date(iso).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric', timeZone: ZONA });
 
+/**
+ * Akhir hari sebuah tanggal (kolom `date`, "2026-11-01") di Jakarta, dalam milidetik. Date.parse("2026-11-01")
+ * jatuh pada pukul 07.00 WIB hari itu, padahal janji "selesai 1 November" baru lewat setelah hari itu habis.
+ */
+export const akhirHari = (tgl: string) => Date.parse(`${tgl.slice(0, 10)}T23:59:59.999+07:00`);
+
 /** "1 Nov 2026, 14.05". */
 export const tanggalJam = (iso: string) =>
   new Date(iso).toLocaleString('id-ID', {

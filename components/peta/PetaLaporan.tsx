@@ -24,11 +24,13 @@ const KlasterLaporan = dynamic(() => import('./KlasterLaporan'), {
 export const STATUS_PUBLIK: StatusLaporan[] = ['menunggu', 'diverifikasi', 'diproses', 'selesai', 'ditolak'];
 const PER_HALAMAN = 12;
 
+// Semua terpilih = parameter dihapus. Tidak ada yang terpilih tetap ditulis (?kategori=) supaya pilihan kosong
+// itu bertahan setelah muat ulang, tidak kembali menjadi "semua".
 function simpanKeUrl(kategori: number[], status: StatusLaporan[]) {
   const url = new URL(window.location.href);
-  if (kategori.length && kategori.length < KATEGORI.length) url.searchParams.set('kategori', kategori.join(','));
+  if (kategori.length < KATEGORI.length) url.searchParams.set('kategori', kategori.join(','));
   else url.searchParams.delete('kategori');
-  if (status.length && status.length < STATUS_PUBLIK.length) url.searchParams.set('status', status.join(','));
+  if (status.length < STATUS_PUBLIK.length) url.searchParams.set('status', status.join(','));
   else url.searchParams.delete('status');
   window.history.replaceState(null, '', url);
 }
@@ -41,11 +43,12 @@ export default function PetaLaporan({
 }: {
   laporan: TitikLaporan[];
   sekarang: number;
-  kategoriAwal: number[];
-  statusAwal: StatusLaporan[];
+  /** null = tidak ada di URL, jadi semua terpilih. */
+  kategoriAwal: number[] | null;
+  statusAwal: StatusLaporan[] | null;
 }) {
-  const [kategori, setKategori] = useState<number[]>(kategoriAwal.length ? kategoriAwal : KATEGORI.map((k) => k.id));
-  const [status, setStatus] = useState<StatusLaporan[]>(statusAwal.length ? statusAwal : STATUS_PUBLIK);
+  const [kategori, setKategori] = useState<number[]>(kategoriAwal ?? KATEGORI.map((k) => k.id));
+  const [status, setStatus] = useState<StatusLaporan[]>(statusAwal ?? STATUS_PUBLIK);
   const [jumlah, setJumlah] = useState(PER_HALAMAN);
 
   const namaKategori = useMemo(() => new Set<string>(KATEGORI.filter((k) => kategori.includes(k.id)).map((k) => k.nama)), [kategori]);
