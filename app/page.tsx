@@ -21,6 +21,7 @@ import Ikon from '@/components/ui/Ikon';
 import LabelSumber from '@/components/ui/LabelSumber';
 import { kodeLaporanUntukIsu, ambilStatistik, ambilTitikLaporan, type TitikLaporan } from '@/lib/data/laporan';
 import { ambilDataPrioritas, ambilRapor } from '@/lib/data/prioritas';
+import { keTitikPeta, type TitikPeta } from '@/lib/geo/proyeksi';
 import { desimal, persen, ribuan } from '@/lib/format';
 import { FOTO, KATEGORI } from '@/lib/konten';
 import { urutkanRapor } from '@/lib/konten-rapor';
@@ -76,7 +77,11 @@ async function PanelRapor() {
 }
 
 async function BagianPrioritas() {
-  const [data, { sumber: sumberStat, statistik }] = await Promise.all([ambilDataPrioritas(), ambilStatistik()]);
+  const [data, { sumber: sumberStat, statistik }, { laporan }] = await Promise.all([
+    ambilDataPrioritas(),
+    ambilStatistik(),
+    ambilTitikLaporan(),
+  ]);
   const resmi = hitungSkor(data.faktor.isu, data.bobotResmi);
   if (resmi.length === 0) return null;
   const contoh = pilihIsuContoh(resmi, hitungSkor(data.faktor.isu, PRESET.keselamatan));
@@ -91,6 +96,22 @@ async function BagianPrioritas() {
     sudah.add(s.kode_wilayah);
     teratas.push({ kode_wilayah: s.kode_wilayah, kecamatan: s.kecamatan, kota: s.kota, kategori: s.kategori, skor: s.skor, peringkat: s.peringkat });
     if (teratas.length === 10) break;
+  }
+
+  // Titik untuk tampilan fokus di peta: paling banyak 8 laporan berkategori sama di kecamatan itu, yang masih
+  // berjalan didahulukan. Dipilih di server supaya peramban tidak menerima semua laporan.
+  const AKTIF = new Set(['menunggu', 'diverifikasi', 'diproses']);
+  const titikIsu: Record<string, TitikPeta[]> = {};
+  for (const t of teratas) {
+    titikIsu[t.kode_wilayah] = laporan
+      .filter((l) => l.kecamatan === t.kecamatan && l.kategori === t.kategori && l.status !== 'dibatalkan')
+      .filter((l) => Number.isFinite(l.lat) && Number.isFinite(l.lng))
+      .sort((a, b) => Number(AKTIF.has(b.status)) - Number(AKTIF.has(a.status)))
+      .slice(0, 8)
+      .map((l) => {
+        const [x, y] = keTitikPeta(l.lat, l.lng);
+        return { kode: l.kode, status: l.status, x, y };
+      });
   }
 
   return (
@@ -157,7 +178,7 @@ async function BagianPrioritas() {
             {sumberStat === 'contoh' ? 'Data contoh' : 'Data simulasi'}, dihitung dari semua laporan kecuali yang dibatalkan.
           </p>
           <div className="mt-6 border-t border-garis pt-6">
-            <SorotKecamatan teratas={teratas} skorPerKecamatan={skorPerKecamatan} />
+            <SorotKecamatan teratas={teratas} skorPerKecamatan={skorPerKecamatan} titik={titikIsu} />
           </div>
         </div>
       </section>

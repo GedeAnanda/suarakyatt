@@ -9,6 +9,8 @@
 import { useRef, useState } from 'react';
 import { formatPoin } from '@/lib/scoring';
 import { KECAMATAN, VIEWBOX } from '@/lib/geo/kecamatan-svg';
+import type { TitikPeta } from '@/lib/geo/proyeksi';
+import KecamatanTimbul3D from './KecamatanTimbul3D';
 
 export const KELAS = [
   { dari: 0, sampai: 20, warna: 'var(--color-k1)' },
@@ -31,11 +33,18 @@ export default function PetaKecamatan({
   onPilih,
   keterangan,
   judul,
+  efek = 'timbul',
+  titik,
   className = '',
 }: {
   /** Skor tertinggi per kode_wilayah; kecamatan yang tidak ada di sini = tidak ada laporan aktif. */
   skor: Record<string, number>;
   sorot?: string | null;
+  /** Cara menonjolkan kecamatan terpilih: "timbul" (naik sedikit di tempatnya) atau "fokus" (bergerak ke tengah peta,
+      timbul 3D dengan titik laporannya, peta lain diburamkan; dashboard Beranda saat nomor dipilih). */
+  efek?: 'timbul' | 'fokus';
+  /** Titik laporan di kecamatan terpilih, hanya untuk efek "fokus". */
+  titik?: TitikPeta[];
   onPilih?: (kodeWilayah: string) => void;
   /** Baris tambahan di keterangan melayang, misalnya kategori isu teratasnya. */
   keterangan?: Record<string, string>;
@@ -46,6 +55,7 @@ export default function PetaKecamatan({
   const [aktif, setAktif] = useState<{ kode: string; x: number; y: number } | null>(null);
   const interaktif = Boolean(onPilih);
   const kecamatanAktif = aktif && KECAMATAN.find((k) => k.kode_wilayah === aktif.kode);
+  const fokus = efek === 'fokus' && Boolean(sorot);
 
   function dariPointer(kode: string, e: React.PointerEvent) {
     const r = bingkai.current?.getBoundingClientRect();
@@ -55,7 +65,12 @@ export default function PetaKecamatan({
 
   return (
     <div ref={bingkai} className={`relative ${className}`}>
-      <svg viewBox={VIEWBOX} role={interaktif ? 'group' : 'img'} aria-label={judul} className="block h-auto w-full">
+      <svg
+        viewBox={VIEWBOX}
+        role={interaktif ? 'group' : 'img'}
+        aria-label={judul}
+        className={`block h-auto w-full transition-[filter,opacity] duration-500 ${fokus ? 'peta-fokus-latar' : ''}`}
+      >
         <defs>
           <pattern id="arsir-kosong" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
             <rect width="10" height="10" fill="var(--color-latar)" />
@@ -98,19 +113,36 @@ export default function PetaKecamatan({
             </path>
           );
         })}
+        {/* Efek "timbul": kecamatan terpilih digambar ulang di lapisan paling atas, naik sedikit dan membesar di
+            tempatnya. Lapisan ini tidak menangkap klik, jadi kecamatan di bawahnya tetap bisa dipilih. */}
         {sorot &&
+          !fokus &&
           KECAMATAN.filter((k) => k.kode_wilayah === sorot).map((k) => (
             <path
               key={`sorot-${k.kode_wilayah}`}
               d={k.d}
-              fill="none"
-              stroke="var(--color-oranye)"
-              strokeWidth={7}
+              fill={warnaSkor(skor[k.kode_wilayah])}
+              stroke="var(--color-permukaan)"
+              strokeWidth={2}
               strokeLinejoin="round"
+              className="kecamatan-timbul"
+              style={{ transformOrigin: `${k.pusat[0]}px ${k.pusat[1]}px` }}
               pointerEvents="none"
+              aria-hidden="true"
             />
           ))}
       </svg>
+
+      {/* Efek "fokus": key = kode wilayah, jadi animasinya diulang dari awal setiap kali pilihan berganti. */}
+      {fokus &&
+        KECAMATAN.filter((k) => k.kode_wilayah === sorot).map((k) => (
+          <KecamatanTimbul3D
+            key={k.kode_wilayah}
+            d={k.d}
+            warna={skor[k.kode_wilayah] === undefined ? 'var(--color-lapis-2)' : warnaSkor(skor[k.kode_wilayah])}
+            titik={titik}
+          />
+        ))}
 
       {kecamatanAktif && (
         <div

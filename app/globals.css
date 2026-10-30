@@ -844,6 +844,73 @@ input[type="range"].slider::-moz-range-thumb {
   border: 2.5px solid #fff;
   box-shadow: 0 1px 4px rgb(15 42 51 / 0.45);
 }
+/* Kecamatan terpilih di peta skor: naik sedikit dan membesar dari pusatnya, dengan bayangan di bawahnya, supaya
+   terlihat terangkat dari peta. Satuan px di sini = unit viewBox SVG (lebar 1000), jadi -12px ≈ 6 px di layar. */
+.kecamatan-timbul {
+  transform: translateY(-12px) scale(1.06);
+  filter: drop-shadow(0 6px 5px rgb(15 42 51 / 0.4)) drop-shadow(0 14px 14px rgb(15 42 51 / 0.2));
+}
+@media (prefers-reduced-motion: no-preference) {
+  .kecamatan-timbul {
+    animation: timbul 380ms var(--ease-pegas) both;
+  }
+  @keyframes timbul {
+    from {
+      transform: scale(1);
+      filter: drop-shadow(0 0 0 rgb(15 42 51 / 0)) drop-shadow(0 0 0 rgb(15 42 51 / 0));
+    }
+  }
+}
+/* Efek "fokus" (dashboard Beranda, components/KecamatanTimbul3D.tsx): peta penuh diburamkan, kecamatan terpilih
+   bergerak dari tempatnya ke tengah peta sambil membesar dan miring, lalu titik laporannya muncul satu per satu. */
+.peta-fokus-latar {
+  filter: blur(3px);
+  opacity: 0.55;
+}
+.t3d {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  perspective: 1100px;
+}
+.t3d-kotak {
+  position: absolute;
+  transform-style: preserve-3d;
+  transform: rotateX(32deg);
+}
+.t3d-kotak svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.t3d-bayang {
+  opacity: 0.35;
+  filter: blur(8px);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .t3d-kotak {
+    animation: t3d-masuk 900ms var(--ease-keluar) both;
+  }
+  .t3d-titik {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: t3d-titik 380ms var(--ease-pegas) both;
+  }
+  @keyframes t3d-masuk {
+    from {
+      transform: translate(var(--asal-x), var(--asal-y)) scale(var(--asal-skala)) rotateX(0deg);
+    }
+  }
+  @keyframes t3d-titik {
+    from {
+      opacity: 0;
+      transform: scale(0);
+    }
+  }
+}
 @media (prefers-reduced-motion: no-preference) {
   .peta .titik,
   .peta .klaster {
