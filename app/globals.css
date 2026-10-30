@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 /* `rel:` = menu samping sedang berupa deret ikon (layar ≥ 1024 px, panel lebar tidak dibuka).
-   Panel lebar dibuka lewat tombol menu (data-sisi="buka" di <html>, lib/sisi.ts) dan menumpang di atas halaman,
-   lalu tertutup lagi begitu halaman dipilih. Di bawah 1024 px menu berupa laci, jadi varian ini tidak berlaku. */
+   Panel lebar dibuka lewat tombol menu (data-sisi="buka" di <html>, lib/sisi.ts) dan mendorong isi halaman ke kanan.
+   Di bawah 1024 px menu berupa laci, jadi varian ini tidak berlaku. */
 @custom-variant rel {
   @media (min-width: 64rem) {
     html:not([data-sisi="buka"]) & {
@@ -352,13 +352,14 @@
 
 /* Di layer components supaya kelas utilitas (rounded-none, h-*, dan sebagainya) tetap bisa menimpanya. */
 @layer components {
-  /* Halaman: satu pasang tepi dan satu lebar maksimal untuk semua isi di samping menu. */
+  /* Halaman: satu pasang tepi dan satu lebar maksimal untuk semua isi di samping menu. Isi memenuhi ruang di samping
+     menu sampai layar 1920 px; baru di layar yang lebih lebar ada ruang kosong di kiri-kanan. */
   .bingkai {
     /* Di iPhone miring, tepi isi tidak boleh masuk ke area poni / Dynamic Island. */
     padding-inline: max(var(--tepi), env(safe-area-inset-left)) max(var(--tepi), env(safe-area-inset-right));
     margin-inline: auto;
     width: 100%;
-    max-width: 77rem;
+    max-width: 120rem;
   }
 
   /* Kerangka memuat: denyut nada, bukan kilau gradasi. */
@@ -450,25 +451,13 @@ html[data-laci="buka"] .tirai {
       margin 220ms var(--ease-keluar),
       box-shadow 220ms;
   }
-  /* Panel lebar menumpang di atas halaman: margin negatif membuatnya tetap memakai ruang 4,75rem,
-     jadi isi halaman tidak bergeser saat menu dibuka. */
+  /* Panel lebar mendorong isi: menu melebar ke 15rem dan isi halaman bergeser ke kanan (menyempit); saat menu
+     ditutup, isi melebar lagi memenuhi ruangnya. Tanpa tirai, karena tidak ada yang tertutup. */
   html[data-sisi="buka"] .sisi {
-    z-index: 950;
     width: 15rem;
-    margin-right: -10.25rem;
-    box-shadow: var(--shadow-angkat);
   }
-  /* Tirai tipis di belakang panel: menandai bahwa panel menumpang, dan klik di situ menutupnya. */
   .tirai {
-    background: rgb(15 42 51 / 0.18);
-  }
-  html:not([data-sisi="buka"]) .tirai {
     display: none;
-  }
-  html[data-sisi="buka"] .tirai {
-    opacity: 1;
-    visibility: visible;
-    transition-delay: 0s;
   }
 }
 @media (prefers-reduced-motion: reduce) {

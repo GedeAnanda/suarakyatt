@@ -1,5 +1,5 @@
 // lib/sisi.ts — status menu samping, disimpan sebagai atribut di <html> (pemilik: A)
-// Layar ≥ 1024 px: menu berupa deret ikon; data-sisi="buka" membuka panel lebar yang menumpang di atas halaman.
+// Layar ≥ 1024 px: menu berupa deret ikon; data-sisi="buka" membuka panel lebar yang mendorong isi halaman.
 // Layar < 1024 px: menu berupa laci; data-laci="buka" membukanya.
 // Keduanya tertutup lagi begitu pengguna memilih halaman (components/Sisi.tsx), jadi tidak ada yang diingat.
 // Header (TombolMenu) dan menu (Sisi) dua komponen terpisah, jadi keduanya membaca atribut yang sama
