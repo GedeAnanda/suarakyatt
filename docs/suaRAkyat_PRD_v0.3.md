@@ -270,7 +270,7 @@ Setiap FR di bawah harus bisa diuji satu per satu. Angka dan aturan detailnya ad
 
 ### 6.2 Pelaporan
 
-- **FR-B1** Form berisi kategori (wajib), deskripsi (wajib, 20–500 karakter), foto 1–3 file (JPG/PNG/WebP, maks 5 MB per file, dikompres di browser sekaligus membuang metadata EXIF), dan pin peta (wajib). Tombol "Pakai lokasi saya" bersifat opsional. Form menampilkan peringatan agar tidak memotret wajah atau plat nomor orang lain. Di atas form ada pemberitahuan bahwa laporan di suaRAkyat tidak diteruskan ke instansi, dengan tautan ke kanal resmi (JAKI, LAPOR!).
+- **FR-B1** Form berisi kategori (wajib), deskripsi (wajib, 20–500 karakter), foto 1–3 file (JPG/PNG/WebP, maks 20 MB per file asli dan maks 5 MB setelah dikompres di browser sekaligus membuang metadata EXIF), dan pin peta (wajib). Tombol "Pakai lokasi saya" bersifat opsional. Form menampilkan peringatan agar tidak memotret wajah atau plat nomor orang lain. Di atas form ada pemberitahuan bahwa laporan di suaRAkyat tidak diteruskan ke instansi, dengan tautan ke kanal resmi (JAKI, LAPOR!).
 - **FR-B2** Kecamatan ditentukan dari koordinat (point-in-polygon), instansi dari kategori. Pin di luar wilayah studi ditolak dengan pesan yang jelas.
 - **FR-B3** Sebelum laporan dikirim, sistem menampilkan laporan serupa (bagian 7.3). Warga bisa upvote laporan yang ada atau tetap mengirim.
 - **FR-B4** Laporan terkirim mendapat kode unik `SR-` + 6 karakter (huruf besar dan angka, tanpa O, 0, I, 1) dan status awal Menunggu.
