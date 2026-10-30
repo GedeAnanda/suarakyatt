@@ -3,7 +3,10 @@
 // tanpa EXIF (lokasi GPS, merek ponsel, waktu). Orientasi dari EXIF diterapkan dulu.
 
 export const TIPE_FOTO = ['image/jpeg', 'image/png', 'image/webp'];
-export const UKURAN_MAKS = 5 * 1024 * 1024;
+/** Batas file asli dari perangkat. Foto kamera HP 48 MP biasanya 5–12 MB; hasil kompresnya hanya ratusan KB. */
+export const UKURAN_MAKS = 20 * 1024 * 1024;
+/** Batas hasil kompres, sama dengan batas bucket Storage (lib/supabase/unggah.ts). */
+const UKURAN_HASIL_MAKS = 5 * 1024 * 1024;
 const SISI_MAKS = 1600;
 
 export async function kompresFoto(file: File): Promise<Blob> {
@@ -28,7 +31,9 @@ export async function kompresFoto(file: File): Promise<Blob> {
   if (!hasil || hasil.type !== 'image/webp') {
     const jpeg = await new Promise<Blob | null>((res) => canvas.toBlob(res, 'image/jpeg', 0.82));
     if (!jpeg) throw new Error('KOMPRES_GAGAL');
+    if (jpeg.size > UKURAN_HASIL_MAKS) throw new Error('UKURAN_FOTO');
     return jpeg;
   }
+  if (hasil.size > UKURAN_HASIL_MAKS) throw new Error('UKURAN_FOTO');
   return hasil;
 }

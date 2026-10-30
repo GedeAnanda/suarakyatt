@@ -6,10 +6,13 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { Suspense } from 'react';
+import BadgeStatus from '@/components/BadgeStatus';
 import CariKode from '@/components/CariKode';
 import KepalaHalaman from '@/components/KepalaHalaman';
 import Ikon, { type NamaIkon } from '@/components/ui/Ikon';
-import { normalisasiKode } from '@/lib/format';
+import { kelasTautan } from '@/components/ui/Tombol';
+import { ambilLaporanSaya } from '@/lib/data/laporan';
+import { normalisasiKode, tanggal } from '@/lib/format';
 
 export const metadata: Metadata = { title: 'Lacak laporan' };
 
@@ -34,6 +37,47 @@ async function Isi({ searchParams }: { searchParams: PageProps<'/lacak'>['search
       )}
       <CariKode id="kode-lacak" nilaiAwal={masukan} />
     </>
+  );
+}
+
+/** Daftar laporan milik pengguna yang login, supaya kode yang hilang tetap bisa ditemukan. Tamu tidak melihat apa-apa. */
+async function LaporanAnda() {
+  const daftar = await ambilLaporanSaya();
+  if (daftar === null) return null;
+  return (
+    <section id="laporan-saya" aria-labelledby="judul-laporan-saya" className="mt-10 max-w-3xl scroll-mt-24">
+      <h2 id="judul-laporan-saya" className="judul-seksi">
+        Laporan Anda
+      </h2>
+      {daftar.length === 0 ? (
+        <p className="kartu mt-4 p-5 text-badan">
+          Anda belum pernah melapor dari akun ini.{' '}
+          <Link href="/lapor" className={kelasTautan}>
+            Lapor masalah
+          </Link>
+        </p>
+      ) : (
+        <ul className="kartu mt-4 divide-y divide-garis">
+          {daftar.map((l) => (
+            <li key={l.kode} className="flex flex-wrap items-center gap-x-4 gap-y-1 px-5 py-3.5">
+              {/* Laporan yang dibatalkan tidak punya halaman publik, jadi kodenya tidak ditautkan. */}
+              {l.status === 'dibatalkan' ? (
+                <span className="font-kode angka font-bold text-lembut">{l.kode}</span>
+              ) : (
+                <Link href={`/laporan/${l.kode}`} className="font-kode angka font-bold text-biru-tua hover:underline">
+                  {l.kode}
+                </Link>
+              )}
+              <BadgeStatus status={l.status} />
+              <span className="text-kecil text-lembut">
+                {l.kategori}
+                {l.kecamatan && ` · Kec. ${l.kecamatan}`} · {tanggal(l.created_at)}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
   );
 }
 
@@ -65,6 +109,10 @@ export default function LacakPage({ searchParams }: PageProps<'/lacak'>) {
           untuk mencoba alurnya.
         </p>
       </div>
+
+      <Suspense fallback={null}>
+        <LaporanAnda />
+      </Suspense>
 
       <section aria-labelledby="judul-isi-lacak" className="mt-10">
         <h2 id="judul-isi-lacak" className="judul-seksi">

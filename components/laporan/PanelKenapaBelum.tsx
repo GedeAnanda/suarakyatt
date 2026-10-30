@@ -49,7 +49,7 @@ export default function PanelKenapaBelum({
           <span className="block text-[clamp(1.5rem,1.2rem+1.4vw,2.25rem)] leading-none font-bold tracking-[-0.02em]">
             Kenapa belum?
           </span>
-          <span className="mt-1.5 block text-kecil text-white/90">
+          <span className="mt-1.5 block text-kecil text-white">
             {buka ? 'Tutup penjelasan' : 'Lihat posisi isu ini di daftar prioritas dan apa yang menahannya'}
           </span>
         </span>

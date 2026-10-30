@@ -109,7 +109,7 @@ suarakyat/
 │  │  ├─ server.ts                  client untuk Server Component, Server Action, Route Handler
 │  │  ├─ proxy.ts                   client khusus proxy.ts: segarkan token sesi
 │  │  ├─ admin.ts                   client service role: melewati RLS, hanya server
-│  │  ├─ aksi-auth.ts               Server Action masuk(), daftar(), keluar()
+│  │  ├─ aksi-auth.ts               Server Action masuk(), daftar(), keluar(), lupa/ganti password
 │  │  ├─ unggah.ts                  unggah foto ke Storage → URL publik
 │  │  └─ env.ts                     baca NEXT_PUBLIC_SUPABASE_URL dan ANON_KEY
 │  ├─ data/                         baca data untuk halaman (+ cadangan data contoh)
@@ -174,18 +174,23 @@ Label akses yang dipakai di tabel bab ini: **publik** semua orang termasuk tamu 
 | Endpoint · file | Akses | Yang dilakukan | Respons |
 |---|---|---|---|
 | `POST /api/demo-login` · `app/api/demo-login/route.ts` | publik | Body `{ peran: 'warga' \| 'admin' }` divalidasi dengan Zod. Email dan password akun demo dibaca dari env di server, jadi browser tidak pernah melihatnya. Server lalu login ke Supabase dan menulis cookie sesi. Dipanggil dari `components/TombolDemo.tsx`. | 200 `{ok, redirect}` · 400 `PERAN_TIDAK_VALID` · 500 `DEMO_BELUM_DIATUR`, `LOGIN_DEMO_GAGAL` |
-| `GET /api/cron/reset-demo` · `app/api/cron/reset-demo/route.ts` | rahasia | Hanya menerima header `Authorization: Bearer <CRON_SECRET>`, dibandingkan dengan `timingSafeEqual`. Setelah itu membuat client service role dan memanggil RPC `reset_demo_data()`. Dipicu Vercel Cron `0 19 * * *` (19.00 UTC = 02.00 WIB). | 200 `{reset_at}` · 401 `TIDAK_BERWENANG` · 409 kode dari RPC, mis. `SEED_BELUM_ADA` · 500/501 konfigurasi atau fungsi belum ada |
-| `GET /auth/callback` · `app/auth/callback/route.ts` | publik | Tujuan tautan di email verifikasi. Menukar `?code=` (alur PKCE) atau `?token_hash=&type=` menjadi sesi, lalu redirect ke `?lanjut=` yang sudah disaring `tujuanAman()`. | 302 ke `lanjut` · jika gagal: 302 ke `/masuk?verifikasi=gagal` |
+| `GET /api/cron/reset-demo` · `app/api/cron/reset-demo/route.ts` | rahasia | Hanya menerima header `Authorization: Bearer <CRON_SECRET>`, dibandingkan dengan `timingSafeEqual`. Setelah itu membuat client service role, mengembalikan email dan password kedua akun demo ke nilai `DEMO_*` di env (akun dicari lewat `profiles.is_demo` + `role`; pengunjung bisa mengganti keduanya lewat `auth.updateUser` dari browser), lalu memanggil RPC `reset_demo_data()`. Dipicu Vercel Cron `0 19 * * *` (19.00 UTC = 02.00 WIB). | 200 `{reset_at}` · 500 `PULIHKAN_AKUN_DEMO_GAGAL` (data tetap direset) · 401 `TIDAK_BERWENANG` · 409 kode dari RPC, mis. `SEED_BELUM_ADA` · 500/501 konfigurasi atau fungsi belum ada |
+| `GET /auth/callback` · `app/auth/callback/route.ts` | publik | Tujuan tautan di email verifikasi dan email lupa password (`lanjut=/masuk/sandi-baru`). Menukar `?code=` (alur PKCE) atau `?token_hash=&type=` menjadi sesi, lalu redirect ke `?lanjut=` yang sudah disaring `tujuanAman()`. | 302 ke `lanjut` · jika gagal: 302 ke `/masuk?verifikasi=gagal` |
 
 ### 3.2 Server Action · `lib/supabase/aksi-auth.ts`
 
 | Fungsi | Yang dilakukan | Dipakai di · error |
 |---|---|---|
 | `masuk()` | Validasi Zod (email, password), lalu `signInWithPassword`, lalu `redirect(tujuanAman(lanjut))`. | `FormAuth.tsx` · `KREDENSIAL_SALAH`, `EMAIL_BELUM_VERIFIKASI` |
-| `daftar()` | Nama 2–80 karakter, email, password ≥ 8. Lalu `signUp` dengan `data.nama`, yang dibaca trigger `handle_new_user` untuk membuat profil. Tautan email diarahkan ke `/auth/callback?lanjut=/lapor`. | `FormAuth.tsx` · `PASSWORD_LEMAH`, `BATAS_EMAIL` |
+| `daftar()` | Nama 2–80 karakter, email, password ≥ 8. Lalu `signUp` dengan `data.nama`, yang dibaca trigger `handle_new_user` untuk membuat profil. Tautan email diarahkan ke `/auth/callback?lanjut=<asal>`; asalnya halaman tempat pengguna mulai mendaftar, bawaannya `/lapor`. | `FormAuth.tsx` · `NAMA_TIDAK_VALID`, `EMAIL_TIDAK_VALID`, `PASSWORD_LEMAH`, `BATAS_EMAIL` |
+| `kirimUlangVerifikasi()` | `auth.resend({ type: 'signup' })`. Selalu menjawab ok, kecuali kena batas kirim, supaya email terdaftar tidak bisa ditebak. | `FormAuth.tsx` (muncul setelah `EMAIL_BELUM_VERIFIKASI`) · `BATAS_EMAIL` |
+| `lupaPassword()` | `resetPasswordForEmail` dengan tautan ke `/auth/callback?lanjut=/masuk/sandi-baru`. Selalu menjawab ok. Email akun demo (`DEMO_*_EMAIL`) dilewati. | `FormAuth.tsx` · `EMAIL_TIDAK_VALID`, `BATAS_EMAIL` |
+| `gantiPassword()` | Untuk pengguna yang sudah punya sesi (dari tautan lupa password). Menolak akun `is_demo` sebelum `updateUser({ password })`. | `/masuk/sandi-baru` · `TIDAK_LOGIN`, `DEMO_SANDI`, `SANDI_SAMA`, `PASSWORD_LEMAH` |
 | `keluar()` | `signOut()`, lalu redirect ke `/`. | `Header.tsx` |
 
-Fungsi `kodeAuth()` di berkas yang sama menerjemahkan kode error Supabase Auth (misalnya `invalid_credentials`) ke kode error milik kita.
+Fungsi `kodeAuth()` di berkas yang sama menerjemahkan kode error Supabase Auth (misalnya `invalid_credentials`) ke kode error milik kita. Saat gagal, `masuk`, `daftar`, dan `lupaPassword` mengembalikan nama dan email di `nilai`. Alasannya, React 19 mengosongkan form setelah action selesai, dan form memakai `nilai` itu sebagai `defaultValue`.
+
+Pengaturan di dashboard Supabase (B): **Redirect URLs** harus menerima `/auth/callback` beserta query-nya, misalnya `https://<domain>/auth/callback**` dan `http://localhost:3000/auth/callback**`. Kalau tidak cocok, Supabase mengirim pengguna ke Site URL dan tautan lupa password tidak membuka `/masuk/sandi-baru`.
 
 ### 3.3 RPC: fungsi Postgres (inti backend)
 
@@ -311,7 +316,7 @@ Ada dua lapis penjaga. Fungsi RPC memeriksa transisi dan memberi pesan error yan
 
 Tidak ada satu lapis pun yang dianggap cukup. Kalau satu lapis bocor, lapis berikutnya masih menahan. Konsep ini disebut *defense in depth*.
 
-1. **`proxy.ts`: kenyamanan, bukan keamanan.** Tamu yang membuka `/lapor` atau `/admin` diarahkan ke `/masuk?lanjut=…`. Non-admin di `/admin` diarahkan ke `/`. Komentarnya sendiri menulis: "keamanan sebenarnya tetap di RLS dan RPC."
+1. **`proxy.ts`: kenyamanan, bukan keamanan.** Tamu yang membuka `/lapor` atau `/admin` diarahkan ke `/masuk?lanjut=…` (path beserta query-nya). Pengguna yang sudah login dan membuka `/masuk` langsung diarahkan ke `lanjut`. Non-admin di `/admin` diarahkan ke `/`. Komentarnya sendiri menulis: "keamanan sebenarnya tetap di RLS dan RPC."
 2. **Hak tabel (GRANT/REVOKE)** di `0002` bagian 5. Supabase awalnya memberi `anon` dan `authenticated` semua hak. Kita cabut semuanya, lalu hanya memberi `SELECT`. Satu-satunya pengecualian: `UPDATE (nama)` di `profiles`.
 3. **Row Level Security.** Menentukan *baris* mana yang boleh dibaca. Pelapor hanya melihat laporannya sendiri, admin hanya melihat laporan kategori instansinya, Perencana melihat semua. Data referensi (wilayah, kategori, bobot) terbuka untuk publik.
 4. **View.** Menentukan *kolom* mana yang boleh dilihat publik. `v_laporan_publik` tidak memuat `user_id`. Opsi `security_barrier` mencegah filter di view dibocorkan lewat fungsi di `WHERE`. Sebaliknya, `v_laporan_admin` memakai `security_invoker` supaya RLS pemanggil tetap berlaku.

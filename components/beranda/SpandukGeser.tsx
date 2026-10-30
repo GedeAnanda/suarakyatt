@@ -122,7 +122,8 @@ export default function SpandukGeser({ className = '' }: { className?: string })
           </button>
         )}
       </div>
-      <div className="mt-3 flex justify-center gap-1.5" role="group" aria-label="Pilih spanduk">
+      {/* Titiknya kecil, tapi area klik tiap tombol minimal 24×24 px (WCAG 2.5.8). */}
+      <div className="mt-3 flex justify-center" role="group" aria-label="Pilih spanduk">
         {SPANDUK.map((s, i) => (
           <button
             key={s.href}
@@ -130,7 +131,7 @@ export default function SpandukGeser({ className = '' }: { className?: string })
             onClick={() => ke(i)}
             aria-label={`Spanduk ${i + 1}: ${s.judul}`}
             aria-current={i === indeks || undefined}
-            className="flex h-6 items-center px-0.5"
+            className="flex h-6 min-w-6 items-center justify-center px-1"
           >
             <span className={`block h-1.5 rounded-full transition-[width,background-color] duration-300 ${i === indeks ? 'w-6 bg-biru' : 'w-1.5 bg-lapis-2'}`} />
           </button>

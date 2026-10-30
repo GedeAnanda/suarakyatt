@@ -23,6 +23,9 @@ export const tanggal = (iso: string) =>
  */
 export const akhirHari = (tgl: string) => Date.parse(`${tgl.slice(0, 10)}T23:59:59.999+07:00`);
 
+/** Tanggal hari ini di Jakarta dalam bentuk "2026-11-01", untuk atribut min pada <input type="date">. */
+export const hariIni = (sekarang = Date.now()) => new Date(sekarang).toLocaleDateString('en-CA', { timeZone: ZONA });
+
 /** "1 Nov 2026, 14.05". */
 export const tanggalJam = (iso: string) =>
   new Date(iso).toLocaleString('id-ID', {

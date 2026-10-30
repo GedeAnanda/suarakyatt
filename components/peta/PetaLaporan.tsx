@@ -7,7 +7,7 @@
 import dynamic from 'next/dynamic';
 import { useMemo, useState } from 'react';
 import type { TitikLaporan } from '@/lib/data/laporan';
-import { KATEGORI } from '@/lib/konten';
+import { KATEGORI, STATUS_PUBLIK } from '@/lib/konten';
 import type { StatusLaporan } from '@/lib/types';
 import { LABEL_STATUS, TitikStatus, WARNA_TITIK } from '../BadgeStatus';
 import KartuLaporan from '../KartuLaporan';
@@ -20,7 +20,6 @@ const KlasterLaporan = dynamic(() => import('./KlasterLaporan'), {
   loading: () => <div className="kerangka h-[min(70svh,42rem)] min-h-96 w-full rounded-none" />,
 });
 
-export const STATUS_PUBLIK: StatusLaporan[] = ['menunggu', 'diverifikasi', 'diproses', 'selesai', 'ditolak'];
 const PER_HALAMAN = 12;
 
 // Semua terpilih = parameter dihapus. Tidak ada yang terpilih tetap ditulis (?kategori=) supaya pilihan kosong
