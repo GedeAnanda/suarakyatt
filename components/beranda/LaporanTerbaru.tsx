@@ -10,7 +10,6 @@ import type { TitikLaporan } from '@/lib/data/laporan';
 import { KATEGORI } from '@/lib/konten';
 import KartuLaporan from '../KartuLaporan';
 import Ikon from '../ui/Ikon';
-import IkonKategori from '../ui/IkonKategori';
 
 const TAB = [{ id: 'semua', nama: 'Semua kategori' }, ...KATEGORI.map((k) => ({ id: String(k.id), nama: k.nama }))];
 
@@ -30,9 +29,8 @@ export default function LaporanTerbaru({ per, sekarang }: { per: Record<string, 
             aria-selected={t.id === aktif}
             aria-controls="panel-terbaru"
             onClick={() => setAktif(t.id)}
-            className={`chip ${t.id === 'semua' ? '' : 'pl-1.5'}`}
+            className="chip"
           >
-            {t.id !== 'semua' && <IkonKategori nama={t.nama} ukuran="kecil" />}
             {t.nama}
           </button>
         ))}

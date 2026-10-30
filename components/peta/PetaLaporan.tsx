@@ -9,11 +9,10 @@ import { useMemo, useState } from 'react';
 import type { TitikLaporan } from '@/lib/data/laporan';
 import { KATEGORI, STATUS_PUBLIK } from '@/lib/konten';
 import type { StatusLaporan } from '@/lib/types';
-import { IkonStatus, LABEL_STATUS, WARNA_TITIK } from '../BadgeStatus';
+import { LABEL_STATUS, TitikStatus, WARNA_TITIK } from '../BadgeStatus';
 import KartuLaporan from '../KartuLaporan';
 import AngkaGulir from '../ui/AngkaGulir';
 import Ikon from '../ui/Ikon';
-import IkonKategori from '../ui/IkonKategori';
 import { Tombol } from '../ui/Tombol';
 
 const KlasterLaporan = dynamic(() => import('./KlasterLaporan'), {
@@ -92,8 +91,7 @@ export default function PetaLaporan({
           <legend className="text-kecil font-bold">Kategori</legend>
           <div className={DERET_CHIP}>
             {KATEGORI.map((k) => (
-              <button key={k.id} type="button" aria-pressed={kategori.includes(k.id)} onClick={() => ubahKategori(k.id)} className="chip pl-1.5">
-                <IkonKategori nama={k.nama} ukuran="kecil" />
+              <button key={k.id} type="button" aria-pressed={kategori.includes(k.id)} onClick={() => ubahKategori(k.id)} className="chip">
                 {k.nama}
                 {kategori.includes(k.id) && <Ikon nama="centang" className="size-3.5" />}
               </button>
@@ -107,7 +105,7 @@ export default function PetaLaporan({
           <div className={DERET_CHIP}>
             {STATUS_PUBLIK.map((s) => (
               <button key={s} type="button" aria-pressed={status.includes(s)} onClick={() => ubahStatus(s)} className="chip">
-                <IkonStatus status={s} className="size-3.5" />
+                <TitikStatus status={s} className="size-2.5" />
                 {LABEL_STATUS[s]}
                 <AngkaGulir className="angka font-medium opacity-75" nilai={String(hitungStatus[s])} />
               </button>

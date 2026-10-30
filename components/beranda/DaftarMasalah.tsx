@@ -9,7 +9,6 @@ import Link from 'next/link';
 import { useState, type CSSProperties } from 'react';
 import { FOTO, KATEGORI, type FotoTerbuka } from '@/lib/konten';
 import Ikon from '../ui/Ikon';
-import IkonKategori from '../ui/IkonKategori';
 
 const FOTO_KATEGORI: FotoTerbuka[] = [FOTO.jalan1975, FOTO.kanalTimur, FOTO.ciliwung, FOTO.lampuJalan];
 
@@ -27,8 +26,7 @@ export default function DaftarMasalah() {
     <div>
       <div className="flex flex-wrap gap-2" role="group" aria-label="Pilih kategori laporan">
         {KATEGORI.map((x, i) => (
-          <button key={x.id} type="button" aria-pressed={i === pilih} onClick={() => setPilih(i)} className="chip pl-1.5">
-            <IkonKategori nama={x.nama} ukuran="kecil" />
+          <button key={x.id} type="button" aria-pressed={i === pilih} onClick={() => setPilih(i)} className="chip">
             {x.nama}
           </button>
         ))}
@@ -74,10 +72,7 @@ export default function DaftarMasalah() {
             </span>
             <span className="text-kecil text-lembut">ditentukan dari kategori, bukan dipilih pelapor</span>
           </div>
-          <h3 className="mt-4 flex items-center gap-3 text-seksi font-bold">
-            <IkonKategori nama={k.nama} ukuran="besar" />
-            {k.nama}
-          </h3>
+          <h3 className="mt-4 text-seksi font-bold">{k.nama}</h3>
           <p className="mt-1 flex items-center gap-2 text-badan text-lembut">
             <Ikon nama="gedung" className="size-4.5" />
             {k.instansi}
@@ -101,7 +96,7 @@ export default function DaftarMasalah() {
                 <span className="truncate">{x.nama}</span>
                 <span className="relative block h-2 overflow-hidden rounded-full bg-lapis" aria-hidden="true">
                   <span
-                    className="bar-isi absolute inset-y-0 left-0 w-full rounded-full bg-k2"
+                    className="bar-isi absolute inset-y-0 left-0 w-full rounded-full bg-biru/35"
                     style={{ '--isi': x.selesai / JAM_MAKS } as CSSProperties}
                   />
                   <span

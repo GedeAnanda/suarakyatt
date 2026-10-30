@@ -20,7 +20,6 @@ import { unggahFoto } from '@/lib/supabase/unggah';
 import type { StatusLaporan } from '@/lib/types';
 import BadgeStatus from '../BadgeStatus';
 import Ikon from '../ui/Ikon';
-import IkonKategori from '../ui/IkonKategori';
 import { Tombol } from '../ui/Tombol';
 import type { Titik } from './PetaPinLeaflet';
 
@@ -378,15 +377,14 @@ export default function FormLaporan() {
             {KATEGORI.map((k) => (
               <label
                 key={k.id}
-                className="group grid cursor-pointer grid-cols-[1.25rem_auto_1fr] items-start gap-x-3 gap-y-1 rounded-kartu border border-garis bg-permukaan p-4 transition-[background-color,border-color,scale] duration-200 hover:border-biru active:scale-[0.99] has-checked:border-biru has-checked:bg-biru-muda has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-biru"
+                className="group grid cursor-pointer grid-cols-[1.25rem_1fr] items-start gap-x-3 gap-y-1 rounded-kartu border border-garis bg-permukaan p-4 transition-[background-color,border-color,scale] duration-200 hover:border-biru active:scale-[0.99] has-checked:border-biru has-checked:bg-biru-muda has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-biru"
               >
                 <input type="radio" name="kategori" value={k.id} checked={kategori === k.id} onChange={() => setKategori(k.id)} className="sr-only" />
                 <span aria-hidden="true" className="mt-1 flex size-5 items-center justify-center rounded-full border-2 border-garis-isian bg-permukaan group-has-[:checked]:border-biru">
                   <span className="size-2.5 rounded-full bg-biru opacity-0 transition-opacity group-has-[:checked]:opacity-100" />
                 </span>
-                <IkonKategori nama={k.nama} className="row-span-2" />
                 <span className="text-lead font-bold">{k.nama}</span>
-                <span className="col-start-3 text-kecil text-lembut">
+                <span className="col-start-2 text-kecil text-lembut">
                   {k.instansi} · urgensi {k.urgensi.toLowerCase()} · respons {k.respons} jam, selesai {k.selesai / 24} hari
                 </span>
               </label>

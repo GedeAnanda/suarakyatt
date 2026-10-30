@@ -12,11 +12,11 @@ function Langkah({ n, judul, isi, children }: { n: number; judul: string; isi: s
   return (
     <li className="flex">
       <article className="kartu flex min-w-0 flex-1 flex-col p-5">
-        <p className="inline-flex items-center gap-2 self-start rounded-full bg-biru-muda py-1 pr-3 pl-1 text-mini font-bold text-biru-tua">
-          <span className="angka flex size-5 items-center justify-center rounded-full bg-biru text-white">{n}</span>
-          Langkah {n}
+        <p className="angka text-[2.75rem] leading-none font-light text-biru">
+          <span className="sr-only">Langkah </span>
+          {String(n).padStart(2, '0')}
         </p>
-        <h3 className="mt-3 text-sub font-bold">{judul}</h3>
+        <h3 className="mt-4 text-sub font-bold">{judul}</h3>
         <p className="mt-1.5 text-kecil text-lembut">{isi}</p>
         <div className="mt-5 flex-1" data-ui>
           {children}
@@ -26,30 +26,26 @@ function Langkah({ n, judul, isi, children }: { n: number; judul: string; isi: s
   );
 }
 
+// Satu baris rapor seperti di kertas rapor: huruf tebal biru tanpa kotak, nama dan
+// tingkat penolakan di tengah, nilai rata kanan supaya bisa dibandingkan sekilas.
 function BarisRapor({ i }: { i: RaporInstansi }) {
   const tertahan = i.huruf !== i.huruf_asli;
   return (
-    <div className="flex items-center gap-3 rounded-kontrol border border-garis p-3">
-      <span
-        className={`flex size-11 shrink-0 items-center justify-center rounded-kontrol text-[1.5rem] leading-none font-bold ${
-          i.huruf ? 'bg-biru text-white' : 'bg-lapis text-lembut'
-        }`}
-      >
-        {i.huruf ?? '–'}
-      </span>
-      <div className="min-w-0 text-kecil leading-snug">
+    <li className="grid grid-cols-[2.25rem_minmax(0,1fr)_auto] items-center gap-x-2 py-3 first:pt-0 last:pb-0">
+      <span className={`text-center text-[1.75rem] leading-none font-bold ${i.huruf ? 'text-biru' : 'text-lembut'}`}>{i.huruf ?? '–'}</span>
+      <div className="text-kecil leading-snug">
         <p className="truncate font-bold">{i.nama.replace(' (simulasi)', '')}</p>
-        <p className="text-lembut">
-          Nilai <span className="angka">{desimal(i.nilai)}</span>
+        <p className={i.peringatan_penolakan ? 'text-merah-tua' : 'text-lembut'}>
+          ditolak <span className="angka">{persen(i.tingkat_penolakan)}</span>
+          {i.peringatan_penolakan && ' · huruf ditahan'}
           {tertahan && `, setara ${i.huruf_asli}`}
         </p>
-        <p className={`flex items-center gap-1 ${i.peringatan_penolakan ? 'font-semibold text-merah-tua' : 'text-lembut'}`}>
-          {i.peringatan_penolakan && <Ikon nama="peringatan" className="size-3.5" />}
-          Ditolak {persen(i.tingkat_penolakan)}
-          {i.peringatan_penolakan && ', huruf ditahan C'}
-        </p>
       </div>
-    </div>
+      <p className="angka self-start text-kecil font-bold whitespace-nowrap">
+        {desimal(i.nilai)}
+        <span className="font-normal text-lembut"> /100</span>
+      </p>
+    </li>
   );
 }
 
@@ -64,17 +60,15 @@ export default function AlurLapor({ rapor, kodeContoh }: { rapor: RaporInstansi[
     <ol className="grid grid-cols-1 gap-4 @3xl:grid-cols-3" data-muncul>
       <Langkah n={1} judul="Warga melapor" isi="Foto, titik di peta, dan cerita singkat. Kecamatan dan dinasnya ditentukan otomatis.">
         <div className="grid gap-3 rounded-kontrol bg-latar p-4">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="rounded-[0.375rem] bg-biru px-2 py-0.5 text-mini font-bold text-white">Jalan rusak</span>
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+            <span className="text-kecil font-bold">Jalan rusak</span>
             <span className="inline-flex items-center gap-1 text-kecil text-lembut">
               <Ikon nama="lokasi" className="size-3.5" />
               Cipayung, Jakarta Timur
             </span>
           </div>
           <p className="text-kecil">&ldquo;Lubang besar di lajur kiri, motor sering oleng saat malam.&rdquo;</p>
-          <p className="inline-flex items-center gap-1.5 text-kecil text-lembut">
-            <Ikon nama="kamera" className="size-4" />2 foto terlampir
-          </p>
+          <p className="text-kecil text-lembut">2 foto terlampir</p>
         </div>
         <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-kontrol border border-garis p-3">
           <div>
@@ -110,7 +104,7 @@ export default function AlurLapor({ rapor, kodeContoh }: { rapor: RaporInstansi[
             </li>
           ))}
         </ol>
-        <p className="mt-3 flex items-center gap-2 rounded-kontrol bg-biru-muda px-3 py-2.5 text-kecil text-biru-tua">
+        <p className="mt-3 flex items-center gap-2 border-t border-garis pt-3 text-kecil text-lembut">
           <Ikon nama="jam" className="size-4 shrink-0" />
           Sisa 4 hari menuju batas waktu selesai
         </p>
@@ -125,10 +119,10 @@ export default function AlurLapor({ rapor, kodeContoh }: { rapor: RaporInstansi[
           </span>
           <span className="text-kecil text-lembut">&ldquo;Rapi, tapi enam hari.&rdquo;</span>
         </div>
-        <div className="mt-3 grid gap-2">
+        <ul className="mt-4 divide-y divide-garis">
           <BarisRapor i={baik} />
           <BarisRapor i={tertahan} />
-        </div>
+        </ul>
       </Langkah>
     </ol>
     </div>

@@ -1,8 +1,8 @@
-// components/BadgeStatus.tsx — status laporan sebagai teks + ikon (SDD 9.1), pemilik: A
-// Label kecil bersudut seperti tag di situs travel. Warna hanya pelengkap; status selalu terbaca
-// dari teks dan bentuk ikonnya.
+// components/BadgeStatus.tsx — status laporan sebagai titik warna + teks (SDD 9.1), pemilik: A
+// Titiknya senada dengan titik di peta. Warna hanya pelengkap; status selalu terbaca dari teksnya.
+// IkonStatus tetap dipakai untuk penanda riwayat (Timeline) dan halaman admin.
 
-import type { ReactNode } from 'react';
+import { Ban, CheckCheck, CircleCheck, CircleX, Clock, RefreshCw, type LucideIcon } from 'lucide-react';
 import type { StatusLaporan } from '@/lib/types';
 
 export const LABEL_STATUS: Record<StatusLaporan, string> = {
@@ -33,66 +33,34 @@ export const WARNA_TITIK: Record<StatusLaporan, string> = {
   dibatalkan: '#8592a6',
 };
 
-export const IKON_STATUS: Record<StatusLaporan, ReactNode> = {
-  // jam
-  menunggu: (
-    <>
-      <circle cx="12" cy="12" r="9" />
-      <path d="M12 7v5l3 2" />
-    </>
-  ),
-  // lingkaran centang
-  diverifikasi: (
-    <>
-      <circle cx="12" cy="12" r="9" />
-      <path d="m8.5 12 2.5 2.5 4.5-5" />
-    </>
-  ),
-  // panah berputar
-  diproses: (
-    <>
-      <path d="M20 11a8 8 0 0 0-14.9-3M4 4v4h4" />
-      <path d="M4 13a8 8 0 0 0 14.9 3M20 20v-4h-4" />
-    </>
-  ),
-  // centang ganda
-  selesai: (
-    <>
-      <path d="m2 13 4 4L16 7" />
-      <path d="m10 15 2 2 10-10" />
-    </>
-  ),
-  // lingkaran silang
-  ditolak: (
-    <>
-      <circle cx="12" cy="12" r="9" />
-      <path d="m9 9 6 6m0-6-6 6" />
-    </>
-  ),
-  // tanda larangan
-  dibatalkan: (
-    <>
-      <circle cx="12" cy="12" r="9" />
-      <path d="m5.6 5.6 12.8 12.8" />
-    </>
-  ),
+/** Warna teks badge di latar putih (teks st-ditolak putih karena dibuat untuk latar navy). */
+const TEKS_STATUS: Record<StatusLaporan, string> = {
+  menunggu: 'text-st-menunggu',
+  diverifikasi: 'text-st-diverifikasi',
+  diproses: 'text-st-diproses',
+  selesai: 'text-st-selesai',
+  ditolak: 'text-teks',
+  dibatalkan: 'text-st-dibatalkan',
+};
+
+/** Titik warna status, dipakai badge dan saringan status di peta. */
+export function TitikStatus({ status, className = 'size-2' }: { status: StatusLaporan; className?: string }) {
+  return <span aria-hidden="true" className={`shrink-0 rounded-full ${className}`} style={{ backgroundColor: WARNA_TITIK[status] }} />;
+}
+
+/** Ikon Lucide tiap status: jam, lingkaran centang, panah berputar, centang ganda, lingkaran silang, larangan. */
+const IKON_STATUS: Record<StatusLaporan, LucideIcon> = {
+  menunggu: Clock,
+  diverifikasi: CircleCheck,
+  diproses: RefreshCw,
+  selesai: CheckCheck,
+  ditolak: CircleX,
+  dibatalkan: Ban,
 };
 
 export function IkonStatus({ status, className = 'size-4' }: { status: StatusLaporan; className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      className={`shrink-0 ${className}`}
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={2.25}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      {IKON_STATUS[status]}
-    </svg>
-  );
+  const Komponen = IKON_STATUS[status];
+  return <Komponen className={`shrink-0 ${className}`} strokeWidth={2.25} aria-hidden="true" />;
 }
 
 export default function BadgeStatus({
@@ -106,11 +74,11 @@ export default function BadgeStatus({
 }) {
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-[0.375rem] font-semibold whitespace-nowrap ${
-        besar ? 'px-3 py-1.5 text-kecil' : 'px-2 py-0.5 text-mini'
-      } ${GAYA_STATUS[status]} ${className}`}
+      className={`inline-flex items-center gap-1.5 font-semibold whitespace-nowrap ${besar ? 'text-kecil' : 'text-mini'} ${
+        TEKS_STATUS[status]
+      } ${className}`}
     >
-      <IkonStatus status={status} className={besar ? 'size-4' : 'size-3.5'} />
+      <TitikStatus status={status} className={besar ? 'size-2.5' : 'size-2'} />
       {LABEL_STATUS[status]}
     </span>
   );
