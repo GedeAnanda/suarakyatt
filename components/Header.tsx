@@ -45,7 +45,7 @@ function TautanUtilitas({
     <Link
       href={href}
       title={ringkas ? String(children) : undefined}
-      className={`h-10 shrink-0 items-center gap-1.5 rounded-kontrol px-2.5 text-kecil font-semibold whitespace-nowrap text-teks transition-colors hover:bg-lapis hover:text-biru-tua ${className}`}
+      className={`h-10 shrink-0 items-center gap-1.5 rounded-kontrol px-2.5 text-kecil max-[389px]:px-2 font-semibold whitespace-nowrap text-teks transition-colors hover:bg-lapis hover:text-biru-tua ${className}`}
     >
       <Ikon nama={ikon} className={ringkas ? 'size-5' : 'size-4.5'} />
       <span className={ringkas ? 'sr-only' : ''}>{children}</span>
@@ -57,7 +57,7 @@ async function Akun() {
   const sesi = await ambilSesi();
   if (!sesi) {
     return (
-      <Link href="/masuk" className={kelasTombol('utama', 'ml-1 min-h-9 shrink-0 px-3.5 text-kecil sm:px-4')}>
+      <Link href="/masuk" className={kelasTombol('utama', 'ml-1 min-h-9 shrink-0 px-3.5 text-kecil max-[389px]:px-3 sm:px-4')}>
         <span className="sm:hidden">Masuk</span>
         <span className="hidden sm:inline">Masuk / Daftar</span>
       </Link>
@@ -119,12 +119,14 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-1000 h-(--tinggi-kepala) border-b border-garis bg-permukaan">
       {/* Tepi kiri-kanan memakai env(safe-area-inset-*) supaya tombol tidak masuk ke area poni iPhone yang dimiringkan. */}
-      <div className="flex h-full items-center gap-1.5 pr-[max(0.75rem,env(safe-area-inset-right))] pl-[max(0.5rem,env(safe-area-inset-left))] sm:gap-2 sm:pr-[max(1rem,env(safe-area-inset-right))] lg:pr-6 lg:pl-3">
+      {/* Di bawah 390 px (ponsel 320–375 px) wordmark, jarak, tautan ikon, dan tombol Masuk dirapatkan supaya isi
+          header tidak melewati tepi layar. */}
+      <div className="flex h-full items-center gap-1.5 pr-[max(0.75rem,env(safe-area-inset-right))] pl-[max(0.5rem,env(safe-area-inset-left))] max-[389px]:gap-1 sm:gap-2 sm:pr-[max(1rem,env(safe-area-inset-right))] lg:pr-6 lg:pl-3">
         <TombolMenu />
         <Link
           href="/"
           aria-label="suaRAkyat, ke Beranda"
-          className="shrink-0 rounded-kontrol px-1 text-[1.3125rem] text-teks sm:text-[1.4375rem]"
+          className="shrink-0 rounded-kontrol px-1 text-[1.3125rem] text-teks max-[389px]:text-[1.125rem] sm:text-[1.4375rem]"
         >
           <Wordmark />
         </Link>

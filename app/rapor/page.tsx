@@ -33,7 +33,11 @@ async function Isi() {
         <ul className="grid grid-cols-2 gap-3 lg:grid-cols-4">
           {urut.map((i) => (
             <li key={i.id}>
-              <a href={`#instansi-${i.id}`} className="group kartu kartu-klik flex h-full items-center gap-3 p-3 sm:p-4">
+              {/* Di bawah 375 px huruf ditumpuk di atas nama: dua kolom terlalu sempit untuk "Penerangan" di sampingnya. */}
+              <a
+                href={`#instansi-${i.id}`}
+                className="group kartu kartu-klik flex h-full items-center gap-3 p-3 max-[374px]:flex-col max-[374px]:items-start max-[374px]:gap-2 sm:p-4"
+              >
                 <span
                   className={`flex size-12 shrink-0 items-center justify-center rounded-kontrol text-[1.75rem] leading-none font-bold transition-transform duration-300 ease-pegas group-hover:scale-105 ${
                     i.huruf ? 'bg-biru text-white' : 'bg-lapis text-lembut'
