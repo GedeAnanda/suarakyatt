@@ -33,6 +33,12 @@ function simpanKeUrl(kategori: number[], status: StatusLaporan[]) {
   window.history.replaceState(null, '', url);
 }
 
+// py-1 memberi ruang garis fokus chip di dalam deret yang digeser (jarak luarnya tetap, lewat mt-1/-mb-1);
+// -mx-4/px-4 membuat deret sampai tepi kartu. <fieldset> induknya perlu min-w-0 supaya deret tidak melebarkannya,
+// dan deretnya `relative` supaya teks sr-only (absolute) di dalam chip ikut terpotong, tidak melebarkan halaman.
+const DERET_CHIP =
+  'tanpa-batang relative mt-2 flex gap-2 max-sm:-mx-4 max-sm:mt-1 max-sm:-mb-1 max-sm:overflow-x-auto max-sm:px-4 max-sm:py-1 sm:flex-wrap';
+
 export default function PetaLaporan({
   laporan,
   sekarang,
@@ -78,11 +84,12 @@ export default function PetaLaporan({
 
   return (
     <div className="grid gap-5">
-      {/* Bar saring, seperti bar filter di atas hasil pencarian. */}
+      {/* Bar saring, seperti bar filter di atas hasil pencarian. Di ponsel tiap deret chip digeser menyamping
+          (seperti chip saring aplikasi peta), supaya peta sudah terlihat di layar pertama. */}
       <div className="kartu grid gap-4 p-4 sm:p-5 lg:grid-cols-2 lg:gap-8">
-        <fieldset>
+        <fieldset className="min-w-0">
           <legend className="text-kecil font-bold">Kategori</legend>
-          <div className="mt-2 flex flex-wrap gap-2">
+          <div className={DERET_CHIP}>
             {KATEGORI.map((k) => (
               <button key={k.id} type="button" aria-pressed={kategori.includes(k.id)} onClick={() => ubahKategori(k.id)} className="chip">
                 {k.nama}
@@ -91,11 +98,11 @@ export default function PetaLaporan({
             ))}
           </div>
         </fieldset>
-        <fieldset>
+        <fieldset className="min-w-0">
           <legend className="text-kecil font-bold">
             Status <span className="font-normal text-lembut">(jumlah dalam kategori terpilih)</span>
           </legend>
-          <div className="mt-2 flex flex-wrap gap-2">
+          <div className={DERET_CHIP}>
             {STATUS_PUBLIK.map((s) => (
               <button key={s} type="button" aria-pressed={status.includes(s)} onClick={() => ubahStatus(s)} className="chip">
                 <TitikStatus status={s} className="size-2.5" />

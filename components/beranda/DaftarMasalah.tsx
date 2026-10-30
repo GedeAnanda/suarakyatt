@@ -92,7 +92,7 @@ export default function DaftarMasalah() {
           {/* Keempat kategori berdampingan: biru tua = respons, biru muda = sampai selesai. Lebar sebanding jam. */}
           <ul className="mt-6 grid gap-2.5" aria-label="Batas waktu keempat kategori">
             {KATEGORI.map((x, i) => (
-              <li key={x.id} className={`grid grid-cols-[7.5rem_1fr] items-center gap-3 text-kecil ${i === pilih ? 'font-bold' : 'text-lembut'}`}>
+              <li key={x.id} className={`grid grid-cols-[9rem_1fr] items-center gap-3 text-kecil ${i === pilih ? 'font-bold' : 'text-lembut'}`}>
                 <span className="truncate">{x.nama}</span>
                 <span className="relative block h-2 overflow-hidden rounded-full bg-lapis" aria-hidden="true">
                   <span

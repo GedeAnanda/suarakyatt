@@ -102,6 +102,11 @@ export default function Simulator({
 
   const terpilih = simulasi.find((s) => s.id === pilihId) ?? simulasi[0];
   const tampil = semua ? simulasi : simulasi.slice(0, JUMLAH_AWAL);
+  // Baris peringkat memakai lebar kolom (@container), bukan lebar layar: di 1024 px kolom ini hanya ±550 px.
+  // Nama dan batang berbagi sisa ruang 3:2; kolom tanda geser hanya diberi ruang saat bobot disimulasikan.
+  const kolomBaris = disimulasikan
+    ? '@xl:grid-cols-[2.75rem_3rem_minmax(0,3fr)_minmax(0,2fr)_3.5rem]'
+    : '@xl:grid-cols-[2.75rem_0_minmax(0,3fr)_minmax(0,2fr)_3.5rem]';
   const presetAktif = (Object.keys(PRESET) as NamaPreset[]).find((p) => sama(bobot, normalisasiBobot(PRESET[p])));
 
   function setSlider(nilai: Slider) {
@@ -342,29 +347,29 @@ export default function Simulator({
                   type="button"
                   aria-pressed={s.id === terpilih?.id}
                   onClick={() => pilihIsu(s.id)}
-                  className="grid w-full grid-cols-[2.5rem_1fr_auto] items-center gap-x-3 gap-y-2 bg-permukaan px-4 py-3 text-left transition-colors hover:bg-biru-pudar aria-pressed:bg-biru-muda/60 aria-pressed:shadow-[inset_3px_0_0_var(--color-biru)] sm:grid-cols-[2.75rem_3rem_1fr_minmax(8rem,14rem)_3.5rem] sm:px-5"
+                  className={`grid w-full grid-cols-[2.5rem_1fr_auto] items-center gap-x-3 gap-y-2 bg-permukaan px-4 py-3 text-left transition-colors hover:bg-biru-pudar aria-pressed:bg-biru-muda/60 aria-pressed:shadow-[inset_3px_0_0_var(--color-biru)] @xl:px-5 ${kolomBaris}`}
                 >
                   <span className="angka text-lead font-bold text-biru-tua">{s.peringkat}</span>
-                  <span className="hidden sm:block">{disimulasikan && <TandaGeser n={selisih[s.id]} />}</span>
+                  <span className="hidden @xl:block">{disimulasikan && <TandaGeser n={selisih[s.id]} />}</span>
                   <span className="min-w-0">
-                    <span className="block truncate text-badan font-bold">
+                    <span className="block text-badan font-bold @xl:truncate">
                       {s.kecamatan}
                       <span className="font-normal text-lembut"> · {s.kota.replace('Jakarta ', 'Jak')}</span>
                     </span>
                     <span className="block text-kecil text-lembut">
                       {s.kategori}
                       {disimulasikan && (
-                        <span className="sm:hidden">
+                        <span className="@xl:hidden">
                           {' '}
                           · <TandaGeser n={selisih[s.id]} />
                         </span>
                       )}
                     </span>
                   </span>
-                  <span className="col-span-3 row-start-2 sm:col-span-1 sm:col-start-4 sm:row-start-1">
+                  <span className="col-span-3 row-start-2 @xl:col-span-1 @xl:col-start-4 @xl:row-start-1">
                     <BarTumpuk isu={s} />
                   </span>
-                  <span className="angka col-start-3 row-start-1 text-right text-lead font-bold sm:col-start-5">
+                  <span className="angka col-start-3 row-start-1 text-right text-lead font-bold @xl:col-start-5">
                     {formatPoin(s.skor)}
                   </span>
                 </button>

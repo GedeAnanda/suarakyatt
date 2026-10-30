@@ -77,7 +77,7 @@ export default function CaraMenilaiPage() {
         </div>
         <ul className="grid grid-cols-5 gap-2" data-muncul>
           {HURUF.map((h) => (
-            <li key={h.h} className="kartu p-3 text-center sm:p-4">
+            <li key={h.h} className="kartu px-1.5 py-3 text-center sm:p-4">
               <p className="text-[clamp(2.25rem,1.5rem+3vw,4rem)] leading-none font-bold text-biru-tua">{h.h}</p>
               <p className="mt-2 text-mini text-lembut sm:text-kecil">{h.rentang}</p>
             </li>
