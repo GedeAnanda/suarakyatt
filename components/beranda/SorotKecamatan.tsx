@@ -111,7 +111,7 @@ export default function SorotKecamatan({
         {fokus && nyala && (
           <p className="mt-3 text-kecil text-lembut" aria-live="polite">
             {(titik[nyala.kode_wilayah]?.length ?? 0) > 0
-              ? `Titik di peta: ${titik[nyala.kode_wilayah].length} laporan ${nyala.kategori.toLowerCase()} di ${nyala.kecamatan}, warnanya menurut status. `
+              ? `Pin di peta: contoh laporan ${nyala.kategori.toLowerCase()} di ${nyala.kecamatan}, warna titiknya menurut status. `
               : ''}
             Tekan nomor {indeks + 1} lagi untuk kembali ke peta penuh.
           </p>

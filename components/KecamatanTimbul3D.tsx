@@ -6,7 +6,7 @@
 // Tebal 3D = tumpukan salinan bentuk yang makin gelap ke bawah, lalu dimiringkan (rotateX). Gerak dikurangi: langsung
 // di posisi akhir, titik langsung tampil.
 
-import { Fragment, type CSSProperties } from 'react';
+import { Fragment, useId, type CSSProperties } from 'react';
 import { VIEWBOX } from '@/lib/geo/kecamatan-svg';
 import type { TitikPeta } from '@/lib/geo/proyeksi';
 import { WARNA_TITIK } from './BadgeStatus';
@@ -16,6 +16,12 @@ const LAPIS = 8; // jumlah salinan untuk sisi tebal
 const TEBAL = 14; // tebal sisi di layar, px
 const UKURAN = 0.45; // wilayah diperbesar sampai ±45% lebar atau tinggi peta
 const SKALA_MAKS = 4;
+const MIRING = 32; // derajat, sama dengan rotateX .t3d-kotak di globals.css
+// Pin lokasi (viewBox 0 0 24 32, ujung bawah di 12,31) ditumpuk beberapa lapis supaya tampak tebal saat berputar.
+const PIN = 'M12 31C12 31 2.5 19.6 2.5 12a9.5 9.5 0 0 1 19 0C21.5 19.6 12 31 12 31Z';
+const PIN_LAPIS = 4;
+const TITIK_MAKS = 4; // hanya beberapa laporan sebagai contoh
+const JARAK_MIN = 26; // px di layar; titik yang lebih dekat dari ini dianggap berdempetan, cukup satu yang tampil
 
 /** Kotak pembatas dari data jalur: semua koordinat absolut (M/L/Z), jadi cukup pasangan angkanya. */
 function kotak(d: string) {
@@ -34,6 +40,7 @@ function kotak(d: string) {
 }
 
 export default function KecamatanTimbul3D({ d, warna, titik = [] }: { d: string; warna: string; titik?: TitikPeta[] }) {
+  const idGradasi = `pin${useId().replace(/[^a-zA-Z0-9]/g, '')}`;
   const b = kotak(d);
   const skala = Math.min(SKALA_MAKS, (LEBAR * UKURAN) / b.lebar, (TINGGI * UKURAN) / b.tinggi);
   const lebarPersen = ((b.lebar * skala) / LEBAR) * 100;
@@ -57,6 +64,15 @@ export default function KecamatanTimbul3D({ d, warna, titik = [] }: { d: string;
   // Satu unit viewBox ≈ 0,55 px × skala di layar; jari-jari titik ±5 px.
   const jariJari = 9 / skala;
 
+  // Beberapa titik saja, sesuai urutan dari server (laporan yang masih berjalan dulu), dan dari titik-titik yang
+  // berdempetan hanya yang pertama yang diambil.
+  const jarakMin = JARAK_MIN / (0.55 * skala);
+  const contoh: TitikPeta[] = [];
+  for (const t of titik) {
+    if (contoh.length === TITIK_MAKS) break;
+    if (contoh.every((c) => Math.hypot(c.x - t.x, c.y - t.y) >= jarakMin)) contoh.push(t);
+  }
+
   const lapis = (isi: string, z: number, kecerahan?: number, kelas?: string) => (
     <svg
       viewBox={kotakView}
@@ -69,6 +85,18 @@ export default function KecamatanTimbul3D({ d, warna, titik = [] }: { d: string;
 
   return (
     <div aria-hidden="true" className="t3d">
+      {contoh.length > 0 && (
+        <svg width="0" height="0" className="absolute">
+          <defs>
+            {/* Merah membulat dengan kilau di kiri atas, seperti pin lokasi 3D. */}
+            <radialGradient id={idGradasi} cx="35%" cy="25%" r="80%">
+              <stop offset="0" stopColor="#ff9da1" />
+              <stop offset="0.45" stopColor="#ef4b52" />
+              <stop offset="1" stopColor="#b8232a" />
+            </radialGradient>
+          </defs>
+        </svg>
+      )}
       <div className="t3d-kotak" style={gaya}>
         {lapis('#0f2a33', -langkah, undefined, 't3d-bayang')}
         {Array.from({ length: LAPIS }, (_, i) => (
@@ -76,7 +104,7 @@ export default function KecamatanTimbul3D({ d, warna, titik = [] }: { d: string;
         ))}
         <svg viewBox={kotakView} style={{ transform: `translateZ(${LAPIS * langkah}px)` }}>
           <path d={d} fill={warna} stroke="var(--color-permukaan)" strokeWidth={2} strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
-          {titik.map((t, i) => (
+          {contoh.map((t, i) => (
             <circle
               key={t.kode}
               cx={t.x}
@@ -91,6 +119,35 @@ export default function KecamatanTimbul3D({ d, warna, titik = [] }: { d: string;
             />
           ))}
         </svg>
+        {/* Pin di atas tiap titik: berdiri tegak menghadap layar (rotateX dibalik), naik-turun dan berputar pelan
+            seperti penanda di game. Iramanya digeser per pin supaya tidak bergerak serempak. */}
+        {contoh.map((t, i) => (
+          <div
+            key={`pin-${t.kode}`}
+            className="t3d-pin"
+            style={{
+              left: `${((t.x - b.x0) / b.lebar) * 100}%`,
+              top: `${((t.y - b.y0) / b.tinggi) * 100}%`,
+              transform: `translateZ(${LAPIS * langkah + 1}px) rotateX(-${MIRING}deg)`,
+              // Sama dengan jeda titik di bawahnya, jadi pin dan titiknya muncul bersamaan.
+              animationDelay: `${900 + i * 90}ms`,
+            }}
+          >
+            <div className="t3d-pin-naik" style={{ animationDelay: `${-i * 0.37}s` }}>
+              <div className="t3d-pin-putar" style={{ animationDelay: `${-i * 0.6}s` }}>
+                {Array.from({ length: PIN_LAPIS }, (_, j) => {
+                  const muka = j === 0 || j === PIN_LAPIS - 1;
+                  return (
+                    <svg key={j} viewBox="0 0 24 32" style={{ transform: `translateZ(${j - (PIN_LAPIS - 1) / 2}px)` }}>
+                      <path d={PIN} fill={muka ? `url(#${idGradasi})` : '#a11d23'} />
+                      {muka && <circle cx="12" cy="11.5" r="4.3" fill="#fff" />}
+                    </svg>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
