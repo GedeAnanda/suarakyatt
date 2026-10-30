@@ -73,7 +73,7 @@ interface Serupa {
 
 const PESAN_FOTO: Record<string, string> = {
   TIPE_FOTO: 'Pilih foto JPG, PNG, atau WebP.',
-  UKURAN_FOTO: 'Ukuran tiap foto maksimal 5 MB.',
+  UKURAN_FOTO: 'Ukuran tiap foto maksimal 20 MB.',
   KOMPRES_GAGAL: 'Foto tidak bisa diproses di perangkat ini. Coba foto lain.',
 };
 
@@ -153,6 +153,7 @@ export default function FormLaporan() {
   const [deskripsi, setDeskripsi] = useState('');
   const [hasilSerupa, setHasilSerupa] = useState<{ kunci: string; data: Serupa[]; waktu: number } | null>(null);
   const [didukung, setDidukung] = useState<Record<string, boolean>>({});
+  const [galatDukung, setGalatDukung] = useState<string | null>(null);
   const [tahap, setTahap] = useState<'isi' | 'mengunggah' | 'mengirim'>('isi');
   const [galat, setGalat] = useState<string | null>(null);
   const [cobaKirim, setCobaKirim] = useState(false);
@@ -288,8 +289,9 @@ export default function FormLaporan() {
   const sudah = (s: Serupa) => didukung[s.kode] ?? s.didukung ?? false;
 
   async function dukung(kode: string) {
+    setGalatDukung(null);
     const { data, error } = await createClient().rpc('toggle_upvote', { p_kode: kode });
-    if (error) return setGalat(pesanError(error));
+    if (error) return setGalatDukung(pesanError(error));
     const hasil = data as { upvoted: boolean; jumlah_upvote: number };
     setDidukung((d) => ({ ...d, [kode]: hasil.upvoted }));
     setHasilSerupa((h) =>
@@ -411,6 +413,9 @@ export default function FormLaporan() {
             ) : (
               <span className="text-lembut">Memeriksa wilayah…</span>
             )}
+            {serupa && serupa.length > 0 && (
+              <span className="sr-only"> Ada {serupa.length} laporan serupa dalam 100 meter, tercantum di bawah peta.</span>
+            )}
           </p>
           <Tombol varian="garis" onClick={pakaiLokasiSaya} disabled={mencariLokasi}>
             <Ikon nama="lokasi" className="size-4" />
@@ -422,9 +427,50 @@ export default function FormLaporan() {
             {lokasiGalat}
           </p>
         )}
+
+        {/* Laporan serupa langsung di bawah peta: warga tahu sebelum memotret dan menulis cerita (FR-B3). */}
+        {serupa && serupa.length > 0 && (
+          <section aria-labelledby="judul-serupa" className="ganti mt-4 rounded-kontrol bg-biru-pudar p-4 sm:p-5">
+            <h3 id="judul-serupa" className="flex items-center gap-2 text-badan font-bold text-biru-tua">
+              <Ikon nama="info" className="size-5" />
+              Sudah ada {serupa.length} laporan serupa dalam 100 meter
+            </h3>
+            <p className="mt-1.5 max-w-[60ch] text-kecil text-lembut">
+              Dukung laporan yang sudah ada supaya suaranya terkumpul di satu tempat. Kalau masalahnya memang berbeda, tetap
+              lanjutkan laporan baru.
+            </p>
+            <ul className="mt-4 grid gap-2">
+              {serupa.map((s) => (
+                <li key={s.kode} className="flex flex-wrap items-center gap-x-5 gap-y-3 rounded-kontrol border border-garis bg-permukaan p-4">
+                  <div className="min-w-0 flex-1">
+                    <p className="flex flex-wrap items-center gap-3">
+                      <Link href={`/laporan/${s.kode}`} target="_blank" className="font-kode angka font-bold text-biru-tua underline-offset-4 hover:underline">
+                        {s.kode}
+                        <span className="sr-only"> (tab baru)</span>
+                      </Link>
+                      <BadgeStatus status={s.status} />
+                    </p>
+                    <p className="mt-1 text-kecil text-lembut">
+                      {s.jarak_m} m dari titik Anda · {lalu(s.created_at, hasilSerupa?.waktu ?? Date.parse(s.created_at))} · {s.jumlah_upvote} dukungan
+                    </p>
+                  </div>
+                  <Tombol varian={sudah(s) ? 'kedua' : 'utama'} onClick={() => dukung(s.kode)} aria-pressed={sudah(s)}>
+                    <Ikon nama="dukung" className="size-4" isi={sudah(s)} />
+                    {sudah(s) ? 'Didukung' : 'Dukung'}
+                  </Tombol>
+                </li>
+              ))}
+            </ul>
+            {galatDukung && (
+              <p role="alert" className="mt-3 text-kecil font-semibold text-merah-tua">
+                {galatDukung}
+              </p>
+            )}
+          </section>
+        )}
       </Langkah>
 
-      <Langkah n={3} selesai={lengkap.includes(3)} galat={galatLangkah(3)} judul="Foto masalahnya" petunjuk="1–3 foto JPG, PNG, atau WebP, maksimal 5 MB. Foto dikecilkan dan data lokasi di dalam file dibuang sebelum diunggah.">
+      <Langkah n={3} selesai={lengkap.includes(3)} galat={galatLangkah(3)} judul="Foto masalahnya" petunjuk="1–3 foto JPG, PNG, atau WebP, maksimal 20 MB per foto. Foto dikecilkan dan data lokasi di dalam file dibuang sebelum diunggah.">
         <p className="flex gap-2 rounded-kontrol bg-oranye-muda p-3 text-kecil text-st-menunggu">
           <Ikon nama="peringatan" className="mt-0.5 size-4 shrink-0" />
           Jangan memotret wajah atau plat nomor orang lain. Foto tampil publik.
@@ -461,7 +507,6 @@ export default function FormLaporan() {
                 type="file"
                 accept={TIPE_FOTO.join(',')}
                 multiple
-                capture="environment"
                 onChange={(e) => tambahFoto(e.target.files)}
                 className="sr-only"
                 data-ukuran-maks={UKURAN_MAKS}
@@ -495,40 +540,6 @@ export default function FormLaporan() {
           {panjang} / {MAKS_DESKRIPSI} karakter{panjang < MIN_DESKRIPSI ? `, minimal ${MIN_DESKRIPSI}` : ''}
         </p>
       </Langkah>
-
-      {serupa && serupa.length > 0 && (
-        <section aria-labelledby="judul-serupa" className="ganti kartu border-biru bg-biru-pudar p-5 sm:p-6">
-          <h2 id="judul-serupa" className="flex items-center gap-2 text-lead font-bold text-biru-tua">
-            <Ikon nama="info" className="size-5" />
-            Sudah ada {serupa.length} laporan serupa dalam 100 meter
-          </h2>
-          <p className="mt-1.5 max-w-[60ch] text-kecil text-lembut">
-            Dukung laporan yang sudah ada supaya suaranya terkumpul di satu tempat. Kalau masalahnya memang berbeda, tetap
-            kirim laporan baru.
-          </p>
-          <ul className="mt-4 grid gap-2">
-            {serupa.map((s) => (
-              <li key={s.kode} className="flex flex-wrap items-center gap-x-5 gap-y-3 rounded-kontrol border border-garis bg-permukaan p-4">
-                <div className="min-w-0 flex-1">
-                  <p className="flex flex-wrap items-center gap-3">
-                    <Link href={`/laporan/${s.kode}`} target="_blank" className="font-kode angka font-bold text-biru-tua underline-offset-4 hover:underline">
-                      {s.kode}
-                    </Link>
-                    <BadgeStatus status={s.status} />
-                  </p>
-                  <p className="mt-1 text-kecil text-lembut">
-                    {s.jarak_m} m dari titik Anda · {lalu(s.created_at, hasilSerupa?.waktu ?? Date.parse(s.created_at))} · {s.jumlah_upvote} dukungan
-                  </p>
-                </div>
-                <Tombol varian={sudah(s) ? 'kedua' : 'utama'} onClick={() => dukung(s.kode)} aria-pressed={sudah(s)}>
-                  <Ikon nama="dukung" className="size-4" isi={sudah(s)} />
-                  {sudah(s) ? 'Didukung' : 'Dukung'}
-                </Tombol>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
       </div>
 
       {/* Ringkasan: seperti ringkasan pesanan, menempel di kanan selama form digulir. */}

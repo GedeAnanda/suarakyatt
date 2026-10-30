@@ -16,9 +16,12 @@ export const metadata: Metadata = { title: 'Masuk' };
 async function Isi({ searchParams }: { searchParams: PageProps<'/masuk'>['searchParams'] }) {
   const sp = await searchParams;
   const lanjut = tujuanAman(typeof sp.lanjut === 'string' ? sp.lanjut : null);
-  return (
-    <FormAuth lanjut={lanjut} modeAwal={sp.mode === 'daftar' ? 'daftar' : 'masuk'} verifikasiGagal={sp.verifikasi === 'gagal'} />
-  );
+  // Tautan ganti password yang gagal juga kembali ke sini (auth/callback): tawarkan tautan baru, dan setelah masuk
+  // biasa jangan arahkan ke halaman ganti password.
+  const reset = lanjut.startsWith('/masuk/sandi-baru');
+  const gagal = sp.verifikasi === 'gagal' ? (reset ? 'lupa' : 'daftar') : null;
+  const mode = sp.mode === 'daftar' || sp.mode === 'lupa' ? sp.mode : gagal === 'lupa' ? 'lupa' : 'masuk';
+  return <FormAuth lanjut={reset ? '/' : lanjut} modeAwal={mode} verifikasiGagal={gagal} />;
 }
 
 export default function MasukPage({ searchParams }: PageProps<'/masuk'>) {

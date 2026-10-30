@@ -6,6 +6,7 @@
 import 'server-only';
 import { connection } from 'next/server';
 import { cache } from 'react';
+import { KATEGORI } from '@/lib/konten';
 import contoh from '@/lib/mocks/contoh-laporan.json';
 import { createClient } from './klien';
 import type { LaporanPublik, StatusLaporan, TimelineItem } from '@/lib/types';
@@ -145,6 +146,44 @@ export async function ambilHubungan(kode: string): Promise<HubunganLaporan> {
     return { login: true, pemilik: true, sudahRating: (count ?? 0) > 0, sudahDukung: false };
   } catch {
     return { login: false, pemilik: false, sudahRating: false, sudahDukung: false };
+  }
+}
+
+/** Laporan milik pengguna yang login, untuk "Laporan saya" di /lacak. */
+export interface LaporanSaya {
+  kode: string;
+  status: StatusLaporan;
+  kategori: string;
+  kecamatan: string | null;
+  created_at: string;
+}
+
+/** null = tamu (atau database tidak terjangkau). Termasuk laporan yang dibatalkan, yang tidak tampil publik. */
+export async function ambilLaporanSaya(): Promise<LaporanSaya[] | null> {
+  await connection();
+  try {
+    const supabase = await createClient();
+    const { data: klaim } = await supabase.auth.getClaims();
+    const uid = klaim?.claims.sub;
+    if (!uid) return null;
+    // RLS "pelapor baca miliknya". Filter user_id tetap perlu: admin juga boleh membaca laporan instansinya.
+    const { data, error } = await supabase
+      .from('reports')
+      .select('kode,status,category_id,created_at,regions(nama)')
+      .eq('user_id', uid)
+      .order('created_at', { ascending: false })
+      .limit(50);
+    if (error) return null;
+    return (data ?? []).map((r) => ({
+      kode: r.kode,
+      status: r.status,
+      kategori: KATEGORI.find((k) => k.id === r.category_id)?.nama ?? 'Laporan',
+      // Relasi banyak-ke-satu datang sebagai objek, tapi tipe supabase-js tanpa skema menganggapnya array.
+      kecamatan: ([r.regions].flat()[0] as { nama: string } | null | undefined)?.nama ?? null,
+      created_at: r.created_at,
+    }));
+  } catch {
+    return null;
   }
 }
 

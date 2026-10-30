@@ -12,6 +12,7 @@ import BadgeStatus, { WARNA_TITIK } from '@/components/BadgeStatus';
 import IndikatorSLA from '@/components/IndikatorSLA';
 import { FormRating, TombolBatalkan, TombolDukung } from '@/components/laporan/AksiLaporan';
 import Galeri from '@/components/laporan/Galeri';
+import HapusParamBaru from '@/components/laporan/HapusParamBaru';
 import SalinKode from '@/components/laporan/SalinKode';
 import PanelKenapaBelum from '@/components/laporan/PanelKenapaBelum';
 import Timeline from '@/components/laporan/Timeline';
@@ -59,10 +60,12 @@ async function Isi({ params, searchParams }: Pick<PageProps<'/laporan/[kode]'>, 
     }
   }
   const penolakan = l.status === 'ditolak' ? [...timeline].reverse().find((t) => t.status_baru === 'ditolak') : undefined;
-  const baru = sp.baru === '1';
+  // Banner "terkirim" hanya untuk pelapornya; orang lain yang membuka tautan ?baru=1 melihat halaman biasa.
+  const baru = sp.baru === '1' && hubungan.pemilik;
 
   return (
     <>
+      {sp.baru !== undefined && <HapusParamBaru />}
       {baru && (
         <div role="status" className="pop mb-5 flex gap-3 rounded-kartu border border-st-selesai/30 bg-hijau-muda p-5">
           <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-hijau text-white">

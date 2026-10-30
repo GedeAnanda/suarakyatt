@@ -106,6 +106,8 @@ export function TombolBatalkan({ kode }: { kode: string }) {
     const { error } = await createClient().rpc('cancel_report', { p_kode: kode });
     setMemuat(false);
     if (error) return setGalat(pesanError(error));
+    // Laporan yang dibatalkan tidak tampil publik, jadi pemberitahuan ini satu-satunya konfirmasi.
+    umumkan(`Laporan ${kode} dibatalkan.`);
     router.push('/peta');
     router.refresh();
   }

@@ -18,6 +18,8 @@ const satoshi = localFont({
 });
 
 export const metadata: Metadata = {
+  // Tanpa SITE_URL, Next.js memakai domain Vercel (VERCEL_PROJECT_PRODUCTION_URL), atau localhost saat lokal.
+  metadataBase: process.env.SITE_URL ? new URL(process.env.SITE_URL) : undefined,
   title: { default: 'suaRAkyat · Kenapa belum?', template: '%s · suaRAkyat' },
   description:
     'Kanal pengaduan sudah melacak laporan. suaRAkyat membuka alasan di balik keputusan: kenapa satu masalah kota didahulukan, dan siapa saja bisa mengujinya.',

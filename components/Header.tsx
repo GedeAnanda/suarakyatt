@@ -97,6 +97,12 @@ async function Akun() {
           </Link>
         </li>
         <li>
+          <Link href="/lacak#laporan-saya" className="flex h-10 items-center gap-2.5 rounded-kontrol px-2 text-badan font-medium hover:bg-lapis">
+            <Ikon nama="lacak" className="size-4.5" />
+            Laporan saya
+          </Link>
+        </li>
+        <li>
           <form action={keluar}>
             <button type="submit" className="flex h-10 w-full items-center gap-2.5 rounded-kontrol px-2 text-left text-badan font-medium hover:bg-lapis">
               <Ikon nama="keluar" className="size-4.5" />
@@ -138,6 +144,12 @@ export default function Header() {
           </TautanUtilitas>
           <TautanUtilitas href="/lacak" ikon="lacak" ringkas className="cari-kepala flex md:hidden">
             Lacak laporan
+          </TautanUtilitas>
+          {/* HP: aksi utama tetap terlihat di header. Di bawah 360 px hanya ikonnya; namanya tetap dibaca pembaca layar. */}
+          <TautanUtilitas href="/lapor" ikon="tambah" className="flex sm:hidden">
+            <span className="max-[359px]:sr-only">
+              Lapor<span className="sr-only"> masalah</span>
+            </span>
           </TautanUtilitas>
           <Suspense fallback={<span aria-hidden="true" className="ml-1 h-9 w-20 sm:w-32" />}>
             <Akun />

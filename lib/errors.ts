@@ -22,9 +22,13 @@ export const PESAN_ERROR: Record<string, string> = {
   DEMO_TERBATAS: 'Akun demo hanya bisa mengubah laporan simulasi.',
 
   // Auth dan unggah foto (lib/supabase/aksi-auth.ts, lib/supabase/unggah.ts)
-  KREDENSIAL_SALAH: 'Email atau password salah.',
-  EMAIL_BELUM_VERIFIKASI: 'Email belum diverifikasi. Buka tautan di email Anda dulu.',
+  KREDENSIAL_SALAH: 'Email atau password salah. Lupa password? Minta tautan untuk menggantinya.',
+  EMAIL_BELUM_VERIFIKASI: 'Email belum diverifikasi. Buka tautan di email Anda, atau kirim ulang tautannya di bawah.',
   PASSWORD_LEMAH: 'Password minimal 8 karakter.',
+  NAMA_TIDAK_VALID: 'Nama minimal 2 huruf, maksimal 80.',
+  EMAIL_TIDAK_VALID: 'Format email belum benar, misalnya nama@contoh.id.',
+  SANDI_SAMA: 'Password baru harus berbeda dari password lama.',
+  DEMO_SANDI: 'Password akun demo dipakai bersama dan tidak bisa diubah.',
   BATAS_EMAIL: 'Terlalu banyak permintaan email. Coba lagi beberapa menit lagi.',
   EMAIL_TIDAK_TERKIRIM: 'Email verifikasi belum bisa dikirim. Untuk mencoba, pakai tombol akun demo.',
   UNGGAH_GAGAL: 'Foto gagal diunggah. Coba lagi.',

@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { pesanError } from '@/lib/errors';
 import { kompresFoto, TIPE_FOTO } from '@/lib/foto';
-import { normalisasiKode } from '@/lib/format';
+import { hariIni, normalisasiKode } from '@/lib/format';
 import { LABEL_ALASAN } from '@/lib/konten';
 import { ubahStatusLaporan } from '@/lib/supabase/aksi-status';
 import { unggahFoto } from '@/lib/supabase/unggah';
@@ -61,6 +61,7 @@ export default function FormUbahStatus({ kode, status, aktif }: { kode: string; 
     baru === 'ditolak' && alasan === 'duplikat' && !normalisasiKode(rujukan) && 'Isi kode laporan rujukan yang sah.',
     catatanWajib && !catatan.trim() && 'Catatan wajib untuk alasan ini.',
     baru === 'selesai' && !bukti && 'Lampirkan foto bukti penyelesaian.',
+    baru === 'diverifikasi' && perkiraan && perkiraan < hariIni() && 'Perkiraan tanggal selesai tidak boleh sebelum hari ini.',
   ].filter(Boolean) as string[];
 
   async function pilihBukti(files: FileList | null) {
@@ -72,7 +73,7 @@ export default function FormUbahStatus({ kode, status, aktif }: { kode: string; 
       if (bukti) URL.revokeObjectURL(bukti.pratinjau);
       setBukti({ blob, pratinjau: URL.createObjectURL(blob) });
     } catch {
-      setGalat('Foto tidak bisa diproses. Pilih JPG, PNG, atau WebP maksimal 5 MB.');
+      setGalat('Foto tidak bisa diproses. Pilih JPG, PNG, atau WebP maksimal 20 MB.');
     }
   }
 
@@ -166,7 +167,7 @@ export default function FormUbahStatus({ kode, status, aktif }: { kode: string; 
         {baru === 'diverifikasi' && (
           <label className="grid gap-1.5 text-kecil font-semibold">
             Perkiraan tanggal selesai (opsional, tampil publik; lewat dari tanggal ini muncul label &ldquo;Melewati janji&rdquo;)
-            <input type="date" value={perkiraan} onChange={(e) => setPerkiraan(e.target.value)} className={`${kelasIsian} sm:max-w-xs`} />
+            <input type="date" value={perkiraan} min={hariIni()} onChange={(e) => setPerkiraan(e.target.value)} className={`${kelasIsian} sm:max-w-xs`} />
           </label>
         )}
 
