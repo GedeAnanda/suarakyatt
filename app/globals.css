@@ -21,43 +21,45 @@
  */
 
 @theme {
-  --color-latar: #f5f7fa;
+  /* Palet C "Teal Publik" (percobaan 2026-10-30). Nama token "biru-*" dipertahankan supaya kelas di komponen
+     tidak perlu diubah; isinya sekarang teal. Nilai biru lama tercatat di cadangan scratchpad. */
+  --color-latar: #f4f8f7;
   --color-permukaan: #ffffff;
-  --color-lapis: #eef1f5;
-  --color-lapis-2: #dfe4eb;
-  --color-garis: #e3e7ed; /* garis kartu dan pemisah (dekoratif) */
-  --color-garis-isian: #8592a6; /* batas isian form: 3,1:1 terhadap putih (WCAG 1.4.11) */
-  --color-teks: #0f294d;
-  --color-lembut: #455873;
-  --color-samar: #8592a6; /* hanya placeholder dan hiasan, bukan teks yang wajib dibaca */
+  --color-lapis: #ecf2f0;
+  --color-lapis-2: #d9e3e0;
+  --color-garis: #e0e8e6; /* garis kartu dan pemisah (dekoratif) */
+  --color-garis-isian: #84958f; /* batas isian form: ≥ 3:1 terhadap putih (WCAG 1.4.11) */
+  --color-teks: #0f2a33;
+  --color-lembut: #4a5d63;
+  --color-samar: #84958f; /* hanya placeholder dan hiasan, bukan teks yang wajib dibaca */
 
-  --color-biru: #3264ff;
-  --color-biru-tua: #1f4fe0; /* hover, dan teks biru di atas biru-muda */
-  --color-biru-muda: #ebf0ff;
-  --color-biru-pudar: #f5f8ff;
-  --color-navy: #0f294d;
+  --color-biru: #0f766e;
+  --color-biru-tua: #115e59; /* hover, dan teks aksi di atas biru-muda */
+  --color-biru-muda: #e3f3f0;
+  --color-biru-pudar: #f1f8f6;
+  --color-navy: #0f2a33;
 
-  --color-merah: #d92330;
-  --color-merah-tua: #b3141f;
+  --color-merah: #c92a2a;
+  --color-merah-tua: #a61e1e;
   --color-merah-muda: #fdecec;
-  --color-oranye: #e86c00;
+  --color-oranye: #e8590c;
   --color-oranye-muda: #fff4e5;
   --color-hijau: #12733d;
   --color-hijau-muda: #e6f6ec;
 
   /* Status laporan: pasangan teks/latar dengan kontras AA. */
-  --color-st-menunggu: #8a5300;
-  --color-st-menunggu-bg: #fff1dc;
-  --color-st-diverifikasi: #1f4fe0;
-  --color-st-diverifikasi-bg: #ebf0ff;
-  --color-st-diproses: #006b75;
-  --color-st-diproses-bg: #dff4f6;
-  --color-st-selesai: #12733d;
-  --color-st-selesai-bg: #e3f5e9;
+  --color-st-menunggu: #92400e;
+  --color-st-menunggu-bg: #fef3c7;
+  --color-st-diverifikasi: #4338ca;
+  --color-st-diverifikasi-bg: #eef2ff;
+  --color-st-diproses: #0e7490;
+  --color-st-diproses-bg: #cffafe;
+  --color-st-selesai: #166534;
+  --color-st-selesai-bg: #dcfce7;
   --color-st-ditolak: #ffffff;
-  --color-st-ditolak-bg: #0f294d;
-  --color-st-dibatalkan: #455873;
-  --color-st-dibatalkan-bg: #eef1f5;
+  --color-st-ditolak-bg: #0f2a33;
+  --color-st-dibatalkan: #475569;
+  --color-st-dibatalkan-bg: #f1f5f9;
 
   /* Identitas kategori masalah: warna teks/ikon di atas latar mudanya, kontras ≥ 4,5:1.
      Sengaja tidak memakai rona status (biru, teal, hijau tua) supaya kategori dan status tidak tertukar. */
@@ -70,22 +72,20 @@
   --color-kt-lampu: #a16207;
   --color-kt-lampu-bg: #fef6d8;
 
-  /* Lima kelas tetap choropleth (SDD 9.1): 0–20, 20–40, 40–60, 60–80, 80–100. ColorBrewer YlGnBu: kuning pucat
-     → toska → biru tua, jadi skor tertinggi tetap biru tua tapi kelima tingkat mudah dibedakan (aman buta warna).
-     Skala biru lama: #dbe5ff #a8c0ff #6b93ff #3264ff #1a3aa8. */
-  --color-k1: #ffffcc;
-  --color-k2: #a1dab4;
-  --color-k3: #41b6c4;
-  --color-k4: #2c7fb8;
-  --color-k5: #253494;
+  /* Lima kelas tetap choropleth (SDD 9.1): 0–20, 20–40, 40–60, 60–80, 80–100. ColorBrewer GnBu, hijau muda ke biru tua. */
+  --color-k1: #f0f9e8;
+  --color-k2: #bae4bc;
+  --color-k3: #7bccc4;
+  --color-k4: #43a2ca;
+  --color-k5: #0868ac;
 
   --radius-kontrol: 0.5rem;
   --radius-kartu: 0.75rem;
   --radius-besar: 1rem;
 
-  --shadow-kartu: 0 1px 2px rgb(15 41 77 / 0.04), 0 4px 14px rgb(15 41 77 / 0.06);
-  --shadow-angkat: 0 2px 6px rgb(15 41 77 / 0.06), 0 16px 36px rgb(15 41 77 / 0.14);
-  --shadow-kotak: 0 12px 32px rgb(15 41 77 / 0.16);
+  --shadow-kartu: 0 1px 2px rgb(15 42 51 / 0.04), 0 4px 14px rgb(15 42 51 / 0.06);
+  --shadow-angkat: 0 2px 6px rgb(15 42 51 / 0.06), 0 16px 36px rgb(15 42 51 / 0.14);
+  --shadow-kotak: 0 12px 32px rgb(15 42 51 / 0.16);
 
   /* Satoshi untuk seluruh situs: UI, judul, wordmark, dan kode laporan (SR-K7W3PA). */
   --font-sans: var(--font-satoshi), ui-sans-serif, system-ui, "Segoe UI", Roboto, Arial, sans-serif;
@@ -419,7 +419,7 @@ html[data-laci="buka"] .sisi {
   position: fixed;
   inset: var(--tinggi-kepala) 0 0;
   z-index: 940;
-  background: rgb(15 41 77 / 0.45);
+  background: rgb(15 42 51 / 0.45);
   opacity: 0;
   visibility: hidden;
   transition:
@@ -460,7 +460,7 @@ html[data-laci="buka"] .tirai {
   }
   /* Tirai tipis di belakang panel: menandai bahwa panel menumpang, dan klik di situ menutupnya. */
   .tirai {
-    background: rgb(15 41 77 / 0.18);
+    background: rgb(15 42 51 / 0.18);
   }
   html:not([data-sisi="buka"]) .tirai {
     display: none;
@@ -754,7 +754,7 @@ input[type="range"].slider::-webkit-slider-thumb {
   border-radius: 999px;
   background: var(--color-biru);
   border: 4px solid var(--color-permukaan);
-  box-shadow: 0 1px 4px rgb(15 41 77 / 0.35);
+  box-shadow: 0 1px 4px rgb(15 42 51 / 0.35);
   transition: transform 150ms var(--ease-keluar);
 }
 input[type="range"].slider:active::-webkit-slider-thumb {
@@ -766,7 +766,7 @@ input[type="range"].slider::-moz-range-thumb {
   border-radius: 999px;
   background: var(--color-biru);
   border: 4px solid var(--color-permukaan);
-  box-shadow: 0 1px 4px rgb(15 41 77 / 0.35);
+  box-shadow: 0 1px 4px rgb(15 42 51 / 0.35);
 }
 
 /* Leaflet: ubin OSM dibuat pudar supaya warna titik laporan yang bicara. */
@@ -820,7 +820,7 @@ input[type="range"].slider::-moz-range-thumb {
   line-height: 1.45;
 }
 
-/* Klaster: lingkaran biru dengan jumlah, bukan gelembung hijau-kuning bawaan. */
+/* Klaster: lingkaran warna aksi dengan jumlah, bukan gelembung hijau-kuning bawaan. */
 .peta .klaster {
   display: grid;
   place-items: center;
@@ -832,7 +832,7 @@ input[type="range"].slider::-moz-range-thumb {
   font-variant-numeric: tabular-nums;
   box-shadow:
     0 0 0 5px color-mix(in srgb, var(--color-biru) 25%, transparent),
-    0 4px 10px rgb(15 41 77 / 0.3);
+    0 4px 10px rgb(15 42 51 / 0.3);
   transition: transform 150ms var(--ease-keluar);
 }
 .peta .klaster:hover {
@@ -842,7 +842,7 @@ input[type="range"].slider::-moz-range-thumb {
   display: block;
   border-radius: 999px;
   border: 2.5px solid #fff;
-  box-shadow: 0 1px 4px rgb(15 41 77 / 0.45);
+  box-shadow: 0 1px 4px rgb(15 42 51 / 0.45);
 }
 @media (prefers-reduced-motion: no-preference) {
   .peta .titik,

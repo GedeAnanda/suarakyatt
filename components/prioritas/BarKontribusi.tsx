@@ -8,9 +8,9 @@ import type { Bobot, Faktor, SkorIsu } from '@/lib/types';
 
 /** Warna pelengkap per faktor (enam rona yang mudah dibedakan); faktor selalu juga dinamai dengan teks. */
 export const WARNA_FAKTOR: Record<Faktor, string> = {
-  urgensi: '#3264ff',
+  urgensi: '#0f766e',
   umur: '#f08a24',
-  volume: '#139c9c',
+  volume: '#3b82f6',
   dukungan: '#8b5cf6',
   kerentanan: '#e5484d',
   kepadatan: '#7a8699',

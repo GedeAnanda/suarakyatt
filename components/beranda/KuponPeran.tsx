@@ -52,7 +52,7 @@ export default function KuponPeran() {
       <BarisGeser label="Untuk siapa suaRAkyat" className="mt-5">
         {/* Lebar dibatasi persen deret supaya di ponsel 320 px kartu tidak lebih lebar dari layar. */}
         <li className="w-[min(20rem,88%)] shrink-0 snap-start sm:w-[22rem]">
-          <div className="di-gelap flex h-full flex-col rounded-kartu bg-[linear-gradient(135deg,#3264ff_0%,#1f4fe0_55%,#1a3aa8_100%)] p-5 text-white">
+          <div className="di-gelap flex h-full flex-col rounded-kartu bg-[linear-gradient(135deg,#0f766e_0%,#115e59_55%,#134e4a_100%)] p-5 text-white">
             <p className="flex items-center gap-2 text-lead font-bold">
               <Ikon nama="kunci" className="size-5" />
               Coba tanpa daftar

@@ -95,7 +95,7 @@ export default function SpandukGeser({ className = '' }: { className?: string })
                 />
                 <span
                   aria-hidden="true"
-                  className="absolute inset-0 bg-[linear-gradient(0deg,rgb(15_41_77/0.88)_0%,rgb(15_41_77/0.35)_55%,rgb(15_41_77/0.1)_100%)]"
+                  className="absolute inset-0 bg-[linear-gradient(0deg,rgb(15_42_51/0.88)_0%,rgb(15_42_51/0.35)_55%,rgb(15_42_51/0.1)_100%)]"
                 />
                 <span className="absolute inset-x-0 bottom-0 grid gap-1 p-4">
                   <span className="flex items-center gap-1 text-lead font-bold">

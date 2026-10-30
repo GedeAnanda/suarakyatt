@@ -111,7 +111,7 @@ async function BagianPrioritas() {
           />
           <div
             aria-hidden="true"
-            className="absolute inset-0 bg-[linear-gradient(90deg,rgb(15_41_77/0.88)_0%,rgb(15_41_77/0.55)_55%,rgb(15_41_77/0.1)_100%)]"
+            className="absolute inset-0 bg-[linear-gradient(90deg,rgb(15_42_51/0.88)_0%,rgb(15_42_51/0.55)_55%,rgb(15_42_51/0.1)_100%)]"
           />
           <figcaption className="absolute inset-y-0 left-0 flex max-w-[36rem] flex-col justify-center p-6 sm:p-10">
             <p className="text-kecil font-semibold text-white/85">Banjir di Batavia, awal abad ke-20</p>
@@ -228,7 +228,7 @@ function AngkaMusrenbang() {
             sizes="(min-width: 1024px) 30vw, 100vw"
             className="object-cover"
           />
-          <figcaption className="absolute inset-x-0 bottom-0 bg-[linear-gradient(0deg,rgb(15_41_77/0.85),transparent)] px-4 pt-10 pb-3 text-mini text-white">
+          <figcaption className="absolute inset-x-0 bottom-0 bg-[linear-gradient(0deg,rgb(15_42_51/0.85),transparent)] px-4 pt-10 pb-3 text-mini text-white">
             Tanjung Duren, Grogol Petamburan, 1 Januari 2020: salah satu dari 42 kecamatan yang dinilai. Foto &ldquo;
             {FOTO.banjirTanjungDuren.judul}&rdquo; oleh {FOTO.banjirTanjungDuren.pembuat},{' '}
             <a href={FOTO.banjirTanjungDuren.url} target="_blank" rel="noreferrer" className="underline">

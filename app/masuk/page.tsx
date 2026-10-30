@@ -44,7 +44,7 @@ export default function MasukPage({ searchParams }: PageProps<'/masuk'>) {
           </div>
         </div>
 
-        <aside className="di-gelap flex flex-col bg-[linear-gradient(150deg,#3264ff_0%,#1f4fe0_50%,#1a3aa8_100%)] p-6 text-white sm:p-10">
+        <aside className="di-gelap flex flex-col bg-[linear-gradient(150deg,#0f766e_0%,#115e59_50%,#134e4a_100%)] p-6 text-white sm:p-10">
           <Wordmark className="text-sub" />
           <h2 className="mt-6 flex items-center gap-2 text-sub font-bold">
             <Ikon nama="kunci" className="size-5" />

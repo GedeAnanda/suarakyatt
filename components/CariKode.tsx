@@ -21,7 +21,7 @@ export default function CariKode({
       action="/lacak"
       method="get"
       role="search"
-      className={`flex min-w-0 items-center rounded-kontrol border border-garis-isian bg-permukaan transition-[border-color,box-shadow] focus-within:border-biru focus-within:shadow-[0_0_0_3px_rgb(50_100_255/0.22)] hover:border-biru ${
+      className={`flex min-w-0 items-center rounded-kontrol border border-garis-isian bg-permukaan transition-[border-color,box-shadow] focus-within:border-biru focus-within:shadow-[0_0_0_3px_rgb(15_118_110/0.22)] hover:border-biru ${
         kepala ? 'h-10 pl-3' : 'h-14 pl-4'
       } ${className}`}
     >

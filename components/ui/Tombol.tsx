@@ -12,7 +12,7 @@ const DASAR =
 
 const VARIAN: Record<VarianTombol, string> = {
   utama: 'bg-biru text-white hover:bg-biru-tua',
-  kedua: 'bg-biru-muda text-biru-tua hover:bg-[#dce5ff]',
+  kedua: 'bg-biru-muda text-biru-tua hover:bg-[#d0ebe5]',
   garis: 'border border-garis-isian bg-permukaan text-teks hover:border-biru hover:text-biru-tua',
   terang: 'bg-white text-biru-tua hover:bg-biru-muda',
   'terang-garis': 'border border-white/70 bg-transparent text-white hover:bg-white/12',

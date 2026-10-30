@@ -25,12 +25,12 @@ export const GAYA_STATUS: Record<StatusLaporan, string> = {
 
 /** Warna titik di peta, senada dengan badge. */
 export const WARNA_TITIK: Record<StatusLaporan, string> = {
-  menunggu: '#c77700',
-  diverifikasi: '#3264ff',
-  diproses: '#00838f',
-  selesai: '#18864b',
-  ditolak: '#0f294d',
-  dibatalkan: '#8592a6',
+  menunggu: '#d97706',
+  diverifikasi: '#6366f1',
+  diproses: '#06b6d4',
+  selesai: '#22a04b',
+  ditolak: '#0f2a33',
+  dibatalkan: '#94a3b8',
 };
 
 /** Warna teks badge di latar putih (teks st-ditolak putih karena dibuat untuk latar navy). */

@@ -67,7 +67,7 @@ const STATUS_PETA: StatusLaporan[] = ['menunggu', 'diverifikasi', 'diproses', 's
 const bobotUrl = (p: NamaPreset) => FAKTOR.map((f) => Math.round(PRESET[p][f] * 100)).join(',');
 
 const kelasBidang =
-  'flex h-14 min-w-0 items-center gap-3 rounded-kontrol border border-garis-isian bg-permukaan px-4 transition-[border-color,box-shadow] focus-within:border-biru focus-within:shadow-[0_0_0_3px_rgb(50_100_255/0.22)] hover:border-biru';
+  'flex h-14 min-w-0 items-center gap-3 rounded-kontrol border border-garis-isian bg-permukaan px-4 transition-[border-color,box-shadow] focus-within:border-biru focus-within:shadow-[0_0_0_3px_rgb(15_118_110/0.22)] hover:border-biru';
 const kelasMasukan =
   'h-full w-0 min-w-0 flex-1 rounded-none border-0 bg-transparent p-0 text-badan font-semibold shadow-none outline-none focus:shadow-none';
 const kelasCari =
@@ -144,7 +144,7 @@ export default function HeroCari({ panelRapor }: { panelRapor: ReactNode }) {
   return (
     <section aria-labelledby="judul-beranda" className="bingkai pt-4 sm:pt-6">
       {/* Foto memenuhi seluruh hero, termasuk di belakang kotak cari, jadi kotak putih menumpang penuh di atasnya. */}
-      <div className="relative isolate overflow-hidden rounded-besar bg-biru-tua">
+      <div className="relative isolate overflow-hidden rounded-besar bg-navy">
         {TAB.map((t, i) => (
           <Image
             key={t.id}
@@ -157,11 +157,11 @@ export default function HeroCari({ panelRapor }: { panelRapor: ReactNode }) {
             style={{ objectPosition: t.posisi ?? '50% 50%' }}
           />
         ))}
-        {/* Gradasi biru di atas foto, seperti hero situs travel: 90% di atas, turun ke 40% di bawah. Titik tengah
-            75% menjaga area teks tetap pekat; foto diredupkan (brightness-75) supaya teks putih tetap terbaca. */}
+        {/* Lapisan navy gelap di atas foto, senada dengan spanduk Batavia: 85% di atas, turun ke 30% di bawah. Area
+            teks tetap pekat; foto diredupkan (brightness-75) supaya teks putih tetap terbaca. */}
         <div
           aria-hidden="true"
-          className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgb(47_98_245/0.9)_0%,rgb(37_86_230/0.75)_50%,rgb(26_58_168/0.4)_100%)]"
+          className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgb(15_42_51/0.85)_0%,rgb(15_42_51/0.6)_50%,rgb(15_42_51/0.3)_100%)]"
         />
         <div className="di-gelap px-5 pt-9 pb-7 text-white sm:px-10 sm:pt-12 sm:pb-9 lg:px-12 lg:pt-14 lg:pb-10">
           <h1 id="judul-beranda" className="text-hero font-bold tracking-[-0.03em]">

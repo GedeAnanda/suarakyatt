@@ -37,7 +37,7 @@ export default function Istilah({
           type="button"
           popoverTarget={id}
           popoverTargetAction="hide"
-          className="mt-5 min-h-10 rounded-kontrol bg-biru-muda px-4 text-kecil font-semibold text-biru-tua hover:bg-[#dce5ff]"
+          className="mt-5 min-h-10 rounded-kontrol bg-biru-muda px-4 text-kecil font-semibold text-biru-tua hover:bg-[#d0ebe5]"
         >
           Tutup
         </button>

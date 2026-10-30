@@ -53,7 +53,7 @@ export default function DaftarMasalah() {
               />
             ))}
           </div>
-          <figcaption className="absolute inset-x-0 bottom-0 z-20 bg-[linear-gradient(0deg,rgb(15_41_77/0.8),transparent)] px-4 pt-8 pb-3 text-mini text-white">
+          <figcaption className="absolute inset-x-0 bottom-0 z-20 bg-[linear-gradient(0deg,rgb(15_42_51/0.8),transparent)] px-4 pt-8 pb-3 text-mini text-white">
             Foto &ldquo;{foto.judul}&rdquo; oleh {foto.pembuat},{' '}
             <a href={foto.url} target="_blank" rel="noreferrer" className="underline">
               {foto.lisensi}
@@ -96,7 +96,7 @@ export default function DaftarMasalah() {
                 <span className="truncate">{x.nama}</span>
                 <span className="relative block h-2 overflow-hidden rounded-full bg-lapis" aria-hidden="true">
                   <span
-                    className="bar-isi absolute inset-y-0 left-0 w-full rounded-full bg-biru/35"
+                    className="bar-isi absolute inset-y-0 left-0 w-full rounded-full bg-k2"
                     style={{ '--isi': x.selesai / JAM_MAKS } as CSSProperties}
                   />
                   <span
