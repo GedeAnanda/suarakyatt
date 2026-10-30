@@ -14,6 +14,9 @@ export const KATEGORI = [
 
 export const STATUS_AKTIF: StatusLaporan[] = ['menunggu', 'diverifikasi', 'diproses'];
 
+/** Status yang tampil di peta publik (tanpa Dibatalkan). Di sini, bukan di komponen 'use client', supaya halaman server bisa memakainya. */
+export const STATUS_PUBLIK: StatusLaporan[] = ['menunggu', 'diverifikasi', 'diproses', 'selesai', 'ditolak'];
+
 export const LABEL_ALASAN: Record<AlasanTolak, string> = {
   duplikat: 'Duplikat',
   tidak_valid: 'Tidak valid',

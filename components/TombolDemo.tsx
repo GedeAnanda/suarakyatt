@@ -2,7 +2,6 @@
 
 'use client';
 
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { tujuanAman } from '@/lib/tujuan-aman';
 import { Tombol, type VarianTombol } from './ui/Tombol';
@@ -34,7 +33,6 @@ export default function TombolDemo({
   varianAdmin?: VarianTombol;
   className?: string;
 }) {
-  const router = useRouter();
   const [memuat, setMemuat] = useState<Peran | null>(null);
   const [galat, setGalat] = useState<string | null>(null);
 
@@ -49,8 +47,9 @@ export default function TombolDemo({
       });
       const hasil = (await res.json().catch(() => ({}))) as { redirect?: string; error?: string };
       if (!res.ok || !hasil.redirect) throw new Error(hasil.error ?? 'LOGIN_DEMO_GAGAL');
-      router.push(tujuanSetelahDemo(peran, hasil.redirect));
-      router.refresh();
+      // Navigasi penuh, bukan router.push: selagi masih tamu, tautan /lapor sudah di-prefetch dan hasilnya (redirect
+      // ke /masuk) tersimpan di cache router. Cookie sesi ditulis route handler, jadi cache itu tidak ikut dibersihkan.
+      window.location.assign(tujuanSetelahDemo(peran, hasil.redirect));
     } catch (err) {
       setGalat(PESAN[err instanceof Error ? err.message : ''] ?? PESAN.LOGIN_DEMO_GAGAL);
       setMemuat(null);

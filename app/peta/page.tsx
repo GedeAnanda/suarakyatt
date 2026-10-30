@@ -5,8 +5,9 @@ import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import BannerSimulasi from '@/components/BannerSimulasi';
 import KepalaHalaman from '@/components/KepalaHalaman';
-import PetaLaporan, { STATUS_PUBLIK } from '@/components/peta/PetaLaporan';
+import PetaLaporan from '@/components/peta/PetaLaporan';
 import { ambilTitikLaporan } from '@/lib/data/laporan';
+import { STATUS_PUBLIK } from '@/lib/konten';
 import type { StatusLaporan } from '@/lib/types';
 
 export const metadata: Metadata = {

@@ -7,10 +7,11 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 import FormUbahStatus from '@/components/admin/FormUbahStatus';
-import BadgeStatus from '@/components/BadgeStatus';
+import BadgeStatus, { WARNA_TITIK } from '@/components/BadgeStatus';
 import IndikatorSLA from '@/components/IndikatorSLA';
 import Galeri from '@/components/laporan/Galeri';
 import Timeline from '@/components/laporan/Timeline';
+import TitikTunggal from '@/components/peta/TitikTunggal';
 import TombolKembali from '@/components/TombolKembali';
 import Ikon from '@/components/ui/Ikon';
 import LabelSumber from '@/components/ui/LabelSumber';
@@ -44,6 +45,10 @@ async function Isi({ params }: { params: PageProps<'/admin/laporan/[kode]'>['par
           </p>
           <div className="mt-4 rounded-kontrol bg-latar px-4 py-3">
             <IndikatorSLA laporan={l} sekarang={sekarang} />
+          </div>
+          {/* Titik laporan, supaya admin bisa memeriksa lokasinya sebelum memverifikasi. */}
+          <div className="mt-4">
+            <TitikTunggal lat={l.lat} lng={l.lng} warna={WARNA_TITIK[l.status]} label={`Lokasi ${l.kode}`} />
           </div>
         </div>
         <section aria-labelledby="judul-isi" className="kartu p-5 sm:p-6">
@@ -80,7 +85,8 @@ async function Isi({ params }: { params: PageProps<'/admin/laporan/[kode]'>['par
               : 'Laporan ini bukan milik instansi Anda, jadi statusnya tidak bisa diubah dari akun ini.'}
           </p>
         )}
-        <FormUbahStatus kode={l.kode} status={l.status} aktif={milikInstansi} />
+        {/* key: status baru (setelah router.refresh) memasang ulang form, jadi transisi berikutnya langsung tersedia. */}
+        <FormUbahStatus key={l.status} kode={l.kode} status={l.status} aktif={milikInstansi} />
         <p className="text-kecil">
           <Link href={`/laporan/${l.kode}`} className={kelasTautan}>
             Lihat halaman publik laporan ini
