@@ -9,7 +9,6 @@ import type { LaporanPublik } from '@/lib/types';
 import BadgeStatus from './BadgeStatus';
 import IndikatorSLA from './IndikatorSLA';
 import Ikon from './ui/Ikon';
-import IkonKategori from './ui/IkonKategori';
 
 export type RingkasLaporan = Pick<
   LaporanPublik,
@@ -34,17 +33,14 @@ export default function KartuLaporan({
             <span className="font-kode angka text-kecil font-bold tracking-wide text-biru-tua">{l.kode}</span>
             <BadgeStatus status={l.status} />
           </p>
-          <div className="mt-3 flex items-center gap-3">
-            <IkonKategori nama={l.kategori} />
-            <div className="min-w-0">
-              <p className="text-lead leading-snug font-bold group-hover:text-biru-tua">{l.kategori}</p>
-              <p className="mt-0.5 flex items-center gap-1 text-kecil text-lembut">
-                <Ikon nama="lokasi" className="size-3.5" />
-                <span className="truncate">
-                  {l.kecamatan}, {l.kota}
-                </span>
-              </p>
-            </div>
+          <div className="mt-3 min-w-0">
+            <p className="text-lead leading-snug font-bold group-hover:text-biru-tua">{l.kategori}</p>
+            <p className="mt-0.5 flex items-center gap-1 text-kecil text-lembut">
+              <Ikon nama="lokasi" className="size-3.5" />
+              <span className="truncate">
+                {l.kecamatan}, {l.kota}
+              </span>
+            </p>
           </div>
         </div>
         {l.foto && <Image src={l.foto} alt="" width={96} height={96} className="size-20 shrink-0 rounded-kontrol object-cover" />}

@@ -70,12 +70,14 @@
   --color-kt-lampu: #a16207;
   --color-kt-lampu-bg: #fef6d8;
 
-  /* Lima kelas tetap choropleth (SDD 9.1): 0–20, 20–40, 40–60, 60–80, 80–100. Satu rona biru, muda ke tua. */
-  --color-k1: #dbe5ff;
-  --color-k2: #a8c0ff;
-  --color-k3: #6b93ff;
-  --color-k4: #3264ff;
-  --color-k5: #1a3aa8;
+  /* Lima kelas tetap choropleth (SDD 9.1): 0–20, 20–40, 40–60, 60–80, 80–100. ColorBrewer YlGnBu: kuning pucat
+     → toska → biru tua, jadi skor tertinggi tetap biru tua tapi kelima tingkat mudah dibedakan (aman buta warna).
+     Skala biru lama: #dbe5ff #a8c0ff #6b93ff #3264ff #1a3aa8. */
+  --color-k1: #ffffcc;
+  --color-k2: #a1dab4;
+  --color-k3: #41b6c4;
+  --color-k4: #2c7fb8;
+  --color-k5: #253494;
 
   --radius-kontrol: 0.5rem;
   --radius-kartu: 0.75rem;
