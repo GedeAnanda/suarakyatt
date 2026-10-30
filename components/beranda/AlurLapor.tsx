@@ -32,7 +32,7 @@ function BarisRapor({ i }: { i: RaporInstansi }) {
   const tertahan = i.huruf !== i.huruf_asli;
   return (
     <li className="grid grid-cols-[2.25rem_minmax(0,1fr)_auto] items-center gap-x-2 py-3 first:pt-0 last:pb-0">
-      <span className={`text-center text-[1.75rem] leading-none font-bold ${i.huruf ? 'text-biru' : 'text-lembut'}`}>{i.huruf ?? '–'}</span>
+      <span className={`text-center text-[1.75rem] leading-none font-bold ${i.huruf ? 'text-biru' : 'text-lembut'}`}>{i.huruf ?? '?'}</span>
       <div className="text-kecil leading-snug">
         <p className="truncate font-bold">{i.nama.replace(' (simulasi)', '')}</p>
         <p className={i.peringatan_penolakan ? 'text-merah-tua' : 'text-lembut'}>
@@ -110,7 +110,7 @@ export default function AlurLapor({ rapor, kodeContoh }: { rapor: RaporInstansi[
         </p>
       </Langkah>
 
-      <Langkah n={3} judul="Warga menilai, rapor berubah" isi="Rating, ketepatan waktu, dan tingkat penolakan menjadi Rapor Instansi A–E.">
+      <Langkah n={3} judul="Warga menilai, rapor berubah" isi="Rating, ketepatan waktu, dan tingkat penolakan menjadi Rapor Instansi A sampai E.">
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-kontrol bg-latar p-3">
           <span role="img" className="flex gap-0.5 text-oranye" aria-label="4 dari 5 bintang">
             {[1, 2, 3, 4, 5].map((n) => (

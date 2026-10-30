@@ -69,7 +69,7 @@ export default function PanelKenapaBelum({
             ) : (
               <div className="grid gap-5" data-susul>
                 <p className="text-kecil text-lembut">
-                  Ini penjelasan posisi menurut model prioritas suaRAkyat. Alasan dan kendala penanganan dari instansi dicatat
+                  Ini penjelasan posisi menurut model prioritas SUARAKYAT. Alasan dan kendala penanganan dari instansi dicatat
                   terpisah di{' '}
                   <a href="#judul-riwayat" className={kelasTautan}>
                     riwayat penanganan

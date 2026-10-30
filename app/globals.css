@@ -72,7 +72,7 @@
   --color-kt-lampu: #a16207;
   --color-kt-lampu-bg: #fef6d8;
 
-  /* Lima kelas tetap choropleth (SDD 9.1): 0–20, 20–40, 40–60, 60–80, 80–100. ColorBrewer GnBu, hijau muda ke biru tua. */
+  /* Lima kelas tetap choropleth (SDD 9.1): 0 sampai 20, 20 sampai 40, 40 sampai 60, 60 sampai 80, 80 sampai 100. ColorBrewer GnBu, hijau muda ke biru tua. */
   --color-k1: #f0f9e8;
   --color-k2: #bae4bc;
   --color-k3: #7bccc4;
@@ -669,7 +669,7 @@ html:has(#kotak-cari):not([data-kotak-lewat]) .cari-kepala {
   to { opacity: 0; transform: scale(1.7); }
 }
 
-/* Angka bergulir (components/ui/AngkaGulir.tsx): tiap digit kolom 0–9 digeser ke nilainya. */
+/* Angka bergulir (components/ui/AngkaGulir.tsx): tiap digit kolom 0 sampai 9 digeser ke nilainya. */
 .gulir-kolom {
   display: inline-block;
   height: 1em;
@@ -850,8 +850,9 @@ input[type="range"].slider::-moz-range-thumb {
     }
   }
 }
-/* Efek "fokus" (dashboard Beranda, components/KecamatanTimbul3D.tsx): peta penuh diburamkan, kecamatan terpilih
-   bergerak dari tempatnya ke tengah peta sambil membesar dan miring, lalu titik laporannya muncul satu per satu. */
+/* Efek "fokus" (dashboard Beranda, components/KecamatanTimbul3D.tsx): peta penuh diburamkan pelan (1 detik), kecamatan
+   terpilih terangkat, melayang ke tengah peta sambil membesar dan miring, mendarat, lalu titik dan pin laporannya
+   muncul satu per satu dan wilayahnya mengambang pelan. */
 .peta-fokus-latar {
   filter: blur(3px);
   opacity: 0.55;
@@ -905,8 +906,16 @@ input[type="range"].slider::-moz-range-thumb {
   filter: blur(8px);
 }
 @media (prefers-reduced-motion: no-preference) {
+  /* Masuk 1,6 detik: terangkat di tempat asal, melayang ke tengah lewat lengkung kecil ke atas sambil mulai miring,
+     lalu mendarat pelan. Setelah itu mengambang naik-turun ±5 px (properti translate, jadi tidak bentrok dengan
+     transform animasi masuk). Bayangan baru muncul saat mendarat. */
   .t3d-kotak {
-    animation: t3d-masuk 900ms var(--ease-keluar) both;
+    animation:
+      t3d-masuk 1600ms linear both,
+      t3d-melayang 3.2s ease-in-out 1600ms infinite alternate;
+  }
+  .t3d-bayang {
+    animation: t3d-bayang 1600ms ease-out both;
   }
   .t3d-titik {
     transform-box: fill-box;
@@ -914,8 +923,34 @@ input[type="range"].slider::-moz-range-thumb {
     animation: t3d-titik 380ms var(--ease-pegas) both;
   }
   @keyframes t3d-masuk {
-    from {
+    0% {
       transform: translate(var(--asal-x), var(--asal-y)) scale(var(--asal-skala)) rotateX(0deg);
+      animation-timing-function: cubic-bezier(0.3, 0, 0.3, 1);
+    }
+    18% {
+      transform: translate(var(--asal-x), var(--asal-y)) scale(calc(var(--asal-skala) * 1.15)) rotateX(0deg);
+      animation-timing-function: cubic-bezier(0.45, 0, 0.2, 1);
+    }
+    76% {
+      transform: translate(0%, -3%) scale(1.04) rotateX(22deg);
+      animation-timing-function: cubic-bezier(0.2, 0.6, 0.3, 1);
+    }
+    100% {
+      transform: translate(0%, 0%) scale(1) rotateX(32deg);
+    }
+  }
+  @keyframes t3d-melayang {
+    to {
+      translate: 0 -5px;
+    }
+  }
+  @keyframes t3d-bayang {
+    0%,
+    60% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 0.35;
     }
   }
   @keyframes t3d-titik {

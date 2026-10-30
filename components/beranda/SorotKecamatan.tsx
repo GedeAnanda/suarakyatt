@@ -3,14 +3,22 @@
 // Berhenti bergantian kalau pengguna meminta gerak dikurangi, atau saat diarahkan kursor.
 // Memilih nomor membuka tampilan fokus: kecamatannya bergerak ke tengah peta (3D) dengan beberapa titik laporan,
 // peta lain diburamkan. Nomor yang sama ditekan lagi = kembali ke tampilan awal (bergantian otomatis).
+// Kolom kiri di bawah daftar kecamatan: saat fokus, "Kenapa peringkat ini" (enam faktor skor) dan daftar laporan contoh
+// yang pin-nya tampil di peta; di bawahnya selalu legenda warna peta.
 
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { KECAMATAN } from '@/lib/geo/kecamatan-svg';
 import type { TitikPeta } from '@/lib/geo/proyeksi';
-import { formatPoin } from '@/lib/scoring';
+import { NAMA_FAKTOR } from '@/lib/konten';
+import { FAKTOR, formatPoin } from '@/lib/scoring';
+import type { Faktor } from '@/lib/types';
+import BadgeStatus from '../BadgeStatus';
+import { pilihContoh } from '../KecamatanTimbul3D';
 import PetaKecamatan, { KeteranganKelas } from '../PetaKecamatan';
+import { WARNA_FAKTOR } from '../prioritas/BarKontribusi';
 
 export interface IsuTeratas {
   kode_wilayah: string;
@@ -19,6 +27,8 @@ export interface IsuTeratas {
   kategori: string;
   skor: number;
   peringkat: number;
+  /** Poin tiap faktor; jumlahnya sama dengan skor. */
+  kontribusi: Record<Faktor, number>;
 }
 
 const NAMA_URUT = [...KECAMATAN].sort((a, b) => a.kecamatan.localeCompare(b.kecamatan, 'id'));
@@ -62,6 +72,10 @@ export default function SorotKecamatan({
   }, [jeda, teratas.length]);
 
   const nyala = teratas[indeks];
+  const bentuk = nyala && KECAMATAN.find((k) => k.kode_wilayah === nyala.kode_wilayah);
+  // Laporan contoh yang sama dengan pin di peta.
+  const contoh = fokus && nyala && bentuk ? pilihContoh(bentuk.d, titik[nyala.kode_wilayah] ?? []) : [];
+  const pendorong = nyala ? [...FAKTOR].sort((a, b) => nyala.kontribusi[b] - nyala.kontribusi[a]).slice(0, 3) : [];
 
   return (
     <div
@@ -90,7 +104,7 @@ export default function SorotKecamatan({
         )}
 
         <div className="mt-4 flex flex-wrap items-center gap-2" role="group" aria-label="Pilih kecamatan teratas untuk disorot">
-          {/* Satu kecamatan satu tombol, jadi nomornya urutan kecamatan (1–10), bukan peringkat isu yang bisa loncat. */}
+          {/* Satu kecamatan satu tombol, jadi nomornya urutan kecamatan (1 sampai 10), bukan peringkat isu yang bisa loncat. */}
           {teratas.map((t, i) => (
             <button
               key={t.kode_wilayah + t.kategori}
@@ -132,6 +146,63 @@ export default function SorotKecamatan({
             </span>
           ))}
         </p>
+
+        {fokus && nyala && (
+          <div key={`rincian-${nyala.kode_wilayah}-${nyala.kategori}`} className="ganti mt-8 grid gap-6 border-t border-garis pt-6">
+            {/* Kenapa peringkat ini: enam faktor sebagai satu bar bertumpuk (lebar = poin dari 100), lalu tiga terbesar. */}
+            <section aria-labelledby="judul-kenapa-peringkat">
+              <h3 id="judul-kenapa-peringkat" className="text-badan font-bold">
+                Kenapa peringkat {nyala.peringkat}?
+              </h3>
+              <p className="mt-1 text-kecil text-lembut">
+                Skor {formatPoin(nyala.skor)} dari 100, dijumlahkan dari enam faktor. Yang paling mendorong:
+              </p>
+              <div aria-hidden="true" className="mt-3 flex h-2.5 w-full overflow-hidden rounded-full bg-lapis">
+                {FAKTOR.map((f) => (
+                  <span key={f} style={{ width: `${nyala.kontribusi[f]}%`, background: WARNA_FAKTOR[f] }} />
+                ))}
+              </div>
+              <ul className="mt-3 grid gap-1.5 text-kecil">
+                {pendorong.map((f) => (
+                  <li key={f} className="flex items-center gap-2">
+                    <span aria-hidden="true" className="size-2.5 shrink-0 rounded-[0.15rem]" style={{ background: WARNA_FAKTOR[f] }} />
+                    <span className="flex-1">{NAMA_FAKTOR[f]}</span>
+                    <span className="angka font-semibold">{formatPoin(nyala.kontribusi[f])} poin</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+
+            {/* Laporan yang pin-nya tampil di peta, bisa dibuka di halaman lacak. */}
+            {contoh.length > 0 && (
+              <section aria-labelledby="judul-contoh-laporan">
+                <h3 id="judul-contoh-laporan" className="text-badan font-bold">
+                  Contoh laporan di {nyala.kecamatan}
+                </h3>
+                <ul className="mt-3 divide-y divide-garis overflow-hidden rounded-kartu border border-garis bg-permukaan">
+                  {contoh.map((t) => (
+                    <li key={t.kode}>
+                      <Link
+                        href={`/laporan/${t.kode}`}
+                        className="flex items-center justify-between gap-3 px-4 py-2.5 transition-colors hover:bg-biru-pudar"
+                      >
+                        <span className="min-w-0">
+                          <span className="font-kode angka block text-kecil font-bold text-biru-tua">{t.kode}</span>
+                          <BadgeStatus status={t.status} />
+                        </span>
+                        <span className={`text-right text-kecil ${t.telat ? 'font-semibold text-merah-tua' : 'text-lembut'}`}>
+                          {t.sla ?? ''}
+                        </span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
+          </div>
+        )}
+
+        <KeteranganKelas className="mt-8" />
       </div>
 
       <figure>
@@ -142,9 +213,6 @@ export default function SorotKecamatan({
           titik={fokus && nyala ? titik[nyala.kode_wilayah] : undefined}
           judul="Peta DKI Jakarta per kecamatan, diwarnai menurut skor prioritas tertinggi"
         />
-        <figcaption className="mt-3">
-          <KeteranganKelas />
-        </figcaption>
       </figure>
     </div>
   );

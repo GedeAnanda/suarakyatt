@@ -49,7 +49,7 @@ export default function KuponPeran() {
         diperbaiki lebih dulu, dinas mana yang lambat, dan apa yang berubah kalau prioritas diganti.
       </p>
 
-      <BarisGeser label="Untuk siapa suaRAkyat" className="mt-5">
+      <BarisGeser label="Untuk siapa SUARAKYAT" className="mt-5">
         {/* Lebar dibatasi persen deret supaya di ponsel 320 px kartu tidak lebih lebar dari layar. */}
         <li className="w-[min(20rem,88%)] shrink-0 snap-start sm:w-[22rem]">
           <div className="di-gelap flex h-full flex-col rounded-kartu bg-[linear-gradient(135deg,#0f766e_0%,#115e59_55%,#134e4a_100%)] p-5 text-white">

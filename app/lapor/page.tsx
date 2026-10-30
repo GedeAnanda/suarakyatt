@@ -21,7 +21,7 @@ export default function LaporPage() {
       <aside role="note" className="mt-5 flex gap-3 rounded-kartu border border-garis bg-permukaan px-4 py-3 text-kecil sm:text-badan">
         <Ikon nama="info" className="mt-0.5 size-5 shrink-0 text-biru" />
         <p>
-          <strong className="font-bold">suaRAkyat bukan kanal pengaduan resmi.</strong> Laporan di sini tidak diteruskan ke
+          <strong className="font-bold">SUARAKYAT bukan kanal pengaduan resmi.</strong> Laporan di sini tidak diteruskan ke
           instansi. Untuk pengaduan resmi ke Pemprov DKI Jakarta, gunakan{' '}
           {KANAL_RESMI.map((k, i) => (
             <span key={k.nama}>

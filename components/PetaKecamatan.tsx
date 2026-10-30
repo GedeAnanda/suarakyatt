@@ -69,7 +69,7 @@ export default function PetaKecamatan({
         viewBox={VIEWBOX}
         role={interaktif ? 'group' : 'img'}
         aria-label={judul}
-        className={`block h-auto w-full transition-[filter,opacity] duration-500 ${fokus ? 'peta-fokus-latar' : ''}`}
+        className={`block h-auto w-full transition-[filter,opacity] duration-[1000ms] ease-out ${fokus ? 'peta-fokus-latar' : ''}`}
       >
         <defs>
           <pattern id="arsir-kosong" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
@@ -173,7 +173,7 @@ export function KeteranganKelas({ className = '' }: { className?: string }) {
         {KELAS.map((k) => (
           <li key={k.dari} className="angka flex items-center gap-1.5">
             <span aria-hidden="true" className="size-3.5 rounded-[0.2rem]" style={{ background: k.warna }} />
-            {k.dari}–{k.sampai}
+            {k.dari} sampai {k.sampai}
           </li>
         ))}
         <li className="flex items-center gap-1.5">

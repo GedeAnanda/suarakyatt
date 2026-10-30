@@ -27,7 +27,7 @@ export default function SalinKode({ kode }: { kode: string }) {
 
   async function bagikan() {
     try {
-      await navigator.share({ title: `Laporan ${kode} · suaRAkyat`, text: `Lacak laporan ${kode}`, url: window.location.href });
+      await navigator.share({ title: `Laporan ${kode} · SUARAKYAT`, text: `Lacak laporan ${kode}`, url: window.location.href });
     } catch {
       // dibatalkan pengguna
     }

@@ -24,4 +24,7 @@ export interface TitikPeta {
   status: StatusLaporan;
   x: number;
   y: number;
+  /** "Sisa 18 jam" atau "Terlambat 2 hari"; hanya untuk laporan yang masih aktif. */
+  sla?: string;
+  telat?: boolean;
 }

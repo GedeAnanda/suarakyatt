@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: PageProps<'/laporan/[kode]'>)
   const k = decodeURIComponent(kode);
   return {
     title: `Laporan ${k}`,
-    description: `Status, riwayat penanganan, batas waktu, dan posisi laporan ${k} di daftar prioritas suaRAkyat, termasuk jawaban "Kenapa belum?".`,
+    description: `Status, riwayat penanganan, batas waktu, dan posisi laporan ${k} di daftar prioritas SUARAKYAT, termasuk jawaban "Kenapa belum?".`,
   };
 }
 
@@ -74,7 +74,7 @@ async function Isi({ params, searchParams }: Pick<PageProps<'/laporan/[kode]'>, 
           <div>
             <p className="text-lead font-bold text-hijau">Laporan terkirim. Simpan kode {l.kode} untuk melacaknya.</p>
             <p className="mt-1 max-w-[75ch] text-kecil">
-              Laporan di suaRAkyat tidak diteruskan ke instansi. Untuk pengaduan resmi, kirim juga lewat{' '}
+              Laporan di SUARAKYAT tidak diteruskan ke instansi. Untuk pengaduan resmi, kirim juga lewat{' '}
               {KANAL_RESMI.map((k, i) => (
                 <span key={k.nama}>
                   {i > 0 && ' atau '}

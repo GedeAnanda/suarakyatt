@@ -13,7 +13,7 @@ import { hurufDari, kepuasan, nilaiRapor } from '@/lib/scoring/rapor';
 
 export const metadata: Metadata = {
   title: 'Cara menilai',
-  description: 'Rumus Rapor Instansi suaRAkyat: komponen, bobot, contoh hitungan, dan aturan peringatan penolakan.',
+  description: 'Rumus Rapor Instansi SUARAKYAT: komponen, bobot, contoh hitungan, dan aturan peringatan penolakan.',
 };
 
 // Contoh PRD 8: Dinas Kebersihan (simulasi), 100 laporan, 10 ditolak "Tidak valid".
@@ -29,9 +29,9 @@ const NILAI_CONTOH = nilaiRapor(dua(CONTOH[0].nilai), dua(CONTOH[1].nilai), dua(
 
 const HURUF = [
   { h: 'A', rentang: '85 ke atas' },
-  { h: 'B', rentang: '70–84' },
-  { h: 'C', rentang: '55–69' },
-  { h: 'D', rentang: '40–54' },
+  { h: 'B', rentang: '70 sampai 84' },
+  { h: 'C', rentang: '55 sampai 69' },
+  { h: 'D', rentang: '40 sampai 54' },
   { h: 'E', rentang: 'di bawah 40' },
 ];
 
@@ -39,7 +39,7 @@ export default function CaraMenilaiPage() {
   return (
     <div className="bingkai pt-6 pb-4 sm:pt-8">
       <KepalaHalaman judul="Cara menilai instansi" jejak={[{ href: '/rapor', label: 'Rapor instansi' }]}>
-        Setiap instansi mendapat nilai 0–100 dan huruf A sampai E dari empat komponen. Laporan yang belum disentuh ikut
+        Setiap instansi mendapat nilai 0 sampai 100 dan huruf A sampai E dari empat komponen. Laporan yang belum disentuh ikut
         dihitung, sehingga instansi yang mengabaikan laporan tidak terlihat bagus. Semua instansi dihitung dengan susunan
         bobot yang sama.
       </KepalaHalaman>
@@ -155,7 +155,7 @@ export default function CaraMenilaiPage() {
                 <td className="p-3">A</td>
               </tr>
               <tr className="border-t border-garis bg-merah-muda/50">
-                <th scope="row" className="p-3 font-semibold">Di suaRAkyat</th>
+                <th scope="row" className="p-3 font-semibold">Di SUARAKYAT</th>
                 <td className="p-3">B · ditolak 5%</td>
                 <td className="p-3 font-bold text-merah-tua">C (angkanya setara A) · ditolak 35%, melewati batas 25%</td>
               </tr>

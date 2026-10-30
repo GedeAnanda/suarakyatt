@@ -6,7 +6,7 @@ import { Suspense } from 'react';
 import TabelLaporanAdmin from '@/components/admin/TabelLaporanAdmin';
 import KepalaHalaman from '@/components/KepalaHalaman';
 import AngkaGulir from '@/components/ui/AngkaGulir';
-import Ikon, { type NamaIkon } from '@/components/ui/Ikon';
+import Ikon from '@/components/ui/Ikon';
 import LabelSumber from '@/components/ui/LabelSumber';
 import { ambilLaporanAdmin } from '@/lib/data/admin';
 import { ambilSesi } from '@/lib/data/sesi';
@@ -18,10 +18,11 @@ async function Isi() {
   const [{ sumber, laporan, sekarang }, sesi] = await Promise.all([ambilLaporanAdmin(), ambilSesi()]);
   const instansi = KATEGORI.find((k) => k.id === sesi?.instansiId)?.instansi ?? (sumber === 'contoh' ? KATEGORI[0].instansi : null);
   const aktif = laporan.filter((l) => ['menunggu', 'diverifikasi', 'diproses'].includes(l.status));
-  const angka: { nilai: number; label: string; ikon: NamaIkon; gaya: string }[] = [
-    { nilai: aktif.length, label: 'laporan perlu ditangani', ikon: 'koper', gaya: 'bg-biru-muda text-biru-tua' },
-    { nilai: aktif.filter((l) => l.terlambat).length, label: 'sudah melewati batas waktu', ikon: 'peringatan', gaya: 'bg-merah-muda text-merah-tua' },
-    { nilai: laporan.filter((l) => l.status === 'menunggu').length, label: 'menunggu respons pertama', ikon: 'jam', gaya: 'bg-oranye-muda text-st-menunggu' },
+  // Ringkasan sebaris: tiga angka sebagai kalimat, tanpa kotak dan ikon. Yang terlambat merah.
+  const angka = [
+    { nilai: aktif.length, label: 'perlu ditangani', merah: false },
+    { nilai: aktif.filter((l) => l.terlambat).length, label: 'sudah lewat batas waktu', merah: true },
+    { nilai: laporan.filter((l) => l.status === 'menunggu').length, label: 'menunggu respons pertama', merah: false },
   ];
 
   return (
@@ -47,18 +48,13 @@ async function Isi() {
           pratinjau. Ubah status aktif setelah data seed dimuat.
         </p>
       )}
-      <dl className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
+      <dl className="mt-5 flex flex-wrap items-baseline gap-x-7 gap-y-2">
         {angka.map((a) => (
-          <div key={a.label} className="kartu flex items-center gap-4 p-4">
-            <span className={`flex size-11 shrink-0 items-center justify-center rounded-full ${a.gaya}`}>
-              <Ikon nama={a.ikon} className="size-5" />
-            </span>
-            <div className="flex flex-col-reverse">
-              <dt className="text-kecil text-lembut">{a.label}</dt>
-              <dd className="angka text-judul leading-none font-bold">
-                <AngkaGulir nilai={String(a.nilai)} />
-              </dd>
-            </div>
+          <div key={a.label} className={`flex flex-row-reverse items-baseline gap-2 ${a.merah && a.nilai > 0 ? 'text-merah-tua' : ''}`}>
+            <dt className={`text-badan ${a.merah && a.nilai > 0 ? '' : 'text-lembut'}`}>{a.label}</dt>
+            <dd className="angka text-sub font-bold">
+              <AngkaGulir nilai={String(a.nilai)} />
+            </dd>
           </div>
         ))}
       </dl>

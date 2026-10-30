@@ -21,6 +21,8 @@ const MIRING = 32; // derajat, sama dengan rotateX .t3d-kotak di globals.css
 const PIN = 'M12 31C12 31 2.5 19.6 2.5 12a9.5 9.5 0 0 1 19 0C21.5 19.6 12 31 12 31Z';
 const PIN_LAPIS = 4;
 const TITIK_MAKS = 4; // hanya beberapa laporan sebagai contoh
+// Titik dan pin mulai muncul saat wilayah hampir mendarat (animasi masuk 1600 ms, t3d-masuk di globals.css).
+const MUNCUL_TITIK = 1350;
 const JARAK_MIN = 26; // px di layar; titik yang lebih dekat dari ini dianggap berdempetan, cukup satu yang tampil
 
 /** Kotak pembatas dari data jalur: semua koordinat absolut (M/L/Z), jadi cukup pasangan angkanya. */
@@ -37,6 +39,21 @@ function kotak(d: string) {
     y1 = Math.max(y1, angka[i + 1]);
   }
   return { x0, y0, lebar: Math.max(1, x1 - x0), tinggi: Math.max(1, y1 - y0) };
+}
+
+/** Beberapa titik saja sebagai contoh, sesuai urutan dari server (laporan yang masih berjalan dulu); dari titik yang
+ *  berdempetan di layar hanya yang pertama diambil. Dipakai peta (pin) dan daftar contoh di sampingnya. */
+export function pilihContoh(d: string, titik: TitikPeta[]): TitikPeta[] {
+  const b = kotak(d);
+  const skala = Math.min(SKALA_MAKS, (LEBAR * UKURAN) / b.lebar, (TINGGI * UKURAN) / b.tinggi);
+  // Satu unit viewBox ≈ 0,55 px × skala di layar.
+  const jarakMin = JARAK_MIN / (0.55 * skala);
+  const contoh: TitikPeta[] = [];
+  for (const t of titik) {
+    if (contoh.length === TITIK_MAKS) break;
+    if (contoh.every((c) => Math.hypot(c.x - t.x, c.y - t.y) >= jarakMin)) contoh.push(t);
+  }
+  return contoh;
 }
 
 export default function KecamatanTimbul3D({ d, warna, titik = [] }: { d: string; warna: string; titik?: TitikPeta[] }) {
@@ -64,14 +81,7 @@ export default function KecamatanTimbul3D({ d, warna, titik = [] }: { d: string;
   // Satu unit viewBox ≈ 0,55 px × skala di layar; jari-jari titik ±5 px.
   const jariJari = 9 / skala;
 
-  // Beberapa titik saja, sesuai urutan dari server (laporan yang masih berjalan dulu), dan dari titik-titik yang
-  // berdempetan hanya yang pertama yang diambil.
-  const jarakMin = JARAK_MIN / (0.55 * skala);
-  const contoh: TitikPeta[] = [];
-  for (const t of titik) {
-    if (contoh.length === TITIK_MAKS) break;
-    if (contoh.every((c) => Math.hypot(c.x - t.x, c.y - t.y) >= jarakMin)) contoh.push(t);
-  }
+  const contoh = pilihContoh(d, titik);
 
   const lapis = (isi: string, z: number, kecerahan?: number, kelas?: string) => (
     <svg
@@ -115,7 +125,7 @@ export default function KecamatanTimbul3D({ d, warna, titik = [] }: { d: string;
               strokeWidth={2}
               vectorEffect="non-scaling-stroke"
               className="t3d-titik"
-              style={{ animationDelay: `${900 + i * 90}ms` }}
+              style={{ animationDelay: `${MUNCUL_TITIK + i * 110}ms` }}
             />
           ))}
         </svg>
@@ -130,7 +140,7 @@ export default function KecamatanTimbul3D({ d, warna, titik = [] }: { d: string;
               top: `${((t.y - b.y0) / b.tinggi) * 100}%`,
               transform: `translateZ(${LAPIS * langkah + 1}px) rotateX(-${MIRING}deg)`,
               // Sama dengan jeda titik di bawahnya, jadi pin dan titiknya muncul bersamaan.
-              animationDelay: `${900 + i * 90}ms`,
+              animationDelay: `${MUNCUL_TITIK + i * 110}ms`,
             }}
           >
             <div className="t3d-pin-naik" style={{ animationDelay: `${-i * 0.37}s` }}>

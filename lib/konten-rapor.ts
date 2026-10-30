@@ -49,5 +49,5 @@ export const DEFINISI_RAPOR = {
   median:
     'Nilai tengah waktu dari laporan masuk sampai pertama kali direspons. Ditampilkan, tapi tidak masuk nilai: laporan yang diabaikan tidak punya waktu respons, jadi median bisa menyesatkan.',
   terlambat: 'Laporan yang masih aktif dan sudah melewati batas waktu respons atau selesai.',
-  huruf: 'A untuk nilai 85 ke atas, B 70–84, C 55–69, D 40–54, dan E di bawah 40.',
+  huruf: 'A untuk nilai 85 ke atas, B 70 sampai 84, C 55 sampai 69, D 40 sampai 54, dan E di bawah 40.',
 };

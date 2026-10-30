@@ -1,4 +1,4 @@
-// components/prioritas/Simulator.tsx — Dashboard Prioritas + simulator bobot publik (FR-F2–F4, PRD 9), pemilik: A
+// components/prioritas/Simulator.tsx — Dashboard Prioritas + simulator bobot publik (FR-F2 sampai F4, PRD 9), pemilik: A
 // Semua skor dihitung di browser dengan lib/scoring dari hasil priority_factors, jadi slider
 // langsung mengubah peringkat tanpa ke server dan tanpa menyimpan apa pun (SDD 2.1, 8.3).
 // Bobot simulasi ikut tersimpan di URL (?bobot=30,20,5,20,15,10) supaya skenarionya bisa dibagikan.

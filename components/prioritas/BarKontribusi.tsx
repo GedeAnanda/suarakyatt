@@ -16,7 +16,7 @@ export const WARNA_FAKTOR: Record<Faktor, string> = {
   kepadatan: '#7a8699',
 };
 
-/** Satu bar bertumpuk: lebar tiap ruas = poin faktor, dari skala 0–100. */
+/** Satu bar bertumpuk: lebar tiap ruas = poin faktor, dari skala 0 sampai 100. */
 export function BarTumpuk({ isu, className = 'h-2' }: { isu: SkorIsu; className?: string }) {
   return (
     <div className={`flex w-full overflow-hidden rounded-full bg-lapis ${className}`} aria-hidden="true">

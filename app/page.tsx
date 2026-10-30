@@ -8,6 +8,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Suspense } from 'react';
+import { hitungSLA } from '@/components/IndikatorSLA';
 import AlurLapor from '@/components/beranda/AlurLapor';
 import DaftarMasalah from '@/components/beranda/DaftarMasalah';
 import HeroCari from '@/components/beranda/HeroCari';
@@ -51,7 +52,7 @@ async function PanelRapor() {
                   i.huruf ? 'bg-biru text-white' : 'bg-lapis text-lembut'
                 }`}
               >
-                {i.huruf ?? '–'}
+                {i.huruf ?? '?'}
               </span>
               <span className="min-w-0 text-kecil leading-tight">
                 <span className="block truncate font-bold">{i.nama.replace(' (simulasi)', '')}</span>
@@ -77,7 +78,7 @@ async function PanelRapor() {
 }
 
 async function BagianPrioritas() {
-  const [data, { sumber: sumberStat, statistik }, { laporan }] = await Promise.all([
+  const [data, { sumber: sumberStat, statistik }, { laporan, sekarang }] = await Promise.all([
     ambilDataPrioritas(),
     ambilStatistik(),
     ambilTitikLaporan(),
@@ -94,7 +95,15 @@ async function BagianPrioritas() {
   for (const s of resmi) {
     if (sudah.has(s.kode_wilayah)) continue;
     sudah.add(s.kode_wilayah);
-    teratas.push({ kode_wilayah: s.kode_wilayah, kecamatan: s.kecamatan, kota: s.kota, kategori: s.kategori, skor: s.skor, peringkat: s.peringkat });
+    teratas.push({
+      kode_wilayah: s.kode_wilayah,
+      kecamatan: s.kecamatan,
+      kota: s.kota,
+      kategori: s.kategori,
+      skor: s.skor,
+      peringkat: s.peringkat,
+      kontribusi: s.kontribusi,
+    });
     if (teratas.length === 10) break;
   }
 
@@ -110,7 +119,8 @@ async function BagianPrioritas() {
       .slice(0, 8)
       .map((l) => {
         const [x, y] = keTitikPeta(l.lat, l.lng);
-        return { kode: l.kode, status: l.status, x, y };
+        const sla = AKTIF.has(l.status) ? hitungSLA({ ...l, responded_at: null, resolved_at: null }, sekarang) : null;
+        return { kode: l.kode, status: l.status, x, y, sla: sla?.teks, telat: sla?.terlambat };
       });
   }
 
