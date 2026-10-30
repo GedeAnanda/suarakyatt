@@ -1,4 +1,4 @@
-// components/lapor/FormLaporan.tsx — Buat Laporan (FR-B1–B4, SDD 9), pemilik: A
+// components/lapor/FormLaporan.tsx — Buat Laporan (FR-B1 sampai B4, SDD 9), pemilik: A
 // Urutan: kategori → titik di peta → foto → deskripsi → cek laporan serupa → kirim.
 // Operasi SDD 6: S1 unggah foto (lib/supabase/unggah.ts), R2 similar_reports, R4 toggle_upvote, R3 create_report.
 // Isian tidak hilang kalau unggah atau kirim gagal; foto yang sudah terunggah tidak diunggah ulang.
@@ -468,7 +468,7 @@ export default function FormLaporan() {
         )}
       </Langkah>
 
-      <Langkah n={3} selesai={lengkap.includes(3)} galat={galatLangkah(3)} judul="Foto masalahnya" petunjuk="1–3 foto JPG, PNG, atau WebP, maksimal 20 MB per foto. Foto dikecilkan dan data lokasi di dalam file dibuang sebelum diunggah.">
+      <Langkah n={3} selesai={lengkap.includes(3)} galat={galatLangkah(3)} judul="Foto masalahnya" petunjuk="1 sampai 3 foto JPG, PNG, atau WebP, maksimal 20 MB per foto. Foto dikecilkan dan data lokasi di dalam file dibuang sebelum diunggah.">
         <p className="flex gap-2 rounded-kontrol bg-oranye-muda p-3 text-kecil text-st-menunggu">
           <Ikon nama="peringatan" className="mt-0.5 size-4 shrink-0" />
           Jangan memotret wajah atau plat nomor orang lain. Foto tampil publik.
@@ -519,7 +519,7 @@ export default function FormLaporan() {
         )}
       </Langkah>
 
-      <Langkah n={4} selesai={lengkap.includes(4)} galat={galatLangkah(4)} judul="Ceritakan singkat" petunjuk="Apa yang terjadi, sejak kapan, dan dampaknya. 20–500 karakter.">
+      <Langkah n={4} selesai={lengkap.includes(4)} galat={galatLangkah(4)} judul="Ceritakan singkat" petunjuk="Apa yang terjadi, sejak kapan, dan dampaknya. 20 sampai 500 karakter.">
         <label htmlFor="deskripsi" className="sr-only">
           Deskripsi
         </label>

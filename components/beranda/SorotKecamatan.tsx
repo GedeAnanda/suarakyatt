@@ -90,7 +90,7 @@ export default function SorotKecamatan({
         )}
 
         <div className="mt-4 flex flex-wrap items-center gap-2" role="group" aria-label="Pilih kecamatan teratas untuk disorot">
-          {/* Satu kecamatan satu tombol, jadi nomornya urutan kecamatan (1–10), bukan peringkat isu yang bisa loncat. */}
+          {/* Satu kecamatan satu tombol, jadi nomornya urutan kecamatan (1 sampai 10), bukan peringkat isu yang bisa loncat. */}
           {teratas.map((t, i) => (
             <button
               key={t.kode_wilayah + t.kategori}

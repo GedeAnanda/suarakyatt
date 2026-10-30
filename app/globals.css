@@ -72,7 +72,7 @@
   --color-kt-lampu: #a16207;
   --color-kt-lampu-bg: #fef6d8;
 
-  /* Lima kelas tetap choropleth (SDD 9.1): 0–20, 20–40, 40–60, 60–80, 80–100. ColorBrewer GnBu, hijau muda ke biru tua. */
+  /* Lima kelas tetap choropleth (SDD 9.1): 0 sampai 20, 20 sampai 40, 40 sampai 60, 60 sampai 80, 80 sampai 100. ColorBrewer GnBu, hijau muda ke biru tua. */
   --color-k1: #f0f9e8;
   --color-k2: #bae4bc;
   --color-k3: #7bccc4;
@@ -669,7 +669,7 @@ html:has(#kotak-cari):not([data-kotak-lewat]) .cari-kepala {
   to { opacity: 0; transform: scale(1.7); }
 }
 
-/* Angka bergulir (components/ui/AngkaGulir.tsx): tiap digit kolom 0–9 digeser ke nilainya. */
+/* Angka bergulir (components/ui/AngkaGulir.tsx): tiap digit kolom 0 sampai 9 digeser ke nilainya. */
 .gulir-kolom {
   display: inline-block;
   height: 1em;

@@ -9,7 +9,7 @@ import { FOTO, KATEGORI } from '@/lib/konten';
 
 export const metadata: Metadata = {
   title: 'Sumber data',
-  description: 'Dataset yang dipakai suaRAkyat, lisensinya, dan bagian mana yang merupakan data simulasi.',
+  description: 'Dataset yang dipakai SUARAKYAT, lisensinya, dan bagian mana yang merupakan data simulasi.',
 };
 
 const DATA_TERBUKA = [
@@ -167,7 +167,7 @@ export default function SumberDataPage() {
         </h2>
         <div className="mt-2 grid max-w-[80ch] gap-3 text-badan text-lembut">
           <p>
-            Laporan, status, dukungan, dan rating dibuat oleh generator dengan random seed tetap: 800–1.000 laporan dalam enam
+            Laporan, status, dukungan, dan rating dibuat oleh generator dengan random seed tetap: 800 sampai 1.000 laporan dalam enam
             bulan terakhir, titiknya diambil acak di dalam poligon kecamatan sebanding jumlah penduduk. Reset data selalu
             menghasilkan angka yang sama, jadi angka di video dan proposal konsisten.
           </p>

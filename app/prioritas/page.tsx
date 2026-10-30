@@ -77,7 +77,7 @@ export default function PrioritasPage() {
           </Link>
         }
       >
-        Setiap isu wilayah (satu kecamatan × satu kategori yang punya laporan aktif) mendapat skor 0–100 dari enam faktor.
+        Setiap isu wilayah (satu kecamatan × satu kategori yang punya laporan aktif) mendapat skor 0 sampai 100 dari enam faktor.
         Pilih isu untuk melihat faktor yang mendorong dan menahannya, atau geser bobotnya sendiri.
       </KepalaHalaman>
 
@@ -92,7 +92,7 @@ export default function PrioritasPage() {
           Enam faktor
         </h2>
         <p className="mt-2 max-w-[80ch] text-badan text-lembut">
-          Skor = 100 × jumlah (bobot × nilai faktor). Nilai faktor diubah ke skala 0–1; kontribusi semua faktor selalu
+          Skor = 100 × jumlah (bobot × nilai faktor). Nilai faktor diubah ke skala 0 sampai 1; kontribusi semua faktor selalu
           berjumlah sama dengan skornya. Isu tanpa laporan aktif tidak diberi peringkat.
         </p>
         <dl className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3" data-muncul>

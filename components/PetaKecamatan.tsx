@@ -173,7 +173,7 @@ export function KeteranganKelas({ className = '' }: { className?: string }) {
         {KELAS.map((k) => (
           <li key={k.dari} className="angka flex items-center gap-1.5">
             <span aria-hidden="true" className="size-3.5 rounded-[0.2rem]" style={{ background: k.warna }} />
-            {k.dari}–{k.sampai}
+            {k.dari} sampai {k.sampai}
           </li>
         ))}
         <li className="flex items-center gap-1.5">

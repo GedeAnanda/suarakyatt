@@ -3,7 +3,7 @@
 // tanpa EXIF (lokasi GPS, merek ponsel, waktu). Orientasi dari EXIF diterapkan dulu.
 
 export const TIPE_FOTO = ['image/jpeg', 'image/png', 'image/webp'];
-/** Batas file asli dari perangkat. Foto kamera HP 48 MP biasanya 5–12 MB; hasil kompresnya hanya ratusan KB. */
+/** Batas file asli dari perangkat. Foto kamera HP 48 MP biasanya 5 sampai 12 MB; hasil kompresnya hanya ratusan KB. */
 export const UKURAN_MAKS = 20 * 1024 * 1024;
 /** Batas hasil kompres, sama dengan batas bucket Storage (lib/supabase/unggah.ts). */
 const UKURAN_HASIL_MAKS = 5 * 1024 * 1024;

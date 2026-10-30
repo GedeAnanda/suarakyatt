@@ -51,11 +51,11 @@ export interface RaporInstansi {
   id: number;
   nama: string;
   sampel: number;
-  R: number; // 0–1
+  R: number; // 0 sampai 1
   S: number;
   P: number;
   K: number;
-  nilai: number; // 0–100, satu desimal
+  nilai: number; // 0 sampai 100, satu desimal
   huruf_asli: Huruf; // huruf sebelum batas maksimal C
   huruf: Huruf | null; // null = data belum cukup
   tingkat_penolakan: number;
@@ -92,9 +92,9 @@ export interface PriorityFactorsResponse {
 
 // Hasil lib/scoring di browser
 export interface SkorIsu extends FaktorIsu {
-  nilai01: Record<Faktor, number>; // setelah diubah ke skala 0–1
+  nilai01: Record<Faktor, number>; // setelah diubah ke skala 0 sampai 1
   kontribusi: Record<Faktor, number>; // poin; jumlahnya sama dengan skor
-  skor: number; // 0–100
+  skor: number; // 0 sampai 100
   peringkat: number; // 1 = paling prioritas
   faktor_tidak_membedakan: Faktor[];
   penjelasan: string;

@@ -166,7 +166,7 @@ export default function HeroCari({ panelRapor }: { panelRapor: ReactNode }) {
         <div className="di-gelap px-5 pt-9 pb-7 text-white sm:px-10 sm:pt-12 sm:pb-9 lg:px-12 lg:pt-14 lg:pb-10">
           <h1 id="judul-beranda" className="text-hero font-bold tracking-[-0.03em]">
             Kenapa belum?
-            <span className="sr-only"> suaRAkyat membuka alasan di balik urutan penanganan masalah kota.</span>
+            <span className="sr-only"> SUARAKYAT membuka alasan di balik urutan penanganan masalah kota.</span>
           </h1>
           {/* Tinggi dua baris supaya kotak cari tidak naik-turun saat kalimat tab berganti panjang. */}
           <p key={aktif} className="ganti mt-3 max-w-[46ch] text-lead font-medium text-white/95 sm:min-h-[2.7em] sm:text-sub">
@@ -327,7 +327,7 @@ export default function HeroCari({ panelRapor }: { panelRapor: ReactNode }) {
           <div role="tabpanel" id="panel-lapor" aria-labelledby="tab-lapor" hidden={aktif !== 'lapor'}>
             <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
               <ol className="grid flex-1 grid-cols-2 gap-2 sm:grid-cols-4">
-                {['Pilih kategori', 'Titik di peta', '1–3 foto', 'Cerita singkat'].map((l, i) => (
+                {['Pilih kategori', 'Titik di peta', '1 sampai 3 foto', 'Cerita singkat'].map((l, i) => (
                   <li key={l} className="flex items-center gap-2.5 rounded-kontrol bg-latar px-3 py-3 text-kecil font-semibold">
                     <span className="angka flex size-6 shrink-0 items-center justify-center rounded-full bg-biru text-mini text-white">
                       {i + 1}
@@ -342,7 +342,7 @@ export default function HeroCari({ panelRapor }: { panelRapor: ReactNode }) {
               </Link>
             </div>
             <p className="mt-3 text-kecil text-lembut">
-              Perlu akun warga. suaRAkyat bukan kanal pengaduan resmi; untuk pengaduan resmi gunakan{' '}
+              Perlu akun warga. SUARAKYAT bukan kanal pengaduan resmi; untuk pengaduan resmi gunakan{' '}
               {KANAL_RESMI.map((k, i) => (
                 <span key={k.nama}>
                   {i > 0 && ' atau '}

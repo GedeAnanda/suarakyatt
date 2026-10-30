@@ -60,7 +60,7 @@ export default function Footer() {
 
         <div className="sm:col-span-3 lg:col-span-1">
           <h2 className="text-badan font-bold">Pengaduan resmi Pemprov DKI Jakarta</h2>
-          <p className="mt-1 text-kecil text-lembut">Laporan di suaRAkyat tidak diteruskan ke instansi.</p>
+          <p className="mt-1 text-kecil text-lembut">Laporan di SUARAKYAT tidak diteruskan ke instansi.</p>
           <ul className="mt-3 flex flex-wrap gap-2">
             {KANAL_RESMI.map((k) => (
               <li key={k.nama}>
@@ -114,7 +114,7 @@ export default function Footer() {
           </p>
           <p className="mt-2 flex flex-wrap items-baseline gap-x-3 gap-y-1">
             <Wordmark className="text-lead text-teks" />
-            <span>Kanal pengaduan sudah melacak laporan. suaRAkyat membuka alasan di balik keputusan.</span>
+            <span>Kanal pengaduan sudah melacak laporan. SUARAKYAT membuka alasan di balik keputusan.</span>
           </p>
         </div>
       </div>

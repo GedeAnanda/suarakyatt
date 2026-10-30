@@ -75,7 +75,7 @@ export default function SpandukGeser({ className = '' }: { className?: string })
     el.scrollTo({ left: item.offsetLeft - el.offsetLeft, behavior: halus ? 'smooth' : 'auto' });
   }
 
-  // Panah ada di baris titik, bukan di atas foto: kartu selebar 280–400 px hampir penuh oleh teks, jadi panah
+  // Panah ada di baris titik, bukan di atas foto: kartu selebar 280 sampai 400 px hampir penuh oleh teks, jadi panah
   // di tengah kartu selalu menimpa judul.
   const kelasPanah =
     'flex size-10 items-center justify-center rounded-full border border-garis bg-permukaan text-teks transition-colors hover:border-biru hover:text-biru-tua disabled:cursor-default disabled:opacity-40 disabled:hover:border-garis disabled:hover:text-teks';

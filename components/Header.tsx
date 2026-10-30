@@ -119,7 +119,7 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-1000 h-(--tinggi-kepala) border-b border-garis bg-permukaan">
       {/* Tepi kiri-kanan memakai env(safe-area-inset-*) supaya tombol tidak masuk ke area poni iPhone yang dimiringkan. */}
-      {/* Di bawah 390 px (ponsel 320–375 px) wordmark, jarak, tautan ikon, dan tombol Masuk dirapatkan supaya isi
+      {/* Di bawah 390 px (ponsel 320 sampai 375 px) wordmark, jarak, tautan ikon, dan tombol Masuk dirapatkan supaya isi
           header tidak melewati tepi layar. */}
       <div className="flex h-full items-center gap-1.5 pr-[max(0.75rem,env(safe-area-inset-right))] pl-[max(0.5rem,env(safe-area-inset-left))] max-[389px]:gap-1 sm:gap-2 sm:pr-[max(1rem,env(safe-area-inset-right))] lg:pr-6 lg:pl-3">
         <TombolMenu />

@@ -17,7 +17,7 @@ export const PESAN_ERROR: Record<string, string> = {
   UPVOTE_SENDIRI: 'Anda tidak bisa mendukung laporan sendiri.',
   BELUM_SELESAI: 'Rating hanya bisa diberikan setelah laporan selesai.',
   SUDAH_DIRATING: 'Laporan ini sudah diberi rating.',
-  BOBOT_TIDAK_VALID: 'Bobot harus 0–1 dan tidak boleh semuanya nol.',
+  BOBOT_TIDAK_VALID: 'Bobot harus 0 sampai 1 dan tidak boleh semuanya nol.',
   ALASAN_TERLALU_PENDEK: 'Alasan minimal 10 karakter.',
   DEMO_TERBATAS: 'Akun demo hanya bisa mengubah laporan simulasi.',
 

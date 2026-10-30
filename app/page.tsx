@@ -51,7 +51,7 @@ async function PanelRapor() {
                   i.huruf ? 'bg-biru text-white' : 'bg-lapis text-lembut'
                 }`}
               >
-                {i.huruf ?? '–'}
+                {i.huruf ?? '?'}
               </span>
               <span className="min-w-0 text-kecil leading-tight">
                 <span className="block truncate font-bold">{i.nama.replace(' (simulasi)', '')}</span>

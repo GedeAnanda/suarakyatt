@@ -56,7 +56,7 @@ export default function MasukPage({ searchParams }: PageProps<'/masuk'>) {
           </p>
           <TombolDemo className="mt-6" varianWarga="terang" varianAdmin="terang-garis" />
           <p className="mt-auto pt-8 text-kecil text-white/80">
-            Akun admin instansi dan Perencana dibuat oleh tim, tanpa pendaftaran publik. Laporan di suaRAkyat tidak
+            Akun admin instansi dan Perencana dibuat oleh tim, tanpa pendaftaran publik. Laporan di SUARAKYAT tidak
             diteruskan ke instansi resmi.
           </p>
         </aside>
