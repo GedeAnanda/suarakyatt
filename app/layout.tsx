@@ -6,6 +6,7 @@ import Header from '@/components/Header';
 import Pengumuman from '@/components/Pengumuman';
 import { SisiNav, SisiNavStatis } from '@/components/Sisi';
 import TombolMelayang from '@/components/TombolMelayang';
+import EfekCair from '@/components/ui/EfekCair';
 import './globals.css';
 
 // Satoshi: huruf seluruh situs (UI, judul, wordmark, kode laporan). Dari Fontshare (ITF Free Font License,
@@ -39,6 +40,8 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
   return (
     <html lang="id" className={`${satoshi.variable} antialiased`} data-scroll-behavior="smooth" suppressHydrationWarning>
       <body suppressHydrationWarning>
+        {/* Efek air untuk semua tombol pilihan (filter SVG, cahaya kursor, riak tekan). */}
+        <EfekCair />
         <a
           href="#isi"
           className="sr-only z-2000 rounded-kontrol bg-biru px-4 py-3 font-semibold text-white focus:not-sr-only focus:fixed focus:top-2 focus:left-2"

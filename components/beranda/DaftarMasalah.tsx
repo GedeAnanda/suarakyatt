@@ -9,6 +9,7 @@ import Link from 'next/link';
 import { useState, type CSSProperties } from 'react';
 import { FOTO, KATEGORI, type FotoTerbuka } from '@/lib/konten';
 import Ikon from '../ui/Ikon';
+import KelompokCair from '../ui/KelompokCair';
 
 const FOTO_KATEGORI: FotoTerbuka[] = [FOTO.jalan1975, FOTO.kanalTimur, FOTO.ciliwung, FOTO.lampuJalan];
 
@@ -24,13 +25,13 @@ export default function DaftarMasalah() {
 
   return (
     <div>
-      <div className="flex flex-wrap gap-2" role="group" aria-label="Pilih kategori laporan">
+      <KelompokCair className="flex flex-wrap gap-2" role="group" aria-label="Pilih kategori laporan">
         {KATEGORI.map((x, i) => (
           <button key={x.id} type="button" aria-pressed={i === pilih} onClick={() => setPilih(i)} className="chip">
             {x.nama}
           </button>
         ))}
-      </div>
+      </KelompokCair>
 
       <article className="kartu mt-4 grid overflow-hidden md:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
         <figure className="relative">

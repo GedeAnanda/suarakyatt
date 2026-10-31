@@ -11,6 +11,7 @@ import { formatPoin, hitungSkor, kenapaBelum, LABEL_PRESET, PRESET, type NamaPre
 import type { Bobot, FaktorIsu } from '@/lib/types';
 import AngkaGulir from '../ui/AngkaGulir';
 import Ikon from '../ui/Ikon';
+import KelompokCair from '../ui/KelompokCair';
 
 const URUTAN_PRESET: NamaPreset[] = ['keselamatan', 'kerentanan', 'suara_warga'];
 
@@ -51,13 +52,13 @@ export default function PerbandinganPeringkat({
             </p>
             <fieldset className="mt-6">
               <legend className="text-kecil font-semibold">Bandingkan bobot resmi dengan</legend>
-              <div className="mt-2 flex flex-wrap gap-2">
+              <KelompokCair className="mt-2 flex flex-wrap gap-2">
                 {URUTAN_PRESET.map((p) => (
                   <button key={p} type="button" aria-pressed={preset === p} onClick={() => setPreset(p)} className="chip">
                     {LABEL_PRESET[p]}
                   </button>
                 ))}
-              </div>
+              </KelompokCair>
             </fieldset>
           </div>
 

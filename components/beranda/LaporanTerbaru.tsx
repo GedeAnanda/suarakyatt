@@ -10,6 +10,7 @@ import type { TitikLaporan } from '@/lib/data/laporan';
 import { KATEGORI } from '@/lib/konten';
 import KartuLaporan from '../KartuLaporan';
 import Ikon from '../ui/Ikon';
+import KelompokCair from '../ui/KelompokCair';
 
 const TAB = [{ id: 'semua', nama: 'Semua kategori' }, ...KATEGORI.map((k) => ({ id: String(k.id), nama: k.nama }))];
 
@@ -19,7 +20,7 @@ export default function LaporanTerbaru({ per, sekarang }: { per: Record<string, 
 
   return (
     <div>
-      <div role="tablist" aria-label="Kategori laporan" className="flex flex-wrap gap-2">
+      <KelompokCair role="tablist" aria-label="Kategori laporan" className="flex flex-wrap gap-2">
         {TAB.map((t) => (
           <button
             key={t.id}
@@ -34,7 +35,7 @@ export default function LaporanTerbaru({ per, sekarang }: { per: Record<string, 
             {t.nama}
           </button>
         ))}
-      </div>
+      </KelompokCair>
 
       <div id="panel-terbaru" role="tabpanel" aria-labelledby={`tab-terbaru-${aktif}`} className="mt-4">
         {daftar.length === 0 ? (

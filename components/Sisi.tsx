@@ -13,6 +13,7 @@ import { useEffect, useSyncExternalStore } from 'react';
 import { KANAL_RESMI } from '@/lib/konten';
 import { laciBuka, layarLebar, pantauSisi, sisiTerbuka, tutupMenu } from '@/lib/sisi';
 import Ikon, { type NamaIkon } from './ui/Ikon';
+import KelompokCair from './ui/KelompokCair';
 
 const MENU: { label: string; item: { href: string; label: string; ikon: NamaIkon }[] }[] = [
   {
@@ -55,7 +56,8 @@ function IsiSisi({ aktif }: { aktif?: string }) {
   return (
     <>
       <nav id="sisi" aria-label="Menu utama" className="sisi">
-        <div className="flex min-h-full flex-col px-3 py-3 rel:px-2">
+        {/* KelompokCair: tetesan air mengalir ke halaman aktif (aria-current) saat berpindah halaman. */}
+        <KelompokCair className="flex min-h-full flex-col px-3 py-3 rel:px-2">
           {MENU.map((g, i) => (
             <ul key={g.label} aria-label={g.label} className={`grid gap-0.5 ${i > 0 ? 'mt-2 border-t border-garis pt-2' : ''}`}>
               {g.item.map((it) => (
@@ -103,7 +105,7 @@ function IsiSisi({ aktif }: { aktif?: string }) {
           <p className="mt-auto px-3 pt-8 pb-1 text-mini text-lembut rel:hidden">
             Prototipe untuk lomba WIA MIA 2026. Sebagian besar data adalah data simulasi.
           </p>
-        </div>
+        </KelompokCair>
       </nav>
       <div className="tirai" aria-hidden="true" onClick={tutupMenu} />
     </>

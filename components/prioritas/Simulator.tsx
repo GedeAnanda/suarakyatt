@@ -28,6 +28,7 @@ import type { Bobot, Faktor, FaktorIsu } from '@/lib/types';
 import PetaKecamatan, { KeteranganKelas } from '../PetaKecamatan';
 import { umumkan } from '../Pengumuman';
 import Ikon from '../ui/Ikon';
+import KelompokCair from '../ui/KelompokCair';
 import { Tombol } from '../ui/Tombol';
 import BarKontribusi, { BarTumpuk, KeteranganFaktor, WARNA_FAKTOR } from './BarKontribusi';
 
@@ -184,13 +185,13 @@ export default function Simulator({
             Pilih preset atau geser sendiri. Bobot dinormalisasi supaya totalnya 100%. Bobot acuan tidak berubah.
           </p>
 
-          <div className="mt-4 flex flex-wrap gap-2" role="group" aria-label="Preset bobot">
+          <KelompokCair className="mt-4 flex flex-wrap gap-2" role="group" aria-label="Preset bobot">
             {(Object.keys(PRESET) as NamaPreset[]).map((p) => (
               <button key={p} type="button" aria-pressed={presetAktif === p} onClick={() => setSlider(keSlider(PRESET[p]))} className="chip">
                 {LABEL_PRESET[p]}
               </button>
             ))}
-          </div>
+          </KelompokCair>
 
           <button
             type="button"
@@ -262,7 +263,7 @@ export default function Simulator({
           layarnya. Di iPad miring dengan menu samping, kolomnya sempit walau layarnya "lebar". */}
       <div className="@container grid min-w-0 content-start gap-5">
         {/* Saring kategori + kalimat konsekuensi */}
-        <div className="flex flex-wrap gap-2" role="group" aria-label="Saring kategori">
+        <KelompokCair className="flex flex-wrap gap-2" role="group" aria-label="Saring kategori">
           {[{ id: null, nama: 'Semua kategori' }, ...KATEGORI].map((k) => (
             <button
               key={k.nama}
@@ -277,7 +278,7 @@ export default function Simulator({
               {k.nama}
             </button>
           ))}
-        </div>
+        </KelompokCair>
         <p
           aria-live="polite"
           className={`flex min-h-[3.25rem] items-start gap-3 rounded-kartu border px-4 py-3 text-badan font-semibold transition-colors ${

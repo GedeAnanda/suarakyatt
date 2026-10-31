@@ -15,6 +15,7 @@ import { FAKTOR, LABEL_PRESET, PRESET, type NamaPreset } from '@/lib/scoring';
 import type { StatusLaporan } from '@/lib/types';
 import { LABEL_STATUS } from '../BadgeStatus';
 import Ikon, { type NamaIkon } from '../ui/Ikon';
+import KelompokCair from '../ui/KelompokCair';
 
 type IdTab = 'lacak' | 'prioritas' | 'peta' | 'rapor' | 'lapor';
 
@@ -267,7 +268,7 @@ export default function HeroCari({ panelRapor }: { panelRapor: ReactNode }) {
             <form action="/prioritas" method="get" onSubmit={kirimBersih}>
               <fieldset>
                 <legend className="text-kecil font-semibold">Urutkan isu wilayah dengan bobot</legend>
-                <div className="mt-2 flex flex-wrap gap-2">
+                <KelompokCair className="mt-2 flex flex-wrap gap-2">
                   <label className="chip">
                     <input type="radio" name="bobot" value="" defaultChecked className="sr-only" />
                     Bobot resmi
@@ -278,7 +279,7 @@ export default function HeroCari({ panelRapor }: { panelRapor: ReactNode }) {
                       {LABEL_PRESET[p]}
                     </label>
                   ))}
-                </div>
+                </KelompokCair>
               </fieldset>
               <div className="mt-4 flex flex-col gap-3 sm:flex-row">
                 <div className="flex-1">

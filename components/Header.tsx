@@ -10,6 +10,7 @@ import CariKode from './CariKode';
 import TombolMenu from './TombolMenu';
 import Turun from './Turun';
 import Ikon, { type NamaIkon } from './ui/Ikon';
+import KelompokCair from './ui/KelompokCair';
 import { kelasTombol } from './ui/Tombol';
 import Wordmark from './Wordmark';
 
@@ -134,7 +135,8 @@ export default function Header() {
         <CariKode id="cari-kode-header" varian="kepala" className="cari-kepala ml-3 hidden max-w-[27rem] flex-1 md:flex lg:ml-8" />
         {/* Urutan seperti tautan utilitas situs travel: Daftarkan Properti → Bantuan → Login. "Lacak laporan" hanya
             berupa ikon di ponsel, karena di layar lebar kolom cari sudah melayani hal yang sama. */}
-        <nav aria-label="Tautan cepat" className="ml-auto flex items-center gap-0.5">
+        {/* KelompokCair: tetesan air menandai tautan halaman yang sedang dibuka, dicocokkan dari alamatnya. */}
+        <KelompokCair as="nav" aktifDariAlamat aria-label="Tautan cepat" className="ml-auto flex items-center gap-0.5">
           <TautanUtilitas href="/sumber-data" ikon="data" className="hidden 2xl:flex">
             Sumber data
           </TautanUtilitas>
@@ -156,7 +158,7 @@ export default function Header() {
           <Suspense fallback={<span aria-hidden="true" className="ml-1 h-9 w-20 sm:w-32" />}>
             <Akun />
           </Suspense>
-        </nav>
+        </KelompokCair>
       </div>
     </header>
   );
