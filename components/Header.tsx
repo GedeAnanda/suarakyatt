@@ -129,7 +129,7 @@ export default function Header() {
           aria-label="suaRAkyat, ke Beranda"
           className="shrink-0 rounded-kontrol px-1 text-[1.3125rem] text-teks max-[389px]:text-[1.125rem] sm:text-[1.4375rem]"
         >
-          <Wordmark />
+          <Wordmark gelombang />
         </Link>
         {/* Di Beranda kolom ini muncul setelah kotak cari hero tergulir lewat (globals.css, .cari-kepala). */}
         <CariKode id="cari-kode-header" varian="kepala" className="cari-kepala ml-3 hidden max-w-[27rem] flex-1 md:flex lg:ml-8" />

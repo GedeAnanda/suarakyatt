@@ -1132,6 +1132,32 @@ input[type="range"].slider::-moz-range-thumb {
   }
 }
 
+/* --- Gelombang logo header (components/Wordmark.tsx, dipicu EfekCair) ---
+   Tiap huruf naik lalu turun dengan lentingan kecil, berselang 70 ms dari kiri ke kanan; satu gelombang ±1,1 detik. */
+.wordmark-gelombang .huruf {
+  display: inline-block;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .wordmark-gelombang[data-gelombang] .huruf {
+    animation: huruf-gelombang 560ms cubic-bezier(0.37, 0, 0.29, 1) both;
+    animation-delay: calc(var(--i) * 70ms);
+  }
+}
+@keyframes huruf-gelombang {
+  0% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-0.24em);
+  }
+  75% {
+    transform: translateY(0.03em);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
 /* --- Efek air pada tombol (components/ui/KelompokCair.tsx, components/ui/EfekCair.tsx) --- */
 .kelompok-cair {
   position: relative;

@@ -5,6 +5,7 @@
 // - riak teal menyebar dari titik tekan, dipotong mengikuti sudut tombol;
 // - ikon memainkan adegan kecil saat diklik, dipilih dari jenis ikonnya (rumah melompat, peta berputar, dst.).
 // Sasarannya: .chip, .cair (tombol bertepi, tombol Kembali), dan semua tombol di dalam KelompokCair.
+// Juga memicu gelombang huruf logo header (Wordmark gelombang) saat kursor masuk.
 // Juga memasang filter SVG #cair-goo yang menyatukan tetesan KelompokCair menjadi satu genangan.
 // Riak dan animasi ikon tidak jalan kalau pengguna meminta gerak dikurangi.
 
@@ -96,14 +97,37 @@ export default function EfekCair() {
       ikon.addEventListener('animationend', () => ikon.removeAttribute('data-fx'), { once: true });
     };
 
+    // Gelombang logo: saat kursor masuk ke logo header, hurufnya melompat bergantian dari kiri ke kanan. Gelombang yang
+    // sedang berjalan tidak dimulai ulang, dan selesai sampai huruf terakhir walaupun kursor sudah keluar.
+    const masuk = (e: PointerEvent) => {
+      if (hemat() || !(e.target instanceof Element)) return;
+      // Pemicunya seluruh tautan logo (termasuk tepinya), bukan hanya hurufnya: kursor biasanya masuk lewat tepi tautan
+      // dulu, dan perpindahan dari tepi ke huruf tidak dihitung sebagai masuk.
+      const batas = e.target.closest<HTMLElement>('a:has(.wordmark-gelombang), .wordmark-gelombang');
+      const logo = batas?.matches('.wordmark-gelombang') ? batas : batas?.querySelector<HTMLElement>('.wordmark-gelombang');
+      if (!batas || !logo || logo.hasAttribute('data-gelombang')) return;
+      // Pindah antarhuruf di dalam logo bukan "masuk": gelombang hanya sekali per kursor masuk.
+      if (e.relatedTarget instanceof Node && batas.contains(e.relatedTarget)) return;
+      logo.setAttribute('data-gelombang', '');
+      const akhir = logo.lastElementChild;
+      const selesai = (ev: AnimationEvent) => {
+        if (ev.target !== akhir) return;
+        logo.removeAttribute('data-gelombang');
+        logo.removeEventListener('animationend', selesai);
+      };
+      logo.addEventListener('animationend', selesai);
+    };
+
     document.addEventListener('pointermove', gerak, { passive: true });
     document.addEventListener('pointerdown', tekan);
     document.addEventListener('click', klik);
+    document.addEventListener('pointerover', masuk);
     return () => {
       cancelAnimationFrame(tunda);
       document.removeEventListener('pointermove', gerak);
       document.removeEventListener('pointerdown', tekan);
       document.removeEventListener('click', klik);
+      document.removeEventListener('pointerover', masuk);
     };
   }, []);
 
