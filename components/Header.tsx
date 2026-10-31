@@ -117,7 +117,7 @@ async function Akun() {
 
 export default function Header() {
   return (
-    <header className="sticky top-0 z-1000 h-(--tinggi-kepala) border-b border-garis bg-permukaan">
+    <header className="kepala sticky top-0 z-1000 h-(--tinggi-kepala) border-b border-garis bg-permukaan">
       {/* Tepi kiri-kanan memakai env(safe-area-inset-*) supaya tombol tidak masuk ke area poni iPhone yang dimiringkan. */}
       {/* Di bawah 390 px (ponsel 320 sampai 375 px) wordmark, jarak, tautan ikon, dan tombol Masuk dirapatkan supaya isi
           header tidak melewati tepi layar. */}

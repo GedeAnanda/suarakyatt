@@ -9,7 +9,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type CSSProperties, type FormEvent, type ReactNode } from 'react';
 import { FOTO, KANAL_RESMI, KATEGORI, type FotoTerbuka } from '@/lib/konten';
 import { FAKTOR, LABEL_PRESET, PRESET, type NamaPreset } from '@/lib/scoring';
 import type { StatusLaporan } from '@/lib/types';
@@ -153,7 +153,7 @@ export default function HeroCari({ panelRapor }: { panelRapor: ReactNode }) {
             fill
             sizes="(min-width: 1280px) 75rem, 100vw"
             {...(i === 0 ? { loading: 'eager' as const, fetchPriority: 'high' as const } : {})}
-            className={`silang -z-20 object-cover brightness-75 ${t.id === aktif ? 'opacity-100' : 'opacity-0'}`}
+            className={`silang masuk-foto -z-20 object-cover brightness-75 ${t.id === aktif ? 'opacity-100' : 'opacity-0'}`}
             style={{ objectPosition: t.posisi ?? '50% 50%' }}
           />
         ))}
@@ -172,7 +172,8 @@ export default function HeroCari({ panelRapor }: { panelRapor: ReactNode }) {
           <p key={aktif} className="ganti mt-3 max-w-[46ch] text-lead font-medium text-white/95 sm:min-h-[2.7em] sm:text-sub">
             {tab.slogan}
           </p>
-          <ul className="mt-5 flex flex-wrap gap-x-6 gap-y-2 text-kecil font-medium sm:text-badan">
+          {/* Masuk berurutan dari atas: judul (bersama halaman), kalimat tab, tiga keunggulan, lalu kotak cari. */}
+          <ul className="masuk mt-5 flex flex-wrap gap-x-6 gap-y-2 text-kecil font-medium sm:text-badan" style={{ '--jeda': '140ms' } as CSSProperties}>
             {KEUNGGULAN.map((k) => (
               <li key={k} className="flex items-center gap-2">
                 <span className="flex size-5 items-center justify-center rounded-full bg-white/20">
@@ -192,7 +193,12 @@ export default function HeroCari({ panelRapor }: { panelRapor: ReactNode }) {
 
       {/* Kotak cari: menumpang di atas foto, seperti kotak pencarian hotel dan tiket. */}
       <div className="px-2 pb-2 sm:px-6 sm:pb-6 lg:px-8 lg:pb-8 xl:px-10 xl:pb-10">
-      <div id="kotak-cari" ref={kotak} className="relative rounded-besar bg-permukaan text-teks shadow-kotak">
+      <div
+        id="kotak-cari"
+        ref={kotak}
+        className="masuk relative rounded-besar bg-permukaan text-teks shadow-kotak"
+        style={{ '--jeda': '240ms' } as CSSProperties}
+      >
         <div
           ref={daftarTab}
           role="tablist"
@@ -225,8 +231,10 @@ export default function HeroCari({ panelRapor }: { panelRapor: ReactNode }) {
           ))}
         </div>
 
+        {/* Kelas `ganti` di tiap panel: animasi CSS mulai ulang setiap kali atribut hidden dilepas, jadi panel yang baru
+            dipilih selalu muncul dengan gerak singkat. */}
         <div className="p-4 sm:p-6">
-          <div role="tabpanel" id="panel-lacak" aria-labelledby="tab-lacak" hidden={aktif !== 'lacak'}>
+          <div role="tabpanel" id="panel-lacak" aria-labelledby="tab-lacak" hidden={aktif !== 'lacak'} className="ganti">
             <form action="/lacak" method="get" role="search" className="flex flex-col gap-3 sm:flex-row">
               {/* sm:flex-1, bukan flex-1: di kolom (ponsel) flex-basis 0 membuat tinggi h-14 diabaikan. */}
               <label className={`${kelasBidang} sm:flex-1`}>
@@ -255,7 +263,7 @@ export default function HeroCari({ panelRapor }: { panelRapor: ReactNode }) {
             </p>
           </div>
 
-          <div role="tabpanel" id="panel-prioritas" aria-labelledby="tab-prioritas" hidden={aktif !== 'prioritas'}>
+          <div role="tabpanel" id="panel-prioritas" aria-labelledby="tab-prioritas" hidden={aktif !== 'prioritas'} className="ganti">
             <form action="/prioritas" method="get" onSubmit={kirimBersih}>
               <fieldset>
                 <legend className="text-kecil font-semibold">Urutkan isu wilayah dengan bobot</legend>
@@ -290,7 +298,7 @@ export default function HeroCari({ panelRapor }: { panelRapor: ReactNode }) {
             </form>
           </div>
 
-          <div role="tabpanel" id="panel-peta" aria-labelledby="tab-peta" hidden={aktif !== 'peta'}>
+          <div role="tabpanel" id="panel-peta" aria-labelledby="tab-peta" hidden={aktif !== 'peta'} className="ganti">
             <form action="/peta" method="get" onSubmit={kirimBersih} className="flex flex-col gap-3 lg:flex-row">
               <div className="grid flex-1 gap-3 sm:grid-cols-2">
                 <Pilihan name="kategori" label="Kategori" ikon="geser">
@@ -320,11 +328,11 @@ export default function HeroCari({ panelRapor }: { panelRapor: ReactNode }) {
             </p>
           </div>
 
-          <div role="tabpanel" id="panel-rapor" aria-labelledby="tab-rapor" hidden={aktif !== 'rapor'}>
+          <div role="tabpanel" id="panel-rapor" aria-labelledby="tab-rapor" hidden={aktif !== 'rapor'} className="ganti">
             {panelRapor}
           </div>
 
-          <div role="tabpanel" id="panel-lapor" aria-labelledby="tab-lapor" hidden={aktif !== 'lapor'}>
+          <div role="tabpanel" id="panel-lapor" aria-labelledby="tab-lapor" hidden={aktif !== 'lapor'} className="ganti">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
               <ol className="grid flex-1 grid-cols-2 gap-2 sm:grid-cols-4">
                 {['Pilih kategori', 'Titik di peta', '1 sampai 3 foto', 'Cerita singkat'].map((l, i) => (

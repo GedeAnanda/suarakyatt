@@ -115,8 +115,8 @@ export default function FormUbahStatus({ kode, status, aktif }: { kode: string; 
 
   if (berhasil) {
     return (
-      <p role="status" className="flex gap-2 rounded-kartu bg-hijau-muda p-5 text-badan font-semibold text-hijau">
-        <Ikon nama="centang" className="mt-0.5 size-5 shrink-0" />
+      <p role="status" className="ganti flex gap-2 rounded-kartu bg-hijau-muda p-5 text-badan font-semibold text-hijau">
+        <Ikon nama="centang" className="pop mt-0.5 size-5 shrink-0" />
         {berhasil}
       </p>
     );
@@ -140,8 +140,9 @@ export default function FormUbahStatus({ kode, status, aktif }: { kode: string; 
           </div>
         </div>
 
+        {/* Isian tambahan per status muncul dengan gerak singkat (ganti) saat statusnya dipilih. */}
         {baru === 'ditolak' && (
-          <fieldset className="grid gap-2">
+          <fieldset className="ganti grid gap-2">
             <legend className="text-badan font-bold">Alasan penolakan</legend>
             {(Object.keys(LABEL_ALASAN) as AlasanTolak[]).map((a) => (
               <label
@@ -156,7 +157,7 @@ export default function FormUbahStatus({ kode, status, aktif }: { kode: string; 
               </label>
             ))}
             {alasan === 'duplikat' && (
-              <label className="mt-2 grid gap-1.5 text-kecil font-semibold">
+              <label className="ganti mt-2 grid gap-1.5 text-kecil font-semibold">
                 Kode laporan rujukan
                 <input value={rujukan} onChange={(e) => setRujukan(e.target.value)} placeholder="SR-K7W3PA" className={`${kelasIsian} font-kode uppercase`} />
               </label>
@@ -165,14 +166,14 @@ export default function FormUbahStatus({ kode, status, aktif }: { kode: string; 
         )}
 
         {baru === 'diverifikasi' && (
-          <label className="grid gap-1.5 text-kecil font-semibold">
+          <label className="ganti grid gap-1.5 text-kecil font-semibold">
             Perkiraan tanggal selesai (opsional, tampil publik; lewat dari tanggal ini muncul label &ldquo;Melewati janji&rdquo;)
             <input type="date" value={perkiraan} min={hariIni()} onChange={(e) => setPerkiraan(e.target.value)} className={`${kelasIsian} sm:max-w-xs`} />
           </label>
         )}
 
         {baru === 'selesai' && (
-          <div className="grid gap-2">
+          <div className="ganti grid gap-2">
             <p className="text-badan font-bold">Foto bukti penyelesaian (wajib)</p>
             <p className="text-kecil text-lembut">Tampil berdampingan dengan foto dari pelapor, supaya warga bisa mengecek klaim selesai.</p>
             <div className="flex flex-wrap items-center gap-4">
@@ -202,6 +203,7 @@ export default function FormUbahStatus({ kode, status, aktif }: { kode: string; 
         </div>
       )}
       <Tombol type="submit" disabled={!aktif || memuat || !baru || masalah.length > 0} className="w-full">
+        {memuat && <Ikon nama="muat" className="putar size-4" />}
         {memuat ? 'Menyimpan…' : baru ? `Simpan sebagai ${LABEL_STATUS[baru]}` : 'Simpan'}
       </Tombol>
     </form>

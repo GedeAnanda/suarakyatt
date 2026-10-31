@@ -48,7 +48,9 @@ export default function PetaPage({ searchParams }: PageProps<'/peta'>) {
             </div>
           }
         >
-          <Isi searchParams={searchParams} />
+          <div className="masuk">
+            <Isi searchParams={searchParams} />
+          </div>
         </Suspense>
       </div>
     </div>

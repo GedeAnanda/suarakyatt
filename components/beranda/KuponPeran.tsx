@@ -46,9 +46,14 @@ export default function KuponPeran() {
       </h2>
       <p className="mt-2 max-w-[78ch] text-badan text-lembut">
         Warga Jakarta sudah bisa melapor dan melacak laporannya. Yang belum terbuka adalah lapis kedua: kenapa satu jalan
-        diperbaiki lebih dulu, dinas mana yang lambat, dan apa yang berubah kalau prioritas diganti.
+        diperbaiki lebih dulu, dinas mana yang lambat, dan apa yang berubah kalau prioritas diganti.{' '}
+        <Link href="/tentang#beda" className="font-semibold text-biru-tua hover:underline">
+          Lihat bedanya dengan kanal resmi
+        </Link>
       </p>
 
+      {/* Tanpa kelas `muncul`: di laptop 900 px deret ini sudah mengintip di layar pertama, jadi akan terlihat pudar
+          sebelum digulir (termasuk di tangkapan layar Beranda). */}
       <BarisGeser label="Untuk siapa SUARAKYAT" className="mt-5">
         {/* Lebar dibatasi persen deret supaya di ponsel 320 px kartu tidak lebih lebar dari layar. */}
         <li className="w-[min(20rem,88%)] shrink-0 snap-start sm:w-[22rem]">
@@ -79,7 +84,7 @@ export default function KuponPeran() {
                 className="m-4 inline-flex items-center gap-1 self-start text-kecil font-bold text-biru-tua hover:underline"
               >
                 {p.aksi}
-                <Ikon nama="kanan" className="size-4" />
+                <Ikon nama="kanan" className="panah size-4" />
               </Link>
             </article>
           </li>

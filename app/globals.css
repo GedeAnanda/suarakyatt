@@ -137,6 +137,12 @@
     -webkit-text-size-adjust: 100%;
     -webkit-tap-highlight-color: transparent;
   }
+  /* Tautan jangkar (isi halaman Sumber data, ringkasan galat form Lapor, "riwayat penanganan") bergulir halus. */
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
 
   /* iOS Safari memperbesar halaman saat isian di bawah 16 px disentuh; di layar sentuh minimal 16 px. */
   @media (pointer: coarse) {
@@ -529,11 +535,110 @@ html:has(#kotak-cari):not([data-kotak-lewat]) .cari-kepala {
     [data-muncul] > *:nth-child(2) { animation-range: entry 6% entry 51%; }
     [data-muncul] > *:nth-child(3) { animation-range: entry 12% entry 57%; }
     [data-muncul] > *:nth-child(n + 4) { animation-range: entry 18% entry 63%; }
+    /* Satu blok besar (kartu bagian Beranda) muncul sendiri. Jaraknya dalam px, bukan persen: kartu setinggi layar
+       akan masih pudar sampai setengahnya terlihat kalau memakai persen. */
+    .muncul {
+      animation: muncul linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 160px;
+    }
+    /* Fokus keyboard di dalamnya: tampil penuh, jangan menunggu digulir. */
+    [data-muncul] > :focus-within,
+    .muncul:focus-within {
+      animation: none;
+    }
   }
 }
 @keyframes muncul {
   from { opacity: 0; transform: translateY(16px); }
   to { opacity: 1; transform: none; }
+}
+
+/*
+ * Masuk halaman: isi halaman di bawah header memudar dan naik 8 px setiap kali halaman dibuka, baik muat pertama
+ * maupun pindah halaman, supaya pergantian halaman terasa. Isi yang menyusul lewat streaming (Suspense) ikut memudar.
+ * Isian `backwards`, bukan `both`: setelah selesai tidak ada transform yang tertinggal, karena transform di induk membuat
+ * elemen position: fixed di dalamnya ikut bergeser. Kerangka memuat (role="status") tidak ikut, karena hanya sekilas.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  #isi > :not([role="status"]) {
+    animation: masuk-halaman 420ms var(--ease-keluar) backwards;
+  }
+  /* Urutan masuk di dalam satu bagian (hero Beranda): jeda diatur lewat --jeda. */
+  .masuk {
+    animation: timbul 640ms var(--ease-keluar) var(--jeda, 0ms) backwards;
+  }
+  /* Foto hero sedikit mundur saat halaman terbuka. */
+  .masuk-foto {
+    animation: masuk-foto 1600ms var(--ease-keluar) backwards;
+  }
+}
+@keyframes masuk-halaman {
+  from { opacity: 0; transform: translateY(8px); }
+}
+@keyframes masuk-foto {
+  from { transform: scale(1.06); }
+}
+
+/* Header: begitu halaman digulir, muncul bayangan tipis supaya isi yang lewat di bawahnya terlihat terpisah.
+   Tanpa dukungan animation-timeline header tetap memakai garis bawahnya saja. */
+@supports (animation-timeline: scroll()) {
+  .kepala {
+    animation: kepala-bayang linear both;
+    animation-timeline: scroll(root);
+    animation-range: 0 96px;
+  }
+}
+@keyframes kepala-bayang {
+  to { box-shadow: 0 8px 24px rgb(15 42 51 / 0.08); }
+}
+
+/* Tautan dengan panah di ujung ("Buka riwayat keputusan >"): panahnya bergeser sedikit saat disorot. */
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .panah {
+    transition: translate 200ms var(--ease-keluar);
+  }
+  :is(a, button):hover > .panah {
+    translate: 3px 0;
+  }
+}
+
+/* Popover bawaan browser (definisi Istilah, panel Bantuan): membuka dengan memudar dan naik sedikit, menutup dengan
+   memudar. display dan overlay ikut ditransisikan (allow-discrete) supaya animasi tutup sempat terlihat. Browser yang
+   belum mendukung @starting-style langsung membuka tanpa gerak. */
+@layer components {
+  @media (prefers-reduced-motion: no-preference) {
+    [popover] {
+      opacity: 0;
+      transform: translateY(8px) scale(0.98);
+      transition:
+        opacity 180ms,
+        transform 240ms var(--ease-keluar),
+        overlay 240ms allow-discrete,
+        display 240ms allow-discrete;
+    }
+    [popover]:popover-open {
+      opacity: 1;
+      transform: none;
+    }
+    @starting-style {
+      [popover]:popover-open {
+        opacity: 0;
+        transform: translateY(8px) scale(0.98);
+      }
+    }
+    [popover]::backdrop {
+      transition:
+        background-color 240ms,
+        overlay 240ms allow-discrete,
+        display 240ms allow-discrete;
+    }
+    @starting-style {
+      [popover]:popover-open::backdrop {
+        background-color: transparent;
+      }
+    }
+  }
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -650,6 +755,20 @@ html:has(#kotak-cari):not([data-kotak-lewat]) .cari-kepala {
 @keyframes muat-garis {
   from { transform: translateX(-100%) scaleX(0.4); }
   to { transform: translateX(100%) scaleX(0.7); }
+}
+
+/* Ikon "muat" di tombol yang sedang menunggu server. Saat gerak dikurangi tetap berputar, hanya lebih pelan: putaran
+   kecil di tempat tidak memicu pusing seperti gerak yang melintasi layar. */
+.putar {
+  animation: putar 800ms linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .putar {
+    animation-duration: 2.4s;
+  }
+}
+@keyframes putar {
+  to { rotate: 360deg; }
 }
 
 /* Riwayat: status terakhir laporan yang masih berjalan memancarkan cincin tiga kali. */
@@ -833,21 +952,39 @@ input[type="range"].slider::-moz-range-thumb {
   border: 2.5px solid #fff;
   box-shadow: 0 1px 4px rgb(15 42 51 / 0.45);
 }
-/* Kecamatan terpilih di peta skor: naik sedikit dan membesar dari pusatnya, dengan bayangan di bawahnya, supaya
-   terlihat terangkat dari peta. Satuan px di sini = unit viewBox SVG (lebar 1000), jadi -12px ≈ 6 px di layar. */
-.kecamatan-timbul {
-  transform: translateY(-12px) scale(1.06);
-  filter: drop-shadow(0 6px 5px rgb(15 42 51 / 0.4)) drop-shadow(0 14px 14px rgb(15 42 51 / 0.2));
+/* Kecamatan terpilih di peta skor sebagai "gedung" (components/PetaKecamatan.tsx): tiap lapis dinding naik --i unit
+   dikali --naik (0 sampai 1), atap paling atas. Satuan px di sini = unit viewBox SVG (lebar 1000). Dinding digelapkan
+   supaya terbaca sebagai sisi bangun ruang; bayangan jatuh agak ke kanan bawah. */
+@property --naik {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1;
 }
+.kecamatan-gedung path {
+  transform: translateY(calc(var(--naik) * var(--i, 0) * -1px));
+}
+.gedung-dinding {
+  filter: brightness(0.68) saturate(1.1);
+}
+.kecamatan-gedung path.gedung-bayang {
+  transform: translate(6px, 4px);
+  fill: rgb(15 42 51 / 0.35);
+  filter: blur(5px);
+}
+/* Nama keyframes sengaja berbeda dari `timbul`: @keyframes bernama sama menimpa yang lebih dulu di seluruh dokumen,
+   sehingga .ganti, .timbul, .goyang, dan [data-susul] ikut memakai gerak lain, bukan gerak muncul. */
 @media (prefers-reduced-motion: no-preference) {
-  .kecamatan-timbul {
-    animation: timbul 380ms var(--ease-pegas) both;
+  .kecamatan-gedung {
+    animation: gedung-naik 520ms var(--ease-pegas) both;
   }
-  @keyframes timbul {
-    from {
-      transform: scale(1);
-      filter: drop-shadow(0 0 0 rgb(15 42 51 / 0)) drop-shadow(0 0 0 rgb(15 42 51 / 0));
-    }
+  .gedung-bayang {
+    animation: gedung-bayang 520ms ease-out both;
+  }
+  @keyframes gedung-naik {
+    from { --naik: 0; }
+  }
+  @keyframes gedung-bayang {
+    from { opacity: 0; }
   }
 }
 /* Efek "fokus" (dashboard Beranda, components/KecamatanTimbul3D.tsx): peta penuh diburamkan pelan (1 detik), kecamatan

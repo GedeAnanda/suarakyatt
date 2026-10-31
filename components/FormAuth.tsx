@@ -137,6 +137,7 @@ function KirimUlangVerifikasi({ email }: { email?: string }) {
     <form action={aksi} className="grid gap-2">
       <input type="hidden" name="email" value={email ?? ''} />
       <Tombol type="submit" varian="garis" disabled={memuat || !email} className="w-full">
+        {memuat && <Ikon nama="muat" className="putar size-4" />}
         {memuat ? 'Mengirim…' : 'Kirim ulang email verifikasi'}
       </Tombol>
       {galatDari(hasil) && <Galat kode={galatDari(hasil)!} />}
@@ -179,6 +180,7 @@ function FormLupa({ emailAwal, onKembali }: { emailAwal?: string; onKembali: () 
       />
       {galat && !KOLOM_GALAT[galat] && <Galat kode={galat} />}
       <Tombol type="submit" disabled={memuat} className="min-h-12 w-full">
+        {memuat && <Ikon nama="muat" className="putar size-4" />}
         {memuat ? 'Mengirim…' : 'Kirim tautan ganti password'}
       </Tombol>
       {kembali}
@@ -205,6 +207,7 @@ function FormMasuk({ lanjut, lupaAwal }: { lanjut: string; lupaAwal: boolean }) 
         </div>
         {galat && <Galat kode={galat} />}
         <Tombol type="submit" disabled={memuat} className="min-h-12 w-full">
+          {memuat && <Ikon nama="muat" className="putar size-4" />}
           {memuat ? 'Masuk…' : 'Masuk'}
         </Tombol>
       </form>
@@ -255,6 +258,7 @@ function FormDaftar({ lanjut }: { lanjut: string }) {
       />
       {galat && !KOLOM_GALAT[galat] && <Galat kode={galat} />}
       <Tombol type="submit" disabled={memuat} className="min-h-12 w-full">
+        {memuat && <Ikon nama="muat" className="putar size-4" />}
         {memuat ? 'Mendaftar…' : 'Daftar'}
       </Tombol>
     </form>
@@ -294,6 +298,7 @@ export function FormSandiBaru() {
       />
       {galat && !KOLOM_GALAT[galat] && <Galat kode={galat} />}
       <Tombol type="submit" disabled={memuat} className="min-h-12 w-full">
+        {memuat && <Ikon nama="muat" className="putar size-4" />}
         {memuat ? 'Menyimpan…' : 'Simpan password baru'}
       </Tombol>
     </form>

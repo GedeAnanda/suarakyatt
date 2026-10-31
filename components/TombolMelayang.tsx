@@ -20,6 +20,7 @@ function pantauGulir(ubah: () => void) {
 }
 
 const BANTUAN: { href: string; label: string; ikon: NamaIkon }[] = [
+  { href: '/tentang#tanya-jawab', label: 'Tanya jawab', ikon: 'bantuan' },
   { href: '/rapor/cara-menilai', label: 'Cara menilai instansi', ikon: 'buku' },
   { href: '/sumber-data', label: 'Sumber data dan lisensi', ikon: 'data' },
   { href: '/lacak', label: 'Lacak laporan dengan kode', ikon: 'lacak' },

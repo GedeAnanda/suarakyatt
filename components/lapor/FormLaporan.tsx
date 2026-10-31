@@ -156,6 +156,9 @@ export default function FormLaporan() {
   const [tahap, setTahap] = useState<'isi' | 'mengunggah' | 'mengirim'>('isi');
   const [galat, setGalat] = useState<string | null>(null);
   const [cobaKirim, setCobaKirim] = useState(false);
+  // Bertambah setiap kali tombol kirim ditekan: ringkasan galat dipasang ulang dan bergetar lagi, jadi penekanan
+  // berikutnya yang masih gagal tetap terasa ada tanggapannya.
+  const [percobaan, setPercobaan] = useState(0);
   const ringkasan = useRef<HTMLDivElement>(null);
   const drafSiap = useRef(false);
   const [drafDipulihkan, setDrafDipulihkan] = useState(false);
@@ -316,6 +319,7 @@ export default function FormLaporan() {
     e.preventDefault();
     if (tahap !== 'isi' || prosesFoto.current) return;
     setCobaKirim(true);
+    setPercobaan((p) => p + 1);
     if (masalah.length > 0 || !titik || !kategori) {
       // Fokus ke ringkasan supaya pembaca layar dan keyboard langsung tahu apa yang kurang.
       window.requestAnimationFrame(() => ringkasan.current?.focus());
@@ -362,7 +366,7 @@ export default function FormLaporan() {
       <legend className="sr-only">Isi laporan masalah</legend>
       <div className="grid min-w-0 gap-5">
       {drafDipulihkan && (
-        <div role="status" className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-kontrol bg-biru-muda px-4 py-3 text-kecil text-biru-tua sm:text-badan">
+        <div role="status" className="ganti flex flex-wrap items-center gap-x-4 gap-y-2 rounded-kontrol bg-biru-muda px-4 py-3 text-kecil text-biru-tua sm:text-badan">
           <Ikon nama="info" className="size-5 shrink-0" />
           <span className="min-w-0 flex-1">Isian terakhir Anda dipulihkan. Foto perlu ditambahkan lagi.</span>
           <button type="button" onClick={mulaiKosong} className="font-semibold underline underline-offset-2 hover:text-biru">
@@ -416,7 +420,7 @@ export default function FormLaporan() {
             )}
           </p>
           <Tombol varian="garis" onClick={pakaiLokasiSaya} disabled={mencariLokasi}>
-            <Ikon nama="lokasi" className="size-4" />
+            <Ikon nama={mencariLokasi ? 'muat' : 'lokasi'} className={`size-4 ${mencariLokasi ? 'putar' : ''}`} />
             {mencariLokasi ? 'Membaca lokasi…' : 'Pakai lokasi saya'}
           </Tombol>
         </div>
@@ -489,7 +493,15 @@ export default function FormLaporan() {
               </button>
             </figure>
           ))}
-          {foto.length < MAKS_FOTO && (
+          {/* Selama foto dikecilkan di perangkat (bisa beberapa detik untuk foto besar), petak tambah foto berganti
+              menjadi penanda proses, karena seluruh form sedang dikunci. */}
+          {fotoMemproses && (
+            <p role="status" className="flex aspect-square flex-col items-center justify-center gap-2 rounded-kartu border-2 border-dashed border-biru bg-biru-pudar p-4 text-center text-kecil font-semibold text-biru-tua">
+              <Ikon nama="muat" className="putar size-7" />
+              Memproses foto…
+            </p>
+          )}
+          {foto.length < MAKS_FOTO && !fotoMemproses && (
             <label
               htmlFor={idInputFoto}
               className="flex aspect-square cursor-pointer flex-col items-center justify-center gap-2 rounded-kartu border-2 border-dashed border-garis-isian bg-latar p-4 text-center text-kecil font-semibold transition-colors hover:border-biru hover:bg-biru-pudar hover:text-biru-tua has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-biru"
@@ -576,7 +588,13 @@ export default function FormLaporan() {
 
           <div className="mt-4">
             {cobaKirim && masalah.length > 0 ? (
-              <div ref={ringkasan} tabIndex={-1} role="alert" className="rounded-kontrol bg-merah-muda p-3 outline-none focus-visible:outline-2 focus-visible:outline-merah">
+              <div
+                key={percobaan}
+                ref={ringkasan}
+                tabIndex={-1}
+                role="alert"
+                className="goyang rounded-kontrol bg-merah-muda p-3 outline-none focus-visible:outline-2 focus-visible:outline-merah"
+              >
                 <p className="text-kecil font-bold text-merah-tua">Belum bisa dikirim: {masalah.length} hal perlu dilengkapi</p>
                 <ul className="mt-2 grid gap-1">
                   {masalah.map((m) => (
@@ -599,6 +617,7 @@ export default function FormLaporan() {
             )}
           </div>
           <Tombol type="submit" disabled={sibuk} className="mt-4 min-h-12 w-full text-lead">
+            {sibuk && <Ikon nama="muat" className="putar size-5" />}
             {tahap === 'mengunggah' ? 'Mengunggah foto…' : tahap === 'mengirim' ? 'Mengirim laporan…' : galat ? 'Coba kirim lagi' : 'Kirim laporan'}
           </Tombol>
         </div>

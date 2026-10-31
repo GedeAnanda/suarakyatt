@@ -6,7 +6,7 @@
 
 'use client';
 
-import { useRef, useState } from 'react';
+import { useId, useRef, useState } from 'react';
 import { formatPoin } from '@/lib/scoring';
 import { KECAMATAN, VIEWBOX } from '@/lib/geo/kecamatan-svg';
 import type { TitikPeta } from '@/lib/geo/proyeksi';
@@ -21,6 +21,9 @@ export const KELAS = [
 ];
 
 const [, , LEBAR, TINGGI] = VIEWBOX.split(' ').map(Number);
+
+/** Tinggi "gedung" kecamatan terpilih dalam unit viewBox (lebar 1000), ±10 px di layar; satu lapis dinding per unit. */
+const TINGGI_GEDUNG = 20;
 
 export function warnaSkor(skor: number | undefined): string {
   if (skor === undefined) return 'url(#arsir-kosong)';
@@ -52,6 +55,8 @@ export default function PetaKecamatan({
   className?: string;
 }) {
   const bingkai = useRef<HTMLDivElement>(null);
+  // id filter unik per peta: id SVG berlaku di seluruh dokumen.
+  const idBayangDalam = `bayang-dalam-${useId().replace(/:/g, '')}`;
   const [aktif, setAktif] = useState<{ kode: string; x: number; y: number } | null>(null);
   const interaktif = Boolean(onPilih);
   const kecamatanAktif = aktif && KECAMATAN.find((k) => k.kode_wilayah === aktif.kode);
@@ -72,6 +77,21 @@ export default function PetaKecamatan({
         className={`block h-auto w-full transition-[filter,opacity] duration-[1000ms] ease-out ${fokus ? 'peta-fokus-latar' : ''}`}
       >
         <defs>
+          {/* Bayangan ke dalam untuk atap "gedung": tepi bagian dalam sedikit lebih gelap dari warna wilayahnya (hitam
+              tipis di atas warna asli), memudar ke tengah, supaya atapnya tidak tampak datar dan kaku. */}
+          <filter id={idBayangDalam} x="-5%" y="-5%" width="110%" height="110%">
+            <feComponentTransfer in="SourceAlpha" result="luar">
+              <feFuncA type="table" tableValues="1 0" />
+            </feComponentTransfer>
+            <feGaussianBlur in="luar" stdDeviation="5" result="kabur" />
+            <feComposite in="kabur" in2="SourceAlpha" operator="in" result="tepi" />
+            <feFlood floodColor="rgb(15 42 51)" floodOpacity="0.38" />
+            <feComposite in2="tepi" operator="in" result="bayang" />
+            <feMerge>
+              <feMergeNode in="SourceGraphic" />
+              <feMergeNode in="bayang" />
+            </feMerge>
+          </filter>
           <pattern id="arsir-kosong" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
             <rect width="10" height="10" fill="var(--color-latar)" />
             <path d="M0 0v10" stroke="var(--color-lapis-2)" strokeWidth="3" />
@@ -113,24 +133,34 @@ export default function PetaKecamatan({
             </path>
           );
         })}
-        {/* Efek "timbul": kecamatan terpilih digambar ulang di lapisan paling atas, naik sedikit dan membesar di
-            tempatnya. Lapisan ini tidak menangkap klik, jadi kecamatan di bawahnya tetap bisa dipilih. */}
+        {/* Efek "timbul" sebagai gedung: kecamatan terpilih diangkat lurus ke atas, dan jejak bentuknya ditumpuk
+            selapis per unit sebagai dinding yang lebih gelap, jadi terlihat seperti bangun ruang (prisma), bukan
+            sekadar melayang. Bayangan jatuh di tanah. Key = kode wilayah, jadi gedung "dibangun" ulang setiap pilihan
+            berganti. Lapisan ini tidak menangkap klik, jadi kecamatan di bawahnya tetap bisa dipilih. */}
         {sorot &&
           !fokus &&
-          KECAMATAN.filter((k) => k.kode_wilayah === sorot).map((k) => (
-            <path
-              key={`sorot-${k.kode_wilayah}`}
-              d={k.d}
-              fill={warnaSkor(skor[k.kode_wilayah])}
-              stroke="var(--color-permukaan)"
-              strokeWidth={2}
-              strokeLinejoin="round"
-              className="kecamatan-timbul"
-              style={{ transformOrigin: `${k.pusat[0]}px ${k.pusat[1]}px` }}
-              pointerEvents="none"
-              aria-hidden="true"
-            />
-          ))}
+          KECAMATAN.filter((k) => k.kode_wilayah === sorot).map((k) => {
+            const warna = warnaSkor(skor[k.kode_wilayah]);
+            return (
+              <g key={`gedung-${k.kode_wilayah}`} className="kecamatan-gedung" pointerEvents="none" aria-hidden="true">
+                <path d={k.d} className="gedung-bayang" />
+                <g className="gedung-dinding">
+                  {Array.from({ length: TINGGI_GEDUNG }, (_, i) => (
+                    <path key={i} d={k.d} fill={warna} style={{ '--i': i } as React.CSSProperties} />
+                  ))}
+                </g>
+                <path
+                  d={k.d}
+                  fill={warna}
+                  stroke="var(--color-permukaan)"
+                  strokeWidth={2}
+                  strokeLinejoin="round"
+                  className="gedung-atap"
+                  style={{ '--i': TINGGI_GEDUNG, filter: `url(#${idBayangDalam}) drop-shadow(0 0 1.5px rgb(15 42 51 / 0.35))` } as React.CSSProperties}
+                />
+              </g>
+            );
+          })}
       </svg>
 
       {/* Efek "fokus": key = kode wilayah, jadi animasinya diulang dari awal setiap kali pilihan berganti. */}

@@ -14,7 +14,10 @@ import { kelasTautan } from '@/components/ui/Tombol';
 import { ambilLaporanSaya } from '@/lib/data/laporan';
 import { normalisasiKode, tanggal } from '@/lib/format';
 
-export const metadata: Metadata = { title: 'Lacak laporan' };
+export const metadata: Metadata = {
+  title: 'Lacak laporan',
+  description: 'Lacak laporan dengan kode SR: status, riwayat penanganan, batas waktu, dan posisi isunya di daftar prioritas.',
+};
 
 async function Isi({ searchParams }: { searchParams: PageProps<'/lacak'>['searchParams'] }) {
   const { kode } = await searchParams;
@@ -45,7 +48,7 @@ async function LaporanAnda() {
   const daftar = await ambilLaporanSaya();
   if (daftar === null) return null;
   return (
-    <section id="laporan-saya" aria-labelledby="judul-laporan-saya" className="mt-10 max-w-3xl scroll-mt-24">
+    <section id="laporan-saya" aria-labelledby="judul-laporan-saya" className="masuk mt-10 max-w-3xl scroll-mt-24">
       <h2 id="judul-laporan-saya" className="judul-seksi">
         Laporan Anda
       </h2>

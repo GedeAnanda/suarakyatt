@@ -54,7 +54,7 @@ export default function LaporanTerbaru({ per, sekarang }: { per: Record<string, 
             className="inline-flex min-h-10 items-center gap-1.5 rounded-kontrol border border-garis-isian bg-permukaan px-5 text-badan font-semibold transition-colors hover:border-biru hover:text-biru-tua"
           >
             Lihat semua di peta laporan
-            <Ikon nama="kanan" className="size-4" />
+            <Ikon nama="kanan" className="panah size-4" />
           </Link>
         </div>
       </div>

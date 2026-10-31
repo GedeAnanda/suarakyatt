@@ -146,15 +146,17 @@ export default function PetaLaporan({
           Laporan terbaru sesuai saringan
         </h2>
         {tersaring.length === 0 ? (
-          <p className="kartu mt-4 flex gap-3 p-5 text-badan">
+          <p className="kartu ganti mt-4 flex gap-3 p-5 text-badan">
             <Ikon nama="info" className="mt-0.5 size-5 shrink-0 text-biru" />
             Tidak ada laporan dengan saringan ini. Pilih kategori atau status lain di atas.
           </p>
         ) : (
           <>
+            {/* Kartu yang baru masuk daftar (saringan diganti, atau "Tampilkan lebih banyak") muncul dengan gerak singkat;
+                kartu yang tetap ada tidak bergerak karena key-nya sama. */}
             <ul className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
               {tersaring.slice(0, jumlah).map((l) => (
-                <li key={l.kode}>
+                <li key={l.kode} className="ganti">
                   <KartuLaporan laporan={l} sekarang={sekarang} />
                 </li>
               ))}

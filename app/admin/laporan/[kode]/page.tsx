@@ -123,7 +123,9 @@ export default function AdminDetailLaporanPage({ params }: PageProps<'/admin/lap
       </nav>
       </div>
       <Suspense fallback={<div aria-hidden="true" className="kerangka h-[36rem]" />}>
-        <Isi params={params} />
+        <div className="masuk">
+          <Isi params={params} />
+        </div>
       </Suspense>
     </div>
   );

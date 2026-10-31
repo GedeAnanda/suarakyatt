@@ -34,6 +34,7 @@ const MENU: { label: string; item: { href: string; label: string; ikon: NamaIkon
   {
     label: 'Pelajari',
     item: [
+      { href: '/tentang', label: 'Tentang SUARAKYAT', ikon: 'info' },
       { href: '/rapor/cara-menilai', label: 'Cara menilai', ikon: 'buku' },
       { href: '/sumber-data', label: 'Sumber data', ikon: 'data' },
     ],

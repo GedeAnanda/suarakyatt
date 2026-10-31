@@ -4,6 +4,7 @@
 
 import { useState } from 'react';
 import { tujuanAman } from '@/lib/tujuan-aman';
+import Ikon from './ui/Ikon';
 import { Tombol, type VarianTombol } from './ui/Tombol';
 
 type Peran = 'warga' | 'admin';
@@ -60,9 +61,11 @@ export default function TombolDemo({
     <div className={className}>
       <div className="flex flex-wrap gap-3">
         <Tombol varian={varianWarga} onClick={() => masuk('warga')} disabled={memuat !== null}>
+          {memuat === 'warga' && <Ikon nama="muat" className="putar size-4" />}
           {memuat === 'warga' ? 'Masuk sebagai warga…' : 'Coba sebagai warga demo'}
         </Tombol>
         <Tombol varian={varianAdmin} onClick={() => masuk('admin')} disabled={memuat !== null}>
+          {memuat === 'admin' && <Ikon nama="muat" className="putar size-4" />}
           {memuat === 'admin' ? 'Masuk sebagai admin…' : 'Coba sebagai admin demo'}
         </Tombol>
       </div>

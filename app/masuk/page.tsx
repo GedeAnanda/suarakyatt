@@ -11,7 +11,11 @@ import Ikon from '@/components/ui/Ikon';
 import Wordmark from '@/components/Wordmark';
 import { tujuanAman } from '@/lib/tujuan-aman';
 
-export const metadata: Metadata = { title: 'Masuk' };
+export const metadata: Metadata = {
+  title: 'Masuk',
+  description:
+    'Masuk atau daftar untuk melapor, mendukung laporan warga, dan memberi rating. Ada akun demo untuk mencoba tanpa mendaftar.',
+};
 
 async function Isi({ searchParams }: { searchParams: PageProps<'/masuk'>['searchParams'] }) {
   const sp = await searchParams;

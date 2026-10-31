@@ -82,8 +82,11 @@ export default function PrioritasPage() {
       </KepalaHalaman>
 
       <div className="mt-6">
+        {/* Pembungkus `masuk`: isi yang datang lewat streaming memudar masuk menggantikan kerangka, tidak muncul tiba-tiba. */}
         <Suspense fallback={<Kerangka />}>
-          <Isi />
+          <div className="masuk">
+            <Isi />
+          </div>
         </Suspense>
       </div>
 

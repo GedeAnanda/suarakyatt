@@ -36,7 +36,7 @@ export default function PerbandinganPeringkat({
 
   return (
     <section aria-labelledby="judul-dua-urutan" className="bingkai mt-12 sm:mt-14">
-      <div className="kartu p-5 sm:p-8">
+      <div className="kartu muncul p-5 sm:p-8">
         <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)] lg:gap-12">
           <div>
             <h2 id="judul-dua-urutan" className="judul-seksi">
@@ -127,7 +127,7 @@ export default function PerbandinganPeringkat({
             className="inline-flex items-center gap-1 font-bold text-biru-tua hover:underline"
           >
             Geser sendiri keenam bobotnya
-            <Ikon nama="kanan" className="size-4" />
+            <Ikon nama="kanan" className="panah size-4" />
           </Link>
           {kodeLaporan && (
             <Link
@@ -135,7 +135,7 @@ export default function PerbandinganPeringkat({
               className="inline-flex items-center gap-1 font-bold text-biru-tua hover:underline"
             >
               Buka laporan {kodeLaporan} dan tekan &ldquo;Kenapa belum?&rdquo;
-              <Ikon nama="kanan" className="size-4" />
+              <Ikon nama="kanan" className="panah size-4" />
             </Link>
           )}
         </div>

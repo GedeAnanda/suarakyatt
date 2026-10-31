@@ -31,8 +31,10 @@ async function Isi() {
         sumber={sumber}
         keterangan={`Periode ${tanggal(rapor.periode.dari)} sampai ${tanggal(rapor.periode.sampai)} · semua laporan kecuali yang dibatalkan`}
       />
-      <section aria-label="Rapor tiap instansi" className="kartu mt-6 px-4 sm:px-7" data-muncul>
-        <ol>
+      {/* data-muncul di <ol>, bukan di section: tiap instansi muncul sendiri. Di section, seluruh daftar (±1.200 px)
+          menjadi satu elemen yang masih pudar sampai hampir setengahnya tergulir. */}
+      <section aria-label="Rapor tiap instansi" className="kartu mt-6 px-4 sm:px-7">
+        <ol data-muncul>
           {urut.map((i) => (
             <KartuRapor key={i.id} i={i} kategoriId={KATEGORI.find((k) => k.instansi === i.nama)?.id} />
           ))}
@@ -86,7 +88,9 @@ export default function RaporPage() {
             </div>
           }
         >
-          <Isi />
+          <div className="masuk">
+            <Isi />
+          </div>
         </Suspense>
       </div>
 

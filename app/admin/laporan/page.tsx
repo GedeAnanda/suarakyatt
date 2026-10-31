@@ -78,7 +78,9 @@ export default function AdminLaporanPage() {
       </KepalaHalaman>
       <div className="mt-6">
         <Suspense fallback={<div aria-hidden="true" className="kerangka h-[30rem]" />}>
-          <Isi />
+          <div className="masuk">
+            <Isi />
+          </div>
         </Suspense>
       </div>
     </div>

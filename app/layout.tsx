@@ -33,9 +33,11 @@ export const viewport: Viewport = {
 
 // Kerangka seperti situs travel: header putih di atas, menu samping berikon di kiri, isi dan footer di kanan.
 // Status menu ada di atribut <html> (data-sisi, data-laci) yang diubah di browser, karena itu suppressHydrationWarning.
+// data-scroll-behavior: tautan jangkar di halaman yang sama bergulir halus (globals.css), tetapi Next.js mematikannya
+// sementara saat pindah halaman supaya halaman baru langsung mulai dari atas.
 export default function RootLayout({ children }: LayoutProps<'/'>) {
   return (
-    <html lang="id" className={`${satoshi.variable} antialiased`} suppressHydrationWarning>
+    <html lang="id" className={`${satoshi.variable} antialiased`} data-scroll-behavior="smooth" suppressHydrationWarning>
       <body suppressHydrationWarning>
         <a
           href="#isi"

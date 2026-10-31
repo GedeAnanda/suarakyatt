@@ -71,7 +71,11 @@ export function TombolDukung({
         </p>
         {aktif && !pemilik && login && (
           <Tombol varian={didukung ? 'kedua' : 'utama'} onClick={dukung} disabled={memuat} aria-pressed={didukung}>
-            <Ikon key={String(didukung)} nama="dukung" className="pop size-4" isi={didukung} />
+            {memuat ? (
+              <Ikon nama="muat" className="putar size-4" />
+            ) : (
+              <Ikon key={String(didukung)} nama="dukung" className="pop size-4" isi={didukung} />
+            )}
             {memuat ? 'Menyimpan…' : didukung ? 'Batal dukung' : 'Dukung laporan ini'}
           </Tombol>
         )}
@@ -124,8 +128,9 @@ export function TombolBatalkan({ kode }: { kode: string }) {
           Batalkan laporan
         </Tombol>
       ) : (
-        <div className="mt-4 flex flex-wrap items-center gap-3">
+        <div className="ganti mt-4 flex flex-wrap items-center gap-3">
           <Tombol varian="bahaya" onClick={batalkan} disabled={memuat}>
+            {memuat && <Ikon nama="muat" className="putar size-4" />}
             {memuat ? 'Membatalkan…' : `Ya, batalkan ${kode}`}
           </Tombol>
           <Tombol varian="garis" onClick={() => setKonfirmasi(false)} disabled={memuat}>
@@ -165,8 +170,8 @@ export function FormRating({ kode }: { kode: string }) {
 
   if (terkirim) {
     return (
-      <p className="flex gap-2 rounded-kartu bg-hijau-muda p-5 text-badan font-semibold text-hijau">
-        <Ikon nama="centang" className="mt-0.5 size-5 shrink-0" />
+      <p className="ganti flex gap-2 rounded-kartu bg-hijau-muda p-5 text-badan font-semibold text-hijau">
+        <Ikon nama="centang" className="pop mt-0.5 size-5 shrink-0" />
         Terima kasih. Rating Anda ikut menghitung nilai kepuasan di Rapor Instansi.
       </p>
     );
@@ -202,6 +207,7 @@ export function FormRating({ kode }: { kode: string }) {
         />
       </label>
       <Tombol type="submit" disabled={!nilai || memuat} className="justify-self-start">
+        {memuat && <Ikon nama="muat" className="putar size-4" />}
         {memuat ? 'Mengirim…' : 'Kirim rating'}
       </Tombol>
       {galat && (

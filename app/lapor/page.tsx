@@ -8,7 +8,10 @@ import FormLaporan from '@/components/lapor/FormLaporan';
 import Ikon from '@/components/ui/Ikon';
 import { KANAL_RESMI } from '@/lib/konten';
 
-export const metadata: Metadata = { title: 'Lapor masalah' };
+export const metadata: Metadata = {
+  title: 'Lapor masalah',
+  description: 'Laporkan masalah kota di DKI Jakarta dengan foto dan titik lokasi, lalu lacak penanganannya dengan kode SR.',
+};
 
 export default function LaporPage() {
   return (

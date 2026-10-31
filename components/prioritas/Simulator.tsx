@@ -203,7 +203,7 @@ export default function Simulator({
             <Ikon nama={sliderTerbuka ? 'naik' : 'turun'} className="size-5" />
           </button>
 
-          <ul id="daftar-slider" className={`mt-4 gap-2 border-garis lg:grid lg:border-t lg:pt-4 ${sliderTerbuka ? 'grid' : 'hidden'}`}>
+          <ul id="daftar-slider" className={`ganti mt-4 gap-2 border-garis lg:grid lg:border-t lg:pt-4 ${sliderTerbuka ? 'grid' : 'hidden'}`}>
             {FAKTOR.map((f) => {
               const berubah = Math.abs(bobot[f] - bobotResmi[f]) >= 0.005;
               return (
@@ -239,7 +239,7 @@ export default function Simulator({
           </ul>
 
           {totalSlider === 0 && (
-            <p role="alert" className="mt-3 rounded-kontrol bg-merah-muda px-3 py-2 text-kecil font-semibold text-merah-tua">
+            <p role="alert" className="goyang mt-3 rounded-kontrol bg-merah-muda px-3 py-2 text-kecil font-semibold text-merah-tua">
               Semua bobot nol tidak bisa dipakai. Naikkan minimal satu faktor; urutan sementara memakai bobot acuan.
             </p>
           )}
@@ -307,6 +307,9 @@ export default function Simulator({
 
           {terpilih && (
             <section ref={panelIsu} aria-labelledby="judul-isu" aria-live="polite" className="kartu scroll-mt-24 p-5">
+              {/* Judul dan penjelasan berganti dengan gerak saat isu lain dipilih; bar di bawahnya tidak di-key supaya
+                  lebarnya tetap bergeser dari nilai isu lama ke isu baru. */}
+              <div key={terpilih.id} className="ganti">
               <p className="flex flex-wrap items-center gap-2 text-kecil">
                 <span className="angka rounded-[0.375rem] bg-biru px-2 py-0.5 text-mini font-bold text-white">
                   #{terpilih.peringkat}
@@ -325,6 +328,7 @@ export default function Simulator({
                 {terpilih.kota} · {terpilih.laporan_aktif} laporan aktif, {terpilih.laporan_terverifikasi} terverifikasi
               </p>
               <p className="mt-4 rounded-kontrol bg-latar p-3 text-kecil font-semibold">{terpilih.penjelasan}</p>
+              </div>
               <div className="mt-5">
                 <BarKontribusi isu={terpilih} bobot={bobot} />
               </div>
@@ -432,6 +436,7 @@ function SimpanBobot({ bobot, aktif, onTersimpan }: { bobot: Bobot; aktif: boole
         className="w-full p-3 text-badan"
       />
       <Tombol type="submit" disabled={!aktif || pendek || memuat}>
+        {memuat && <Ikon nama="muat" className="putar size-4" />}
         {memuat ? 'Menyimpan…' : 'Simpan sebagai bobot acuan'}
       </Tombol>
       {!aktif && <p className="text-kecil text-lembut">Ubah bobot dulu; bobot sekarang sama dengan bobot acuan.</p>}

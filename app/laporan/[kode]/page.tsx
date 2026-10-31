@@ -239,7 +239,9 @@ export default function DetailLaporanPage({ params, searchParams }: PageProps<'/
       </nav>
       </div>
       <Suspense fallback={<Kerangka />}>
-        <Isi params={params} searchParams={searchParams} />
+        <div className="masuk">
+          <Isi params={params} searchParams={searchParams} />
+        </div>
       </Suspense>
     </div>
   );

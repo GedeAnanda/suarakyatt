@@ -24,8 +24,9 @@ const KOLOM = [
     ],
   },
   {
-    judul: 'Data',
+    judul: 'Pelajari',
     tautan: [
+      { href: '/tentang', label: 'Tentang dan tanya jawab' },
       { href: '/sumber-data', label: 'Sumber data dan lisensi' },
       { href: '/sumber-data#simulasi', label: 'Skenario simulasi' },
       { href: '/sumber-data#foto', label: 'Kredit foto' },

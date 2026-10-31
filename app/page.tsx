@@ -130,7 +130,7 @@ async function BagianPrioritas() {
 
       {/* Spanduk besar (foto arsip) lalu deret spanduk fitur, seperti spanduk promo di situs travel. */}
       <section aria-label="Sorotan" className="bingkai mt-12 sm:mt-14">
-      <figure>
+      <figure className="muncul">
         <div className="di-gelap relative overflow-hidden rounded-besar bg-navy text-white">
           <Image
             src={FOTO.banjirBatavia.src}
@@ -159,7 +159,7 @@ async function BagianPrioritas() {
           </figcaption>
         </div>
       </figure>
-      <SpandukGeser className="mt-4" />
+      <SpandukGeser className="muncul mt-4" />
       </section>
 
       <section aria-labelledby="judul-kecamatan" className="bingkai mt-12 sm:mt-14">
@@ -169,14 +169,16 @@ async function BagianPrioritas() {
           </h2>
           <LabelSumber sumber={data.sumber} />
         </div>
-        <div className="kartu mt-5 p-5 sm:p-7">
+        <div className="kartu muncul mt-5 p-5 sm:p-7">
           <dl className="grid grid-cols-3 gap-2 sm:gap-3">
             {[
               { nilai: ribuan(statistik.total_laporan), label: 'laporan masuk' },
               { nilai: `${desimal(statistik.persen_selesai, 0)}%`, label: 'laporan selesai' },
               { nilai: ribuan(statistik.terlambat_aktif), label: 'laporan aktif terlambat' },
             ].map((s) => (
-              <div key={s.label} className="flex flex-col-reverse rounded-kontrol bg-latar p-3 sm:p-4">
+              // justify-end: di flex-col-reverse isi jadi rata atas, jadi angka di ketiga kotak sejajar walau labelnya
+              // turun ke baris yang berbeda jumlahnya.
+              <div key={s.label} className="flex flex-col-reverse justify-end rounded-kontrol bg-latar p-3 sm:p-4">
                 <dt className="mt-1 text-mini text-lembut sm:text-kecil">{s.label}</dt>
                 <dd className="angka text-sub font-bold sm:text-judul">
                   <AngkaGulir nilai={s.nilai} />
@@ -205,7 +207,7 @@ function AngkaMusrenbang() {
   ];
   return (
     <section aria-labelledby="judul-musrenbang" className="bingkai mt-12 sm:mt-14">
-      <div className="relative isolate grid overflow-hidden rounded-besar bg-[linear-gradient(120deg,#f0f4ff_0%,#dfe8ff_100%)] lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
+      <div className="relative isolate grid overflow-hidden rounded-besar bg-[linear-gradient(120deg,var(--color-biru-pudar)_0%,#d4ebe5_100%)] lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
         {/* Lingkaran hiasan di sudut, seperti latar bagian aplikasi di situs travel. */}
         <span aria-hidden="true" className="pointer-events-none absolute -top-28 -left-28 -z-10 size-80 rounded-full bg-white/45" />
         <span aria-hidden="true" className="pointer-events-none absolute -bottom-36 left-1/3 -z-10 size-72 rounded-full bg-biru/8" />
@@ -227,7 +229,7 @@ function AngkaMusrenbang() {
           </p>
           <dl className="mt-6 grid grid-cols-2 gap-3 xl:grid-cols-4" data-muncul>
             {ANGKA.map((a) => (
-              <div key={a.label} className="flex flex-col-reverse rounded-kartu bg-white p-4">
+              <div key={a.label} className="flex flex-col-reverse justify-end rounded-kartu bg-white p-4">
                 <dt className="mt-1 text-mini text-lembut sm:text-kecil">{a.label}</dt>
                 <dd className="angka text-seksi font-bold text-biru-tua">
                   <AngkaGulir nilai={a.nilai} />
@@ -297,7 +299,7 @@ async function BagianTerbaru() {
         </div>
         <LabelSumber sumber={sumber} />
       </div>
-      <div className="mt-5">
+      <div className="muncul mt-5">
         <LaporanTerbaru per={per} sekarang={sekarang} />
       </div>
     </>
@@ -336,7 +338,7 @@ export default function BerandaPage() {
         <p className="mt-2 max-w-[70ch] text-badan text-lembut">
           Setiap kategori punya dinas penanggung jawab (simulasi), batas waktu respons, dan batas waktu selesai.
         </p>
-        <div className="mt-5">
+        <div className="muncul mt-5">
           <DaftarMasalah />
         </div>
       </section>

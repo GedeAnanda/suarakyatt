@@ -29,6 +29,7 @@ import {
   Info,
   Lightbulb,
   Link,
+  LoaderCircle,
   Lock,
   LogOut,
   Map as Peta,
@@ -95,6 +96,8 @@ const IKON = {
   tautan: Link,
   salin: Copy,
   bagikan: Share,
+  // Putar dengan kelas `putar` (globals.css) selama tombol menunggu server.
+  muat: LoaderCircle,
 } satisfies Record<string, LucideIcon>;
 
 export type NamaIkon = keyof typeof IKON;

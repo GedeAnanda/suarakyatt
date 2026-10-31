@@ -178,7 +178,7 @@ export default function TabelLaporanAdmin({ laporan, sekarang }: { laporan: Lapo
                     className="inline-flex min-h-9 items-center gap-1 rounded-kontrol bg-biru px-3 text-kecil font-bold whitespace-nowrap text-white transition-colors hover:bg-biru-tua"
                   >
                     Buka
-                    <Ikon nama="kanan" className="size-4" />
+                    <Ikon nama="kanan" className="panah size-4" />
                   </Link>
                 </td>
               </tr>
