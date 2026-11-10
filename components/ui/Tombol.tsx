@@ -43,5 +43,6 @@ export function TautanTombol({
 }
 
 /** Tautan teks biasa: biru, bergaris bawah saat disorot. */
+/** Tautan di dalam teks: selalu bergaris bawah (layar sentuh tidak punya hover; pembeda bukan hanya warna, WCAG 1.4.1). */
 export const kelasTautan =
-  'font-semibold text-biru-tua underline-offset-4 hover:underline [.di-gelap_&]:text-white [.di-gelap_&]:underline';
+  'font-semibold text-biru-tua underline decoration-1 underline-offset-4 hover:decoration-2 [.di-gelap_&]:text-white';

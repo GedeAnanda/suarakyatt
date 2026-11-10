@@ -134,3 +134,76 @@ Pemeriksaan sesudahnya:
   - `/lacak` → skenario "Terlambat, ada kendala".
 - Belum dicek di HP fisik: popover Istilah di slider, rotasi sorotan Beranda di layar sentuh, dan `<select>` "Cari kecamatanmu" di iOS.
 - Kelas `.chip` tingginya masih 40 px, di bawah target sentuh 44 px (perlu ubah `globals.css`).
+
+## Putaran 2: bukti, aksesibilitas, performa (10 November malam)
+
+Branch `feat/ramah-semua` (dari `dev` setelah PR #23), belum di-commit.
+
+### Keterbacaan (diukur)
+
+Hanya paragraf yang dibaca warga (`<p>`, `<li>`, `<dd>`), di build produksi lokal 375 px:
+
+| Halaman | Kalimat | Rata-rata kata/kalimat | > 20 kata |
+|---|---:|---:|---:|
+| Beranda | 86 | 9,2 | 2 |
+| Lacak | 13 | 7,2 | 0 |
+| Detail laporan | 34 | 8,7 | 0 |
+| Peta | 6 | 8,7 | 0 |
+| Urutan prioritas | 65 | 10,4 | 0 |
+| Kecamatan | 29 | 9,1 | 0 |
+| Rapor dinas | 62 | 7,5 | 0 |
+| Cara rapor dihitung | 58 | 9,9 | 0 |
+
+Kalimat pendek **belum membuktikan** warga paham. Buktinya harus dari uji ke warga: kit ada di [uji-warga-2026-11-10.md](uji-warga-2026-11-10.md) (5 profil, 6 tugas, batas waktu, lembar catat).
+
+### Aksesibilitas
+
+- **axe-core 4.10 (WCAG 2.2 A/AA), 13 halaman di 375 px: 0 pelanggaran.**
+  - Halaman yang dicek: Beranda, Lacak, dua detail laporan, Peta, Urutan prioritas, dua halaman Kecamatan, Rapor, Cara rapor dihitung, Tentang, Sumber data, dan Masuk.
+  - Satu catatan "perlu dicek": id `sisi` dobel, berasal dari potongan streaming React yang tersembunyi (`<div hidden id="S:0">`) di layout. Elemen itu tidak terlihat, tidak terbaca pembaca layar, dan sudah ada sebelum audit.
+- **Lighthouse aksesibilitas:**
+  - Awalnya 96–97, karena kontras gagal saat animasi "muncul" berjalan dan ada tautan dalam teks tanpa garis bawah.
+  - Sesudah perbaikan: **100** di 5 halaman. Peta tidak bisa dinilai karena alatnya galat di gatherer RootCauses.
+- **Perbaikan:**
+  - Animasi "muncul saat digulir" hanya bergerak naik, tanpa memudar, sehingga teks selalu kontras penuh.
+  - `kelasTautan` selalu bergaris bawah (layar sentuh tidak punya hover; WCAG 1.4.1).
+  - Chip 44 px.
+  - Tombol **"Perbesar huruf"** di menu dan footer: seluruh tampilan +12,5%, pilihan disimpan di HP, dan dipasang sebelum halaman tergambar. Saat menyala, 7 halaman utama tetap pas di 375 px; label "Lapor" di header jadi ikon saja.
+
+### Performa (Lighthouse 12, HP, simulasi 4G lambat)
+
+| Halaman | Performa awal → akhir | LCP awal → akhir | FCP | CLS |
+|---|---|---|---:|---:|
+| Beranda | 75 → 80 | 7,4 → 5,3 s | 1,2 s | 0 |
+| Detail laporan | 77 → 80 | 6,4 → 5,5 s | 0,9 s | 0 |
+| Peta | 84 → 77 | 4,5 → 4,7 s | 1,2 s | 0 |
+| Urutan prioritas | 84 → 85 | 4,5 → 4,4 s | 1,2 s | 0 |
+| Kecamatan | 81 → 82 | 4,7 → 4,5 s | 1,1 s | 0,096 |
+| Rapor dinas | 86 → 85 | 4,2 → 4,4 s | 0,9 s | 0 |
+
+- Selisih ±3 poin antar-percobaan adalah variasi wajar Lighthouse; Peta dan Rapor tidak diubah.
+- **Perbaikan:**
+  - Foto tab hero di Beranda baru diunduh saat tabnya dibuka (dulu 5 foto, ±500 KB, sekaligus).
+  - Galeri laporan diberi `sizes`; dulu HP diberi gambar selebar 1920 px.
+- **Belum memenuhi target LCP 2,5 s.** Sisa bebannya JavaScript (±350–470 KB, terbesar di Peta karena Leaflet) dan foto di bawah layar yang diunduh lebih awal oleh Chrome saat koneksi lambat. Langkah berikutnya:
+  - muat Leaflet hanya saat peta mendekati layar;
+  - foto Beranda dalam AVIF dan lebih sedikit;
+  - periksa `unused-javascript`.
+
+### Ringkasan sekali lihat
+
+- Urutan prioritas sekarang dibuka dengan kotak **"Paling didahulukan sekarang"**: 3 masalah teratas, alasannya, skor dari 100, dan "Cari kecamatanmu".
+- Halaman lain sudah dibuka dengan jawaban:
+  - Rapor: "Paling baik / Paling perlu diperbaiki";
+  - Kecamatan: kalimat 3 bagian;
+  - Lacak: "Status sekarang".
+
+### README (nilai FDS 4)
+
+README sekarang memuat:
+
+- tautan situs dan latar belakang/tujuan;
+- **peta halaman** (Mermaid);
+- tabel **progres** yang jujur (termasuk yang belum: uji warga, LCP, data BPS/CRM);
+- nama tim dari riwayat git: Wildan (@wildanpanjii), Gede Ananda (@GedeAnanda), Fatih Akram Wicaksono. **Tim perlu memastikan nama lengkapnya.**
+

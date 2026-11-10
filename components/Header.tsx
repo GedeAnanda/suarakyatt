@@ -151,7 +151,7 @@ export default function Header() {
           </TautanUtilitas>
           {/* HP: aksi utama tetap terlihat di header. Di bawah 360 px hanya ikonnya; namanya tetap dibaca pembaca layar. */}
           <TautanUtilitas href="/lapor" ikon="tambah" className="flex sm:hidden">
-            <span className="max-[359px]:sr-only">
+            <span className="label-kepala max-[359px]:sr-only">
               Lapor<span className="sr-only"> masalah</span>
             </span>
           </TautanUtilitas>

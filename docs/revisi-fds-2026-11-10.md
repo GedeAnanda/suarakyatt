@@ -254,8 +254,14 @@ Sesudah diterapkan: fungsi `foto_sah` dan `sudah_dukung` ada; bucket `bukti` (pu
 
 ### Masih terbuka
 
-1. **2.6:** uji ke 3–5 orang awam.
-2. **3.5:** Lighthouse mobile dengan 4G di HP/Chrome sungguhan, untuk `/`, `/laporan/[kode]`, `/peta`, `/prioritas`, dan `/kecamatan`. Catat hasilnya di sini.
+1. **2.6:** uji ke 3–5 orang awam. Kit siap di [uji-warga-2026-11-10.md](uji-warga-2026-11-10.md); tinggal dijalankan tim.
+2. **3.5:** Lighthouse sudah dijalankan (10 Nov malam, simulasi 4G lambat):
+   - aksesibilitas 100;
+   - performa 77–85;
+   - FCP ±1 detik;
+   - LCP 4,4–5,5 detik, belum memenuhi target 2,5 detik.
+
+   Rincian di [audit-awam-2026-11-10.md](audit-awam-2026-11-10.md#putaran-2-bukti-aksesibilitas-performa-10-november-malam).
 3. **2.5:** hapus paket `recharts` atau pakai.
 4. Batas waktu final submission tidak tercantum di lembar FDS.
 

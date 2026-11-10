@@ -11,6 +11,7 @@ import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useEffect, useSyncExternalStore } from 'react';
 import { KANAL_RESMI } from '@/lib/konten';
+import TombolHuruf from './TombolHuruf';
 import { laciBuka, layarLebar, pantauSisi, sisiTerbuka, tutupMenu } from '@/lib/sisi';
 import Ikon, { type NamaIkon } from './ui/Ikon';
 import KelompokCair from './ui/KelompokCair';
@@ -105,6 +106,10 @@ function IsiSisi({ aktif }: { aktif?: string }) {
             </ul>
           </div>
 
+          {/* Untuk lansia dan penglihatan kurang: seluruh tampilan membesar 12,5%. */}
+          <div className="mt-6 px-3 rel:hidden">
+            <TombolHuruf />
+          </div>
           <p className="mt-auto px-3 pt-8 pb-1 text-kecil text-lembut rel:hidden">
             Situs ini dibuat untuk lomba Web in Action 2026. Laporan, dinas, dan nilai rapor adalah data buatan; peta dan
             batas kecamatan memakai data asli.

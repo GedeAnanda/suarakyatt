@@ -108,6 +108,10 @@ function Pilihan({
 export default function HeroCari({ panelRapor }: { panelRapor: ReactNode }) {
   const router = useRouter();
   const [aktif, setAktif] = useState<IdTab>('lacak');
+  // Foto tab baru diunduh setelah tab itu pernah dibuka (Lighthouse 10 Nov: 5 foto sekaligus ±500 KB di HP 4G lambat
+  // membuat foto utama terlambat). Foto yang sudah dimuat tetap dipasang supaya pergantian silang tetap halus.
+  const [dimuat, setDimuat] = useState<Set<IdTab>>(() => new Set(['lacak']));
+  if (!dimuat.has(aktif)) setDimuat(new Set([...dimuat, aktif]));
   const daftarTab = useRef<HTMLDivElement>(null);
   const kotak = useRef<HTMLDivElement>(null);
   const masukanKode = useRef<HTMLInputElement>(null);
@@ -164,7 +168,7 @@ export default function HeroCari({ panelRapor }: { panelRapor: ReactNode }) {
     <section aria-labelledby="judul-beranda" className="bingkai pt-3 sm:pt-4">
       {/* Foto memenuhi seluruh hero, termasuk di belakang kotak cari, jadi kotak putih menumpang penuh di atasnya. */}
       <div className="relative isolate overflow-hidden rounded-besar bg-navy">
-        {TAB.map((t, i) => (
+        {TAB.filter((t) => dimuat.has(t.id)).map((t, i) => (
           <Image
             key={t.id}
             src={t.foto.src}

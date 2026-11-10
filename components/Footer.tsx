@@ -3,6 +3,7 @@
 
 import Link from 'next/link';
 import { FOTO, KANAL_RESMI } from '@/lib/konten';
+import TombolHuruf from './TombolHuruf';
 import Ikon from './ui/Ikon';
 import Wordmark from './Wordmark';
 
@@ -116,6 +117,9 @@ export default function Footer() {
               .join(', ')}
             .
           </p>
+          <div className="mb-2">
+            <TombolHuruf />
+          </div>
           <p className="text-kecil">
             Situs ini dibuat untuk lomba Web in Action 2026. Laporan, dinas, dan nilai rapor adalah data buatan; peta dan
             batas kecamatan memakai data asli.
