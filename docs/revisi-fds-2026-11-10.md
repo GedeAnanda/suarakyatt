@@ -2,7 +2,7 @@
 
 > Versi .md dari lembar penilaian mentor `[FDS] WIA_abis ini ke wdp.pdf` (2 halaman), lalu dipetakan ke kode di branch `add-ui-2-animation` (commit `267ac8e`).
 >
-> **Status 10 Nov (malam):** semua usulan di bawah dikerjakan di branch `feat/revisi-fds` (dari `add-ui-2-animation`, tanpa upstream) dan **belum di-commit**. Migrasi `0010` sudah diterapkan ke Supabase. Rinciannya di [Hasil pengerjaan](#6-hasil-pengerjaan-10-november). Yang masih terbuka: uji ke orang awam (2.6), Lighthouse dengan throttling (3.5), keputusan Recharts (2.5), dan **migrasi `0009` yang belum diterapkan ke Supabase** (temuan baru).
+> **Status 10 Nov (malam):** semua usulan di bawah dikerjakan di `feat/revisi-fds` (commit `1e9544b`) dan sudah di-merge ke `dev` lewat PR #19. Migrasi `0009` dan `0010` sudah diterapkan ke Supabase. Rinciannya di [Hasil pengerjaan](#6-hasil-pengerjaan-10-november). Yang masih terbuka: uji ke orang awam (2.6), Lighthouse dengan throttling (3.5), keputusan Recharts (2.5), dan rilis `dev` → `main`.
 
 ## Ringkasan cepat
 
@@ -19,7 +19,7 @@
 - **Temuan di luar saran:**
   - `https://suarakyat.vercel.app` mengembalikan **404 NOT_FOUND** (dicek 10 Nov). Deployment-nya sendiri hidup, karena cron reset demo tetap berjalan (reset terakhir 9 Nov 19:40 UTC). Jadi yang 404 hanya domain itu. Pastikan tautan demo untuk juri benar.
   - Branch `dev` terakhir diperbarui 29 Okt; 20 commit UI di `add-ui-2-animation` belum masuk ke `dev`.
-  - **Migrasi `0009_foto_dan_dukungan.sql` belum diterapkan ke Supabase** (`foto_sah`, `sudah_dukung`, dan bucket `karantina` tidak ada). Kode di branch UI sudah memanggil `sudah_dukung` dan karantina foto. Lihat [Masih terbuka](#masih-terbuka).
+  - **Migrasi `0009_foto_dan_dukungan.sql` (30 Okt) ternyata belum diterapkan ke Supabase**, padahal kode di branch UI sudah memanggil `sudah_dukung` dan karantina foto. Sudah diterapkan 10 Nov malam. Lihat [Migrasi 0009](#migrasi-0009-diterapkan-10-november).
 
 ## 1. Lembar FDS (versi teks)
 
@@ -215,7 +215,7 @@ Sebelumnya, "Kenapa belum?" baru muncul sesudah foto dan cerita, dan alasan tund
 | 3.3 | Selesai | Tes baru: `status-laporan.test.ts` (SLA dan kendala yang berlaku, 8 tes) dan `data-contoh.test.ts` (matriks skenario, alasan tolak, duplikat, konten melanggar, kendala, urutan timeline; 9 tes). | `tests/` |
 | 3.4 | Selesai, manual | Dicek di browser untuk semua skenario di HP dan desktop (bukti di atas). Belum ada skrip Playwright tetap di repo. | — |
 | 3.5 | Sebagian | Diukur di build produksi lokal tanpa throttling (tabel di bawah). LCP tidak terekam karena pane browser uji tersembunyi. **Lighthouse mobile dengan 4G belum dijalankan.** | — |
-| 3.6 | Selesai | `test:db` ditambah 3 pemeriksaan: kendala tanpa ubah status; tiga alasan tolak lewat RPC; tamu membaca isi tersembunyi, kode laporan asli, dan alasan tunda. **Hasil: 12/12 lulus saat 0009 dimuat di dalam transaksi uji.** Tanpa itu, pemeriksaan foto lama gagal karena 0009 belum ada di DB (sudah gagal juga sebelum revisi). | `scripts/verifikasi-demo.mjs` |
+| 3.6 | Selesai | `test:db` ditambah 3 pemeriksaan: kendala tanpa ubah status; tiga alasan tolak lewat RPC; tamu membaca isi tersembunyi, kode laporan asli, dan alasan tunda. **Hasil: 12/12 lulus** setelah 0009 diterapkan. Sebelumnya, pemeriksaan foto selalu gagal karena 0009 belum ada di DB. | `scripts/verifikasi-demo.mjs` |
 
 **Pengukuran lokal (375×812, `next start`, tanpa throttling):**
 
@@ -235,17 +235,28 @@ TTFB semua halaman sekitar 10 ms. `/contoh?jenis=terlambat` membaca maksimal 1.0
 - Data contoh: nama "Setia Budi" ikut diperbaiki menjadi "Setiabudi", sesuai geojson.
 - Halaman laporan konten melanggar tidak lagi menulis kalimat "isi disembunyikan" dua kali.
 
+### Migrasi 0009 diterapkan (10 November)
+
+`0009_foto_dan_dukungan.sql` dibuat 30 Okt di branch UI, tetapi belum pernah diterapkan ke Supabase. Akibatnya selama ini:
+
+- tombol dukung tidak tahu apakah pengguna sudah mendukung, dan mengklik lagi justru menghapus dukungan;
+- karantina foto konten melanggar diam-diam terlewati;
+- `create_report` menerima URL foto apa saja.
+
+Sebelum diterapkan, sudah dicek:
+
+- **Tidak menimpa perubahan manual.** Isi `create_report`, `update_report_status`, dan `similar_reports` di DB sama persis dengan 0003, dan tanda tangannya sama dengan 0009, jadi fungsinya diganti di tempat tanpa membuat versi ganda.
+- **Bucket tidak berubah perilakunya.** `foto-laporan` dan `bukti` sudah memakai batas 5 MB dan JPG/PNG/WebP. Yang baru hanya bucket privat `karantina`. Ada 26 berkas lama (terbesar 0,9 MB), semuanya aman.
+- **Form lapor versi `main` tetap jalan.** Pengunggahnya memakai path `<uid>/<uuid>.<ext>` yang sama, jadi lolos `foto_sah`.
+- **Diuji di dalam transaksi yang di-rollback:** `test:db` 13/13 lulus (ditambah cek bucket karantina). Lalu `sudah_dukung` berubah false → true setelah mendukung, `similar_reports.didukung` = true, dan tamu ditolak.
+
+Sesudah diterapkan: fungsi `foto_sah` dan `sudah_dukung` ada; bucket `bukti` (publik), `foto-laporan` (publik), `karantina` (privat); `npm run test:db` 12/12 lulus.
+
 ### Masih terbuka
 
-1. **Migrasi `0009_foto_dan_dukungan.sql` belum ada di Supabase** (dibuat 30 Okt di branch UI). Tanpa 0009:
-   - tombol dukung tidak tahu apakah pengguna sudah mendukung (`sudah_dukung` tidak ada);
-   - karantina foto konten melanggar gagal (bucket `karantina` tidak ada);
-   - `create_report` masih menerima URL foto apa saja.
-
-   0009 mengubah aturan `create_report`, jadi terapkan bersamaan dengan merge branch UI. Kalau diterapkan lebih dulu, form lapor versi lama di deployment yang sedang jalan bisa ikut terkena.
-2. **2.6:** uji ke 3–5 orang awam.
-3. **3.5:** Lighthouse mobile dengan 4G di HP/Chrome sungguhan, untuk `/`, `/laporan/[kode]`, `/peta`, `/prioritas`, dan `/kecamatan`. Catat hasilnya di sini.
-4. **2.5:** hapus paket `recharts` atau pakai.
-5. **Tautan demo** `suarakyat.vercel.app` 404; cek domain deployment yang benar.
-6. **Commit dan PR:** semua perubahan ada di `feat/revisi-fds` dan belum di-commit. `FormKendala` dan Simulator menyentuh file milik A, jadi minta Wildan meninjau PR-nya.
-7. Batas waktu final submission tidak tercantum di lembar FDS.
+1. **2.6:** uji ke 3–5 orang awam.
+2. **3.5:** Lighthouse mobile dengan 4G di HP/Chrome sungguhan, untuk `/`, `/laporan/[kode]`, `/peta`, `/prioritas`, dan `/kecamatan`. Catat hasilnya di sini.
+3. **2.5:** hapus paket `recharts` atau pakai.
+4. **Tautan demo** `suarakyat.vercel.app` 404; cek domain deployment yang benar.
+5. **Rilis `dev` → `main`.** Sudah dicek: merge bersih tanpa konflik, hasilnya sama persis dengan `dev`, dan tes CI lulus. Tidak ada env baru yang perlu ditambah.
+6. Batas waktu final submission tidak tercantum di lembar FDS.
