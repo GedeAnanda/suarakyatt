@@ -3,7 +3,7 @@
 
 import 'server-only';
 import { connection } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createClient } from './klien';
 
 export interface Sesi {
   uid: string;

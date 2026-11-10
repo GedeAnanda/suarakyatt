@@ -8,9 +8,9 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { pesanError } from '@/lib/errors';
 import { kompresFoto, TIPE_FOTO } from '@/lib/foto';
-import { normalisasiKode } from '@/lib/format';
+import { hariIni, normalisasiKode } from '@/lib/format';
 import { LABEL_ALASAN } from '@/lib/konten';
-import { createClient } from '@/lib/supabase/client';
+import { ubahStatusLaporan } from '@/lib/supabase/aksi-status';
 import { unggahFoto } from '@/lib/supabase/unggah';
 import type { AlasanTolak, StatusLaporan } from '@/lib/types';
 import { IkonStatus, LABEL_STATUS } from '../BadgeStatus';
@@ -30,7 +30,7 @@ const KETERANGAN_ALASAN: Record<AlasanTolak, string> = {
   konten_melanggar: 'Kata kasar, foto tidak pantas, atau data pribadi orang lain. Isi dan foto disembunyikan dari publik. Wajib catatan. Masuk tingkat penolakan.',
 };
 
-const kelasIsian = 'w-full px-4 py-3 text-badan';
+const kelasIsian = 'w-full px-4 py-3 text-badan font-normal';
 
 export default function FormUbahStatus({ kode, status, aktif }: { kode: string; status: StatusLaporan; aktif: boolean }) {
   const router = useRouter();
@@ -47,9 +47,10 @@ export default function FormUbahStatus({ kode, status, aktif }: { kode: string; 
 
   if (pilihan.length === 0) {
     return (
-      <p className="kartu p-5 text-badan">
-        Status {LABEL_STATUS[status].toLowerCase()} bersifat final. Status ini tidak bisa diubah dari halaman ini. Hubungi Perencana
-        bila ada keputusan yang perlu ditinjau.
+      <p className="kartu flex gap-3 p-5 text-badan">
+        <Ikon nama="info" className="mt-0.5 size-5 shrink-0 text-biru" />
+        Status {LABEL_STATUS[status].toLowerCase()} bersifat final. Status ini tidak bisa diubah dari halaman ini. Hubungi
+        Perencana bila ada keputusan yang perlu ditinjau.
       </p>
     );
   }
@@ -60,6 +61,7 @@ export default function FormUbahStatus({ kode, status, aktif }: { kode: string; 
     baru === 'ditolak' && alasan === 'duplikat' && !normalisasiKode(rujukan) && 'Isi kode laporan rujukan yang sah.',
     catatanWajib && !catatan.trim() && 'Catatan wajib untuk alasan ini.',
     baru === 'selesai' && !bukti && 'Lampirkan foto bukti penyelesaian.',
+    baru === 'diverifikasi' && perkiraan && perkiraan < hariIni() && 'Perkiraan tanggal selesai tidak boleh sebelum hari ini.',
   ].filter(Boolean) as string[];
 
   async function pilihBukti(files: FileList | null) {
@@ -71,7 +73,7 @@ export default function FormUbahStatus({ kode, status, aktif }: { kode: string; 
       if (bukti) URL.revokeObjectURL(bukti.pratinjau);
       setBukti({ blob, pratinjau: URL.createObjectURL(blob) });
     } catch {
-      setGalat('Foto tidak bisa diproses. Pilih JPG, PNG, atau WebP maksimal 5 MB.');
+      setGalat('Foto tidak bisa diproses. Pilih JPG, PNG, atau WebP maksimal 20 MB.');
     }
   }
 
@@ -86,7 +88,8 @@ export default function FormUbahStatus({ kode, status, aktif }: { kode: string; 
         buktiUrl = bukti.url ?? (await unggahFoto('bukti', bukti.blob));
         setBukti({ ...bukti, url: buktiUrl });
       }
-      const { error } = await createClient().rpc('update_report_status', {
+      // Lewat Server Action supaya foto laporan yang ditolak karena konten melanggar ikut dikarantina di server.
+      const hasil = await ubahStatusLaporan({
         p_kode: kode,
         p_status: baru,
         p_catatan: catatan.trim() || null,
@@ -95,7 +98,11 @@ export default function FormUbahStatus({ kode, status, aktif }: { kode: string; 
         p_duplikat_kode: baru === 'ditolak' && alasan === 'duplikat' ? normalisasiKode(rujukan) : null,
         p_perkiraan: baru === 'diverifikasi' && perkiraan ? perkiraan : null,
       });
-      if (error) throw error;
+      if ('error' in hasil) {
+        // Status sudah berubah walaupun karantina foto gagal: muat ulang supaya halaman tidak menampilkan status lama.
+        if (hasil.error === 'KARANTINA_GAGAL') router.refresh();
+        throw new Error(hasil.error);
+      }
       setBerhasil(`Status ${kode} sekarang ${LABEL_STATUS[baru]}. Perubahan ini tampil di riwayat publik.`);
       umumkan(`Status ${kode} diubah menjadi ${LABEL_STATUS[baru]}.`);
       router.refresh();
@@ -108,26 +115,23 @@ export default function FormUbahStatus({ kode, status, aktif }: { kode: string; 
 
   if (berhasil) {
     return (
-      <p role="status" className="flex gap-2 rounded-(--radius-kartu) bg-st-selesai-bg p-5 text-badan text-st-selesai">
-        <Ikon nama="centang" className="mt-1 size-5" />
+      <p role="status" className="ganti flex gap-2 rounded-kartu bg-hijau-muda p-5 text-badan font-semibold text-hijau">
+        <Ikon nama="centang" className="pop mt-0.5 size-5 shrink-0" />
         {berhasil}
       </p>
     );
   }
 
   return (
-    <form onSubmit={simpan} className="kartu grid gap-6 p-5 sm:p-6">
+    <form onSubmit={simpan} className="kartu grid gap-6 p-5">
       <fieldset disabled={!aktif || memuat} className="grid gap-6 disabled:opacity-70">
         <div role="radiogroup" aria-labelledby={`label-status-${kode}`}>
-          <p id={`label-status-${kode}`} className="text-badan font-medium">
+          <p id={`label-status-${kode}`} className="text-badan font-bold">
             Ubah status menjadi
           </p>
           <div className="mt-3 flex flex-wrap gap-2">
             {pilihan.map((s) => (
-              <label
-                key={s}
-                className="flex min-h-11 cursor-pointer items-center gap-2 rounded-full bg-lapis px-4 font-medium transition-colors hover:bg-lapis-2 has-checked:bg-tinta has-checked:text-white has-focus-visible:outline-3 has-focus-visible:outline-tinta"
-              >
+              <label key={s} className="chip">
                 <input type="radio" name="status" checked={baru === s} onChange={() => setBaru(s)} className="sr-only" />
                 <IkonStatus status={s} />
                 {LABEL_STATUS[s]}
@@ -136,20 +140,24 @@ export default function FormUbahStatus({ kode, status, aktif }: { kode: string; 
           </div>
         </div>
 
+        {/* Isian tambahan per status muncul dengan gerak singkat (ganti) saat statusnya dipilih. */}
         {baru === 'ditolak' && (
-          <fieldset className="grid gap-2">
-            <legend className="text-badan font-medium">Alasan penolakan</legend>
+          <fieldset className="ganti grid gap-2">
+            <legend className="text-badan font-bold">Alasan penolakan</legend>
             {(Object.keys(LABEL_ALASAN) as AlasanTolak[]).map((a) => (
-              <label key={a} className="grid cursor-pointer gap-1 rounded-(--radius-kontrol) border border-batas p-4 transition-colors hover:bg-terang has-checked:border-tinta has-checked:bg-tinta-muda">
-                <span className="flex items-center gap-2 font-medium">
-                  <input type="radio" name="alasan" checked={alasan === a} onChange={() => setAlasan(a)} className="size-4 accent-tinta" />
+              <label
+                key={a}
+                className="grid cursor-pointer gap-1 rounded-kontrol border border-garis p-4 transition-colors hover:border-biru has-checked:border-biru has-checked:bg-biru-muda"
+              >
+                <span className="flex items-center gap-2 font-bold">
+                  <input type="radio" name="alasan" checked={alasan === a} onChange={() => setAlasan(a)} className="size-4" />
                   {LABEL_ALASAN[a]}
                 </span>
                 <span className="text-kecil text-lembut">{KETERANGAN_ALASAN[a]}</span>
               </label>
             ))}
             {alasan === 'duplikat' && (
-              <label className="mt-2 grid gap-1.5 text-kecil">
+              <label className="ganti mt-2 grid gap-1.5 text-kecil font-semibold">
                 Kode laporan rujukan
                 <input value={rujukan} onChange={(e) => setRujukan(e.target.value)} placeholder="SR-K7W3PA" className={`${kelasIsian} font-kode uppercase`} />
               </label>
@@ -158,22 +166,22 @@ export default function FormUbahStatus({ kode, status, aktif }: { kode: string; 
         )}
 
         {baru === 'diverifikasi' && (
-          <label className="grid gap-1.5 text-kecil">
+          <label className="ganti grid gap-1.5 text-kecil font-semibold">
             Perkiraan tanggal selesai (opsional, tampil publik; lewat dari tanggal ini muncul label &ldquo;Melewati janji&rdquo;)
-            <input type="date" value={perkiraan} onChange={(e) => setPerkiraan(e.target.value)} className={`${kelasIsian} sm:max-w-xs`} />
+            <input type="date" value={perkiraan} min={hariIni()} onChange={(e) => setPerkiraan(e.target.value)} className={`${kelasIsian} sm:max-w-xs`} />
           </label>
         )}
 
         {baru === 'selesai' && (
-          <div className="grid gap-2">
-            <p className="text-badan font-medium">Foto bukti penyelesaian (wajib)</p>
+          <div className="ganti grid gap-2">
+            <p className="text-badan font-bold">Foto bukti penyelesaian (wajib)</p>
             <p className="text-kecil text-lembut">Tampil berdampingan dengan foto dari pelapor, supaya warga bisa mengecek klaim selesai.</p>
             <div className="flex flex-wrap items-center gap-4">
               {bukti && (
                 /* eslint-disable-next-line @next/next/no-img-element -- pratinjau blob lokal */
-                <img src={bukti.pratinjau} alt="Pratinjau foto bukti" className="size-28 object-cover" />
+                <img src={bukti.pratinjau} alt="Pratinjau foto bukti" className="size-28 rounded-kontrol object-cover" />
               )}
-              <label className="flex min-h-11 cursor-pointer items-center gap-2 rounded-(--radius-kontrol) bg-lapis px-4 font-semibold hover:bg-lapis-2 has-focus-visible:outline-3 has-focus-visible:outline-tinta">
+              <label className="flex min-h-10 cursor-pointer items-center gap-2 rounded-kontrol border border-garis-isian px-4 font-semibold hover:border-biru hover:text-biru-tua has-focus-visible:outline-2 has-focus-visible:outline-biru">
                 <Ikon nama="unggah" className="size-4" />
                 {bukti ? 'Ganti foto' : 'Pilih foto'}
                 <input type="file" accept={TIPE_FOTO.join(',')} onChange={(e) => pilihBukti(e.target.files)} className="sr-only" />
@@ -182,7 +190,7 @@ export default function FormUbahStatus({ kode, status, aktif }: { kode: string; 
           </div>
         )}
 
-        <label className="grid gap-1.5 text-kecil">
+        <label className="grid gap-1.5 text-kecil font-semibold">
           Catatan untuk publik{catatanWajib ? ' (wajib)' : ' (opsional)'}
           <textarea value={catatan} onChange={(e) => setCatatan(e.target.value)} rows={3} maxLength={500} className={kelasIsian} />
         </label>
@@ -190,11 +198,12 @@ export default function FormUbahStatus({ kode, status, aktif }: { kode: string; 
 
       {(galat || masalah.length > 0) && (
         <div role={galat ? 'alert' : undefined} className="text-kecil">
-          {galat && <p className="font-semibold">{galat}</p>}
+          {galat && <p className="font-bold text-merah-tua">{galat}</p>}
           {!galat && <p className="text-lembut">{masalah.join(' ')}</p>}
         </div>
       )}
-      <Tombol type="submit" disabled={!aktif || memuat || !baru || masalah.length > 0} className="justify-self-start">
+      <Tombol type="submit" disabled={!aktif || memuat || !baru || masalah.length > 0} className="w-full">
+        {memuat && <Ikon nama="muat" className="putar size-4" />}
         {memuat ? 'Menyimpan…' : baru ? `Simpan sebagai ${LABEL_STATUS[baru]}` : 'Simpan'}
       </Tombol>
     </form>

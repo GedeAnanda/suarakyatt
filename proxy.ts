@@ -3,6 +3,7 @@
 
 import { NextResponse, type NextRequest } from 'next/server';
 import { updateSession } from '@/lib/supabase/proxy';
+import { tujuanAman } from '@/lib/tujuan-aman';
 
 const RUTE_PERLU_LOGIN = ['/lapor', '/admin'];
 
@@ -11,23 +12,24 @@ function cocokRute(pathname: string, rute: string): boolean {
   return pathname === rute || pathname.startsWith(`${rute}/`);
 }
 
-/** Redirect sambil membawa cookie sesi yang baru diperbarui (atau dihapus). */
-function alihkan(request: NextRequest, response: NextResponse, pathname: string, lanjut?: string) {
-  const url = request.nextUrl.clone();
-  url.pathname = pathname;
-  url.search = '';
-  if (lanjut) url.searchParams.set('lanjut', lanjut);
-  const redirect = NextResponse.redirect(url);
+/** Redirect ke path internal (boleh dengan query) sambil membawa cookie sesi yang baru diperbarui (atau dihapus). */
+function alihkan(request: NextRequest, response: NextResponse, tujuan: string) {
+  const redirect = NextResponse.redirect(new URL(tujuan, request.url));
   response.cookies.getAll().forEach((cookie) => redirect.cookies.set(cookie));
   return redirect;
 }
 
 export async function proxy(request: NextRequest) {
   const { response, claims, supabase } = await updateSession(request);
-  const { pathname } = request.nextUrl;
+  const { pathname, search } = request.nextUrl;
 
   if (!claims && RUTE_PERLU_LOGIN.some((rute) => cocokRute(pathname, rute))) {
-    return alihkan(request, response, '/masuk', pathname);
+    return alihkan(request, response, `/masuk?lanjut=${encodeURIComponent(pathname + search)}`);
+  }
+
+  // Sudah login tapi membuka /masuk (misalnya lewat redirect lama di cache router): langsung ke tujuannya.
+  if (claims && pathname === '/masuk') {
+    return alihkan(request, response, tujuanAman(request.nextUrl.searchParams.get('lanjut')));
   }
 
   // Non-admin yang membuka /admin/* diarahkan ke Beranda. is_admin() ada di 0002_views_rls.sql.

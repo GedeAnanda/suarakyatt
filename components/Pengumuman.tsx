@@ -40,20 +40,20 @@ export default function Pengumuman() {
     <div
       aria-live="polite"
       aria-atomic="false"
-      className="pointer-events-none fixed inset-x-0 bottom-[max(1rem,env(safe-area-inset-bottom))] z-2000 flex flex-col items-center gap-2 px-4 sm:right-6 sm:left-auto sm:items-end"
+      className="pointer-events-none fixed inset-x-0 bottom-[max(4.5rem,calc(env(safe-area-inset-bottom)+3.5rem))] z-2000 flex flex-col items-center gap-2 px-4 sm:bottom-8"
     >
       {daftar.map((d) => (
         <div
           key={d.id}
           role="status"
-          className="toast pointer-events-auto flex max-w-md items-center gap-3 bg-teks py-3 pr-2 pl-4 text-badan text-kertas shadow-[0_12px_32px_rgb(42_19_22/0.28)]"
+          className="toast pointer-events-auto flex max-w-md items-center gap-3 rounded-kartu bg-navy/95 py-2.5 pr-1.5 pl-4 text-kecil font-medium text-white shadow-angkat sm:text-badan"
         >
-          <Ikon nama="centang" className="size-5 text-[#9fd49a]" />
+          <Ikon nama="centang" className="size-5 text-[#7fe0a6]" />
           <span className="flex-1">{d.teks}</span>
           <button
             type="button"
             onClick={() => setDaftar((x) => x.filter((y) => y.id !== d.id))}
-            className="flex size-11 items-center justify-center hover:bg-white/10"
+            className="flex size-10 items-center justify-center rounded-kontrol hover:bg-white/10"
             aria-label="Tutup pemberitahuan"
           >
             <Ikon nama="tutup" className="size-4" />

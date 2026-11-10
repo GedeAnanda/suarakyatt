@@ -17,18 +17,21 @@ export default function BannerSimulasi({
   className?: string;
 }) {
   return (
-    <aside role="note" className={`flex gap-3 rounded-(--radius-kontrol) bg-tinta-muda/70 px-4 py-3 text-kecil text-teks ${className}`}>
-      <Ikon nama="info" className="mt-0.5 size-4 shrink-0" />
+    <aside
+      role="note"
+      className={`flex gap-3 rounded-kartu border border-[#ffd9a3] bg-oranye-muda px-4 py-3 text-kecil text-teks ${className}`}
+    >
+      <Ikon nama="info" className="mt-0.5 size-4.5 shrink-0 text-oranye" />
       <div>
         <p>
-          <strong className="font-semibold">{sumber === 'contoh' ? 'Data contoh.' : 'Data simulasi.'}</strong> Laporan,
+          <strong className="font-bold">{sumber === 'contoh' ? 'Data contoh.' : 'Data simulasi.'}</strong> Laporan,
           instansi, dan angka kinerja di halaman ini dibuat untuk lomba dan bukan data resmi pemerintah.
           {sumber === 'contoh' && ' Sementara ini halaman memakai data contoh bawaan aplikasi.'}{' '}
           <Link href="/sumber-data" className={kelasTautan}>
             Lihat sumber data
           </Link>
         </p>
-        {keterangan && <p className="mt-1 text-lembut">{keterangan}</p>}
+        {keterangan && <p className="mt-0.5 text-lembut">{keterangan}</p>}
       </div>
     </aside>
   );

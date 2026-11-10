@@ -1,6 +1,17 @@
 // lib/konten-rapor.tsx — definisi metrik Rapor Instansi (PRD 8, SDD 8.1), pemilik: A
 // Dipakai di tooltip /rapor dan di halaman /rapor/cara-menilai, supaya kalimatnya selalu sama.
 
+import type { RaporInstansi } from './types';
+
+const URUT_HURUF = { A: 0, B: 1, C: 2, D: 3, E: 4 } as const;
+
+/** Urutan tampil rapor (halaman Rapor dan tab Rapor di Beranda): huruf terbaik dulu, "Data belum cukup" terakhir. */
+export function urutkanRapor<T extends Pick<RaporInstansi, 'huruf' | 'nilai'>>(instansi: T[]): T[] {
+  return [...instansi].sort(
+    (a, b) => (a.huruf ? URUT_HURUF[a.huruf] : 9) - (b.huruf ? URUT_HURUF[b.huruf] : 9) || b.nilai - a.nilai,
+  );
+}
+
 export const KOMPONEN = ['R', 'S', 'P', 'K'] as const;
 export type Komponen = (typeof KOMPONEN)[number];
 
@@ -38,5 +49,5 @@ export const DEFINISI_RAPOR = {
   median:
     'Nilai tengah waktu dari laporan masuk sampai pertama kali direspons. Ditampilkan, tapi tidak masuk nilai: laporan yang diabaikan tidak punya waktu respons, jadi median bisa menyesatkan.',
   terlambat: 'Laporan yang masih aktif dan sudah melewati batas waktu respons atau selesai.',
-  huruf: 'A untuk nilai 85 ke atas, B 70–84, C 55–69, D 40–54, dan E di bawah 40.',
+  huruf: 'A untuk nilai 85 ke atas, B 70 sampai 84, C 55 sampai 69, D 40 sampai 54, dan E di bawah 40.',
 };

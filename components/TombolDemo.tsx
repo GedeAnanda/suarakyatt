@@ -2,8 +2,9 @@
 
 'use client';
 
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { tujuanAman } from '@/lib/tujuan-aman';
+import Ikon from './ui/Ikon';
 import { Tombol, type VarianTombol } from './ui/Tombol';
 
 type Peran = 'warga' | 'admin';
@@ -12,6 +13,17 @@ const PESAN: Record<string, string> = {
   DEMO_BELUM_DIATUR: 'Akun demo belum diatur di server. Hubungi tim.',
   LOGIN_DEMO_GAGAL: 'Akun demo sedang tidak bisa dipakai. Coba lagi sebentar lagi.',
 };
+
+/**
+ * Datang dari /masuk?lanjut=... (misalnya "Masuk untuk mendukung" di halaman laporan): kembali ke halaman itu,
+ * bukan ke tujuan bawaan peran (/lapor atau /admin/laporan). Rute admin hanya untuk admin demo.
+ */
+function tujuanSetelahDemo(peran: Peran, bawaan: string): string {
+  const lanjut = tujuanAman(new URLSearchParams(window.location.search).get('lanjut'), '');
+  if (!lanjut || lanjut === '/') return bawaan;
+  const keAdmin = lanjut === '/admin' || lanjut.startsWith('/admin/');
+  return keAdmin === (peran === 'admin') ? lanjut : bawaan;
+}
 
 export default function TombolDemo({
   varianWarga = 'utama',
@@ -22,7 +34,6 @@ export default function TombolDemo({
   varianAdmin?: VarianTombol;
   className?: string;
 }) {
-  const router = useRouter();
   const [memuat, setMemuat] = useState<Peran | null>(null);
   const [galat, setGalat] = useState<string | null>(null);
 
@@ -37,8 +48,9 @@ export default function TombolDemo({
       });
       const hasil = (await res.json().catch(() => ({}))) as { redirect?: string; error?: string };
       if (!res.ok || !hasil.redirect) throw new Error(hasil.error ?? 'LOGIN_DEMO_GAGAL');
-      router.push(hasil.redirect);
-      router.refresh();
+      // Navigasi penuh, bukan router.push: selagi masih tamu, tautan /lapor sudah di-prefetch dan hasilnya (redirect
+      // ke /masuk) tersimpan di cache router. Cookie sesi ditulis route handler, jadi cache itu tidak ikut dibersihkan.
+      window.location.assign(tujuanSetelahDemo(peran, hasil.redirect));
     } catch (err) {
       setGalat(PESAN[err instanceof Error ? err.message : ''] ?? PESAN.LOGIN_DEMO_GAGAL);
       setMemuat(null);
@@ -49,9 +61,11 @@ export default function TombolDemo({
     <div className={className}>
       <div className="flex flex-wrap gap-3">
         <Tombol varian={varianWarga} onClick={() => masuk('warga')} disabled={memuat !== null}>
+          {memuat === 'warga' && <Ikon nama="muat" className="putar size-4" />}
           {memuat === 'warga' ? 'Masuk sebagai warga…' : 'Coba sebagai warga demo'}
         </Tombol>
         <Tombol varian={varianAdmin} onClick={() => masuk('admin')} disabled={memuat !== null}>
+          {memuat === 'admin' && <Ikon nama="muat" className="putar size-4" />}
           {memuat === 'admin' ? 'Masuk sebagai admin…' : 'Coba sebagai admin demo'}
         </Tombol>
       </div>

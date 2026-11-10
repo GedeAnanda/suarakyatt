@@ -247,6 +247,106 @@ for (let n = 0; n < JUMLAH; n++) {
   timeline.push(...tl);
 }
 
+// --- Skenario penolakan dan kendala (revisi FDS 10 Nov, docs/revisi-fds-2026-11-10.md 3.1) ---------
+// PRNG terpisah supaya laporan di atas (kode, status, waktu) tidak berubah dari versi sebelumnya.
+// Bentuk timeline mengikuti v_timeline_publik migrasi 0010: alasan_tunda dan duplikat_dari_kode.
+
+const acak2 = prng(1110);
+const pilih2 = (xs) => xs[Math.floor(acak2() * xs.length)];
+const tanggalWib = (ms) => new Date(ms + 7 * JAM).toISOString().slice(0, 10);
+
+const CATATAN_TIDAK_VALID = [
+  'Titik lokasi tidak sesuai dengan foto setelah dicek petugas.',
+  'Foto tidak menunjukkan masalah yang dilaporkan.',
+  'Saat dicek di lapangan, kondisi sudah normal.',
+  'Petugas tidak menemukan masalah di titik yang dilaporkan.',
+];
+const CATATAN_MELANGGAR = [
+  'Deskripsi memuat kata-kata kasar terhadap pihak tertentu.',
+  'Foto memuat wajah orang yang dapat dikenali tanpa disensor.',
+];
+// Sama dengan isi_kendala_simulasi() di migrasi 0010.
+const KENDALA = {
+  1: [
+    ['menunggu_material', 'Aspal hotmix belum tersedia di gudang suku dinas; penambalan menunggu kiriman.'],
+    ['antre_jadwal', 'Masuk antrean tim tambal keliling; perbaikan di jalan arteri didahulukan.'],
+    ['cuaca', 'Penambalan ditunda karena hujan; aspal tidak merekat di permukaan basah.'],
+    ['menunggu_anggaran', 'Kerusakan lebih luas dari tambal sulam; perlu pengaspalan ulang lewat anggaran perubahan.'],
+  ],
+  2: [
+    ['cuaca', 'Debit air masih tinggi sejak hujan; pengerukan menunggu air surut.'],
+    ['koordinasi_instansi', 'Saluran ada di bawah trotoar milik dinas jalan; pembongkaran perlu izin bersama.'],
+    ['antre_jadwal', 'Alat pengeruk sedang dipakai di saluran penghubung; lokasi ini dijadwalkan berikutnya.'],
+    ['menunggu_material', 'Tutup saluran beton perlu dipesan ulang sesuai ukuran.'],
+  ],
+  3: [
+    ['antre_jadwal', 'Truk pengangkut penuh di rute ini; pengangkutan masuk jadwal rit berikutnya.'],
+    ['koordinasi_instansi', 'Lahan milik pihak swasta; pengangkutan menunggu koordinasi dengan pengelola lahan.'],
+    ['lainnya', 'Warga masih membuang sampah di titik yang sama; petugas memasang papan larangan lebih dulu.'],
+    ['antre_jadwal', 'Petugas kebersihan kecamatan sedang dikerahkan ke lokasi banjir.'],
+  ],
+  4: [
+    ['koordinasi_instansi', 'Gangguan ada di jaringan listrik PLN, bukan di lampunya; menunggu perbaikan dari PLN.'],
+    ['menunggu_material', 'Lampu LED pengganti sedang dipesan; stok gudang habis.'],
+    ['antre_jadwal', 'Mobil tangga sedang dipakai di wilayah lain; perbaikan dijadwalkan pekan ini.'],
+    ['menunggu_anggaran', 'Tiang perlu diganti, bukan hanya lampunya; pengadaan tiang masuk anggaran berikutnya.'],
+  ],
+};
+
+const perKode = new Map(laporan.map((l) => [l.kode, []]));
+for (const t of timeline) perKode.get(t.kode).push({ ...t, alasan_tunda: null, duplikat_dari_kode: null });
+const jarak2 = (a, b) => (a.lat - b.lat) ** 2 + ((a.lng - b.lng) * Math.cos((a.lat * Math.PI) / 180)) ** 2;
+
+for (const l of laporan) {
+  const tl = perKode.get(l.kode);
+  const tolak = tl.find((t) => t.status_baru === 'ditolak');
+  if (tolak?.alasan_tolak === 'tidak_valid') {
+    // ±1 dari 6 penolakan "tidak valid" sebenarnya pelanggaran konten: deskripsi dan foto disembunyikan di publik.
+    if (acak2() < 0.17) {
+      tolak.alasan_tolak = 'konten_melanggar';
+      tolak.catatan = pilih2(CATATAN_MELANGGAR);
+      l.alasan_tolak = 'konten_melanggar';
+      l.deskripsi = null;
+      l.foto = [];
+    } else {
+      tolak.catatan = pilih2(CATATAN_TIDAK_VALID);
+    }
+  } else if (tolak?.alasan_tolak === 'duplikat') {
+    // Laporan asli: kategori sama, dibuat lebih dulu, tidak ditolak, paling dekat.
+    const asli = laporan
+      .filter((x) => x.category_id === l.category_id && x.status !== 'ditolak' && x.created_at < l.created_at)
+      .sort((a, b) => jarak2(a, l) - jarak2(b, l))[0];
+    if (asli) {
+      tolak.duplikat_dari_kode = asli.kode;
+      tolak.catatan = `Sudah dilaporkan sebelumnya (${asli.kode}).`;
+    } else {
+      tolak.alasan_tolak = 'tidak_valid';
+      tolak.catatan = pilih2(CATATAN_TIDAK_VALID);
+      l.alasan_tolak = 'tidak_valid';
+    }
+  }
+
+  // Kendala: semua laporan aktif terverifikasi yang lewat batas selesai, ditambah ±1/4 yang belum lewat.
+  if (l.status === 'diverifikasi' || l.status === 'diproses') {
+    const lewat = Date.parse(l.batas_selesai) < JANGKAR;
+    if (lewat || acak2() < 0.25) {
+      const terakhir = Date.parse(tl.at(-1).created_at);
+      const [alasan, catatan] = pilih2(KENDALA[l.category_id]);
+      tl.push({
+        kode: l.kode, status_baru: l.status, alasan_tolak: null, catatan, bukti_url: null, pelaku: `Admin · ${l.instansi}`,
+        created_at: iso(terakhir + (JANGKAR - terakhir) * antara2(0.3, 0.7)), alasan_tunda: alasan, duplikat_dari_kode: null,
+      });
+      const hari = alasan === 'menunggu_anggaran' ? 30 + Math.floor(acak2() * 30) : 2 + Math.floor(acak2() * 10);
+      l.perkiraan_selesai = tanggalWib(JANGKAR + hari * 24 * JAM);
+    }
+  }
+}
+function antara2(a, b) {
+  return a + acak2() * (b - a);
+}
+timeline.length = 0;
+for (const l of laporan) timeline.push(...perKode.get(l.kode));
+
 // --- Faktor prioritas (bentuk PriorityFactorsResponse) ---------------------
 
 const AKTIF = new Set(['menunggu', 'diverifikasi', 'diproses']);
@@ -292,7 +392,10 @@ writeFileSync(
 );
 
 const hitung = (s) => laporan.filter((l) => l.status === s).length;
+const hitungAlasan = (a) => laporan.filter((l) => l.alasan_tolak === a).length;
 console.log(
   `${laporan.length} laporan (${['menunggu', 'diverifikasi', 'diproses', 'selesai', 'ditolak'].map((s) => `${s} ${hitung(s)}`).join(', ')}), ` +
-    `${timeline.length} baris timeline, ${faktor.length} isu wilayah.`,
+    `${timeline.length} baris timeline, ${faktor.length} isu wilayah. ` +
+    `Ditolak: ${['tidak_valid', 'duplikat', 'konten_melanggar'].map((a) => `${a} ${hitungAlasan(a)}`).join(', ')}. ` +
+    `Kendala: ${timeline.filter((t) => t.alasan_tunda).length}.`,
 );
