@@ -8,7 +8,7 @@ import { connection } from 'next/server';
 import contohPrioritas from '@/lib/mocks/contoh-prioritas.json';
 import contohRapor from '@/lib/mocks/rapor.json';
 import { BOBOT_AWAL, FAKTOR } from '@/lib/scoring';
-import { createClient } from '@/lib/supabase/server';
+import { createClient } from './klien';
 import type { Bobot, PriorityFactorsResponse, RaporResponse } from '@/lib/types';
 import type { Sumber } from './laporan';
 

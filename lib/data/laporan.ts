@@ -6,8 +6,9 @@
 import 'server-only';
 import { connection } from 'next/server';
 import { cache } from 'react';
+import { KATEGORI } from '@/lib/konten';
 import contoh from '@/lib/mocks/contoh-laporan.json';
-import { createClient } from '@/lib/supabase/server';
+import { createClient } from './klien';
 import type { LaporanPublik, StatusLaporan, TimelineItem } from '@/lib/types';
 
 export type Sumber = 'db' | 'contoh';
@@ -46,6 +47,8 @@ const dataContoh = cache(async () => {
     resolved_at: geser(l.resolved_at, ms),
     batas_respons: geser(l.batas_respons, ms)!,
     batas_selesai: geser(l.batas_selesai, ms)!,
+    // Tanggal (YYYY-MM-DD) dari kendala di data contoh, ikut digeser.
+    perkiraan_selesai: l.perkiraan_selesai && geser(l.perkiraan_selesai, ms)!.slice(0, 10),
   }));
   const timeline = (contoh.timeline as TimelineItem[]).map((t) => ({ ...t, created_at: geser(t.created_at, ms)! }));
   return { laporan, timeline, sekarang: Date.now() };
@@ -81,13 +84,66 @@ export const ambilTitikLaporan = cache(async (): Promise<{ sumber: Sumber; lapor
   };
 });
 
-/** Pilih contoh dari sumber yang sedang tampil; tidak ada kode laporan fiktif di antarmuka. */
-export const ambilContohLaporan = cache(async () => {
-  const { laporan } = await ambilTitikLaporan();
-  const pilihan = laporan.find((l) => l.kategori === 'Jalan rusak' && l.status === 'diverifikasi')
-    ?? laporan.find((l) => l.status === 'diproses')
-    ?? laporan.find((l) => AKTIF.includes(l.status))
-    ?? laporan[0];
+/** Skenario untuk /contoh?jenis=… (revisi FDS 10 Nov, 1.6 dan matriks skenario 3.2). */
+export const JENIS_CONTOH = ['terlambat', 'ditolak', 'duplikat', 'melanggar', 'selesai'] as const;
+export type JenisContoh = (typeof JENIS_CONTOH)[number];
+
+/** Kode laporan dengan kendala (alasan tunda) yang statusnya belum berubah sejak kendala itu dicatat. */
+async function kodeBerkendala(sumber: Sumber): Promise<Set<string>> {
+  let baris: Pick<TimelineItem, 'kode' | 'status_baru' | 'alasan_tunda'>[] = [];
+  if (sumber === 'db') {
+    try {
+      const supabase = await createClient();
+      const { data } = await supabase.from('v_timeline_publik').select('kode,status_baru,alasan_tunda').not('alasan_tunda', 'is', null).limit(1000);
+      baris = (data ?? []) as typeof baris;
+    } catch {
+      baris = [];
+    }
+  } else {
+    baris = (await dataContoh()).timeline.filter((t) => t.alasan_tunda);
+  }
+  return new Set(baris.map((b) => `${b.kode}|${b.status_baru}`));
+}
+
+/** Alasan penolakan per kode untuk laporan ditolak (v_laporan_publik punya kolom alasan_tolak). */
+async function alasanTolak(sumber: Sumber): Promise<Map<string, string | null>> {
+  if (sumber === 'db') {
+    try {
+      const supabase = await createClient();
+      const { data } = await supabase.from('v_laporan_publik').select('kode,alasan_tolak').eq('status', 'ditolak').limit(1000);
+      return new Map((data ?? []).map((d) => [d.kode as string, d.alasan_tolak as string | null]));
+    } catch {
+      return new Map();
+    }
+  }
+  return new Map((await dataContoh()).laporan.filter((l) => l.status === 'ditolak').map((l) => [l.kode, l.alasan_tolak]));
+}
+
+/**
+ * Pilih contoh dari sumber yang sedang tampil; tidak ada kode laporan fiktif di antarmuka.
+ * Tanpa jenis: laporan Jalan rusak yang sudah diverifikasi (alur presentasi). Pilihan diurutkan menurut kode supaya
+ * tautan yang sama membuka laporan yang sama setiap kali (data demo dipulihkan tiap malam dengan kode yang sama).
+ */
+export const ambilContohLaporan = cache(async (jenis?: JenisContoh) => {
+  const { laporan, sumber, sekarang } = await ambilTitikLaporan();
+  const urut = [...laporan].sort((a, b) => a.kode.localeCompare(b.kode));
+  let pilihan: TitikLaporan | undefined;
+  if (jenis === 'terlambat') {
+    const berkendala = await kodeBerkendala(sumber);
+    pilihan = urut.find((l) => terlambat(l, sekarang) && berkendala.has(`${l.kode}|${l.status}`))
+      ?? urut.find((l) => terlambat(l, sekarang));
+  } else if (jenis === 'ditolak' || jenis === 'duplikat' || jenis === 'melanggar') {
+    const alasan = await alasanTolak(sumber);
+    const dicari = { ditolak: 'tidak_valid', duplikat: 'duplikat', melanggar: 'konten_melanggar' }[jenis];
+    pilihan = urut.find((l) => l.status === 'ditolak' && alasan.get(l.kode) === dicari);
+  } else if (jenis === 'selesai') {
+    pilihan = urut.find((l) => l.status === 'selesai');
+  } else {
+    pilihan = laporan.find((l) => l.kategori === 'Jalan rusak' && l.status === 'diverifikasi')
+      ?? laporan.find((l) => l.status === 'diproses')
+      ?? laporan.find((l) => AKTIF.includes(l.status))
+      ?? laporan[0];
+  }
   return pilihan ? ambilDetailLaporan(pilihan.kode) : null;
 });
 
@@ -124,6 +180,8 @@ export interface HubunganLaporan {
   login: boolean;
   pemilik: boolean;
   sudahRating: boolean;
+  /** Pengguna ini sudah mendukung laporan (RPC sudah_dukung, migrasi 0009). */
+  sudahDukung: boolean;
 }
 
 export async function ambilHubungan(kode: string): Promise<HubunganLaporan> {
@@ -132,14 +190,55 @@ export async function ambilHubungan(kode: string): Promise<HubunganLaporan> {
     const supabase = await createClient();
     const { data: klaim } = await supabase.auth.getClaims();
     const uid = klaim?.claims.sub;
-    if (!uid) return { login: false, pemilik: false, sudahRating: false };
+    if (!uid) return { login: false, pemilik: false, sudahRating: false, sudahDukung: false };
     // RLS "pelapor baca miliknya": baris hanya kembali jika laporan ini milik pengguna.
     const { data: milik } = await supabase.from('reports').select('id').eq('kode', kode).eq('user_id', uid).maybeSingle();
-    if (!milik) return { login: true, pemilik: false, sudahRating: false };
+    if (!milik) {
+      const { data: dukung } = await supabase.rpc('sudah_dukung', { p_kode: kode });
+      return { login: true, pemilik: false, sudahRating: false, sudahDukung: dukung === true };
+    }
     const { count } = await supabase.from('ratings').select('report_id', { count: 'exact', head: true }).eq('report_id', milik.id);
-    return { login: true, pemilik: true, sudahRating: (count ?? 0) > 0 };
+    return { login: true, pemilik: true, sudahRating: (count ?? 0) > 0, sudahDukung: false };
   } catch {
-    return { login: false, pemilik: false, sudahRating: false };
+    return { login: false, pemilik: false, sudahRating: false, sudahDukung: false };
+  }
+}
+
+/** Laporan milik pengguna yang login, untuk "Laporan saya" di /lacak. */
+export interface LaporanSaya {
+  kode: string;
+  status: StatusLaporan;
+  kategori: string;
+  kecamatan: string | null;
+  created_at: string;
+}
+
+/** null = tamu (atau database tidak terjangkau). Termasuk laporan yang dibatalkan, yang tidak tampil publik. */
+export async function ambilLaporanSaya(): Promise<LaporanSaya[] | null> {
+  await connection();
+  try {
+    const supabase = await createClient();
+    const { data: klaim } = await supabase.auth.getClaims();
+    const uid = klaim?.claims.sub;
+    if (!uid) return null;
+    // RLS "pelapor baca miliknya". Filter user_id tetap perlu: admin juga boleh membaca laporan instansinya.
+    const { data, error } = await supabase
+      .from('reports')
+      .select('kode,status,category_id,created_at,regions(nama)')
+      .eq('user_id', uid)
+      .order('created_at', { ascending: false })
+      .limit(50);
+    if (error) return null;
+    return (data ?? []).map((r) => ({
+      kode: r.kode,
+      status: r.status,
+      kategori: KATEGORI.find((k) => k.id === r.category_id)?.nama ?? 'Laporan',
+      // Relasi banyak-ke-satu datang sebagai objek, tapi tipe supabase-js tanpa skema menganggapnya array.
+      kecamatan: ([r.regions].flat()[0] as { nama: string } | null | undefined)?.nama ?? null,
+      created_at: r.created_at,
+    }));
+  } catch {
+    return null;
   }
 }
 

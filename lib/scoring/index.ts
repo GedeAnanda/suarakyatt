@@ -6,7 +6,7 @@ import type { Bobot, Faktor, FaktorIsu, KenapaBelum, SkorIsu, StatusLaporan } fr
 
 export const FAKTOR: Faktor[] = ['urgensi', 'volume', 'dukungan', 'umur', 'kerentanan', 'kepadatan'];
 
-/** Faktor yang diubah ke skala 0–1 dengan min-max antar isu yang sedang dinilai. */
+/** Faktor yang diubah ke skala 0 sampai 1 dengan min-max antar isu yang sedang dinilai. */
 const FAKTOR_MINMAX: Faktor[] = ['volume', 'dukungan', 'kerentanan', 'kepadatan'];
 
 export const BOBOT_AWAL: Bobot = {

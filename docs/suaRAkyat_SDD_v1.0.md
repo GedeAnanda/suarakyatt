@@ -1,6 +1,6 @@
 # suaRAkyat — Software Design Document (SDD) v1.0
 
-> Versi Markdown dari `suaRAkyat_SDD_v1.0.pdf` (25 Okt 2026, @nand). Isi sama dengan PDF; tabel dan kode disusun ulang agar mudah dibaca. Diagram arsitektur dan relasi hanya ada di PDF — halamannya disebut di tempatnya. Ini rancangan awal; kode nyata bisa sudah bergeser (misalnya migrasi sekarang sampai `0007`), jadi cek repo kalau ada beda.
+> Versi Markdown dari `suaRAkyat_SDD_v1.0.pdf` (25 Okt 2026, @nand). Isi sama dengan PDF; tabel dan kode disusun ulang agar mudah dibaca. Diagram arsitektur dan relasi hanya ada di PDF — halamannya disebut di tempatnya. Ini rancangan awal; kode nyata bisa sudah bergeser (migrasi sekarang sampai `0010`), jadi cek repo kalau ada beda. Tambahan revisi FDS 10 Nov (alasan tunda, `catat_kendala`, halaman kecamatan) ditandai **[0010]** dan dijelaskan lengkap di [revisi-fds-2026-11-10.md](revisi-fds-2026-11-10.md).
 
 ## Ringkasan cepat
 
@@ -110,7 +110,7 @@ suarakyat/
 |---|---|
 | Branch | `main` = produksi. Fitur di `feat/<peran>-<fitur>`, misalnya `feat/c-rapor`. Perbaikan di `fix/<topik>`. |
 | Pull request | Setiap PR dicek minimal satu anggota lain. Vercel otomatis membuat preview per PR. |
-| Commit | Format `feat:`, `fix:`, `docs:`, `data:` + kalimat singkat bahasa Indonesia. |
+| Commit | Format `feat:`, `fix:`, `docs:`, `data:` + kalimat singkat bahasa Indonesia. Tanpa trailer `Co-Authored-By` AI; `.claude/settings.json` mematikannya untuk Claude Code. |
 | Migrasi | File SQL baru selalu ditambahkan dengan nomor berikutnya; file yang sudah di-merge tidak diedit. |
 | Penamaan | Tabel dan kolom `snake_case` bahasa Indonesia sesuai PRD; komponen React `PascalCase`; fungsi TypeScript `camelCase`. |
 | Kontrak | Perubahan `lib/types.ts` atau bentuk output RPC wajib diumumkan di grup dan disetujui pemilik kedua sisi. |
@@ -142,6 +142,8 @@ create type peran           as enum ('warga','admin');
 create type tingkat_urgensi as enum ('tinggi','sedang','rendah');
 create type status_laporan  as enum ('menunggu','diverifikasi','diproses','selesai','ditolak','dibatalkan');
 create type alasan_tolak    as enum ('duplikat','tidak_valid','konten_melanggar');
+-- [0010] kenapa laporan aktif belum selesai; dicatat sebagai baris report_updates TANPA perubahan status
+create type alasan_tunda    as enum ('antre_jadwal','menunggu_anggaran','menunggu_material','koordinasi_instansi','cuaca','lainnya');
 
 create table app_config (            -- angka yang bisa disetel tanpa deploy
   kunci text primary key,
@@ -313,7 +315,7 @@ Publik tidak pernah membaca tabel `reports` langsung, karena tabel itu berisi `u
 | View | Isi | Aturan penting |
 |---|---|---|
 | `v_laporan_publik` | kode, kategori, instansi, kecamatan, kota, status, lat, lng, deskripsi, foto, foto_bukti, alasan_tolak, inisial_pelapor, jumlah_upvote, created_at, responded_at, resolved_at, perkiraan_selesai, batas_respons, batas_selesai, is_simulated | Deskripsi dan foto dikosongkan jika alasan tolak `konten_melanggar`; status `dibatalkan` tidak muncul; foto_bukti hanya jika status `selesai` |
-| `v_timeline_publik` | kode, status_baru, alasan_tolak, catatan, bukti_url, pelaku ("Pelapor" atau "Admin · nama instansi"), created_at | Tidak mengekspos `admin_id` |
+| `v_timeline_publik` | kode, status_baru, alasan_tolak, catatan, bukti_url, pelaku ("Pelapor" atau "Admin · nama instansi"), created_at, **[0010]** alasan_tunda, duplikat_dari_kode | Tidak mengekspos `admin_id`. `duplikat_dari_kode` null jika laporan asli dibatalkan |
 | `v_riwayat_bobot` | created_at, bobot_lama, bobot_baru, alasan, pelaku ("Perencana · Bappeda Kota (simulasi)") | Tidak mengekspos `admin_id` |
 | `v_laporan_admin` | Semua kolom `reports` + kategori, kecamatan, batas_respons, batas_selesai, terlambat | `security_invoker = true`, jadi RLS tabel `reports` tetap berlaku |
 
@@ -408,6 +410,7 @@ Ada 22 operasi MVP dalam lima jenis: query langsung ke view/tabel, RPC, file sta
 | R9 | `priority_factors` | RPC | Prioritas, "Kenapa belum?" | Publik | C |
 | R10 | `save_weights` | RPC | Prioritas (mode edit) | Perencana | B |
 | R11 | `reset_demo_data` | RPC | Dipanggil A2 | service_role | B |
+| R12 | `catat_kendala` **[0010]** | RPC | Admin (FormKendala) | Admin instansi | B |
 | A1 | `POST /api/demo-login` | API route | Beranda | Publik | B |
 | A2 | `GET /api/cron/reset-demo` | API route + Vercel Cron | Sistem | `CRON_SECRET` | B |
 | L1 | Skor, simulator, "Kenapa belum?" | Fungsi `lib/scoring` di browser | Prioritas, Detail | — | C |
@@ -437,7 +440,10 @@ RPC menolak permintaan dengan `raise exception '<KODE>' using errcode = 'P0001';
 | `SUDAH_DIRATING` | Laporan ini sudah diberi rating. | R7 |
 | `BOBOT_TIDAK_VALID` | Bobot harus 0–1 dan tidak boleh semuanya nol. | R10 |
 | `ALASAN_TERLALU_PENDEK` | Alasan minimal 10 karakter. | R10 |
-| `DEMO_TERBATAS` | Akun demo hanya bisa mengubah laporan simulasi. | R6 |
+| `DEMO_TERBATAS` | Akun demo hanya bisa mengubah laporan simulasi. | R6, R12 |
+| `KENDALA_TIDAK_BERLAKU` | Kendala hanya bisa dicatat untuk laporan yang sudah diverifikasi atau sedang diproses. | R12 |
+| `ALASAN_TUNDA_WAJIB` | Pilih alasan tunda. Untuk "Alasan lain", isi juga catatannya. | R12 |
+| `TANGGAL_LEWAT` | Perkiraan tanggal selesai tidak boleh sebelum hari ini. | R12 |
 
 ### 6.3 Detail RPC laporan (B)
 
@@ -533,7 +539,17 @@ Hanya Perencana. `p_bobot` wajib berisi tepat enam kunci faktor, setiap nilai �
 
 #### R11 · `reset_demo_data() returns jsonb`
 
-Hanya service role. Menghapus semua laporan, timeline, upvote, rating, dan keberatan yang dibuat atau diubah akun demo, lalu menyalin ulang schema `seed` dengan waktu digeser (bagian 4.4). Laporan dari akun warga sungguhan tidak disentuh.
+Hanya service role. Menghapus semua laporan, timeline, upvote, rating, dan keberatan yang dibuat atau diubah akun demo, lalu menyalin ulang schema `seed` dengan waktu digeser (bagian 4.4). Laporan dari akun warga sungguhan tidak disentuh. **[0010]** Ikut menyalin `alasan_tunda`.
+
+#### R12 · `catat_kendala(p_kode text, p_alasan alasan_tunda, p_catatan text default null, p_perkiraan date default null) returns jsonb` [0010]
+
+Admin instansi pemilik kategori (aturan akun demo sama dengan R6). Hanya untuk laporan berstatus `diverifikasi` atau `diproses`. Menambah satu baris `report_updates` dengan `status_baru` = status sekarang dan `alasan_tunda` terisi, jadi **status tidak berubah**. `lainnya` wajib catatan; catatan maksimal 300 karakter; `p_perkiraan` (opsional, tidak boleh sebelum hari ini WIB) mengganti `perkiraan_selesai`. Constraint tabel: `alasan_tunda` hanya pada status diverifikasi/diproses, dan `lainnya` wajib catatan.
+
+```json
+{ "kode": "SR-K7W3PA", "status": "diproses", "alasan_tunda": "menunggu_material", "perkiraan_selesai": "2026-11-15" }
+```
+
+Fungsi pendamping `isi_kendala_simulasi()` (service role) mengisi kendala deterministik untuk laporan simulasi aktif di `seed.*` dan data tampil; dipanggil migrasi 0010 dan `scripts/05c_muat_seed.py`.
 
 ### 6.4 Detail RPC rapor dan prioritas (C)
 
@@ -771,7 +787,9 @@ Setiap halaman dipetakan ke komponen dan operasi di bagian 6, supaya A tahu pers
 |---|---|---|---|
 | Beranda | `/` | Hero, StatistikRingkas, PreviewPeta, TombolDemo, BannerSimulasi | R1, Q1, A1 |
 | Peta Laporan | `/peta` | PetaLaporan (cluster), FilterKategoriStatus, KartuLaporan | Q1, Q4, F1 |
-| Detail & Lacak | `/laporan/[kode]` | GaleriSebelumSesudah, Timeline, IndikatorSLA, TombolUpvote, PanelKenapaBelum, FormRating, TombolBatalkan | Q2, R4, R5, R7, R9, L1 |
+| Detail & Lacak | `/laporan/[kode]` | GaleriSebelumSesudah, Timeline, IndikatorSLA, TombolUpvote, PanelKenapaBelum, FormRating, TombolBatalkan, **[0010]** RingkasanStatus (kendala, alasan tolak, tautan duplikat) dan baris lompat di HP | Q2, R4, R5, R7, R9, L1 |
+| Contoh skenario **[0010]** | `/contoh?jenis=terlambat\|ditolak\|duplikat\|melanggar\|selesai` | Redirect ke laporan contoh tiap skenario | Q1, Q2 |
+| Skor kecamatan **[0010]** | `/kecamatan`, `/kecamatan/[kode]` | PetaPilihKecamatan, daftar 42 kecamatan, GrafikPosisi, FaktorAwam (nama faktor awam) | R9, Q1, L1 (`lib/scoring/kecamatan.ts`) |
 | Buat Laporan | `/lapor` | BannerBukanKanalResmi, PetaPin, UnggahFoto, DaftarLaporanSerupa | Q4, S1, R2, R3 |
 | Masuk / Daftar | `/masuk` | FormMasuk, FormDaftar, InfoVerifikasiEmail | Supabase Auth |
 | Rapor Instansi | `/rapor` | KartuRapor, BadgePeringatanPenolakan, TabelPerKategori | R8 |
@@ -779,7 +797,7 @@ Setiap halaman dipetakan ke komponen dan operasi di bagian 6, supaya A tahu pers
 | Prioritas | `/prioritas` | PetaChoropleth, DaftarPeringkat, BarKontribusi, PanelSimulator, RiwayatBobot, FormSimpanBobot (Perencana) | R9, Q5, Q6, F1, R10, L1 |
 | Sumber Data | `/sumber-data` | Daftar dataset, lisensi, skenario simulasi | — |
 | Laporan Instansi | `/admin/laporan` | TabelLaporanAdmin | Q3 |
-| Detail dan Ubah Status | `/admin/laporan/[kode]` | FormUbahStatus (status sesuai transisi, alasan tolak, catatan, rujukan duplikat, unggah bukti) | Q2, S1, R6 |
+| Detail dan Ubah Status | `/admin/laporan/[kode]` | FormUbahStatus (status sesuai transisi, alasan tolak, catatan, rujukan duplikat, unggah bukti), **[0010]** FormKendala | Q2, S1, R6, R12 |
 
 ### 9.1 Aturan tampilan
 

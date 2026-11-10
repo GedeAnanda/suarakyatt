@@ -7,29 +7,37 @@
 import dynamic from 'next/dynamic';
 import { useMemo, useState } from 'react';
 import type { TitikLaporan } from '@/lib/data/laporan';
-import { KATEGORI } from '@/lib/konten';
+import { KATEGORI, STATUS_PUBLIK } from '@/lib/konten';
 import type { StatusLaporan } from '@/lib/types';
-import { IkonStatus, LABEL_STATUS, WARNA_TITIK } from '../BadgeStatus';
+import { LABEL_STATUS, TitikStatus, WARNA_TITIK } from '../BadgeStatus';
 import KartuLaporan from '../KartuLaporan';
 import AngkaGulir from '../ui/AngkaGulir';
+import Ikon from '../ui/Ikon';
 import { Tombol } from '../ui/Tombol';
 
 const KlasterLaporan = dynamic(() => import('./KlasterLaporan'), {
   ssr: false,
-  loading: () => <div className="kerangka h-[min(72svh,44rem)] min-h-96 w-full" />,
+  loading: () => <div className="kerangka h-[min(70svh,42rem)] min-h-96 w-full rounded-none" />,
 });
 
-export const STATUS_PUBLIK: StatusLaporan[] = ['menunggu', 'diverifikasi', 'diproses', 'selesai', 'ditolak'];
 const PER_HALAMAN = 12;
 
+// Semua terpilih = parameter dihapus. Tidak ada yang terpilih tetap ditulis (?kategori=) supaya pilihan kosong
+// itu bertahan setelah muat ulang, tidak kembali menjadi "semua".
 function simpanKeUrl(kategori: number[], status: StatusLaporan[]) {
   const url = new URL(window.location.href);
-  if (kategori.length && kategori.length < KATEGORI.length) url.searchParams.set('kategori', kategori.join(','));
+  if (kategori.length < KATEGORI.length) url.searchParams.set('kategori', kategori.join(','));
   else url.searchParams.delete('kategori');
-  if (status.length && status.length < STATUS_PUBLIK.length) url.searchParams.set('status', status.join(','));
+  if (status.length < STATUS_PUBLIK.length) url.searchParams.set('status', status.join(','));
   else url.searchParams.delete('status');
   window.history.replaceState(null, '', url);
 }
+
+// py-1 memberi ruang garis fokus chip di dalam deret yang digeser (jarak luarnya tetap, lewat mt-1/-mb-1);
+// -mx-4/px-4 membuat deret sampai tepi kartu. <fieldset> induknya perlu min-w-0 supaya deret tidak melebarkannya,
+// dan deretnya `relative` supaya teks sr-only (absolute) di dalam chip ikut terpotong, tidak melebarkan halaman.
+const DERET_CHIP =
+  'tanpa-batang relative mt-2 flex gap-2 max-sm:-mx-4 max-sm:mt-1 max-sm:-mb-1 max-sm:overflow-x-auto max-sm:px-4 max-sm:py-1 sm:flex-wrap';
 
 export default function PetaLaporan({
   laporan,
@@ -39,11 +47,12 @@ export default function PetaLaporan({
 }: {
   laporan: TitikLaporan[];
   sekarang: number;
-  kategoriAwal: number[];
-  statusAwal: StatusLaporan[];
+  /** null = tidak ada di URL, jadi semua terpilih. */
+  kategoriAwal: number[] | null;
+  statusAwal: StatusLaporan[] | null;
 }) {
-  const [kategori, setKategori] = useState<number[]>(kategoriAwal.length ? kategoriAwal : KATEGORI.map((k) => k.id));
-  const [status, setStatus] = useState<StatusLaporan[]>(statusAwal.length ? statusAwal : STATUS_PUBLIK);
+  const [kategori, setKategori] = useState<number[]>(kategoriAwal ?? KATEGORI.map((k) => k.id));
+  const [status, setStatus] = useState<StatusLaporan[]>(statusAwal ?? STATUS_PUBLIK);
   const [jumlah, setJumlah] = useState(PER_HALAMAN);
 
   const namaKategori = useMemo(() => new Set<string>(KATEGORI.filter((k) => kategori.includes(k.id)).map((k) => k.nama)), [kategori]);
@@ -74,49 +83,42 @@ export default function PetaLaporan({
   }
 
   return (
-    <div className="grid gap-8" data-muncul>
-      <div className="grid grid-cols-1 gap-5 lg:grid-cols-2 lg:gap-8">
-        <fieldset>
-          <legend className="text-kecil text-lembut">Kategori</legend>
-          <div className="mt-2 flex flex-wrap gap-2">
+    <div className="grid gap-5">
+      {/* Bar saring, seperti bar filter di atas hasil pencarian. Di ponsel tiap deret chip digeser menyamping
+          (seperti chip saring aplikasi peta), supaya peta sudah terlihat di layar pertama. */}
+      <div className="kartu grid gap-4 p-4 sm:p-5 lg:grid-cols-2 lg:gap-8">
+        <fieldset className="min-w-0">
+          <legend className="text-kecil font-bold">Kategori</legend>
+          <div className={DERET_CHIP}>
             {KATEGORI.map((k) => (
-              <button
-                key={k.id}
-                type="button"
-                aria-pressed={kategori.includes(k.id)}
-                onClick={() => ubahKategori(k.id)}
-                className="min-h-11 rounded-full bg-permukaan px-4 py-1.5 text-kecil font-medium ring-1 ring-batas ring-inset transition-[background-color,color,scale] duration-200 hover:bg-terang active:scale-95 aria-pressed:bg-tinta aria-pressed:text-kertas aria-pressed:ring-tinta"
-              >
+              <button key={k.id} type="button" aria-pressed={kategori.includes(k.id)} onClick={() => ubahKategori(k.id)} className="chip">
                 {k.nama}
+                {kategori.includes(k.id) && <Ikon nama="centang" className="size-3.5" />}
               </button>
             ))}
           </div>
         </fieldset>
-        <fieldset>
-          <legend className="text-kecil text-lembut">Status (jumlah dalam kategori terpilih)</legend>
-          <div className="mt-2 flex flex-wrap gap-2">
+        <fieldset className="min-w-0">
+          <legend className="text-kecil font-bold">
+            Status <span className="font-normal text-lembut">(jumlah dalam kategori terpilih)</span>
+          </legend>
+          <div className={DERET_CHIP}>
             {STATUS_PUBLIK.map((s) => (
-              <button
-                key={s}
-                type="button"
-                aria-pressed={status.includes(s)}
-                onClick={() => ubahStatus(s)}
-                className="flex min-h-11 items-center gap-1.5 rounded-full bg-permukaan px-4 py-1.5 text-kecil font-medium ring-1 ring-batas ring-inset transition-[background-color,color,scale] duration-200 hover:bg-terang active:scale-95 aria-pressed:bg-tinta aria-pressed:text-kertas aria-pressed:ring-tinta"
-              >
-                <IkonStatus status={s} className="size-3.5" />
+              <button key={s} type="button" aria-pressed={status.includes(s)} onClick={() => ubahStatus(s)} className="chip">
+                <TitikStatus status={s} className="size-2.5" />
                 {LABEL_STATUS[s]}
-                <AngkaGulir className="angka opacity-75" nilai={String(hitungStatus[s])} />
+                <AngkaGulir className="angka font-medium opacity-75" nilai={String(hitungStatus[s])} />
               </button>
             ))}
           </div>
         </fieldset>
       </div>
 
-      <div>
-        <div className="peta peta-buka isolate overflow-hidden bg-lapis" data-ui>
-          <KlasterLaporan laporan={tersaring} className="h-[min(72svh,44rem)] min-h-96" />
+      <div className="kartu overflow-hidden">
+        <div className="peta isolate overflow-hidden rounded-none bg-lapis" data-ui>
+          <KlasterLaporan laporan={tersaring} className="h-[min(70svh,42rem)] min-h-96" />
         </div>
-        <div className="mt-3 flex flex-wrap items-start justify-between gap-x-8 gap-y-3">
+        <div className="flex flex-wrap items-start justify-between gap-x-8 gap-y-3 border-t border-garis px-4 py-3 sm:px-5">
           <ul aria-label="Arti warna titik" className="flex flex-wrap gap-x-4 gap-y-1.5 text-kecil">
             {STATUS_PUBLIK.map((s) => (
               <li key={s} className="flex items-center gap-1.5">
@@ -125,41 +127,46 @@ export default function PetaLaporan({
               </li>
             ))}
             <li className="flex items-center gap-1.5">
-              <span aria-hidden="true" className="size-3.5 rounded-full bg-tinta" />
-              Kotak berangka: kumpulan laporan berdekatan
+              <span aria-hidden="true" className="size-3.5 rounded-full bg-biru" />
+              Lingkaran berangka: kumpulan laporan berdekatan
             </li>
           </ul>
           <p className="text-kecil text-lembut" aria-live="polite">
             {/* Hitungannya berganti dengan gerak singkat; wadah live region tetap sama supaya tetap dibacakan. */}
-            <span key={tersaring.length} className="ganti inline-block">
+            <span key={tersaring.length} className="ganti inline-block font-bold text-teks">
               {tersaring.length} laporan tampil.
             </span>{' '}
-            Klik kotak untuk memperbesar; klik titik untuk membuka ringkasannya.
+            Zoom dengan cubit dua jari (touchpad atau layar sentuh) atau Ctrl + gulir. Klik lingkaran untuk memperbesar; klik titik untuk membuka ringkasannya.
           </p>
         </div>
       </div>
 
-      <section aria-labelledby="judul-daftar">
-        <h2 id="judul-daftar" className="text-lead font-medium tracking-tight">
+      <section aria-labelledby="judul-daftar" className="mt-4">
+        <h2 id="judul-daftar" className="judul-seksi">
           Laporan terbaru sesuai saringan
         </h2>
         {tersaring.length === 0 ? (
-          <p className="kartu mt-4 p-5 text-badan">
+          <p className="kartu ganti mt-4 flex gap-3 p-5 text-badan">
+            <Ikon nama="info" className="mt-0.5 size-5 shrink-0 text-biru" />
             Tidak ada laporan dengan saringan ini. Pilih kategori atau status lain di atas.
           </p>
         ) : (
           <>
-            <ul className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3" data-muncul>
+            {/* Kartu yang baru masuk daftar (saringan diganti, atau "Tampilkan lebih banyak") muncul dengan gerak singkat;
+                kartu yang tetap ada tidak bergerak karena key-nya sama. */}
+            <ul className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
               {tersaring.slice(0, jumlah).map((l) => (
-                <li key={l.kode}>
+                <li key={l.kode} className="ganti">
                   <KartuLaporan laporan={l} sekarang={sekarang} />
                 </li>
               ))}
             </ul>
             {jumlah < tersaring.length && (
-              <Tombol varian="kedua" className="mt-4" onClick={() => setJumlah((j) => j + PER_HALAMAN * 2)}>
-                Tampilkan lebih banyak ({tersaring.length - jumlah} lagi)
-              </Tombol>
+              <div className="mt-5 flex justify-center">
+                <Tombol varian="garis" onClick={() => setJumlah((j) => j + PER_HALAMAN * 2)}>
+                  Tampilkan lebih banyak ({tersaring.length - jumlah} lagi)
+                </Tombol>
+              </div>
             )}
           </>
         )}

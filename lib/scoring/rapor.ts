@@ -14,7 +14,7 @@ export function kepuasan(jumlahBintang: number, jumlahPemberiRating: number): nu
   return (jumlahBintang + 3 * 5) / (jumlahPemberiRating + 5) / 5;
 }
 
-/** Nilai 0–100, satu desimal. */
+/** Nilai 0 sampai 100, satu desimal. */
 export function nilaiRapor(R: number, S: number, P: number, K: number): number {
   const n = 100 * (BOBOT_RAPOR.R * R + BOBOT_RAPOR.S * S + BOBOT_RAPOR.P * P + BOBOT_RAPOR.K * K);
   return Math.round(n * 10) / 10;
