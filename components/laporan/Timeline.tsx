@@ -5,10 +5,17 @@
 
 import Link from 'next/link';
 import { tanggalJam } from '@/lib/format';
-import { LABEL_ALASAN, LABEL_TUNDA } from '@/lib/konten';
+import { KARENA_ALASAN } from '@/lib/kamus';
+import { LABEL_TUNDA } from '@/lib/konten';
 import type { TimelineItem } from '@/lib/types';
 import { GAYA_STATUS, IkonStatus, LABEL_STATUS } from '../BadgeStatus';
 import Ikon from '../ui/Ikon';
+
+/** "Admin · Dinas Tata Air (simulasi)" → "Dinas Tata Air"; catatan seed → "Dinas (data buatan)". */
+export function namaPelaku(p: string): string {
+  if (p === 'Catatan simulasi') return 'Dinas (data buatan)';
+  return p.replace(/^Admin · /, '').replace(' (simulasi)', '');
+}
 
 export default function Timeline({ item, berjalan = false }: { item: TimelineItem[]; berjalan?: boolean }) {
   return (
@@ -34,16 +41,16 @@ export default function Timeline({ item, berjalan = false }: { item: TimelineIte
               <p className="text-badan font-bold">
                 {kendala ? (
                   <>
-                    Kendala<span className="font-normal"> · {LABEL_TUNDA[t.alasan_tunda!]}</span>
+                    Ada kendala<span className="font-normal">: {LABEL_TUNDA[t.alasan_tunda!].toLowerCase()}</span>
                   </>
                 ) : (
                   LABEL_STATUS[t.status_baru]
                 )}
-                {t.alasan_tolak && <span className="font-normal"> · alasan: {LABEL_ALASAN[t.alasan_tolak]}</span>}
+                {t.alasan_tolak && <span className="font-normal">: {KARENA_ALASAN[t.alasan_tolak]}</span>}
               </p>
               <p className="text-kecil text-lembut">
-                {tanggalJam(t.created_at)} · {t.pelaku}
-                {kendala && ` · status tetap ${LABEL_STATUS[t.status_baru].toLowerCase()}`}
+                {tanggalJam(t.created_at)} · {namaPelaku(t.pelaku)}
+                {kendala && ` · status tidak berubah, masih ${LABEL_STATUS[t.status_baru].toLowerCase()}`}
               </p>
               {t.catatan && <p className="mt-2 max-w-[60ch] rounded-kontrol bg-latar px-3 py-2 text-kecil">&ldquo;{t.catatan}&rdquo;</p>}
               {t.duplikat_dari_kode && (

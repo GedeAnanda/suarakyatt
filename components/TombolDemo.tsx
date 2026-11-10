@@ -1,4 +1,4 @@
-// components/TombolDemo.tsx — "Coba sebagai warga/admin demo" (FR-A2, SDD 6.6 A1), pemilik: A
+// components/TombolDemo.tsx — "Coba sebagai warga / petugas dinas" dengan akun demo (FR-A2, SDD 6.6 A1), pemilik: A
 
 'use client';
 
@@ -10,8 +10,8 @@ import { Tombol, type VarianTombol } from './ui/Tombol';
 type Peran = 'warga' | 'admin';
 
 const PESAN: Record<string, string> = {
-  DEMO_BELUM_DIATUR: 'Akun demo belum diatur di server. Hubungi tim.',
-  LOGIN_DEMO_GAGAL: 'Akun demo sedang tidak bisa dipakai. Coba lagi sebentar lagi.',
+  DEMO_BELUM_DIATUR: 'Akun demo belum siap. Masuk atau daftar dengan akunmu sendiri.',
+  LOGIN_DEMO_GAGAL: 'Akun demo sedang tidak bisa dipakai. Coba lagi sebentar lagi, atau masuk dengan akunmu sendiri.',
 };
 
 /**
@@ -62,11 +62,11 @@ export default function TombolDemo({
       <div className="flex flex-wrap gap-3">
         <Tombol varian={varianWarga} onClick={() => masuk('warga')} disabled={memuat !== null}>
           {memuat === 'warga' && <Ikon nama="muat" className="putar size-4" />}
-          {memuat === 'warga' ? 'Masuk sebagai warga…' : 'Coba sebagai warga demo'}
+          {memuat === 'warga' ? 'Masuk sebagai warga…' : 'Coba sebagai warga'}
         </Tombol>
         <Tombol varian={varianAdmin} onClick={() => masuk('admin')} disabled={memuat !== null}>
           {memuat === 'admin' && <Ikon nama="muat" className="putar size-4" />}
-          {memuat === 'admin' ? 'Masuk sebagai admin…' : 'Coba sebagai admin demo'}
+          {memuat === 'admin' ? 'Masuk sebagai petugas dinas…' : 'Coba sebagai petugas dinas'}
         </Tombol>
       </div>
       {galat && (

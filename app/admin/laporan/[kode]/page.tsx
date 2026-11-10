@@ -36,7 +36,7 @@ async function Isi({ params }: { params: PageProps<'/admin/laporan/[kode]'>['par
         <div className="kartu p-5 sm:p-6">
           <div className="flex flex-wrap items-center gap-2">
             <BadgeStatus status={l.status} besar />
-            {(l.is_simulated || sumber === 'contoh') && <LabelSumber sumber={sumber} />}
+            {(l.is_simulated || sumber === 'contoh') && <LabelSumber sumber={sumber} ringkas />}
           </div>
           <h1 className="font-kode angka mt-4 text-judul font-bold">{l.kode}</h1>
           <p className="mt-2 text-sub font-bold">

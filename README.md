@@ -31,7 +31,7 @@ Tes modul skor: `npm test`.
 
 ## Fitur dan pemeriksaan
 
-Beranda interaktif, login/daftar, peta publik, formulir laporan, pelacakan, tindak lanjut admin, rapor instansi, simulator prioritas, panel “Kenapa belum?”, dan skor 42 kecamatan dalam bahasa sehari-hari (`/kecamatan`) sudah tersedia. Halaman lacak menampilkan “Status sekarang” di atas peta: alasan tunda dari instansi, alasan penolakan, dan tautan ke laporan asli untuk duplikat. Pengaturan bobot, kategori, dan isu terpilih bisa dibagikan lewat URL. Tautan `/contoh` memilih laporan yang tersedia dari sumber data aktif; `/contoh?jenis=terlambat|ditolak|duplikat|melanggar|selesai` membuka tiap skenario.
+Beranda interaktif, login/daftar, peta publik, formulir laporan, pelacakan, tindak lanjut dinas (admin), rapor dinas, urutan prioritas dengan “Coba atur sendiri”, panel “Kenapa belum?”, dan skor 42 kecamatan (`/kecamatan`) sudah tersedia. Seluruh teks memakai bahasa sehari-hari dengan satu kamus istilah (`lib/kamus.ts`, lihat `docs/audit-awam-2026-11-10.md`). Halaman lacak menampilkan “Status sekarang” di atas peta: alasan tunda dari dinas, alasan penolakan, dan tautan ke laporan asli untuk duplikat. Percobaan aturan, jenis masalah, dan masalah terpilih bisa dibagikan lewat URL. Tautan `/contoh` memilih laporan yang tersedia dari sumber data aktif; `/contoh?jenis=terlambat|ditolak|duplikat|melanggar|selesai` membuka tiap skenario.
 
 ```bash
 npm run lint
@@ -44,8 +44,8 @@ Database demo dapat diisi dengan `npm run demo:setup -- --apply` setelah migrasi
 
 ## Alur presentasi lomba
 
-1. Buka Beranda. Ubah pilihan di “Satu isu, dua urutan” dan jelaskan perubahan peringkat.
-2. Buka perhitungan lengkap. Pilih kategori dan isu, ubah bobot, lalu bagikan URL skenarionya.
+1. Buka Beranda. Ubah pilihan di “Urutan bisa berubah, tergantung apa yang diutamakan” dan jelaskan perubahan urutannya.
+2. Buka Urutan prioritas. Pilih jenis masalah dan masalahnya, coba pilihan cepat atau atur sendiri, lalu bagikan URL percobaannya.
 3. Buka `/lacak`, lalu coba skenario “Terlambat, ada kendala” dan “Ditolak karena duplikat”. Di HP, alasan tunda dan alasan tolak langsung terlihat di kotak “Status sekarang”; panel “Kenapa belum?” menjelaskan posisi model. Peringkat bukan janji tanggal perbaikan.
 4. Buka `/kecamatan`, pilih satu kecamatan, dan baca kalimat serta grafik posisinya di antara 42 kecamatan.
 5. Masuk sebagai warga demo untuk melapor atau mendukung laporan yang sudah ada.
@@ -68,6 +68,7 @@ Fokus subtema: **Data-Driven Decision Support** dan **Civic Reporting & Accounta
 - `docs/suaRAkyat_SDD_v1.0.pdf`: desain teknis (bagaimana)
 - `CONTRIBUTING.md`: aturan kerja tim
 - `docs/revisi-fds-2026-11-10.md`: catatan mentor First Draft Submission dan hasil revisinya
+- `docs/audit-awam-2026-11-10.md`: audit bahasa awam, alur UX di HP, dan data, beserta kamus istilah
 
 Versi terbaru kedua dokumen ada di link dokumen online tim; PDF di folder `docs/` adalah salinan.
 

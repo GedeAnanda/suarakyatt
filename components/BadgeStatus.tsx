@@ -5,10 +5,12 @@
 import { Ban, CheckCheck, CircleCheck, CircleX, Clock, RefreshCw, type LucideIcon } from 'lucide-react';
 import type { StatusLaporan } from '@/lib/types';
 
+// Label status untuk semua orang. "Diverifikasi" dan "Diproses" diganti kata sehari-hari (audit bahasa awam 10 Nov);
+// nilai enum di database tetap. Arti tiap status ada di lib/kamus.ts (ARTI_STATUS).
 export const LABEL_STATUS: Record<StatusLaporan, string> = {
   menunggu: 'Menunggu',
-  diverifikasi: 'Diverifikasi',
-  diproses: 'Diproses',
+  diverifikasi: 'Sudah diperiksa',
+  diproses: 'Sedang dikerjakan',
   selesai: 'Selesai',
   ditolak: 'Ditolak',
   dibatalkan: 'Dibatalkan',

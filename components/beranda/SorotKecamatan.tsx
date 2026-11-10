@@ -1,15 +1,16 @@
-// components/beranda/SorotKecamatan.tsx — 42 kecamatan sebagai satu kalimat + peta (pemilik: A)
-// Satu nama menyala bergantian mengikuti sepuluh isu teratas, dan kecamatannya disorot (timbul) di peta.
-// Berhenti bergantian kalau pengguna meminta gerak dikurangi, atau saat diarahkan kursor.
+// components/beranda/SorotKecamatan.tsx — 10 masalah paling didahulukan + peta kecamatan (pemilik: A)
+// Satu masalah per kecamatan disorot bergantian (paling cepat 6 detik sekali), dan kecamatannya timbul di peta.
+// Tidak bergilir sendiri di layar sentuh atau kalau pengguna meminta gerak dikurangi; tombol Jeda/Lanjut selalu ada
+// (WCAG 2.2.2). Berhenti sementara saat diarahkan kursor atau fokus keyboard.
 // Memilih nomor membuka tampilan fokus: kecamatannya bergerak ke tengah peta (3D) dengan beberapa titik laporan,
-// peta lain diburamkan. Nomor yang sama ditekan lagi = kembali ke tampilan awal (bergantian otomatis).
-// Kolom kiri di bawah daftar kecamatan: saat fokus, "Kenapa peringkat ini" (enam faktor skor) dan daftar laporan contoh
-// yang pin-nya tampil di peta; di bawahnya selalu legenda warna peta.
+// peta lain diburamkan. Nomor yang sama ditekan lagi = kembali ke tampilan awal.
+// Kolom kiri: saat fokus, "Kenapa urutan ke-N?" (6 hal yang dinilai) dan daftar laporan contoh yang titiknya tampil di
+// peta; di bawahnya selalu legenda warna peta dan satu tombol "Cari kecamatanmu" ke /kecamatan.
 
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useSyncExternalStore } from 'react';
 import { KECAMATAN } from '@/lib/geo/kecamatan-svg';
 import type { TitikPeta } from '@/lib/geo/proyeksi';
 import { NAMA_FAKTOR } from '@/lib/konten';
@@ -19,6 +20,8 @@ import BadgeStatus from '../BadgeStatus';
 import { pilihContoh } from '../KecamatanTimbul3D';
 import PetaKecamatan, { KeteranganKelas } from '../PetaKecamatan';
 import { WARNA_FAKTOR } from '../prioritas/BarKontribusi';
+import Ikon from '../ui/Ikon';
+import { kelasTombol } from '../ui/Tombol';
 
 export interface IsuTeratas {
   kode_wilayah: string;
@@ -31,14 +34,29 @@ export interface IsuTeratas {
   kontribusi: Record<Faktor, number>;
 }
 
-const NAMA_URUT = [...KECAMATAN].sort((a, b) => a.kecamatan.localeCompare(b.kecamatan, 'id'));
+/** Jeda antar-sorotan. Cukup lama untuk membaca satu kalimat. */
+const JEDA_GILIR = 6000;
+
+// Bergilir sendiri hanya di perangkat berkursor dan tanpa permintaan gerak dikurangi.
+const KUERI_TANPA_GILIR = ['(hover: none)', '(prefers-reduced-motion: reduce)'];
+function pantauMedia(ubah: () => void) {
+  const daftar = KUERI_TANPA_GILIR.map((q) => window.matchMedia(q));
+  for (const m of daftar) m.addEventListener('change', ubah);
+  return () => {
+    for (const m of daftar) m.removeEventListener('change', ubah);
+  };
+}
+const bisaGilirSendiri = () => KUERI_TANPA_GILIR.every((q) => !window.matchMedia(q).matches);
 
 export default function SorotKecamatan({
   teratas,
+  total,
   skorPerKecamatan,
   titik = {},
 }: {
   teratas: IsuTeratas[];
+  /** Jumlah semua masalah yang diurutkan, untuk "urutan ke-3 dari 160 masalah". */
+  total: number;
   skorPerKecamatan: Record<string, number>;
   /** Beberapa titik laporan per kode_wilayah, untuk tampilan fokus. */
   titik?: Record<string, TitikPeta[]>;
@@ -46,11 +64,17 @@ export default function SorotKecamatan({
   const [indeks, setIndeks] = useState(0);
   // Berhenti sementara selama kursor atau fokus keyboard ada di bagian ini.
   const [disentuh, setDisentuh] = useState(false);
-  // Dihentikan dengan memilih nomor: tetap berhenti sampai nomor yang sama ditekan lagi (WCAG 2.2.2).
+  // Dihentikan dengan memilih nomor: tetap berhenti sampai nomor yang sama ditekan lagi.
   const [kunci, setKunci] = useState(false);
   // Tampilan fokus di peta, dibuka dengan memilih nomor.
   const [fokus, setFokus] = useState(false);
-  const jeda = disentuh || kunci;
+  // Pilihan pengguna lewat tombol Jeda/Lanjut; null = ikut perangkat (layar sentuh: tidak bergilir sendiri).
+  const [pilihanGilir, setPilihanGilir] = useState<boolean | null>(null);
+  const gilirSendiri = useSyncExternalStore(pantauMedia, bisaGilirSendiri, () => false);
+  const bergilir = (pilihanGilir ?? gilirSendiri) && teratas.length > 1;
+  // Kalau pengguna sendiri menekan Lanjut, kursor atau fokus di bagian ini tidak menghentikannya lagi. Fokus hanya
+  // menghentikan kalau dari keyboard (:focus-visible): ketukan jari di tombol tidak.
+  const jeda = !bergilir || kunci || (disentuh && pilihanGilir !== true);
 
   function pilih(i: number) {
     if (fokus && i === indeks) {
@@ -65,9 +89,8 @@ export default function SorotKecamatan({
   }
 
   useEffect(() => {
-    if (jeda || teratas.length < 2) return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const t = window.setInterval(() => setIndeks((i) => (i + 1) % teratas.length), 2200);
+    if (jeda) return;
+    const t = window.setInterval(() => setIndeks((i) => (i + 1) % teratas.length), JEDA_GILIR);
     return () => window.clearInterval(t);
   }, [jeda, teratas.length]);
 
@@ -82,12 +105,14 @@ export default function SorotKecamatan({
       className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:gap-10"
       onMouseEnter={() => setDisentuh(true)}
       onMouseLeave={() => setDisentuh(false)}
-      onFocus={() => setDisentuh(true)}
+      onFocus={(e) => e.target.matches(':focus-visible') && setDisentuh(true)}
       onBlur={(e) => !e.currentTarget.contains(e.relatedTarget) && setDisentuh(false)}
     >
       <div>
+        <h3 className="text-badan font-bold">{teratas.length} masalah paling didahulukan sekarang, satu per kecamatan</h3>
+        <p className="mt-1 text-kecil text-lembut">Ketuk nomornya untuk melihat di peta.</p>
         {nyala && (
-          <div key={nyala.kode_wilayah + nyala.kategori} className="ganti flex items-start gap-3 rounded-kartu bg-biru-pudar p-4" aria-live="off">
+          <div key={nyala.kode_wilayah + nyala.kategori} className="ganti mt-4 flex items-start gap-3 rounded-kartu bg-biru-pudar p-4" aria-live="off">
             <span className="angka flex size-10 shrink-0 items-center justify-center rounded-kontrol bg-biru text-badan font-bold text-white">
               {indeks + 1}
             </span>
@@ -97,22 +122,22 @@ export default function SorotKecamatan({
               </strong>
               , {nyala.kota}.{' '}
               <span className="text-lembut">
-                Skor {formatPoin(nyala.skor)}, peringkat {nyala.peringkat} dari semua isu.
+                Skor {formatPoin(nyala.skor)} dari 100 · urutan ke-{nyala.peringkat} dari {total} masalah
               </span>
             </p>
           </div>
         )}
 
-        <div className="mt-4 flex flex-wrap items-center gap-2" role="group" aria-label="Pilih kecamatan teratas untuk disorot">
-          {/* Satu kecamatan satu tombol, jadi nomornya urutan kecamatan (1 sampai 10), bukan peringkat isu yang bisa loncat. */}
+        <div className="mt-4 flex flex-wrap items-center gap-2" role="group" aria-label="Pilih masalah untuk dilihat di peta">
+          {/* Satu kecamatan satu tombol, jadi nomornya 1 sampai 10, bukan urutan masalah yang bisa loncat. */}
           {teratas.map((t, i) => (
             <button
               key={t.kode_wilayah + t.kategori}
               type="button"
               aria-pressed={fokus && i === indeks}
-              aria-label={`${i + 1}. ${t.kecamatan}: ${t.kategori}, peringkat isu ${t.peringkat}`}
+              aria-label={`${i + 1}. ${t.kategori} di ${t.kecamatan}, urutan ke-${t.peringkat} dari ${total} masalah`}
               onClick={() => pilih(i)}
-              className={`angka size-10 rounded-kontrol border text-kecil font-bold transition-[background-color,color,border-color,scale] active:scale-90 ${
+              className={`angka size-11 rounded-kontrol border text-kecil font-bold transition-[background-color,color,border-color,scale] active:scale-90 ${
                 i === indeks
                   ? 'border-biru bg-biru text-white'
                   : 'border-garis bg-permukaan hover:border-biru hover:text-biru-tua'
@@ -121,42 +146,37 @@ export default function SorotKecamatan({
               {i + 1}
             </button>
           ))}
+          {/* Jeda/Lanjut: selalu ada selama tidak sedang fokus pada satu nomor. */}
+          {!fokus && teratas.length > 1 && (
+            <button
+              type="button"
+              onClick={() => setPilihanGilir(!bergilir)}
+              className="ml-1 inline-flex min-h-11 items-center gap-1.5 rounded-kontrol px-3 text-kecil font-semibold text-biru-tua transition-colors hover:bg-biru-muda"
+            >
+              <Ikon nama={bergilir ? 'jeda' : 'putar'} className="size-4" />
+              {bergilir ? 'Jeda' : 'Lanjut'}
+              <span className="sr-only"> pergantian otomatis</span>
+            </button>
+          )}
         </div>
         {fokus && nyala && (
           <p className="mt-3 text-kecil text-lembut" aria-live="polite">
             {(titik[nyala.kode_wilayah]?.length ?? 0) > 0
-              ? `Pin di peta: contoh laporan ${nyala.kategori.toLowerCase()} di ${nyala.kecamatan}, warna titiknya menurut status. `
+              ? `Titik di peta: contoh laporan ${nyala.kategori.toLowerCase()} di ${nyala.kecamatan}. Warnanya menurut status. `
               : ''}
-            Tekan nomor {indeks + 1} lagi untuk kembali ke peta penuh.
+            Ketuk nomor {indeks + 1} lagi untuk kembali ke peta penuh.
           </p>
         )}
 
-        <p className="mt-6 text-kecil leading-relaxed text-lembut">
-          <span className="font-semibold text-teks">Isu wilayah dinilai di 42 kecamatan: </span>
-          {NAMA_URUT.map((k, i) => (
-            <span key={k.kode_wilayah}>
-              <Link
-                href={`/kecamatan/${k.kode_wilayah}`}
-                className={`transition-colors duration-[400ms] hover:text-biru-tua hover:underline ${
-                  k.kode_wilayah === nyala?.kode_wilayah ? 'rounded-[0.25rem] bg-biru-muda px-1 font-bold text-biru-tua' : ''
-                }`}
-              >
-                {k.kecamatan}
-              </Link>
-              {i < NAMA_URUT.length - 1 ? ', ' : '.'}
-            </span>
-          ))}
-        </p>
-
         {fokus && nyala && (
           <div key={`rincian-${nyala.kode_wilayah}-${nyala.kategori}`} className="ganti mt-8 grid gap-6 border-t border-garis pt-6">
-            {/* Kenapa peringkat ini: enam faktor sebagai satu bar bertumpuk (lebar = poin dari 100), lalu tiga terbesar. */}
+            {/* Kenapa urutan ini: 6 hal yang dinilai sebagai satu bar bertumpuk (lebar = poin dari 100), lalu tiga terbesar. */}
             <section aria-labelledby="judul-kenapa-peringkat">
               <h3 id="judul-kenapa-peringkat" className="text-badan font-bold">
-                Kenapa peringkat {nyala.peringkat}?
+                Kenapa urutan ke-{nyala.peringkat}?
               </h3>
               <p className="mt-1 text-kecil text-lembut">
-                Skor {formatPoin(nyala.skor)} dari 100, dijumlahkan dari enam faktor. Yang paling mendorong:
+                Skor {formatPoin(nyala.skor)} dari 100. Paling banyak disumbang oleh:
               </p>
               <div aria-hidden="true" className="mt-3 flex h-2.5 w-full overflow-hidden rounded-full bg-lapis">
                 {FAKTOR.map((f) => (
@@ -211,11 +231,11 @@ export default function SorotKecamatan({
           </p>
         )}
         <KeteranganKelas className="mt-8" />
-        <p className="mt-3 text-kecil">
-          <Link href="/kecamatan" className="font-semibold text-biru-tua underline underline-offset-4">
-            Cari kecamatanmu di daftar skor 42 kecamatan
-          </Link>
-        </p>
+        {/* Satu tombol, bukan dinding 42 nama: daftar lengkapnya ada di /kecamatan. */}
+        <Link href="/kecamatan" className={kelasTombol('kedua', 'mt-5 min-h-11')}>
+          <Ikon nama="cari" className="size-4" />
+          Cari kecamatanmu
+        </Link>
       </div>
 
       <figure>
@@ -224,8 +244,15 @@ export default function SorotKecamatan({
           sorot={nyala?.kode_wilayah}
           efek={fokus ? 'fokus' : 'timbul'}
           titik={fokus && nyala ? titik[nyala.kode_wilayah] : undefined}
-          judul="Peta DKI Jakarta per kecamatan, diwarnai menurut skor prioritas tertinggi"
+          judul="Peta Jakarta per kecamatan, diwarnai menurut skor masalah tertinggi di tiap kecamatan"
         />
+        <figcaption className="mt-3 flex flex-wrap items-center gap-2 text-kecil text-lembut">
+          <span className="inline-flex items-center gap-1.5 rounded-[0.375rem] bg-hijau-muda px-2 py-0.5 font-semibold text-hijau">
+            <span aria-hidden="true" className="size-1.5 rounded-full bg-hijau" />
+            Data asli
+          </span>
+          Batas kecamatan dan peta. Warnanya dari skor, yang dihitung dari data buatan.
+        </figcaption>
       </figure>
     </div>
   );

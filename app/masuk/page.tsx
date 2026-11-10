@@ -38,8 +38,8 @@ export default function MasukPage({ searchParams }: PageProps<'/masuk'>) {
         <div className="p-6 sm:p-10">
           <h1 className="text-judul font-bold">Masuk untuk melapor</h1>
           <p className="mt-2 text-badan text-lembut">
-            Melihat peta, rapor, dan dashboard prioritas tidak perlu akun. Akun warga dengan email terverifikasi dibutuhkan
-            untuk melapor, mendukung laporan warga lain, dan memberi rating.
+            Melihat peta, urutan prioritas, rapor, dan melacak laporan tidak perlu akun. Untuk melapor atau mendukung laporan,
+            kamu perlu akun dengan email aktif, supaya laporanmu bisa kamu pantau dan satu orang hanya mendukung sekali.
           </p>
           <div className="mt-6">
             <Suspense fallback={<div className="kerangka h-80 max-w-md" />}>
@@ -55,13 +55,13 @@ export default function MasukPage({ searchParams }: PageProps<'/masuk'>) {
             Coba tanpa daftar
           </h2>
           <p className="mt-2 text-badan text-white/90">
-            Akun demo bersama untuk juri dan pengunjung. Warga demo bisa melapor dan mendukung laporan; admin demo mengelola
-            laporan Dinas Bina Jalan (simulasi). Data demo dikembalikan ke awal setiap malam.
+            Masuk sebagai warga contoh untuk mencoba melapor dan mendukung laporan, atau sebagai petugas dinas contoh (Dinas
+            Bina Jalan) untuk mengubah status laporan. Semua isian dihapus tiap malam.
           </p>
           <TombolDemo className="mt-6" varianWarga="terang" varianAdmin="terang-garis" />
           <p className="mt-auto pt-8 text-kecil text-white/80">
-            Akun admin instansi dan Perencana dibuat oleh tim, tanpa pendaftaran publik. Laporan di SUARAKYAT tidak
-            diteruskan ke instansi resmi.
+            Akun petugas dinas dan petugas perencana kota dibuat oleh tim, tanpa pendaftaran umum. Laporan di SUARAKYAT tidak
+            dikirim ke dinas sungguhan.
           </p>
         </aside>
       </div>

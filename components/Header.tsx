@@ -17,7 +17,7 @@ import Wordmark from './Wordmark';
 type Sesi = NonNullable<Awaited<ReturnType<typeof ambilSesi>>>;
 
 const peranTeks = (s: Sesi) =>
-  `${s.perencana ? 'Perencana' : s.peran === 'admin' ? 'Admin instansi' : 'Warga'}${s.demo ? ' · akun demo' : ''}`;
+  `${s.perencana ? 'Petugas perencana kota' : s.peran === 'admin' ? 'Petugas dinas' : 'Warga'}${s.demo ? ' · akun demo' : ''}`;
 
 /** Dua huruf awal nama untuk lingkaran akun, misalnya "Ani Suryani" → "AS". */
 const inisial = (nama: string) =>
@@ -87,7 +87,7 @@ async function Akun() {
           <li>
             <Link href="/admin/laporan" className="flex h-10 items-center gap-2.5 rounded-kontrol px-2 text-badan font-medium hover:bg-lapis">
               <Ikon nama="koper" className="size-4.5" />
-              Laporan instansi
+              Laporan dinas
             </Link>
           </li>
         )}
@@ -126,7 +126,7 @@ export default function Header() {
         <TombolMenu />
         <Link
           href="/"
-          aria-label="suaRAkyat, ke Beranda"
+          aria-label="SUARAKYAT, ke Beranda"
           className="shrink-0 rounded-kontrol px-1 text-[1.3125rem] text-teks max-[389px]:text-[1.125rem] sm:text-[1.4375rem]"
         >
           <Wordmark gelombang />
@@ -144,7 +144,7 @@ export default function Header() {
             Lapor masalah
           </TautanUtilitas>
           <TautanUtilitas href="/rapor/cara-menilai" ikon="bantuan" className="hidden xl:flex">
-            Cara menilai
+            Cara rapor dihitung
           </TautanUtilitas>
           <TautanUtilitas href="/lacak" ikon="lacak" ringkas className="cari-kepala flex md:hidden">
             Lacak laporan

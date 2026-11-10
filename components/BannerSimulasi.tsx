@@ -1,17 +1,18 @@
-// components/BannerSimulasi.tsx — pemberitahuan data simulasi (SDD 9, 9.1), pemilik: A
-// Tidak bisa ditutup (PRD 11). Satu-satunya label sumber di kepala halaman: keterangan halaman (periode,
-// jumlah laporan, bobot yang berlaku) ikut di dalamnya, bukan di chip terpisah.
+// components/BannerSimulasi.tsx — pita "Data buatan" (SDD 9, 9.1), pemilik: A
+// Tidak bisa ditutup (PRD 11). Satu label, satu kalimat (DATA_BUATAN di lib/kamus.ts), satu tautan. Keterangan halaman
+// (periode, jumlah laporan, aturan yang berlaku) ikut di dalamnya, bukan di chip terpisah.
 
 import Link from 'next/link';
 import type { Sumber } from '@/lib/data/laporan';
+import { DATA_BUATAN } from '@/lib/kamus';
 import Ikon from './ui/Ikon';
 import { kelasTautan } from './ui/Tombol';
 
 export default function BannerSimulasi({
-  sumber,
   keterangan,
   className = '',
 }: {
+  /** Dipertahankan supaya pemanggil lama tetap jalan; db dan contoh sama-sama "Data buatan". */
   sumber?: Sumber;
   keterangan?: string;
   className?: string;
@@ -19,16 +20,15 @@ export default function BannerSimulasi({
   return (
     <aside
       role="note"
+      aria-label="Data buatan"
       className={`flex gap-3 rounded-kartu border border-[#ffd9a3] bg-oranye-muda px-4 py-3 text-kecil text-teks ${className}`}
     >
       <Ikon nama="info" className="mt-0.5 size-4.5 shrink-0 text-oranye" />
       <div>
         <p>
-          <strong className="font-bold">{sumber === 'contoh' ? 'Data contoh.' : 'Data simulasi.'}</strong> Laporan,
-          instansi, dan angka kinerja di halaman ini dibuat untuk lomba dan bukan data resmi pemerintah.
-          {sumber === 'contoh' && ' Sementara ini halaman memakai data contoh bawaan aplikasi.'}{' '}
+          <strong className="font-bold">Data buatan.</strong> {DATA_BUATAN}{' '}
           <Link href="/sumber-data" className={kelasTautan}>
-            Lihat sumber data
+            Lihat data apa yang asli
           </Link>
         </p>
         {keterangan && <p className="mt-0.5 text-lembut">{keterangan}</p>}

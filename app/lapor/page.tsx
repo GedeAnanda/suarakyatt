@@ -17,15 +17,15 @@ export default function LaporPage() {
   return (
     <div className="bingkai pt-6 pb-4 sm:pt-8">
       <KepalaHalaman judul="Lapor masalah">
-        Laporkan masalah kota dengan foto dan titik lokasi. Anda akan mendapat kode untuk melacak penanganannya, dan laporan
-        Anda ikut menentukan posisi isu wilayahnya di daftar prioritas.
+        Laporkan masalah kota dengan foto dan titik lokasi. Kamu akan dapat kode untuk memantaunya, dan laporanmu ikut
+        dihitung dalam urutan masalah di kecamatanmu.
       </KepalaHalaman>
 
       <aside role="note" className="mt-5 flex gap-3 rounded-kartu border border-garis bg-permukaan px-4 py-3 text-kecil sm:text-badan">
         <Ikon nama="info" className="mt-0.5 size-5 shrink-0 text-biru" />
         <p>
-          <strong className="font-bold">SUARAKYAT bukan kanal pengaduan resmi.</strong> Laporan di sini tidak diteruskan ke
-          instansi. Untuk pengaduan resmi ke Pemprov DKI Jakarta, gunakan{' '}
+          <strong className="font-bold">SUARAKYAT adalah proyek lomba, bukan layanan pengaduan pemerintah.</strong> Laporanmu
+          tampil di peta umum, tetapi tidak dikirim ke dinas. Agar ditindaklanjuti Pemprov DKI Jakarta, laporkan juga lewat{' '}
           {KANAL_RESMI.map((k, i) => (
             <span key={k.nama}>
               {i > 0 && ' atau '}

@@ -28,17 +28,28 @@ export const PRESET: Record<NamaPreset, Bobot> = {
 
 export const LABEL_PRESET: Record<NamaPreset, string> = {
   keselamatan: 'Utamakan keselamatan',
-  kerentanan: 'Utamakan kerentanan sosial',
+  kerentanan: 'Utamakan warga kurang mampu',
   suara_warga: 'Utamakan suara warga',
 };
 
+/** Potongan kalimat "terutama karena …": hal yang MENAIKKAN skor (bahasa warga, audit 10 Nov). */
 export const LABEL_FAKTOR: Record<Faktor, string> = {
-  urgensi: 'urgensi kategori',
-  volume: 'banyak laporan terverifikasi',
-  dukungan: 'dukungan warga',
-  umur: 'laporan lama melewati batas waktu',
-  kerentanan: 'kerentanan wilayah',
-  kepadatan: 'kepadatan penduduk',
+  urgensi: 'jenis masalahnya mendesak',
+  volume: 'banyak laporan yang sudah diperiksa',
+  dukungan: 'banyak warga ikut mendukung',
+  umur: 'laporannya sudah lama menunggu',
+  kerentanan: 'banyak warga kurang mampu di kotanya',
+  kepadatan: 'penduduknya padat',
+};
+
+/** Potongan kalimat "belum didahulukan karena …": hal yang paling MENAHAN skor. */
+export const PENAHAN_FAKTOR: Record<Faktor, string> = {
+  urgensi: 'jenis masalahnya kurang mendesak dibanding jalan rusak atau saluran tersumbat',
+  volume: 'laporan yang sudah diperiksa masih sedikit',
+  dukungan: 'dukungan warganya masih sedikit',
+  umur: 'laporannya belum lama menunggu',
+  kerentanan: 'warga di kotanya relatif lebih mampu',
+  kepadatan: 'penduduknya tidak terlalu padat',
 };
 
 const clamp01 = (x: number) => Math.min(1, Math.max(0, x));
@@ -61,12 +72,16 @@ export function bobotEfektif(isu: FaktorIsu[], bobot: Bobot): Bobot {
   return normalisasiBobot(umurKosong ? { ...bobot, umur: 0 } : bobot);
 }
 
-function jelaskan(h: SkorIsu): string {
+function jelaskan(h: SkorIsu, w: Bobot): string {
   const [f1, f2] = [...FAKTOR].sort((a, b) => h.kontribusi[b] - h.kontribusi[a]);
-  return (
-    `Skor ${formatPoin(h.skor)}: terutama karena ${LABEL_FAKTOR[f1]} (${formatPoin(h.kontribusi[f1])} poin) ` +
-    `dan ${LABEL_FAKTOR[f2]} (${formatPoin(h.kontribusi[f2])} poin).`
-  );
+  const bagian = (f: Faktor) =>
+    `${LABEL_FAKTOR[f]} (${formatPoin(h.kontribusi[f])} dari ${formatPoin(100 * w[f])} poin)`;
+  return `Skor ${formatPoin(h.skor)} dari 100. Alasan terbesar: ${bagian(f1)} dan ${bagian(f2)}.`;
+}
+
+/** Hal yang paling menahan skor: selisih terbesar antara poin maksimal (100 × bobot) dan poin yang didapat. */
+export function penahanUtama(h: Pick<SkorIsu, 'kontribusi'>, w: Bobot): Faktor {
+  return [...FAKTOR].filter((f) => w[f] > 0).sort((a, b) => 100 * w[b] - h.kontribusi[b] - (100 * w[a] - h.kontribusi[a]))[0];
 }
 
 /** Hitung skor, kontribusi, peringkat, dan kalimat penjelasan untuk setiap isu wilayah. */
@@ -115,7 +130,7 @@ export function hitungSkor(isu: FaktorIsu[], bobot: Bobot): SkorIsu[] {
   );
   hasil.forEach((h, idx) => {
     h.peringkat = idx + 1;
-    h.penjelasan = jelaskan(h);
+    h.penjelasan = jelaskan(h, w);
   });
   return hasil;
 }
@@ -134,7 +149,7 @@ export function selisihPeringkat(resmi: SkorIsu[], simulasi: SkorIsu[]): Record<
 function ringkasPerKota(daftar: SkorIsu[]): string {
   const hitung = new Map<string, number>();
   for (const s of daftar) hitung.set(s.kota, (hitung.get(s.kota) ?? 0) + 1);
-  const bagian = [...hitung.entries()].map(([kota, n]) => `${n} isu di ${kota}`);
+  const bagian = [...hitung.entries()].map(([kota, n]) => `${n} masalah di ${kota}`);
   return bagian.length <= 1 ? bagian.join('') : `${bagian.slice(0, -1).join(', ')} dan ${bagian.at(-1)}`;
 }
 
@@ -149,10 +164,10 @@ export function kalimatKonsekuensi(resmi: SkorIsu[], simulasi: SkorIsu[], n = 10
     const selisih = selisihPeringkat(resmi, simulasi);
     const bergeser = [...atasResmi].some((id) => (selisih[id] ?? 0) !== 0);
     return bergeser
-      ? `Dengan bobot ini, anggota ${n} besar tetap sama, tapi urutannya berubah.`
-      : `Dengan bobot ini, ${n} besar tidak berubah.`;
+      ? `Dengan percobaanmu, ${n} masalah teratas tetap sama, tapi urutannya berubah.`
+      : `Dengan percobaanmu, ${n} masalah teratas tidak berubah.`;
   }
-  return `Dengan bobot ini, ${ringkasPerKota(masuk)} masuk ${n} besar, dan ${ringkasPerKota(keluar)} keluar.`;
+  return `Dengan percobaanmu, ${ringkasPerKota(masuk)} naik ke ${n} teratas, menggeser ${ringkasPerKota(keluar)}.`;
 }
 
 /** Data untuk panel "Kenapa belum?" di halaman detail laporan. */
@@ -182,12 +197,12 @@ export function kenapaBelum(
   return {
     peringkat: target.peringkat,
     total: resmi.length,
-    pendorong: { faktor: pendorongF, poin: target.kontribusi[pendorongF] },
+    pendorong: { faktor: pendorongF, poin: target.kontribusi[pendorongF], maksimal: 100 * w[pendorongF] },
     penahan: { faktor: penahanF, poin: target.kontribusi[penahanF], maksimal: 100 * w[penahanF] },
     per_preset,
     catatan:
       status === 'menunggu'
-        ? 'Laporan ini belum diverifikasi, jadi belum dihitung di faktor volume. Laporan ini tetap dihitung di faktor umur laporan.'
+        ? 'Laporan ini belum diperiksa dinas, jadi belum ikut dihitung di "Banyaknya laporan". Lama menunggunya tetap dihitung.'
         : null,
   };
 }

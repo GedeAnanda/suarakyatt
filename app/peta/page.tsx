@@ -36,8 +36,8 @@ export default function PetaPage({ searchParams }: PageProps<'/peta'>) {
   return (
     <div className="bingkai pt-6 pb-4 sm:pt-8">
       <KepalaHalaman judul="Peta laporan">
-        Semua laporan warga di DKI Jakarta daratan beserta statusnya. Saring menurut kategori dan status, lalu buka
-        laporannya untuk melihat riwayat penanganan dan posisinya di daftar prioritas.
+        Semua laporan yang masuk ke SUARAKYAT dan statusnya, termasuk yang ditolak. Pilih jenis masalah dan status, lalu
+        ketuk laporannya untuk melihat riwayat dan urutan prioritasnya.
       </KepalaHalaman>
       <div className="mt-6">
         <Suspense

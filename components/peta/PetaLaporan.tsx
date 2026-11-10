@@ -88,7 +88,7 @@ export default function PetaLaporan({
           (seperti chip saring aplikasi peta), supaya peta sudah terlihat di layar pertama. */}
       <div className="kartu grid gap-4 p-4 sm:p-5 lg:grid-cols-2 lg:gap-8">
         <fieldset className="min-w-0">
-          <legend className="text-kecil font-bold">Kategori</legend>
+          <legend className="text-kecil font-bold">Jenis masalah</legend>
           <div className={DERET_CHIP}>
             {KATEGORI.map((k) => (
               <button key={k.id} type="button" aria-pressed={kategori.includes(k.id)} onClick={() => ubahKategori(k.id)} className="chip">
@@ -100,7 +100,7 @@ export default function PetaLaporan({
         </fieldset>
         <fieldset className="min-w-0">
           <legend className="text-kecil font-bold">
-            Status <span className="font-normal text-lembut">(jumlah dalam kategori terpilih)</span>
+            Status <span className="font-normal text-lembut">(angka = jumlah laporan untuk jenis yang dipilih)</span>
           </legend>
           <div className={DERET_CHIP}>
             {STATUS_PUBLIK.map((s) => (
@@ -136,14 +136,14 @@ export default function PetaLaporan({
             <span key={tersaring.length} className="ganti inline-block font-bold text-teks">
               {tersaring.length} laporan tampil.
             </span>{' '}
-            Zoom dengan cubit dua jari (touchpad atau layar sentuh) atau Ctrl + gulir. Klik lingkaran untuk memperbesar; klik titik untuk membuka ringkasannya.
+            Perbesar peta dengan mencubit dua jari (di komputer: Ctrl + gulir). Ketuk lingkaran berangka untuk melihat laporan di dalamnya; ketuk titik untuk ringkasannya.
           </p>
         </div>
       </div>
 
       <section aria-labelledby="judul-daftar" className="mt-4">
         <h2 id="judul-daftar" className="judul-seksi">
-          Laporan terbaru sesuai saringan
+          Laporan terbaru sesuai pilihanmu
         </h2>
         {tersaring.length === 0 ? (
           <p className="kartu ganti mt-4 flex gap-3 p-5 text-badan">
