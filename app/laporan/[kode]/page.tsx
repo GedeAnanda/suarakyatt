@@ -46,15 +46,16 @@ export async function generateMetadata({ params }: PageProps<'/laporan/[kode]'>)
 async function Isi({ params, searchParams }: Pick<PageProps<'/laporan/[kode]'>, 'params' | 'searchParams'>) {
   const [{ kode: mentah }, sp] = await Promise.all([params, searchParams]);
   const kode = decodeURIComponent(mentah).toUpperCase();
-  const detail = await ambilDetailLaporan(kode);
+  // Ketiganya dimulai bersamaan, tidak berurutan (ukur LCP 10 Nov). Hubungan dan prioritas tidak melempar error
+  // (masing-masing punya cadangan), dan hasilnya hanya dipakai bila perlu: hubungan untuk data asli, prioritas untuk
+  // laporan yang belum selesai.
+  const [detail, hubunganDb, dataPrioritas] = await Promise.all([ambilDetailLaporan(kode), ambilHubungan(kode), ambilDataPrioritas()]);
   if (!detail) notFound();
 
   const { laporan: l, timeline, sekarang, sumber } = detail;
   const aktif = STATUS_AKTIF.includes(l.status);
-  const [hubungan, prioritas] = await Promise.all([
-    sumber === 'db' ? ambilHubungan(kode) : Promise.resolve({ login: false, pemilik: false, sudahRating: false, sudahDukung: false }),
-    aktif ? ambilDataPrioritas() : Promise.resolve(null),
-  ]);
+  const hubungan = sumber === 'db' ? hubunganDb : { login: false, pemilik: false, sudahRating: false, sudahDukung: false };
+  const prioritas = aktif ? dataPrioritas : null;
 
   let jelas: KenapaBelum | null = null;
   let idIsu: string | null = null;

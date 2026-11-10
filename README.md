@@ -110,7 +110,7 @@ flowchart TD
 | Admin dinas: ubah status, tolak beralasan, catat kendala | ✅ selesai |
 | Bahasa awam di semua halaman (135 temuan audit) | ✅ selesai, lihat `docs/audit-awam-2026-11-10.md` |
 | Aksesibilitas | ✅ axe-core WCAG 2.2 A/AA: 0 pelanggaran di 13 halaman; Lighthouse aksesibilitas 100 |
-| Performa HP (Lighthouse, simulasi 4G lambat) | 🟡 skor 78–85, tampil pertama ±1 detik; elemen terbesar 4,4–5,5 detik (target 2,5) |
+| Performa HP (Lighthouse, simulasi 4G lambat) | 🟡 skor 82–97; tampil pertama ±1 detik; bagian terbesar tampil dalam 2,6–3,6 detik di 4 halaman, Detail laporan 5,0 dan Kecamatan 4,1 detik (target 2,5); server dipindah ke Tokyo, dekat database |
 | Uji ke 5 warga beragam | 🟡 kit siap (`docs/uji-warga-2026-11-10.md`), belum dijalankan |
 | Integrasi data BPS/CRM sungguhan | ⏳ belum; laporan dan dinas masih data buatan |
 

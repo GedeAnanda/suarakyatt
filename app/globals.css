@@ -576,8 +576,10 @@ html:has(#kotak-cari):not([data-kotak-lewat]) .cari-kepala {
 }
 
 /*
- * Masuk halaman: isi halaman di bawah header memudar dan naik 8 px setiap kali halaman dibuka, baik muat pertama
- * maupun pindah halaman, supaya pergantian halaman terasa. Isi yang menyusul lewat streaming (Suspense) ikut memudar.
+ * Masuk halaman: isi halaman di bawah header naik 8 px setiap kali halaman dibuka, baik muat pertama maupun pindah
+ * halaman, supaya pergantian halaman terasa. Isi yang menyusul lewat streaming (Suspense) ikut naik.
+ * Hanya transform, tanpa memudar (ukur LCP 10 Nov): Chrome baru mencatat LCP setelah animasi opacity dari 0 selesai,
+ * jadi fade 420 ms (halaman) dan 640 ms (isi streaming) langsung menambah LCP sebesar itu. Teks juga tidak pernah pucat.
  * Isian `backwards`, bukan `both`: setelah selesai tidak ada transform yang tertinggal, karena transform di induk membuat
  * elemen position: fixed di dalamnya ikut bergeser. Kerangka memuat (role="status") tidak ikut, karena hanya sekilas.
  */
@@ -587,7 +589,7 @@ html:has(#kotak-cari):not([data-kotak-lewat]) .cari-kepala {
   }
   /* Urutan masuk di dalam satu bagian (hero Beranda): jeda diatur lewat --jeda. */
   .masuk {
-    animation: timbul 640ms var(--ease-keluar) var(--jeda, 0ms) backwards;
+    animation: masuk-halaman 640ms var(--ease-keluar) var(--jeda, 0ms) backwards;
   }
   /* Foto hero sedikit mundur saat halaman terbuka. */
   .masuk-foto {
@@ -595,7 +597,7 @@ html:has(#kotak-cari):not([data-kotak-lewat]) .cari-kepala {
   }
 }
 @keyframes masuk-halaman {
-  from { opacity: 0; transform: translateY(8px); }
+  from { transform: translateY(8px); }
 }
 @keyframes masuk-foto {
   from { transform: scale(1.06); }

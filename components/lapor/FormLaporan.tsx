@@ -15,7 +15,7 @@ import { kompresFoto, TIPE_FOTO, UKURAN_MAKS } from '@/lib/foto';
 import { lalu } from '@/lib/format';
 import { cariKecamatan, muatKecamatan, type FiturKecamatan } from '@/lib/geo/titik';
 import { KATEGORI } from '@/lib/konten';
-import { createClient } from '@/lib/supabase/client';
+import { supabaseBrowser } from '@/lib/supabase/muat';
 import { unggahFoto } from '@/lib/supabase/unggah';
 import type { StatusLaporan } from '@/lib/types';
 import BadgeStatus from '../BadgeStatus';
@@ -220,7 +220,7 @@ export default function FormLaporan() {
     let batal = false;
     const t = window.setTimeout(async () => {
       try {
-      const { data, error } = await createClient().rpc('similar_reports', {
+      const { data, error } = await (await supabaseBrowser()).rpc('similar_reports', {
         p_category_id: kategori,
         p_lat: titik.lat,
         p_lng: titik.lng,
@@ -292,7 +292,7 @@ export default function FormLaporan() {
 
   async function dukung(kode: string) {
     setGalatDukung(null);
-    const { data, error } = await createClient().rpc('toggle_upvote', { p_kode: kode });
+    const { data, error } = await (await supabaseBrowser()).rpc('toggle_upvote', { p_kode: kode });
     if (error) return setGalatDukung(pesanError(error));
     const hasil = data as { upvoted: boolean; jumlah_upvote: number };
     setDidukung((d) => ({ ...d, [kode]: hasil.upvoted }));
@@ -335,7 +335,7 @@ export default function FormLaporan() {
         urls.push(url);
       }
       setTahap('mengirim');
-      const { data, error } = await createClient().rpc('create_report', {
+      const { data, error } = await (await supabaseBrowser()).rpc('create_report', {
         p_category_id: kategori,
         p_deskripsi: deskripsi.trim(),
         p_foto: urls,

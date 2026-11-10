@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { pesanError } from '@/lib/errors';
-import { createClient } from '@/lib/supabase/client';
+import { supabaseBrowser } from '@/lib/supabase/muat';
 import type { StatusLaporan } from '@/lib/types';
 import { umumkan } from '../Pengumuman';
 import AngkaGulir from '../ui/AngkaGulir';
@@ -45,7 +45,7 @@ export function TombolDukung({
   async function dukung() {
     setMemuat(true);
     setGalat(null);
-    const { data, error } = await createClient().rpc('toggle_upvote', { p_kode: kode });
+    const { data, error } = await (await supabaseBrowser()).rpc('toggle_upvote', { p_kode: kode });
     setMemuat(false);
     if (error) return setGalat(pesanError(error));
     const hasil = data as { upvoted: boolean; jumlah_upvote: number };
@@ -107,7 +107,7 @@ export function TombolBatalkan({ kode }: { kode: string }) {
   async function batalkan() {
     setMemuat(true);
     setGalat(null);
-    const { error } = await createClient().rpc('cancel_report', { p_kode: kode });
+    const { error } = await (await supabaseBrowser()).rpc('cancel_report', { p_kode: kode });
     setMemuat(false);
     if (error) return setGalat(pesanError(error));
     // Laporan yang dibatalkan tidak tampil publik, jadi pemberitahuan ini satu-satunya konfirmasi.
@@ -160,7 +160,7 @@ export function FormRating({ kode }: { kode: string }) {
     if (!nilai) return;
     setMemuat(true);
     setGalat(null);
-    const { error } = await createClient().rpc('rate_report', { p_kode: kode, p_nilai: nilai, p_komentar: komentar || null });
+    const { error } = await (await supabaseBrowser()).rpc('rate_report', { p_kode: kode, p_nilai: nilai, p_komentar: komentar || null });
     setMemuat(false);
     if (error) return setGalat(pesanError(error));
     setTerkirim(true);

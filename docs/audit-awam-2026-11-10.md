@@ -2,7 +2,11 @@
 
 > Audit menyeluruh atas pertanyaan: **apakah warga biasa (lulusan SMA, membuka di HP, tidak paham statistik) bisa memahami SUARAKYAT?** Tema WIA 2026 menuntut masyarakat mudah mengerti, dan mentor FDS meminta visualisasi skor yang langsung dipahami warga awam. Semua bagian A, B, dan C diambil alih dalam satu branch: `feat/bahasa-awam` (dari `dev`, tanpa upstream).
 >
-> **Status 10 Nov (malam):** hampir semua temuan dikerjakan di `feat/bahasa-awam` dan **belum di-commit**. Migrasi `0011` sudah diterapkan ke Supabase. Rinciannya di [Hasil](#hasil).
+> **Status 10 Nov (malam):**
+>
+> - Putaran 1 (bahasa) sudah di-merge ke `dev` lewat PR #23. Migrasi `0011` sudah diterapkan ke Supabase. Rinciannya di [Hasil](#hasil).
+> - Putaran 2 (aksesibilitas, huruf besar, kit uji warga) ada di `feat/ramah-semua`, commit `c57ce14`.
+> - Putaran 3 (LCP) ada di branch yang sama dan belum di-commit. Rinciannya di [Putaran 3](#putaran-3-lcp-dan-lebar-halaman-di-hp-10-november-malam).
 
 ## Ringkasan cepat
 
@@ -185,10 +189,7 @@ Kalimat pendek **belum membuktikan** warga paham. Buktinya harus dari uji ke war
 - **Perbaikan:**
   - Foto tab hero di Beranda baru diunduh saat tabnya dibuka (dulu 5 foto, ±500 KB, sekaligus).
   - Galeri laporan diberi `sizes`; dulu HP diberi gambar selebar 1920 px.
-- **Belum memenuhi target LCP 2,5 s.** Sisa bebannya JavaScript (±350–470 KB, terbesar di Peta karena Leaflet) dan foto di bawah layar yang diunduh lebih awal oleh Chrome saat koneksi lambat. Langkah berikutnya:
-  - muat Leaflet hanya saat peta mendekati layar;
-  - foto Beranda dalam AVIF dan lebih sedikit;
-  - periksa `unused-javascript`.
+- **Belum memenuhi target LCP 2,5 s.** Dugaan awal: JavaScript (terutama Leaflet) dan foto di bawah layar. Pengukuran di [Putaran 3](#putaran-3-lcp-dan-lebar-halaman-di-hp-10-november-malam) menemukan penyebab lain, dan dugaan Leaflet ternyata salah (Leaflet sudah dimuat terpisah).
 
 ### Ringkasan sekali lihat
 
@@ -207,3 +208,93 @@ README sekarang memuat:
 - tabel **progres** yang jujur (termasuk yang belum: uji warga, LCP, data BPS/CRM);
 - nama tim dari riwayat git: Wildan (@wildanpanjii), Gede Ananda (@GedeAnanda), Fatih Akram Wicaksono. **Tim perlu memastikan nama lengkapnya.**
 
+## Putaran 3: LCP dan lebar halaman di HP (10 November malam)
+
+### Ringkasan cepat
+
+- **Rapor 4,4 → 2,6 s, Peta 4,7 → 3,1 s, Prioritas 4,5 → 3,2 s, Beranda 5,3 → 3,6 s.** LCP adalah waktu sampai bagian terbesar halaman tampil; diukur dengan Lighthouse 13.5, HP, simulasi 4G lambat.
+- **Bug di HP:** Beranda melebar sampai 1209 px di layar 412 px, jadi halaman bisa digeser ke samping. Sudah diperbaiki.
+- **Penyebab terbesar di situs produksi:** fungsi Vercel berjalan di Amerika (iad1), sedangkan database di Tokyo. Region dipindah ke `hnd1` (Tokyo); hasilnya baru terlihat setelah deploy.
+- **Belum:** Detail laporan (5,0 s) dan Kecamatan (4,1 s) masih di atas 2,5 s, karena teks utamanya baru tampil setelah data datang dari database.
+
+### Cara mengukur
+
+- **Lighthouse 13.5**, bukan 12. Versi 12 tidak bisa membaca elemen LCP di Chrome terbaru (galat `RootCauses`), jadi dugaan di putaran 2 tidak bisa dibuktikan.
+- **Build produksi lokal** (`next start`), dengan simulasi HP dan 4G lambat bawaan Lighthouse.
+- Versi sebelum dan sesudah diukur dengan alat yang sama. Selisih ±0,3 s antar-percobaan masih wajar.
+- **Lebar halaman** diperiksa di Chrome headless dengan emulasi HP 412 × 823.
+
+### Yang ditemukan
+
+1. **Animasi masuk menunda LCP.** Isi halaman memudar dari transparan (opacity 0): 420 ms untuk seluruh halaman, 640 ms untuk isi yang datang menyusul. Chrome baru mencatat LCP setelah animasi itu selesai.
+   - Contoh: di Prioritas, teks pembuka tampil di 77 ms, tetapi LCP tercatat di 510 ms.
+2. **Beranda melebar 1209 px di HP.** Kartu "Untuk siapa SUARAKYAT" bisa digeser menyamping. Teks khusus pembaca layar (`sr-only`) di kartu yang masih di luar layar tidak terkurung oleh jalur geser, sehingga halaman ikut melebar. Akibatnya:
+   - halaman bisa digeser ke samping;
+   - Chrome menganggap layarnya setinggi 2416 px dan mengunduh foto jauh di bawah sebagai foto yang terlihat (Beranda 1.088 KB);
+   - LCP terbaca pada foto yang salah.
+
+   Di putaran 2 angka 1191 px ini dikira artefak alat ukur. Ternyata bug sungguhan.
+3. **supabase-js (±65 KB gzip) ikut dimuat di setiap halaman,** padahal di browser ia hanya dipakai saat tombol ditekan: dukung, batal, beri nilai, kirim laporan, unggah foto, dan simpan aturan.
+4. **Detail laporan mengambil data berurutan.** Laporan diambil dulu, baru riwayatnya, baru data prioritas: tiga kali bolak-balik ke database.
+5. **Server jauh dari database.** Header `x-vercel-id` menunjukkan fungsi berjalan di `iad1` (Washington). Database Supabase ada di `ap-northeast-1` (Tokyo).
+   - Hitungannya sendiri cepat: `priority_factors` hanya 5 ms di server database.
+   - Yang lama adalah jaraknya. Di produksi, isi Detail laporan baru selesai dikirim setelah sekitar 2,1 detik.
+6. **Leaflet bukan penyebab.** Leaflet sudah dimuat terpisah (`next/dynamic`, `ssr: false`) dan tidak menunda teks utama.
+
+### Yang diubah
+
+| Perubahan | Berkas |
+|---|---|
+| Animasi masuk halaman dan isi susulan hanya bergeser naik 8 px, tanpa memudar. Teks juga tidak pernah pucat. | `app/globals.css` |
+| Jalur geser diberi `relative`, supaya isi kartu di luar layar ikut terpotong. | `components/ui/BarisGeser.tsx` |
+| supabase-js baru dimuat saat tombol ditekan, lewat `supabaseBrowser()`. | `lib/supabase/muat.ts`, `AksiLaporan`, `FormLaporan`, `Simulator`, `lib/supabase/unggah.ts` |
+| Laporan, riwayat, hubungan pengguna, dan data prioritas diambil bersamaan. | `lib/data/laporan.ts`, `app/laporan/[kode]/page.tsx` |
+| Fungsi Vercel dipindah ke Tokyo: `"regions": ["hnd1"]`. | `vercel.json` |
+
+### Hasil (Lighthouse 13.5, HP, 4G lambat, build lokal)
+
+| Halaman | Performa | LCP | JS | Total unduhan |
+|---|---|---|---|---|
+| Beranda | 80 → 90 | 5,3 → 3,6 s | 313 → 248 KB | 1.088 → 576 KB |
+| Urutan prioritas | 84 → 93 | 4,5 → 3,2 s | 313 → 248 KB | 527 → 461 KB |
+| Detail laporan | 80 → 82 | 5,4 → 5,0 s | 374 → 308 KB | 745 → 679 KB |
+| Peta | 83 → 93 | 4,7 → 3,1 s | 367 → 301 KB | 882 → 816 KB |
+| Kecamatan | 82 → 85 | 4,5 → 4,1 s | 317 → 251 KB | 511 → 445 KB |
+| Rapor dinas | 85 → 97 | 4,4 → 2,6 s | 313 → 248 KB | 477 → 412 KB |
+
+Di semua halaman FCP tetap 0,9–1,2 s, TBT ≤ 50 ms, dan CLS ≤ 0,096.
+
+Cek lain:
+
+- **Lebar halaman:** 13 halaman di HP 412 px sekarang pas 412 px, tidak ada yang bisa digeser ke samping.
+- **Waktu data di Detail laporan (tanpa throttling, lokal → Tokyo):** 1.755 → 485 ms.
+- **Tombol Dukung** diuji dengan akun warga demo: supabase-js tidak dimuat saat halaman dibuka, lalu dimuat saat tombol ditekan. Dukung dan batal dukung tetap berjalan, dan datanya dikembalikan seperti semula.
+- `tsc`, `lint`, 48 tes, dan build lulus.
+
+### Pembanding produksi (sebelum deploy perubahan ini)
+
+Diukur 10 Nov malam di https://suarakyatt.vercel.app. Kodenya masih versi `main` lama, dan fungsinya masih di `iad1`.
+
+| Halaman | Performa | LCP | Teks utama tampil (tanpa throttling) |
+|---|---|---|---|
+| Beranda | 87 | 2,9 s | 926 ms |
+| Urutan prioritas | 96 | 2,7 s | 763 ms |
+| Detail laporan | 82 | 4,7 s | 3.235 ms |
+| Kecamatan | 89 | 3,3 s | 2.592 ms |
+
+- **Halaman lengkap selesai dikirim (curl):** Detail laporan ±2,1 s, Prioritas ±1,5 s, Kecamatan ±1,8 s, Rapor 1,0–1,7 s.
+- **Angka produksi lebih baik dari lokal** karena CDN Vercel mengompres dengan brotli. Untuk juri, yang berlaku adalah angka produksi.
+
+### Setelah deploy, cek ini
+
+1. `curl -sI https://suarakyatt.vercel.app/api/cron/reset-demo` harus menunjukkan `x-vercel-id: …::hnd1::…`, bukan `iad1`.
+2. Ukur ulang di [PageSpeed Insights](https://pagespeed.web.dev/) untuk `/laporan/SR-27RPCJ` dan `/kecamatan/31.74.010`. Dua halaman ini paling banyak menunggu data, jadi paling terbantu oleh region Tokyo.
+3. Catat hasilnya di tabel ini.
+
+### Yang belum
+
+- **Detail laporan dan Kecamatan masih di atas 2,5 s.** Teks utamanya (status dan kalimat kecamatan) baru ada setelah data datang. Langkah berikutnya, kalau region Tokyo belum cukup:
+  - simpan data publik ini di cache (`'use cache'` + `cacheTag`), lalu segarkan saat status atau dukungan berubah;
+  - risikonya: tampilan bisa tertinggal sebentar, dan lapisan data (bagian B) perlu diubah.
+- **Batas bawah sekitar 2,6 s** di simulasi 4G lambat datang dari JavaScript kerangka Next.js dan React (±170 KB gzip), yang dimuat di setiap halaman.
+- **Prefetch rute:** setelah halaman siap, Next.js mengambil lebih dulu ±12 rute dari tautan menu. Ini membantu perpindahan halaman, tetapi memakai kuota data di HP. Belum diubah.

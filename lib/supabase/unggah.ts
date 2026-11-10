@@ -2,7 +2,7 @@
 // Dipanggil dari Client Component SETELAH foto dikompres dan EXIF-nya dibuang (tugas A, SDD 5.4).
 // URL hasilnya dikirim ke create_report (p_foto) atau update_report_status (p_bukti_url).
 
-import { createClient } from './client';
+import { supabaseBrowser } from './muat';
 
 export type BucketFoto = 'foto-laporan' | 'bukti';
 
@@ -17,7 +17,7 @@ export async function unggahFoto(bucket: BucketFoto, foto: Blob): Promise<string
   const ekstensi = EKSTENSI[foto.type];
   if (!ekstensi || foto.size === 0 || foto.size > UKURAN_MAKS) throw new Error('INPUT_TIDAK_VALID');
 
-  const supabase = createClient();
+  const supabase = await supabaseBrowser();
   const { data } = await supabase.auth.getClaims();
   const uid = data?.claims.sub;
   if (!uid) throw new Error('TIDAK_LOGIN');

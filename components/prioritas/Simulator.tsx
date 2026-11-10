@@ -32,7 +32,7 @@ import {
   selisihPeringkat,
   type NamaPreset,
 } from '@/lib/scoring';
-import { createClient } from '@/lib/supabase/client';
+import { supabaseBrowser } from '@/lib/supabase/muat';
 import type { Bobot, Faktor, FaktorIsu, SkorIsu } from '@/lib/types';
 import PetaKecamatan, { KeteranganKelas } from '../PetaKecamatan';
 import { umumkan } from '../Pengumuman';
@@ -503,7 +503,7 @@ function SimpanBobot({ bobot, aktif, onTersimpan }: { bobot: Bobot; aktif: boole
     setMemuat(true);
     setGalat(null);
     const bulat = Object.fromEntries(FAKTOR.map((f) => [f, Math.round(bobot[f] * 1000) / 1000]));
-    const { error } = await createClient().rpc('save_weights', { p_bobot: bulat, p_alasan: alasan });
+    const { error } = await (await supabaseBrowser()).rpc('save_weights', { p_bobot: bulat, p_alasan: alasan });
     setMemuat(false);
     if (error) {
       setGalat(pesanError(error));
