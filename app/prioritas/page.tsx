@@ -10,6 +10,7 @@ import { Suspense } from 'react';
 import BannerSimulasi from '@/components/BannerSimulasi';
 import KepalaHalaman from '@/components/KepalaHalaman';
 import RiwayatBobot from '@/components/prioritas/RiwayatBobot';
+import JawabanCepat from '@/components/prioritas/JawabanCepat';
 import Simulator from '@/components/prioritas/Simulator';
 import Ikon from '@/components/ui/Ikon';
 import { kelasTautan, kelasTombol } from '@/components/ui/Tombol';
@@ -17,7 +18,8 @@ import { ambilDataPrioritas } from '@/lib/data/prioritas';
 import { ambilSesi } from '@/lib/data/sesi';
 import { tanggal } from '@/lib/format';
 import { DEFINISI_FAKTOR, NAMA_FAKTOR } from '@/lib/konten';
-import { FAKTOR } from '@/lib/scoring';
+import { KECAMATAN } from '@/lib/geo/kecamatan-svg';
+import { FAKTOR, hitungSkor } from '@/lib/scoring';
 import { WARNA_FAKTOR } from '@/components/prioritas/BarKontribusi';
 
 export const metadata: Metadata = {
@@ -28,12 +30,20 @@ export const metadata: Metadata = {
 
 async function Isi() {
   const [data, sesi] = await Promise.all([ambilDataPrioritas(), ambilSesi()]);
+  const resmi = hitungSkor(data.faktor.isu, data.bobotResmi);
   return (
     <>
       <BannerSimulasi
         sumber={data.sumber}
         keterangan={`Aturan resmi berlaku${data.bobotDiperbarui ? ` sejak ${tanggal(data.bobotDiperbarui)}` : ''} · angka warga kurang mampu memakai data per kota`}
       />
+
+      {/* Ringkasan sekali lihat: 3 masalah teratas + cari kecamatan, sebelum alat dan daftar lengkap. */}
+      {resmi.length > 0 && (
+        <div className="mt-6">
+          <JawabanCepat teratas={resmi.slice(0, 3)} total={resmi.length} kecamatan={KECAMATAN} />
+        </div>
+      )}
 
       <div className="mt-6">
         <Simulator isu={data.faktor.isu} bobotResmi={data.bobotResmi} perencana={Boolean(sesi?.perencana)} />

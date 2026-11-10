@@ -254,8 +254,19 @@ Sesudah diterapkan: fungsi `foto_sah` dan `sudah_dukung` ada; bucket `bukti` (pu
 
 ### Masih terbuka
 
-1. **2.6:** uji ke 3–5 orang awam.
-2. **3.5:** Lighthouse mobile dengan 4G di HP/Chrome sungguhan, untuk `/`, `/laporan/[kode]`, `/peta`, `/prioritas`, dan `/kecamatan`. Catat hasilnya di sini.
+1. **2.6:** uji ke 3–5 orang awam. Kit siap di [uji-warga-2026-11-10.md](uji-warga-2026-11-10.md); tinggal dijalankan tim.
+2. **3.5:** Lighthouse sudah dijalankan (10 Nov malam, simulasi 4G lambat).
+   - Aksesibilitas 100.
+   - Setelah perbaikan LCP (putaran 3):
+     - performa 82–97;
+     - FCP ±1 detik;
+     - LCP 2,6–3,6 detik di 4 halaman;
+     - Detail laporan 5,0 detik dan Kecamatan 4,1 detik.
+   - Target 2,5 detik belum tercapai.
+   - Bug lebar 1209 px di Beranda HP sudah diperbaiki.
+   - Fungsi Vercel dipindah ke Tokyo, dekat database; perlu diukur ulang setelah deploy.
+
+   Rincian di [audit-awam-2026-11-10.md](audit-awam-2026-11-10.md#putaran-3-lcp-dan-lebar-halaman-di-hp-10-november-malam).
 3. **2.5:** hapus paket `recharts` atau pakai.
 4. Batas waktu final submission tidak tercantum di lembar FDS.
 

@@ -173,10 +173,13 @@ export async function ambilDetailLaporan(kode: string): Promise<DetailLaporan | 
   await connection();
   try {
     const supabase = await createClient();
-    const { data, error } = await supabase.from('v_laporan_publik').select('*').eq('kode', kode).maybeSingle();
+    // Laporan dan riwayatnya diambil bersamaan (satu kali bolak-balik ke database, bukan dua). Ukur LCP 10 Nov.
+    const [{ data, error }, { data: tl }] = await Promise.all([
+      supabase.from('v_laporan_publik').select('*').eq('kode', kode).maybeSingle(),
+      supabase.from('v_timeline_publik').select('*').eq('kode', kode).order('created_at'),
+    ]);
     if (!error && !data && (await ambilTitikLaporan()).sumber === 'db') return null;
     if (!error && data) {
-      const { data: tl } = await supabase.from('v_timeline_publik').select('*').eq('kode', kode).order('created_at');
       return { sumber: 'db', laporan: data as LaporanPublik, timeline: (tl ?? []) as TimelineItem[], sekarang: Date.now() };
     }
   } catch {
