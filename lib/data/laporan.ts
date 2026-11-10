@@ -15,7 +15,20 @@ export type Sumber = 'db' | 'contoh';
 
 export type TitikLaporan = Pick<
   LaporanPublik,
-  'kode' | 'kategori' | 'status' | 'lat' | 'lng' | 'jumlah_upvote' | 'kecamatan' | 'kota' | 'created_at' | 'batas_respons' | 'batas_selesai'
+  | 'kode'
+  | 'kategori'
+  | 'status'
+  | 'lat'
+  | 'lng'
+  | 'jumlah_upvote'
+  | 'kecamatan'
+  | 'kota'
+  | 'created_at'
+  | 'batas_respons'
+  | 'batas_selesai'
+  // Tanpa dua kolom ini, laporan Selesai di daftar peta terbaca "Terlambat N hari" (audit 10 Nov, W1).
+  | 'responded_at'
+  | 'resolved_at'
 >;
 
 export interface StatistikBeranda {
@@ -26,7 +39,7 @@ export interface StatistikBeranda {
   is_simulated: boolean;
 }
 
-const KOLOM_TITIK = 'kode,kategori,status,lat,lng,jumlah_upvote,kecamatan,kota,created_at,batas_respons,batas_selesai';
+const KOLOM_TITIK = 'kode,kategori,status,lat,lng,jumlah_upvote,kecamatan,kota,created_at,batas_respons,batas_selesai,responded_at,resolved_at';
 const AKTIF: StatusLaporan[] = ['menunggu', 'diverifikasi', 'diproses'];
 
 // --- Data contoh: semua waktu digeser supaya "sekarang" sama dengan jangkar generator (SDD 4.4).
@@ -77,8 +90,8 @@ export const ambilTitikLaporan = cache(async (): Promise<{ sumber: Sumber; lapor
     sumber: 'contoh',
     sekarang,
     laporan: laporan.map(
-      ({ kode, kategori, status, lat, lng, jumlah_upvote, kecamatan, kota, created_at, batas_respons, batas_selesai }) => ({
-        kode, kategori, status, lat, lng, jumlah_upvote, kecamatan, kota, created_at, batas_respons, batas_selesai,
+      ({ kode, kategori, status, lat, lng, jumlah_upvote, kecamatan, kota, created_at, batas_respons, batas_selesai, responded_at, resolved_at }) => ({
+        kode, kategori, status, lat, lng, jumlah_upvote, kecamatan, kota, created_at, batas_respons, batas_selesai, responded_at, resolved_at,
       }),
     ),
   };

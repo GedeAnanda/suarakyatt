@@ -42,33 +42,41 @@ export const KETERANGAN_TUNDA: Record<AlasanTunda, string> = {
   lainnya: 'Alasan lain. Wajib dijelaskan di catatan.',
 };
 
-/** Nama faktor untuk judul dan slider (huruf kapital di awal); LABEL_FAKTOR di lib/scoring untuk kalimat. */
+/**
+ * Nama 6 hal yang dinilai, satu set untuk SEMUA halaman (audit bahasa awam 10 Nov, D12): Prioritas, Kecamatan, Beranda,
+ * panel "Kenapa belum?". Potongan kalimatnya (LABEL_FAKTOR, PENAHAN_FAKTOR) ada di lib/scoring.
+ */
 export const NAMA_FAKTOR: Record<Faktor, string> = {
-  urgensi: 'Urgensi kategori',
-  volume: 'Volume laporan',
+  urgensi: 'Mendesaknya masalah',
+  volume: 'Banyaknya laporan',
   dukungan: 'Dukungan warga',
-  umur: 'Umur laporan',
-  kerentanan: 'Kerentanan wilayah',
+  umur: 'Lama menunggu',
+  kerentanan: 'Warga kurang mampu',
   kepadatan: 'Kepadatan penduduk',
 };
 
+/** Penjelasan satu-dua kalimat tiap hal, untuk popover Istilah. Tanpa rumus. */
 export const DEFINISI_FAKTOR: Record<Faktor, string> = {
-  urgensi: 'Ditentukan dari kategori, bukan dipilih warga: tinggi 1,0, sedang 0,6, rendah 0,3.',
-  volume: 'Laporan aktif yang sudah diverifikasi admin, per 10.000 penduduk kecamatan.',
-  dukungan: 'Upvote pada laporan aktif terverifikasi, maksimal 10 dihitung per laporan, per 10.000 penduduk.',
-  umur: 'Rata-rata umur laporan aktif dibanding batas waktu selesainya, dibatasi maksimal 2 kali.',
-  kerentanan: 'Persentase penduduk miskin di kota administrasi. Semua kecamatan dalam satu kota bernilai sama.',
-  kepadatan: 'Jumlah penduduk dibagi luas kecamatan (jiwa per km²).',
+  urgensi:
+    'Ditentukan oleh jenis masalah, bukan pilihan pelapor. Jalan rusak dan saluran tersumbat paling mendesak (poin penuh); sampah dan lampu mati agak mendesak (60% poin).',
+  volume:
+    'Jumlah laporan yang sudah diperiksa dinas, dibanding jumlah warga kecamatan (per 10.000 orang), supaya kecamatan kecil dan besar adil.',
+  dukungan:
+    'Jumlah warga yang menekan Dukung, dibanding jumlah warga. Paling banyak 10 dukungan per laporan dihitung, supaya satu laporan viral tidak menguasai urutan.',
+  umur: 'Sudah berapa lama laporan menunggu dibanding batas waktu selesainya. Poin penuh kalau sudah menunggu 2 kali batas waktu.',
+  kerentanan:
+    'Persen warga miskin di kota itu. Data per kecamatan belum ada, jadi semua kecamatan dalam satu kota mendapat angka yang sama.',
+  kepadatan: 'Banyaknya orang per km². Makin padat, makin banyak orang yang terdampak.',
 };
 
-/** Satuan nilai mentah, untuk "kemiskinan 4,5% → 15 poin". */
+/** Angka asli tiap hal, untuk "4,5% warga miskin → 15 poin". */
 export const SATUAN_FAKTOR: Record<Faktor, (x: number) => string> = {
-  urgensi: (x) => (x >= 1 ? 'tinggi' : x >= 0.6 ? 'sedang' : 'rendah'),
-  volume: (x) => `${x.toLocaleString('id-ID', { maximumFractionDigits: 2 })} per 10 rb jiwa`,
-  dukungan: (x) => `${x.toLocaleString('id-ID', { maximumFractionDigits: 2 })} per 10 rb jiwa`,
-  umur: (x) => `${x.toLocaleString('id-ID', { maximumFractionDigits: 2 })}× batas waktu`,
-  kerentanan: (x) => `${x.toLocaleString('id-ID', { maximumFractionDigits: 1 })}% miskin`,
-  kepadatan: (x) => `${Math.round(x).toLocaleString('id-ID')} jiwa/km²`,
+  urgensi: (x) => (x >= 1 ? 'sangat mendesak' : x >= 0.6 ? 'agak mendesak' : 'kurang mendesak'),
+  volume: (x) => `${x.toLocaleString('id-ID', { maximumFractionDigits: 2 })} laporan per 10.000 warga`,
+  dukungan: (x) => `${x.toLocaleString('id-ID', { maximumFractionDigits: 2 })} dukungan per 10.000 warga`,
+  umur: (x) => `sudah menunggu ${x.toLocaleString('id-ID', { maximumFractionDigits: 1 })} kali batas waktu`,
+  kerentanan: (x) => `${x.toLocaleString('id-ID', { maximumFractionDigits: 1 })}% warga miskin`,
+  kepadatan: (x) => `${Math.round(x).toLocaleString('id-ID')} orang per km²`,
 };
 
 /** Kanal pengaduan resmi (FR-B1). */

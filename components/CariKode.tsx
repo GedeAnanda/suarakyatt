@@ -34,7 +34,7 @@ export default function CariKode({
         name="kode"
         defaultValue={nilaiAwal}
         maxLength={32}
-        placeholder={kepala ? 'Lacak kode, misalnya SR-K7W3PA' : 'Kode laporan, misalnya SR-K7W3PA'}
+        placeholder={kepala ? 'Lacak kode, misalnya SR-ABC234' : 'Kode laporan, misalnya SR-ABC234'}
         autoComplete="off"
         autoCapitalize="characters"
         spellCheck={false}

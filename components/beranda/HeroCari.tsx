@@ -1,37 +1,49 @@
 // components/beranda/HeroCari.tsx — layar pertama Beranda: foto, "Kenapa belum?", dan kotak cari bertab (pemilik: A)
-// Seperti hero situs travel: foto lebar membulat, slogan di atasnya, lalu kotak putih bertab yang menumpang
-// di tepi bawah foto. Tiap tab adalah pintu ke fitur yang sudah ada: lacak kode (GET /lacak), uji bobot
-// (/prioritas?bobot=&kategori=), saring peta (/peta?kategori=&status=), rapor instansi, dan lapor masalah.
-// Foto dan kalimat di bawah judul ikut berganti mengikuti tab. Tanpa JavaScript, tab pertama tetap berfungsi.
+// Seperti hero situs travel: foto lebar membulat, judul dan subjudul tetap di atasnya, lalu kotak putih bertab yang
+// menumpang di tepi bawah foto. Tiap tab adalah pintu ke fitur yang sudah ada: lacak laporan (GET /lacak), lapor
+// masalah, atur urutan (/prioritas?bobot=&kategori=), peta laporan (/peta?kategori=&status=), dan rapor dinas.
+// Di HP dua aksi utama (Laporkan masalah, Lacak laporan) tampil sebagai tombol di layar pertama; keduanya membuka tab
+// yang sesuai, jadi peringatan "bukan saluran resmi" tetap terbaca sebelum mulai lapor.
+// Foto dan kalimat tab ikut berganti mengikuti tab. Tanpa JavaScript, tab pertama dan kedua tombol tetap berfungsi.
 
 'use client';
 
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect, useRef, useState, type CSSProperties, type FormEvent, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type CSSProperties, type FormEvent, type MouseEvent, type ReactNode } from 'react';
 import { FOTO, KANAL_RESMI, KATEGORI, type FotoTerbuka } from '@/lib/konten';
 import { FAKTOR, LABEL_PRESET, PRESET, type NamaPreset } from '@/lib/scoring';
 import type { StatusLaporan } from '@/lib/types';
 import { LABEL_STATUS } from '../BadgeStatus';
 import Ikon, { type NamaIkon } from '../ui/Ikon';
 import KelompokCair from '../ui/KelompokCair';
+import { kelasTombol } from '../ui/Tombol';
 
 type IdTab = 'lacak' | 'prioritas' | 'peta' | 'rapor' | 'lapor';
 
+// "Lapor masalah" di urutan kedua, bukan di ujung: di HP tab di ujung tersembunyi di balik geseran.
 const TAB: { id: IdTab; label: string; ikon: NamaIkon; slogan: string; foto: FotoTerbuka; posisi?: string }[] = [
   {
     id: 'lacak',
     label: 'Lacak laporan',
     ikon: 'lacak',
-    slogan: 'Lacak laporanmu, lalu lihat alasan di balik urutan penanganannya.',
+    slogan: 'Lacak laporanmu, lalu lihat kenapa masalahnya ada di urutan itu.',
     foto: FOTO.ciliwung,
   },
   {
+    id: 'lapor',
+    label: 'Lapor masalah',
+    ikon: 'tambah',
+    slogan:
+      'Laporkan masalah kota dengan foto dan titik lokasi. Laporanmu ikut dihitung dalam urutan di SUARAKYAT, tetapi tidak dikirim ke pemerintah.',
+    foto: FOTO.jalan1975,
+  },
+  {
     id: 'prioritas',
-    label: 'Uji prioritas',
+    label: 'Atur urutan',
     ikon: 'geser',
-    slogan: 'Bobot bukan kebenaran, melainkan pilihan. Ganti pilihannya dan lihat urutannya bergeser.',
+    slogan: 'Urutan perbaikan tergantung apa yang dianggap paling penting. Pilih sendiri, lihat urutannya berubah.',
     foto: FOTO.banjirTanjungDuren,
     posisi: '50% 62%',
   },
@@ -39,27 +51,23 @@ const TAB: { id: IdTab; label: string; ikon: NamaIkon; slogan: string; foto: Fot
     id: 'peta',
     label: 'Peta laporan',
     ikon: 'peta',
-    slogan: 'Semua laporan warga di Jakarta beserta statusnya, termasuk yang ditolak.',
+    slogan: 'Semua laporan yang masuk ke SUARAKYAT dan statusnya, termasuk yang ditolak.',
     foto: FOTO.trotoar,
   },
   {
     id: 'rapor',
-    label: 'Rapor instansi',
+    label: 'Rapor dinas',
     ikon: 'lencana',
-    slogan: 'Nilai A sampai E tiap instansi, selalu bersama tingkat penolakannya.',
+    slogan: 'Nilai A (sangat baik) sampai E (buruk) untuk tiap dinas, selalu bersama persen laporan yang ditolak.',
     foto: FOTO.lampuJalan,
     posisi: '50% 30%',
   },
-  {
-    id: 'lapor',
-    label: 'Lapor masalah',
-    ikon: 'tambah',
-    slogan: 'Laporkan masalah kota dengan foto dan titik lokasi. Laporanmu ikut menentukan prioritas.',
-    foto: FOTO.jalan1975,
-  },
 ];
 
-const KEUNGGULAN = ['42 kecamatan DKI Jakarta dinilai', 'Enam faktor skor, semuanya terbuka', 'Laporan yang ditolak tetap tampil'];
+const SUBJUDUL =
+  'Laporkan masalah kota, lacak laporanmu, dan lihat kenapa satu masalah ditangani lebih dulu dari yang lain.';
+
+const KEUNGGULAN = ['Mencakup 42 kecamatan Jakarta', '6 alasan urutan, semuanya bisa dilihat', 'Laporan yang ditolak tetap ditampilkan'];
 
 const PRESET_URUT: NamaPreset[] = ['keselamatan', 'kerentanan', 'suara_warga'];
 const STATUS_PETA: StatusLaporan[] = ['menunggu', 'diverifikasi', 'diproses', 'selesai', 'ditolak'];
@@ -102,6 +110,7 @@ export default function HeroCari({ panelRapor }: { panelRapor: ReactNode }) {
   const [aktif, setAktif] = useState<IdTab>('lacak');
   const daftarTab = useRef<HTMLDivElement>(null);
   const kotak = useRef<HTMLDivElement>(null);
+  const masukanKode = useRef<HTMLInputElement>(null);
   const tab = TAB.find((t) => t.id === aktif)!;
 
   // Selama kotak cari ini terlihat, kolom cari di header disembunyikan (globals.css, .cari-kepala) supaya lacak
@@ -132,6 +141,15 @@ export default function HeroCari({ panelRapor }: { panelRapor: ReactNode }) {
     daftarTab.current?.querySelectorAll<HTMLButtonElement>('[role="tab"]')[i]?.focus();
   }
 
+  /** Tombol aksi di HP: buka tab yang sesuai di kotak cari, bukan langsung pindah halaman. Tanpa JavaScript, href-nya jalan. */
+  function bukaTab(id: IdTab, e: MouseEvent<HTMLAnchorElement>) {
+    e.preventDefault();
+    setAktif(id);
+    const halus = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    kotak.current?.scrollIntoView({ behavior: halus ? 'smooth' : 'auto', block: 'start' });
+    if (id === 'lacak') masukanKode.current?.focus({ preventScroll: true });
+  }
+
   /** Form GET tetap jalan tanpa JavaScript; dengan JavaScript, parameter kosong tidak ikut ke URL. */
   function kirimBersih(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -143,7 +161,7 @@ export default function HeroCari({ panelRapor }: { panelRapor: ReactNode }) {
   }
 
   return (
-    <section aria-labelledby="judul-beranda" className="bingkai pt-4 sm:pt-6">
+    <section aria-labelledby="judul-beranda" className="bingkai pt-3 sm:pt-4">
       {/* Foto memenuhi seluruh hero, termasuk di belakang kotak cari, jadi kotak putih menumpang penuh di atasnya. */}
       <div className="relative isolate overflow-hidden rounded-besar bg-navy">
         {TAB.map((t, i) => (
@@ -167,10 +185,29 @@ export default function HeroCari({ panelRapor }: { panelRapor: ReactNode }) {
         <div className="di-gelap px-5 pt-9 pb-7 text-white sm:px-10 sm:pt-12 sm:pb-9 lg:px-12 lg:pt-14 lg:pb-10">
           <h1 id="judul-beranda" className="text-hero font-bold tracking-[-0.03em]">
             Kenapa belum?
-            <span className="sr-only"> SUARAKYAT membuka alasan di balik urutan penanganan masalah kota.</span>
           </h1>
-          {/* Tinggi dua baris supaya kotak cari tidak naik-turun saat kalimat tab berganti panjang. */}
-          <p key={aktif} className="ganti mt-3 max-w-[46ch] text-lead font-medium text-white/95 sm:min-h-[2.7em] sm:text-sub">
+          <p className="mt-3 max-w-[48ch] text-lead font-semibold sm:text-sub">{SUBJUDUL}</p>
+          {/* HP: dua aksi utama terlihat tanpa menggeser. Di layar lebar kotak cari di bawah sudah terlihat. */}
+          <div className="mt-5 flex flex-col gap-2 min-[480px]:flex-row sm:hidden">
+            <Link href="/lapor" onClick={(e) => bukaTab('lapor', e)} className={kelasTombol('terang', 'min-h-11 min-[480px]:flex-1')}>
+              <Ikon nama="tambah" className="size-5" />
+              Laporkan masalah
+            </Link>
+            <Link href="/lacak" onClick={(e) => bukaTab('lacak', e)} className={kelasTombol('terang-garis', 'min-h-11 min-[480px]:flex-1')}>
+              <Ikon nama="lacak" className="size-5" />
+              Lacak laporan
+            </Link>
+          </div>
+          <Link
+            href="/kecamatan"
+            className="mt-3 inline-flex min-h-11 items-center gap-1.5 text-badan font-semibold underline underline-offset-4 hover:text-white/85"
+          >
+            <Ikon nama="grafik" className="size-4.5" />
+            Cek kecamatanmu
+            <Ikon nama="kanan" className="panah size-4" />
+          </Link>
+          {/* Kalimat tab. Tinggi dua baris supaya kotak cari tidak naik-turun saat kalimatnya berganti panjang. */}
+          <p key={aktif} className="ganti mt-3 max-w-[56ch] text-badan text-white/90 sm:min-h-[2.9em] sm:text-lead">
             {tab.slogan}
           </p>
           {/* Masuk berurutan dari atas: judul (bersama halaman), kalimat tab, tiga keunggulan, lalu kotak cari. */}
@@ -242,8 +279,9 @@ export default function HeroCari({ panelRapor }: { panelRapor: ReactNode }) {
                 <Ikon nama="cari" className="size-5 text-lembut" />
                 <span className="sr-only">Kode laporan</span>
                 <input
+                  ref={masukanKode}
                   name="kode"
-                  placeholder="Masukkan kode laporan, misalnya SR-K7W3PA"
+                  placeholder="Kode laporan, misalnya SR-ABC234"
                   autoComplete="off"
                   autoCapitalize="characters"
                   spellCheck={false}
@@ -256,9 +294,8 @@ export default function HeroCari({ panelRapor }: { panelRapor: ReactNode }) {
               </button>
             </form>
             <p className="mt-3 text-kecil text-lembut">
-              Kode dikirim saat laporan terkirim. Halaman lacak menampilkan status, riwayat, batas waktu, dan posisi isunya
-              di daftar prioritas.{' '}
-              Belum punya kode? Coba laporan{' '}
+              Kode laporan (SR-…) muncul setelah laporanmu terkirim dan tersimpan di menu Laporan saya. Di halaman lacak
+              terlihat status, riwayat, batas waktu, dan urutan masalahnya. Belum punya kode? Lihat contoh laporan{' '}
               <Link href="/contoh?jenis=terlambat" className="font-semibold text-biru-tua hover:underline">
                 yang terlambat
               </Link>{' '}
@@ -273,11 +310,11 @@ export default function HeroCari({ panelRapor }: { panelRapor: ReactNode }) {
           <div role="tabpanel" id="panel-prioritas" aria-labelledby="tab-prioritas" hidden={aktif !== 'prioritas'} className="ganti">
             <form action="/prioritas" method="get" onSubmit={kirimBersih}>
               <fieldset>
-                <legend className="text-kecil font-semibold">Urutkan isu wilayah dengan bobot</legend>
+                <legend className="text-badan font-semibold">Mau dahulukan apa?</legend>
                 <KelompokCair className="mt-2 flex flex-wrap gap-2">
                   <label className="chip">
                     <input type="radio" name="bobot" value="" defaultChecked className="sr-only" />
-                    Bobot resmi
+                    Aturan resmi
                   </label>
                   {PRESET_URUT.map((p) => (
                     <label key={p} className="chip">
@@ -289,8 +326,8 @@ export default function HeroCari({ panelRapor }: { panelRapor: ReactNode }) {
               </fieldset>
               <div className="mt-4 flex flex-col gap-3 sm:flex-row">
                 <div className="flex-1">
-                  <Pilihan name="kategori" label="Kategori masalah" ikon="geser">
-                    <option value="">Semua kategori masalah</option>
+                  <Pilihan name="kategori" label="Jenis masalah" ikon="geser">
+                    <option value="">Semua jenis masalah</option>
                     {KATEGORI.map((k) => (
                       <option key={k.id} value={k.id}>
                         {k.nama}
@@ -308,8 +345,8 @@ export default function HeroCari({ panelRapor }: { panelRapor: ReactNode }) {
           <div role="tabpanel" id="panel-peta" aria-labelledby="tab-peta" hidden={aktif !== 'peta'} className="ganti">
             <form action="/peta" method="get" onSubmit={kirimBersih} className="flex flex-col gap-3 lg:flex-row">
               <div className="grid flex-1 gap-3 sm:grid-cols-2">
-                <Pilihan name="kategori" label="Kategori" ikon="geser">
-                  <option value="">Semua kategori</option>
+                <Pilihan name="kategori" label="Jenis masalah" ikon="geser">
+                  <option value="">Semua jenis masalah</option>
                   {KATEGORI.map((k) => (
                     <option key={k.id} value={k.id}>
                       {k.nama}
@@ -331,7 +368,7 @@ export default function HeroCari({ panelRapor }: { panelRapor: ReactNode }) {
               </button>
             </form>
             <p className="mt-3 text-kecil text-lembut">
-              Penolakan tidak disembunyikan: laporan yang ditolak tampil di peta lengkap dengan alasannya.
+              Laporan yang ditolak tidak disembunyikan. Laporan itu tetap tampil di peta, lengkap dengan alasannya.
             </p>
           </div>
 
@@ -340,43 +377,49 @@ export default function HeroCari({ panelRapor }: { panelRapor: ReactNode }) {
           </div>
 
           <div role="tabpanel" id="panel-lapor" aria-labelledby="tab-lapor" hidden={aktif !== 'lapor'} className="ganti">
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
-              <ol className="grid flex-1 grid-cols-2 gap-2 sm:grid-cols-4">
-                {['Pilih kategori', 'Titik di peta', '1 sampai 3 foto', 'Cerita singkat'].map((l, i) => (
-                  <li key={l} className="flex items-center gap-2.5 rounded-kontrol bg-latar px-3 py-3 text-kecil font-semibold">
-                    <span className="angka flex size-6 shrink-0 items-center justify-center rounded-full bg-biru text-mini text-white">
-                      {i + 1}
+            <ol className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+              {['Pilih jenis masalah', 'Titik di peta', '1 sampai 3 foto', 'Cerita singkat'].map((l, i) => (
+                <li key={l} className="flex items-center gap-2.5 rounded-kontrol bg-latar px-3 py-3 text-kecil font-semibold">
+                  <span className="angka flex size-6 shrink-0 items-center justify-center rounded-full bg-biru text-mini text-white">
+                    {i + 1}
+                  </span>
+                  {l}
+                </li>
+              ))}
+            </ol>
+            {/* Peringatan di ATAS tombol, jadi terbaca sebelum mulai lapor. */}
+            <div className="mt-4 flex flex-col gap-4 lg:flex-row lg:items-center">
+              <p role="note" className="flex flex-1 gap-3 rounded-kontrol border border-[#ffd9a3] bg-oranye-muda px-4 py-3 text-kecil">
+                <Ikon nama="peringatan" className="mt-0.5 size-5 shrink-0 text-oranye" />
+                <span>
+                  <strong className="font-bold">Penting:</strong> laporan di sini tidak dikirim ke Pemprov DKI. Agar
+                  ditangani pemerintah, lapor lewat{' '}
+                  {KANAL_RESMI.map((k, i) => (
+                    <span key={k.nama}>
+                      {i > 0 && ' atau '}
+                      <a href={k.url} target="_blank" rel="noreferrer" className="font-semibold text-biru-tua underline-offset-4 hover:underline">
+                        {k.nama}
+                        <span className="sr-only"> (tab baru)</span>
+                      </a>
                     </span>
-                    {l}
-                  </li>
-                ))}
-              </ol>
+                  ))}
+                  . Untuk mencoba di sini, kamu perlu akun.
+                </span>
+              </p>
               <Link href="/lapor" className={kelasCari}>
                 <Ikon nama="tambah" className="size-5" />
                 Mulai lapor
               </Link>
             </div>
-            <p className="mt-3 text-kecil text-lembut">
-              Perlu akun warga. SUARAKYAT bukan kanal pengaduan resmi; untuk pengaduan resmi gunakan{' '}
-              {KANAL_RESMI.map((k, i) => (
-                <span key={k.nama}>
-                  {i > 0 && ' atau '}
-                  <a href={k.url} target="_blank" rel="noreferrer" className="font-semibold text-biru-tua hover:underline">
-                    {k.nama}
-                  </a>
-                </span>
-              ))}
-              .
-            </p>
           </div>
         </div>
 
         <p className="border-t border-garis px-4 py-3 text-kecil text-lembut sm:px-6">
-          Melihat peta, rapor, dan dashboard tidak perlu akun.{' '}
+          Melihat peta, urutan prioritas, dan rapor dinas tidak perlu akun.{' '}
           <Link href="/masuk" className="font-semibold text-biru-tua hover:underline">
             Masuk atau daftar
           </Link>{' '}
-          untuk melapor, mendukung laporan warga, dan memberi rating.
+          untuk melapor, mendukung laporan warga, dan memberi bintang.
         </p>
       </div>
       </div>

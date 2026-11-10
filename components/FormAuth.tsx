@@ -149,14 +149,14 @@ function FormLupa({ emailAwal, onKembali }: { emailAwal?: string; onKembali: () 
   const [hasil, aksi, memuat] = useActionState(lupaPassword, null);
   useFokusGalat(hasil);
   const kembali = (
-    <button type="button" onClick={onKembali} className={`min-h-6 justify-self-start text-kecil ${kelasTautan}`}>
+    <button type="button" onClick={onKembali} className={`min-h-11 justify-self-start text-kecil ${kelasTautan}`}>
       Kembali ke masuk
     </button>
   );
   if (hasil && 'ok' in hasil) {
     return (
       <div className="grid gap-4">
-        <Berhasil judul="Cek email Anda">
+        <Berhasil judul="Cek emailmu">
           <p className="text-badan">
             Kalau email itu terdaftar, tautan untuk mengganti password sudah dikirim. Buka tautannya di browser ini.
           </p>
@@ -169,7 +169,7 @@ function FormLupa({ emailAwal, onKembali }: { emailAwal?: string; onKembali: () 
   const galat = galatDari(hasil);
   return (
     <form action={aksi} className="grid gap-5">
-      <p className="text-badan">Masukkan email akun Anda. Kami kirim tautan untuk membuat password baru.</p>
+      <p className="text-badan">Masukkan email akunmu. Kami kirim tautan untuk membuat password baru.</p>
       <Isian
         label="Email"
         name="email"
@@ -201,7 +201,7 @@ function FormMasuk({ lanjut, lupaAwal }: { lanjut: string; lupaAwal: boolean }) 
         <Isian label="Email" name="email" type="email" autoComplete="email" nilaiAwal={email} />
         <div className="grid gap-2">
           <Isian label="Password" name="password" type="password" autoComplete="current-password" />
-          <button type="button" onClick={() => setLupa(true)} className={`min-h-6 justify-self-start text-kecil ${kelasTautan}`}>
+          <button type="button" onClick={() => setLupa(true)} className={`min-h-11 justify-self-start text-kecil ${kelasTautan}`}>
             Lupa password?
           </button>
         </div>
@@ -221,10 +221,10 @@ function FormDaftar({ lanjut }: { lanjut: string }) {
   useFokusGalat(hasil);
   if (hasil && 'ok' in hasil) {
     return (
-      <Berhasil judul="Cek email Anda">
+      <Berhasil judul="Satu langkah lagi: cek emailmu">
         <p className="text-badan">
-          Kami mengirim tautan verifikasi. Buka tautan itu untuk mengaktifkan akun; setelah itu Anda bisa melapor,
-          mendukung laporan, dan memberi rating. Verifikasi memastikan alamat email dapat diakses; satu akun mendapat satu dukungan per laporan.
+          Buka email dari SUARAKYAT dan ketuk tautannya untuk mengaktifkan akun. Setelah itu kembali ke sini dan masuk, lalu
+          kamu bisa melapor dan mendukung laporan.
         </p>
         <p className="text-kecil text-lembut">Tidak menerima email? Periksa folder spam, atau coba lagi beberapa menit lagi.</p>
       </Berhasil>
@@ -272,7 +272,7 @@ export function FormSandiBaru() {
   if (hasil && 'ok' in hasil) {
     return (
       <Berhasil judul="Password sudah diganti">
-        <p className="text-badan">Anda sudah masuk dengan password baru.</p>
+        <p className="text-badan">Kamu sudah masuk dengan password baru.</p>
         <p className="flex flex-wrap gap-x-5 gap-y-2 text-badan">
           <Link href="/lapor" className={kelasTautan}>
             Lapor masalah
@@ -349,7 +349,7 @@ export default function FormAuth({
           <Ikon nama="info" className="mt-0.5 size-4 shrink-0" />
           {verifikasiGagal === 'lupa'
             ? 'Tautan ganti password sudah kedaluwarsa atau dibuka di browser lain. Minta tautan baru di bawah, lalu buka di browser ini.'
-            : 'Tautan verifikasi dibuka di browser lain atau sudah kedaluwarsa. Email Anda biasanya sudah terverifikasi; silakan masuk di sini.'}
+            : 'Tautan verifikasi dibuka di browser lain atau sudah kedaluwarsa. Biasanya akunmu sudah aktif; silakan masuk di sini.'}
         </p>
       )}
       <div key={mode} id={`panel-${mode}`} role="tabpanel" aria-labelledby={`tab-${mode}`} className="ganti mt-6">

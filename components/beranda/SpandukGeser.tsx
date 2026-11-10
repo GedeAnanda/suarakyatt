@@ -9,6 +9,7 @@ import Link from 'next/link';
 import { useCallback, useRef, useSyncExternalStore } from 'react';
 import { FOTO, type FotoTerbuka } from '@/lib/konten';
 import Ikon from '../ui/Ikon';
+import { KALIMAT_TOLAK } from './AlurLapor';
 
 const SPANDUK: { href: string; judul: string; isi: string; foto: FotoTerbuka; posisi?: string }[] = [
   {
@@ -19,21 +20,21 @@ const SPANDUK: { href: string; judul: string; isi: string; foto: FotoTerbuka; po
   },
   {
     href: '/rapor',
-    judul: 'Rapor instansi A sampai E',
-    isi: 'Huruf selalu tampil bersama tingkat penolakan instansinya.',
+    judul: 'Rapor dinas A sampai E',
+    isi: KALIMAT_TOLAK,
     foto: FOTO.lampuJalan,
     posisi: '50% 30%',
   },
   {
     href: '/prioritas',
-    judul: 'Uji bobotnya sendiri',
-    isi: 'Geser enam faktor dan lihat urutan isu wilayah bergeser.',
+    judul: 'Atur urutannya sendiri',
+    isi: 'Pilih yang menurutmu penting, lihat urutan masalah berubah.',
     foto: FOTO.kanalTimur,
     posisi: '50% 60%',
   },
   {
     href: '/lacak',
-    judul: 'Punya kode SR?',
+    judul: 'Punya kode laporan?',
     isi: 'Lacak status, riwayat, dan batas waktu laporanmu.',
     foto: FOTO.jalan1975,
   },

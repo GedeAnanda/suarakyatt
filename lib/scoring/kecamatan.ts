@@ -4,28 +4,11 @@
 // tanpa rumus baru: skor kecamatan = skor isu tertingginya, sama dengan warna peta di Beranda dan Prioritas.
 // Murni (tanpa jaringan), jadi bisa dites.
 
-import type { Faktor, SkorIsu } from '../types';
-import { FAKTOR, formatPoin } from './index';
+import type { Bobot, Faktor, SkorIsu } from '../types';
+import { FAKTOR, formatPoin, LABEL_FAKTOR, PENAHAN_FAKTOR, penahanUtama } from './index';
 
-/** Nama faktor dalam bahasa sehari-hari, untuk judul grafik. Istilah teknisnya tetap di NAMA_FAKTOR (lib/konten). */
-export const NAMA_AWAM: Record<Faktor, string> = {
-  urgensi: 'Seberapa mendesak jenis masalahnya',
-  volume: 'Berapa banyak laporan',
-  dukungan: 'Berapa banyak warga mendukung',
-  umur: 'Sudah berapa lama menunggu',
-  kerentanan: 'Seberapa rentan warganya',
-  kepadatan: 'Seberapa padat penduduknya',
-};
-
-/** Potongan kalimat "terutama karena …". */
-export const ALASAN_AWAM: Record<Faktor, string> = {
-  urgensi: 'jenis masalahnya mendesak',
-  volume: 'banyak laporan yang sudah diperiksa',
-  dukungan: 'banyak warga ikut mendukung',
-  umur: 'laporannya sudah lama menunggu',
-  kerentanan: 'warganya lebih rentan secara ekonomi',
-  kepadatan: 'penduduknya padat',
-};
+/** Potongan kalimat "terutama karena …" (satu sumber: LABEL_FAKTOR). Nama hal yang dinilai: NAMA_FAKTOR di lib/konten. */
+export const ALASAN_AWAM: Record<Faktor, string> = LABEL_FAKTOR;
 
 export type Tingkat = 'paling' | 'tinggi' | 'sedang' | 'rendah';
 
@@ -59,11 +42,18 @@ function gabung(xs: string[]): string {
   return `${xs.slice(0, -1).join(', ')} dan ${xs.at(-1)}`;
 }
 
-/** "Jalan rusak di Setiabudi ada di urutan 4 dari 91 masalah yang dinilai, terutama karena …" */
-export function kalimatIsu(isu: SkorIsu, total: number): string {
+/**
+ * "Jalan rusak di Setiabudi ada di urutan ke-4 dari 91 masalah. Alasan utamanya: …"
+ * Untuk sepertiga bawah, yang disebut adalah hal yang paling MENAHAN (audit 10 Nov, D3): warga di urutan bawah
+ * bertanya "kenapa belum?", bukan "kenapa naik?".
+ */
+export function kalimatIsu(isu: SkorIsu, total: number, bobot: Bobot): string {
+  const awal = `${isu.kategori} di ${isu.kecamatan} ada di urutan ke-${isu.peringkat} dari ${total} masalah`;
+  if (isu.peringkat > (total * 2) / 3) {
+    return `${awal}. Belum didahulukan terutama karena ${PENAHAN_FAKTOR[penahanUtama(isu, bobot)]}.`;
+  }
   const alasan = alasanUtama(isu).map((f) => ALASAN_AWAM[f]);
-  const awal = `${isu.kategori} di ${isu.kecamatan} ada di urutan ${isu.peringkat} dari ${total} masalah yang dinilai`;
-  return alasan.length ? `${awal}, terutama karena ${gabung(alasan)}.` : `${awal}.`;
+  return alasan.length ? `${awal}. Alasan utamanya: ${gabung(alasan)}.` : `${awal}.`;
 }
 
 export interface RingkasanKecamatan {
@@ -124,22 +114,33 @@ export function ringkasJakarta(
   };
 }
 
-/** Kalimat pembuka halaman kecamatan. */
-export function kalimatKecamatan(k: RingkasanKecamatan, ringkas: RingkasanJakarta): string {
+/**
+ * Kalimat pembuka halaman kecamatan, tiga kalimat pendek (audit 10 Nov, D2):
+ * posisi → masalah terberat dengan skor dibanding nilai tengah → alasan (menaikkan di atas nilai tengah, menahan di bawahnya).
+ */
+export function kalimatKecamatan(k: RingkasanKecamatan, ringkas: RingkasanJakarta, bobot: Bobot): string {
   if (k.skor === null || k.urutan === null) {
-    return `Kecamatan ${k.kecamatan} sedang tidak punya laporan aktif yang dinilai, jadi tidak masuk daftar prioritas.`;
+    return `Kecamatan ${k.kecamatan} sedang tidak punya laporan yang belum selesai, jadi tidak masuk daftar urutan prioritas.`;
   }
   const atas = k.isu[0];
-  const banding =
-    k.skor > ringkas.median + 0.05
-      ? `di atas median Jakarta (${formatPoin(ringkas.median)})`
-      : k.skor < ringkas.median - 0.05
-        ? `di bawah median Jakarta (${formatPoin(ringkas.median)})`
-        : `sama dengan median Jakarta`;
-  const alasan = alasanUtama(atas).map((f) => ALASAN_AWAM[f]);
-  return (
-    `Kecamatan ${k.kecamatan} ada di urutan ${k.urutan} dari ${ringkas.dinilai} kecamatan yang punya laporan aktif. ` +
-    `Masalah yang paling didahulukan di sini adalah ${atas.kategori.toLowerCase()} dengan skor ${formatPoin(atas.skor)}, ${banding}` +
-    (alasan.length ? `, terutama karena ${gabung(alasan)}.` : '.')
-  );
+  const diAtas = k.skor > ringkas.median + 0.05;
+  const diBawah = k.skor < ringkas.median - 0.05;
+  const banding = diAtas
+    ? 'lebih tinggi dari kebanyakan kecamatan'
+    : diBawah
+      ? 'lebih rendah dari kebanyakan kecamatan'
+      : 'sama dengan nilai tengah Jakarta';
+  const alasan = diBawah
+    ? `Yang paling menahan: ${PENAHAN_FAKTOR[penahanUtama(atas, bobot)]}.`
+    : (() => {
+        const a = alasanUtama(atas).map((f) => ALASAN_AWAM[f]);
+        return a.length ? `Alasan utamanya: ${gabung(a)}.` : '';
+      })();
+  return [
+    `Kecamatan ${k.kecamatan} ada di urutan ke-${k.urutan} dari ${ringkas.dinilai} kecamatan yang punya laporan belum selesai.`,
+    `Masalah terberatnya ${atas.kategori.toLowerCase()}: skor ${formatPoin(atas.skor)} dari 100, ${banding}.`,
+    alasan,
+  ]
+    .filter(Boolean)
+    .join(' ');
 }

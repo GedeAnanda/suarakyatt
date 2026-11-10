@@ -8,9 +8,7 @@ import type { CSSProperties } from 'react';
 import { formatPoin } from '@/lib/scoring';
 import type { RingkasanJakarta } from '@/lib/scoring/kecamatan';
 
-// Lima kelas warna yang sama dengan PetaKecamatan (KELAS). Tidak diimpor dari sana karena file itu 'use client':
-// nilai dari file klien hanya berupa referensi di Server Component.
-const warnaSkor = (skor: number) => `var(--color-k${Math.min(5, Math.floor(skor / 20) + 1)})`;
+// Batang lain abu-abu sedang, kecamatan ini hitam (audit 10 Nov, D36): warna kelas peta terlalu pucat di kartu putih.
 
 export default function GrafikPosisi({ ringkas, kode }: { ringkas: RingkasanJakarta; kode: string }) {
   const urut = [...ringkas.kecamatan].sort(
@@ -22,8 +20,8 @@ export default function GrafikPosisi({ ringkas, kode }: { ringkas: RingkasanJaka
   const posisi = `${((indeks + 0.5) / n) * 100}%`;
 
   const label = ini?.urutan
-    ? `Grafik batang ${n} kecamatan. ${ini.kecamatan} di urutan ${ini.urutan} dari ${ringkas.dinilai} kecamatan yang dinilai, skor ${formatPoin(ini.skor!)}; median Jakarta ${formatPoin(ringkas.median)}.`
-    : `Grafik batang ${n} kecamatan. ${ini?.kecamatan ?? 'Kecamatan ini'} tidak punya laporan aktif yang dinilai.`;
+    ? `Grafik batang ${n} kecamatan. ${ini.kecamatan} di urutan ke-${ini.urutan} dari ${ringkas.dinilai} kecamatan, skor ${formatPoin(ini.skor!)} dari 100; nilai tengah Jakarta ${formatPoin(ringkas.median)}.`
+    : `Grafik batang ${n} kecamatan. ${ini?.kecamatan ?? 'Kecamatan ini'} tidak punya laporan belum selesai yang dinilai.`;
 
   return (
     <figure className="grid gap-3">
@@ -40,7 +38,7 @@ export default function GrafikPosisi({ ringkas, kode }: { ringkas: RingkasanJaka
         {ringkas.dinilai > 0 && (
           <li className="flex items-center gap-2">
             <span aria-hidden="true" className="w-4 border-t-2 border-dashed border-teks" />
-            Median Jakarta {formatPoin(ringkas.median)}
+            Nilai tengah Jakarta {formatPoin(ringkas.median)}
           </li>
         )}
       </ul>
@@ -67,7 +65,8 @@ export default function GrafikPosisi({ ringkas, kode }: { ringkas: RingkasanJaka
                 width={0.72}
                 y={100 - tinggi}
                 height={tinggi}
-                fill={sorot ? 'var(--color-teks)' : dinilai ? warnaSkor(k.skor!) : 'var(--color-lapis-2)'}
+                fill={sorot ? 'var(--color-teks)' : dinilai ? 'var(--color-lembut)' : 'var(--color-lapis-2)'}
+                fillOpacity={sorot || !dinilai ? 1 : 0.4}
               />
             );
           })}
@@ -103,7 +102,7 @@ export default function GrafikPosisi({ ringkas, kode }: { ringkas: RingkasanJaka
 
       <figcaption className="mt-5 flex flex-wrap justify-between gap-x-4 gap-y-1 text-mini text-lembut">
         <span>← paling didahulukan</span>
-        {n - ringkas.dinilai > 0 && <span>{n - ringkas.dinilai} kecamatan tanpa laporan aktif (abu-abu)</span>}
+        {n - ringkas.dinilai > 0 && <span>{n - ringkas.dinilai} kecamatan tanpa laporan belum selesai (batang pendek)</span>}
         <span>belum didahulukan →</span>
       </figcaption>
     </figure>

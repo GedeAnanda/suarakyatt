@@ -1,9 +1,13 @@
-// components/prioritas/Simulator.tsx — Dashboard Prioritas + simulator bobot publik (FR-F2 sampai F4, PRD 9), pemilik: A
+// components/prioritas/Simulator.tsx — urutan prioritas + "Coba atur sendiri" (FR-F2 sampai F4, PRD 9), pemilik: A
 // Semua skor dihitung di browser dengan lib/scoring dari hasil priority_factors, jadi slider
-// langsung mengubah peringkat tanpa ke server dan tanpa menyimpan apa pun (SDD 2.1, 8.3).
-// Bobot simulasi ikut tersimpan di URL (?bobot=30,20,5,20,15,10) supaya skenarionya bisa dibagikan.
-// Perencana bisa menyimpan bobot sebagai bobot acuan, wajib dengan alasan (R10 save_weights).
-// Tata letak seperti halaman hasil pencarian: panel saring (bobot) menempel di kiri, hasil di kanan.
+// langsung mengubah urutan tanpa ke server dan tanpa menyimpan apa pun (SDD 2.1, 8.3).
+// Percobaan ikut tersimpan di URL (?bobot=30,20,5,20,15,10) supaya bisa dibagikan.
+// Petugas perencana kota bisa menyimpan percobaan sebagai aturan resmi, wajib dengan alasan (R10 save_weights).
+// Urutan isi (audit bahasa awam 10 Nov): hasil dulu (saring jenis, kalimat, peta + rincian, daftar urutan), lalu panel
+// "Coba atur sendiri". Di layar lebar panel pindah ke kolom kiri lewat lg:col-start/row-start (bukan CSS order),
+// jadi urutan baca pembaca layar dan urutan Tab sama dengan urutan tampilan di HP.
+// Bahasa warga: masalah (bukan isu), urutan ke-N (bukan peringkat), tingkat kepentingan (bukan bobot),
+// aturan resmi (bukan bobot acuan), pilihan cepat (bukan preset), percobaan (bukan simulasi).
 
 'use client';
 
@@ -14,24 +18,29 @@ import { ubahParameter } from '@/lib/pilihan-url';
 import { pesanError } from '@/lib/errors';
 import { DEFINISI_FAKTOR, KATEGORI, NAMA_FAKTOR } from '@/lib/konten';
 import {
+  bobotEfektif,
   FAKTOR,
   formatPoin,
   hitungSkor,
   kalimatKonsekuensi,
+  LABEL_FAKTOR,
   LABEL_PRESET,
   normalisasiBobot,
+  PENAHAN_FAKTOR,
+  penahanUtama,
   PRESET,
   selisihPeringkat,
   type NamaPreset,
 } from '@/lib/scoring';
 import { createClient } from '@/lib/supabase/client';
-import type { Bobot, Faktor, FaktorIsu } from '@/lib/types';
+import type { Bobot, Faktor, FaktorIsu, SkorIsu } from '@/lib/types';
 import PetaKecamatan, { KeteranganKelas } from '../PetaKecamatan';
 import { umumkan } from '../Pengumuman';
 import Ikon from '../ui/Ikon';
+import Istilah from '../ui/Istilah';
 import KelompokCair from '../ui/KelompokCair';
-import { Tombol } from '../ui/Tombol';
-import BarKontribusi, { BarTumpuk, KeteranganFaktor, WARNA_FAKTOR } from './BarKontribusi';
+import { kelasTautan, Tombol } from '../ui/Tombol';
+import BarKontribusi, { WARNA_FAKTOR } from './BarKontribusi';
 
 type Slider = Record<Faktor, number>;
 
@@ -47,13 +56,19 @@ function dariUrl(nilai: string | null): Slider | null {
   return Object.fromEntries(FAKTOR.map((f, i) => [f, Math.round(angka[i])])) as Slider;
 }
 
+/** Hal yang memberi poin terbanyak, untuk "alasan utama: …" di baris daftar; null kalau skornya 0. */
+function alasanUtama(s: SkorIsu): Faktor | null {
+  const f = [...FAKTOR].sort((a, b) => s.kontribusi[b] - s.kontribusi[a])[0];
+  return s.kontribusi[f] > 0 ? f : null;
+}
+
 function TandaGeser({ n }: { n: number | undefined }) {
-  if (n === undefined || n === 0) return <span className="text-mini text-lembut">tetap</span>;
+  if (n === undefined || n === 0) return <span className="text-kecil text-lembut">sama</span>;
   return (
-    <span className={`angka inline-flex items-center text-mini font-bold ${n > 0 ? 'text-hijau' : 'text-merah-tua'}`}>
+    <span className={`angka inline-flex items-center text-kecil font-bold ${n > 0 ? 'text-hijau' : 'text-merah-tua'}`}>
       <Ikon nama={n > 0 ? 'naik' : 'turun'} className="size-3.5" />
       {Math.abs(n)}
-      <span className="sr-only">{n > 0 ? ' posisi naik' : ' posisi turun'} dibanding peringkat acuan</span>
+      <span className="sr-only">{n > 0 ? ' naik' : ' turun'} dibanding urutan dengan aturan resmi</span>
     </span>
   );
 }
@@ -87,6 +102,9 @@ export default function Simulator({
   const isuAktif = useMemo(() => (kategori ? isu.filter((i) => i.category_id === kategori) : isu), [isu, kategori]);
   const resmi = useMemo(() => hitungSkor(isuAktif, bobotResmi), [isuAktif, bobotResmi]);
   const simulasi = useMemo(() => hitungSkor(isuAktif, bobot), [isuAktif, bobot]);
+  // Tingkat kepentingan yang benar-benar dipakai hitungSkor (tanpa data lama menunggu, hal itu dihitung 0), supaya
+  // "12,3 dari 20 poin" di rincian cocok dengan skornya.
+  const bobotPakai = useMemo(() => (isuAktif.length > 0 ? bobotEfektif(isuAktif, bobot) : bobot), [isuAktif, bobot]);
   const selisih = useMemo(() => selisihPeringkat(resmi, simulasi), [resmi, simulasi]);
   const konsekuensi = disimulasikan ? kalimatKonsekuensi(resmi, simulasi) : null;
 
@@ -96,19 +114,22 @@ export default function Simulator({
     for (const s of simulasi) {
       if (skor[s.kode_wilayah] === undefined) {
         skor[s.kode_wilayah] = s.skor;
-        ket[s.kode_wilayah] = `Teratas: ${s.kategori.toLowerCase()}, peringkat ${s.peringkat}`;
+        ket[s.kode_wilayah] = `Masalah teratas: ${s.kategori.toLowerCase()}, urutan ke-${s.peringkat}`;
       }
     }
     return { skorKecamatan: skor, keteranganKecamatan: ket };
   }, [simulasi]);
 
   const terpilih = simulasi.find((s) => s.id === pilihId) ?? simulasi[0];
+  const penahan = terpilih ? penahanUtama(terpilih, bobotPakai) : null;
+  const adaPenahan = Boolean(terpilih && penahan && 100 * bobotPakai[penahan] - terpilih.kontribusi[penahan] > 0.05);
   const tampil = semua ? simulasi : simulasi.slice(0, JUMLAH_AWAL);
-  // Baris peringkat memakai lebar kolom (@container), bukan lebar layar: di 1024 px kolom ini hanya ±550 px.
-  // Nama dan batang berbagi sisa ruang 3:2; kolom tanda geser hanya diberi ruang saat bobot disimulasikan.
+  const namaKategori = kategori ? KATEGORI[kategori - 1].nama.toLowerCase() : null;
+  // Baris daftar memakai lebar kolom (@container), bukan lebar layar: di 1024 px kolom ini hanya ±550 px.
+  // Nama dan batang berbagi sisa ruang 3:2; kolom tanda naik/turun hanya diberi ruang saat ada percobaan.
   const kolomBaris = disimulasikan
-    ? '@xl:grid-cols-[2.75rem_3rem_minmax(0,3fr)_minmax(0,2fr)_3.5rem]'
-    : '@xl:grid-cols-[2.75rem_0_minmax(0,3fr)_minmax(0,2fr)_3.5rem]';
+    ? '@xl:grid-cols-[2.75rem_3rem_minmax(0,3fr)_minmax(0,2fr)_5.5rem]'
+    : '@xl:grid-cols-[2.75rem_0_minmax(0,3fr)_minmax(0,2fr)_5.5rem]';
   const presetAktif = (Object.keys(PRESET) as NamaPreset[]).find((p) => sama(bobot, normalisasiBobot(PRESET[p])));
 
   function setSlider(nilai: Slider) {
@@ -117,7 +138,7 @@ export default function Simulator({
     ubahParameter({ bobot: acuan ? null : FAKTOR.map((f) => nilai[f]).join(',') });
   }
 
-  // FLIP: setiap baris meluncur dari posisi lamanya ke posisi barunya, jadi perubahan peringkat terlihat.
+  // FLIP: setiap baris meluncur dari posisi lamanya ke posisi barunya, jadi perubahan urutan terlihat.
   useLayoutEffect(() => {
     const ol = daftar.current;
     if (!ol) return;
@@ -140,7 +161,7 @@ export default function Simulator({
 
   function pilihIsu(id: string) {
     ubahParameter({ isu: id });
-    // Di layar sempit panel rincian ada jauh di atas daftar: bawa ke sana.
+    // Panel rincian ada di atas daftar: kalau sedang jauh dari layar, bawa ke sana.
     const panel = panelIsu.current;
     if (panel) {
       const r = panel.getBoundingClientRect();
@@ -159,113 +180,29 @@ export default function Simulator({
     try {
       if (terpilih) ubahParameter({ isu: terpilih.id });
       await navigator.clipboard.writeText(window.location.href);
-      umumkan('Tautan disalin, lengkap dengan bobot, kategori, dan isu yang dipilih.');
+      umumkan('Tautan disalin, lengkap dengan percobaanmu, jenis masalah, dan masalah yang dipilih.');
     } catch {
       umumkan('Salin tautan dari bilah alamat browser.');
     }
   }
 
+  /** "dengan aturan resmi urutan ke-6 (naik 2)" untuk masalah terpilih saat ada percobaan. */
+  function urutanResmi(s: SkorIsu): string {
+    const ke = resmi.find((r) => r.id === s.id)?.peringkat;
+    const n = selisih[s.id] ?? 0;
+    if (n === 0) return `dengan aturan resmi juga urutan ke-${ke}`;
+    return `dengan aturan resmi urutan ke-${ke} (${n > 0 ? 'naik' : 'turun'} ${Math.abs(n)})`;
+  }
+
   return (
     <div className="grid gap-6 lg:grid-cols-[19rem_minmax(0,1fr)] xl:grid-cols-[21rem_minmax(0,1fr)]">
-      {/* Panel bobot: seperti panel saring di kiri halaman hasil pencarian. */}
-      <section aria-labelledby="judul-bobot">
-        <div className="kartu p-5 lg:sticky lg:top-20">
-          <div className="flex items-center justify-between gap-4">
-            <h2 id="judul-bobot" className="flex items-center gap-2 text-lead font-bold">
-              <Ikon nama="geser" className="size-5 text-biru" />
-              Bobot faktor
-            </h2>
-            <span
-              aria-live="polite"
-              className={`rounded-[0.375rem] px-2 py-0.5 text-mini font-bold transition-colors ${disimulasikan ? 'bg-biru text-white' : 'bg-lapis text-lembut'}`}
-            >
-              {disimulasikan ? 'Mode simulasi' : 'Bobot acuan'}
-            </span>
-          </div>
-          <p className="mt-2 text-kecil text-lembut">
-            Pilih preset atau geser sendiri. Bobot dinormalisasi supaya totalnya 100%. Bobot acuan tidak berubah.
-          </p>
-
-          <KelompokCair className="mt-4 flex flex-wrap gap-2" role="group" aria-label="Preset bobot">
-            {(Object.keys(PRESET) as NamaPreset[]).map((p) => (
-              <button key={p} type="button" aria-pressed={presetAktif === p} onClick={() => setSlider(keSlider(PRESET[p]))} className="chip">
-                {LABEL_PRESET[p]}
-              </button>
-            ))}
-          </KelompokCair>
-
-          <button
-            type="button"
-            aria-expanded={sliderTerbuka}
-            aria-controls="daftar-slider"
-            onClick={() => setSliderTerbuka((b) => !b)}
-            className="mt-4 flex min-h-11 w-full items-center justify-between gap-2 border-t border-garis pt-3 text-badan font-bold lg:hidden"
-          >
-            Atur keenam bobot sendiri
-            <Ikon nama={sliderTerbuka ? 'naik' : 'turun'} className="size-5" />
-          </button>
-
-          <ul id="daftar-slider" className={`ganti mt-4 gap-2 border-garis lg:grid lg:border-t lg:pt-4 ${sliderTerbuka ? 'grid' : 'hidden'}`}>
-            {FAKTOR.map((f) => {
-              const berubah = Math.abs(bobot[f] - bobotResmi[f]) >= 0.005;
-              return (
-                <li key={f}>
-                  <div className="flex items-baseline justify-between gap-3">
-                    <label htmlFor={`bobot-${f}`} className="flex items-center gap-2 text-kecil font-semibold">
-                      <span aria-hidden="true" className="size-2.5 rounded-full" style={{ background: WARNA_FAKTOR[f] }} />
-                      {NAMA_FAKTOR[f]}
-                    </label>
-                    <span className="angka text-kecil">
-                      <span className={`font-bold ${berubah ? 'text-biru-tua' : ''}`}>{persenBobot(bobot[f])}</span>
-                      {berubah && <span className="text-mini text-lembut"> acuan {persenBobot(bobotResmi[f])}</span>}
-                    </span>
-                  </div>
-                  <input
-                    id={`bobot-${f}`}
-                    type="range"
-                    min={0}
-                    max={100}
-                    step={1}
-                    value={slider[f]}
-                    onChange={(e) => setSlider({ ...slider, [f]: Number(e.target.value) })}
-                    aria-describedby={`definisi-${f}`}
-                    aria-valuetext={`${persenBobot(bobot[f])} setelah dinormalisasi`}
-                    className="slider w-full"
-                  />
-                  <p id={`definisi-${f}`} className="sr-only">
-                    {DEFINISI_FAKTOR[f]}
-                  </p>
-                </li>
-              );
-            })}
-          </ul>
-
-          {totalSlider === 0 && (
-            <p role="alert" className="goyang mt-3 rounded-kontrol bg-merah-muda px-3 py-2 text-kecil font-semibold text-merah-tua">
-              Semua bobot nol tidak bisa dipakai. Naikkan minimal satu faktor; urutan sementara memakai bobot acuan.
-            </p>
-          )}
-
-          <div className="mt-5 grid gap-2">
-            <Tombol varian="garis" onClick={() => setSlider(keSlider(bobotResmi))} disabled={!disimulasikan && totalSlider > 0}>
-              Kembali ke bobot acuan
-            </Tombol>
-            <Tombol varian="kedua" onClick={salinTautan}>
-              <Ikon nama="tautan" className="size-4" />
-              Bagikan skenario
-            </Tombol>
-          </div>
-
-          {perencana && <SimpanBobot bobot={bobot} aktif={disimulasikan} onTersimpan={() => router.refresh()} />}
-        </div>
-      </section>
-
-      {/* @container: peta dan rincian isu berdampingan hanya kalau kolom ini cukup lebar (≥ 36rem), apa pun ukuran
+      {/* HASIL — di DOM lebih dulu (HP: warga melihat jawabannya dulu); di layar lebar kolom kanan.
+          @container: peta dan rincian masalah berdampingan hanya kalau kolom ini cukup lebar (≥ 36rem), apa pun ukuran
           layarnya. Di iPad miring dengan menu samping, kolomnya sempit walau layarnya "lebar". */}
-      <div className="@container grid min-w-0 content-start gap-5">
-        {/* Saring kategori + kalimat konsekuensi */}
-        <KelompokCair className="flex flex-wrap gap-2" role="group" aria-label="Saring kategori">
-          {[{ id: null, nama: 'Semua kategori' }, ...KATEGORI].map((k) => (
+      <div className="@container grid min-w-0 content-start gap-5 lg:col-start-2 lg:row-start-1">
+        {/* Saring jenis masalah + kalimat ringkas */}
+        <KelompokCair className="flex flex-wrap gap-2" role="group" aria-label="Pilih jenis masalah">
+          {[{ id: null, nama: 'Semua jenis masalah' }, ...KATEGORI].map((k) => (
             <button
               key={k.nama}
               type="button"
@@ -287,11 +224,19 @@ export default function Simulator({
           }`}
         >
           <Ikon nama={disimulasikan ? 'geser' : 'info'} className="mt-0.5 size-5 shrink-0" />
-          {konsekuensi ??
-            `${simulasi.length} isu wilayah dinilai${kategori ? ` untuk kategori ${KATEGORI[kategori - 1].nama.toLowerCase()}` : ''}. Geser bobot dan lihat urutannya bergeser.`}
+          {konsekuensi ?? (
+            <span>
+              Ada {simulasi.length} masalah{namaKategori ? ` ${namaKategori}` : ''} yang dinilai. Coba{' '}
+              <a href="#coba-atur" className={kelasTautan}>
+                pilihan cepat
+              </a>{' '}
+              <span className="lg:hidden">di bawah</span>
+              <span className="hidden lg:inline">di kiri</span> dan lihat urutannya berubah.
+            </span>
+          )}
         </p>
 
-        {/* Peta + isu terpilih */}
+        {/* Peta + masalah terpilih */}
         <div className="grid gap-5 @xl:grid-cols-2">
           <figure className="kartu p-4">
             <PetaKecamatan
@@ -299,101 +244,250 @@ export default function Simulator({
               keterangan={keteranganKecamatan}
               sorot={terpilih?.kode_wilayah}
               onPilih={pilihKecamatan}
-              judul="Peta choropleth kecamatan DKI Jakarta menurut skor prioritas tertinggi. Pilih kecamatan untuk melihat isu teratasnya; daftar peringkat di bawah berisi data yang sama."
+              judul="Peta kecamatan Jakarta, diwarnai menurut skor masalah terberat di tiap kecamatan. Pilih kecamatan untuk melihat masalah teratasnya. Daftar urutan di bawah berisi data yang sama."
             />
             <figcaption className="mt-3 grid gap-2">
               <KeteranganKelas />
-              <p className="text-mini text-lembut">Arahkan kursor atau Tab ke kecamatan untuk melihat skornya; klik untuk memilih.</p>
+              <p className="text-kecil text-lembut">
+                Ketuk kecamatan untuk melihat masalah teratasnya. Daftar di bawah berisi data yang sama.
+              </p>
             </figcaption>
           </figure>
 
           {terpilih && (
-            <section ref={panelIsu} aria-labelledby="judul-isu" aria-live="polite" className="kartu scroll-mt-24 p-5">
-              {/* Judul dan penjelasan berganti dengan gerak saat isu lain dipilih; bar di bawahnya tidak di-key supaya
-                  lebarnya tetap bergeser dari nilai isu lama ke isu baru. */}
+            <section ref={panelIsu} aria-labelledby="judul-masalah" aria-live="polite" className="kartu scroll-mt-24 p-5">
+              {/* Judul dan penjelasan berganti dengan gerak saat masalah lain dipilih; bar di bawahnya tidak di-key
+                  supaya lebarnya tetap bergeser dari nilai masalah lama ke masalah baru. */}
               <div key={terpilih.id} className="ganti">
-              <p className="flex flex-wrap items-center gap-2 text-kecil">
-                <span className="angka rounded-[0.375rem] bg-biru px-2 py-0.5 text-mini font-bold text-white">
-                  #{terpilih.peringkat}
-                </span>
-                <span className="text-lembut">dari {simulasi.length} isu</span>
-                {disimulasikan && (
-                  <span className="text-lembut">
-                    · acuan {resmi.find((r) => r.id === terpilih.id)?.peringkat} <TandaGeser n={selisih[terpilih.id]} />
-                  </span>
-                )}
-              </p>
-              <h2 id="judul-isu" className="mt-2 text-sub font-bold">
-                {terpilih.kategori} di {terpilih.kecamatan}
-              </h2>
-              <p className="text-kecil text-lembut">
-                {terpilih.kota} · {terpilih.laporan_aktif} laporan aktif, {terpilih.laporan_terverifikasi} terverifikasi ·{' '}
-                <Link href={`/kecamatan/${terpilih.kode_wilayah}`} className="font-semibold text-biru-tua hover:underline">
-                  penjelasan Kecamatan {terpilih.kecamatan}
-                </Link>
-              </p>
-              <p className="mt-4 rounded-kontrol bg-latar p-3 text-kecil font-semibold">{terpilih.penjelasan}</p>
+                <p className="text-kecil">
+                  <span className="font-bold text-biru-tua">Urutan ke-{terpilih.peringkat}</span>
+                  <span className="text-lembut"> dari {simulasi.length} masalah</span>
+                  {disimulasikan && <span className="text-lembut"> · {urutanResmi(terpilih)}</span>}
+                </p>
+                <h2 id="judul-masalah" className="mt-2 text-sub font-bold">
+                  {terpilih.kategori} di {terpilih.kecamatan}
+                </h2>
+                <p className="text-kecil text-lembut">
+                  {terpilih.kota} · {terpilih.laporan_aktif} laporan belum selesai, {terpilih.laporan_terverifikasi} sudah
+                  diperiksa dinas
+                </p>
+                <div className="mt-4 grid gap-1 rounded-kontrol bg-latar p-3 text-kecil">
+                  <p className="font-semibold">{terpilih.penjelasan}</p>
+                  {adaPenahan && penahan && <p>Yang paling menahan: {PENAHAN_FAKTOR[penahan]}.</p>}
+                </div>
               </div>
               <div className="mt-5">
-                <BarKontribusi isu={terpilih} bobot={bobot} />
+                <BarKontribusi isu={terpilih} bobot={bobotPakai} />
               </div>
+              <Link
+                href={`/kecamatan/${terpilih.kode_wilayah}`}
+                className="mt-3 inline-flex min-h-11 items-center gap-1 text-kecil font-semibold text-biru-tua underline-offset-4 hover:underline"
+              >
+                Lihat Kecamatan {terpilih.kecamatan}
+                <Ikon nama="kanan" className="size-4" />
+              </Link>
             </section>
           )}
         </div>
 
-        {/* Daftar peringkat: seperti daftar hasil, satu baris satu isu. */}
-        <section aria-labelledby="judul-peringkat" className="kartu overflow-hidden">
-          <div className="flex flex-wrap items-end justify-between gap-3 border-b border-garis px-4 py-4 sm:px-5">
-            <h2 id="judul-peringkat" className="text-lead font-bold">
-              Peringkat isu wilayah
+        {/* Daftar urutan: seperti daftar hasil, satu baris satu masalah. */}
+        <section id="daftar-urutan" aria-labelledby="judul-urutan" className="kartu scroll-mt-24 overflow-hidden">
+          <div className="border-b border-garis px-4 py-4 sm:px-5">
+            <h2 id="judul-urutan" className="text-lead font-bold">
+              Urutan masalah, dari yang paling perlu didahulukan
             </h2>
-            <KeteranganFaktor />
+            <p className="mt-1 text-kecil text-lembut">
+              Urutan 1 = paling didahulukan. Skor 0–100 adalah perbandingan dengan masalah lain di Jakarta, bukan nilai
+              baik-buruk.
+              {disimulasikan && ' Panah = naik atau turun dibanding urutan dengan aturan resmi.'}{' '}
+              <a href="#cara-hitung" className={kelasTautan}>
+                Cara menghitungnya
+              </a>
+            </p>
           </div>
           <ol ref={daftar} className="relative grid">
-            {tampil.map((s) => (
-              <li key={s.id} data-isu={s.id} className="relative border-b border-garis will-change-transform last:border-b-0">
-                <button
-                  type="button"
-                  aria-pressed={s.id === terpilih?.id}
-                  onClick={() => pilihIsu(s.id)}
-                  className={`grid w-full grid-cols-[2.5rem_1fr_auto] items-center gap-x-3 gap-y-2 bg-permukaan px-4 py-3 text-left transition-colors hover:bg-biru-pudar aria-pressed:bg-biru-muda/60 aria-pressed:shadow-[inset_3px_0_0_var(--color-biru)] @xl:px-5 ${kolomBaris}`}
-                >
-                  <span className="angka text-lead font-bold text-biru-tua">{s.peringkat}</span>
-                  <span className="hidden @xl:block">{disimulasikan && <TandaGeser n={selisih[s.id]} />}</span>
-                  <span className="min-w-0">
-                    <span className="block text-badan font-bold @xl:truncate">
-                      {s.kecamatan}
-                      <span className="font-normal text-lembut"> · {s.kota.replace('Jakarta ', 'Jak')}</span>
+            {tampil.map((s) => {
+              const alasan = alasanUtama(s);
+              return (
+                <li key={s.id} data-isu={s.id} className="relative border-b border-garis will-change-transform last:border-b-0">
+                  <button
+                    type="button"
+                    aria-pressed={s.id === terpilih?.id}
+                    onClick={() => pilihIsu(s.id)}
+                    className={`grid w-full grid-cols-[2.5rem_1fr_auto] items-center gap-x-3 gap-y-2 bg-permukaan px-4 py-3 text-left transition-colors hover:bg-biru-pudar aria-pressed:bg-biru-muda/60 aria-pressed:shadow-[inset_3px_0_0_var(--color-biru)] @xl:px-5 ${kolomBaris}`}
+                  >
+                    <span className="angka text-lead font-bold text-biru-tua">
+                      <span className="sr-only">Urutan ke-</span>
+                      {s.peringkat}
                     </span>
-                    <span className="block text-kecil text-lembut">
-                      {s.kategori}
-                      {disimulasikan && (
-                        <span className="@xl:hidden">
-                          {' '}
-                          · <TandaGeser n={selisih[s.id]} />
-                        </span>
-                      )}
+                    <span className="hidden @xl:block">{disimulasikan && <TandaGeser n={selisih[s.id]} />}</span>
+                    <span className="min-w-0">
+                      <span className="block text-badan font-bold @xl:truncate">
+                        {s.kecamatan}
+                        <span className="font-normal text-lembut"> · {s.kota}</span>
+                      </span>
+                      <span className="block text-kecil text-lembut">
+                        {s.kategori}
+                        {alasan && ` · alasan utama: ${LABEL_FAKTOR[alasan]}`}
+                        {disimulasikan && (
+                          <span className="@xl:hidden">
+                            {' '}
+                            · <TandaGeser n={selisih[s.id]} />
+                          </span>
+                        )}
+                      </span>
                     </span>
-                  </span>
-                  <span className="col-span-3 row-start-2 @xl:col-span-1 @xl:col-start-4 @xl:row-start-1">
-                    <BarTumpuk isu={s} />
-                  </span>
-                  <span className="angka col-start-3 row-start-1 text-right text-lead font-bold @xl:col-start-5">
-                    {formatPoin(s.skor)}
-                  </span>
-                </button>
-              </li>
-            ))}
+                    {/* Satu warna: panjang = skor dari 100. Asal poinnya (enam warna) ada di panel rincian. */}
+                    <span
+                      aria-hidden="true"
+                      className="col-span-2 col-start-2 row-start-2 block h-2 overflow-hidden rounded-full bg-lapis @xl:col-span-1 @xl:col-start-4 @xl:row-start-1"
+                    >
+                      <span
+                        className="block h-full rounded-full bg-biru transition-[width] duration-500 ease-keluar motion-reduce:transition-none"
+                        style={{ width: `${Math.min(100, Math.max(0, s.skor))}%` }}
+                      />
+                    </span>
+                    <span className="col-start-3 row-start-1 text-right @xl:col-start-5">
+                      <span className="block text-kecil leading-none text-lembut">skor</span>
+                      <span className="angka text-lead font-bold">{formatPoin(s.skor)}</span>
+                      <span className="angka text-kecil text-lembut">
+                        <span aria-hidden="true">/100</span>
+                        <span className="sr-only"> dari 100</span>
+                      </span>
+                    </span>
+                  </button>
+                </li>
+              );
+            })}
           </ol>
           {simulasi.length > JUMLAH_AWAL && (
             <div className="border-t border-garis p-4 sm:px-5">
               <Tombol varian="kedua" onClick={() => setSemua((x) => !x)}>
-                {semua ? `Tampilkan ${JUMLAH_AWAL} teratas saja` : `Tampilkan semua ${simulasi.length} isu`}
+                {semua ? `Tampilkan ${JUMLAH_AWAL} teratas saja` : `Tampilkan semua ${simulasi.length} masalah`}
               </Tombol>
             </div>
           )}
         </section>
       </div>
+
+      {/* COBA ATUR SENDIRI — di DOM sesudah hasil; di layar lebar kolom kiri dan menempel saat digulir. */}
+      <section id="coba-atur" aria-labelledby="judul-atur" className="scroll-mt-24 lg:col-start-1 lg:row-start-1">
+        <div className="kartu p-5 lg:sticky lg:top-20">
+          <div className="flex items-center justify-between gap-4">
+            <h2 id="judul-atur" className="flex items-center gap-2 text-lead font-bold">
+              <Ikon nama="geser" className="size-5 text-biru" />
+              Coba atur sendiri
+            </h2>
+            <span
+              aria-live="polite"
+              className={`rounded-[0.375rem] px-2 py-0.5 text-kecil font-bold transition-colors ${disimulasikan ? 'bg-biru text-white' : 'bg-lapis text-lembut'}`}
+            >
+              {disimulasikan ? 'Percobaanmu' : 'Aturan resmi'}
+            </span>
+          </div>
+          <p className="mt-2 text-kecil text-lembut">
+            Tingkat kepentingan = seberapa penting tiap hal. Pilih salah satu pilihan cepat, atau geser sendiri. Persennya
+            disesuaikan otomatis agar totalnya 100%. Ini hanya percobaan: urutan resmi tidak berubah.
+          </p>
+
+          <p id="label-pilihan-cepat" className="mt-4 text-kecil font-semibold">
+            Pilihan cepat
+          </p>
+          <KelompokCair className="mt-2 flex flex-wrap gap-2" role="group" aria-labelledby="label-pilihan-cepat">
+            {(Object.keys(PRESET) as NamaPreset[]).map((p) => (
+              <button key={p} type="button" aria-pressed={presetAktif === p} onClick={() => setSlider(keSlider(PRESET[p]))} className="chip">
+                {LABEL_PRESET[p]}
+              </button>
+            ))}
+          </KelompokCair>
+
+          {/* Di HP hasilnya ada di atas panel ini: tampilkan akibat percobaan di sini juga, dengan jalan pintas ke daftar.
+              Tidak aria-live: kalimat yang sama di atas sudah diumumkan. */}
+          {konsekuensi && (
+            <div className="mt-4 rounded-kontrol border border-biru bg-biru-pudar px-3 pt-3 pb-1 text-kecil font-semibold text-biru-tua lg:hidden">
+              <p>{konsekuensi}</p>
+              <a href="#daftar-urutan" className="inline-flex min-h-11 items-center gap-1.5 underline underline-offset-4">
+                <Ikon nama="atas" className="size-4" />
+                Lihat urutannya
+              </a>
+            </div>
+          )}
+
+          <button
+            type="button"
+            aria-expanded={sliderTerbuka}
+            aria-controls="daftar-slider"
+            onClick={() => setSliderTerbuka((b) => !b)}
+            className="mt-4 flex min-h-11 w-full items-center justify-between gap-2 border-t border-garis pt-3 text-badan font-bold lg:hidden"
+          >
+            Geser sendiri keenam hal
+            <Ikon nama={sliderTerbuka ? 'naik' : 'turun'} className="size-5" />
+          </button>
+
+          <div id="daftar-slider" className={`ganti mt-4 border-garis lg:block lg:border-t lg:pt-4 ${sliderTerbuka ? 'block' : 'hidden'}`}>
+            <p className="text-kecil font-semibold">Tingkat kepentingan</p>
+            <p className="text-kecil text-lembut">Menaikkan satu hal otomatis mengecilkan yang lain.</p>
+            <ul className="mt-3 grid gap-2">
+              {FAKTOR.map((f) => {
+                const berubah = Math.abs(bobot[f] - bobotResmi[f]) >= 0.005;
+                return (
+                  <li key={f}>
+                    <div className="flex items-baseline justify-between gap-3">
+                      <span className="flex items-center gap-2 text-kecil font-semibold">
+                        <span aria-hidden="true" className="size-2.5 shrink-0 rounded-full" style={{ background: WARNA_FAKTOR[f] }} />
+                        <Istilah id={`istilah-bobot-${f}`} judul={NAMA_FAKTOR[f]} definisi={DEFINISI_FAKTOR[f]}>
+                          {NAMA_FAKTOR[f]}
+                        </Istilah>
+                      </span>
+                      <span className="angka shrink-0 text-kecil">
+                        <span className={`font-bold ${berubah ? 'text-biru-tua' : ''}`}>{persenBobot(bobot[f])}</span>
+                        {berubah && <span className="text-lembut"> (resmi {persenBobot(bobotResmi[f])})</span>}
+                      </span>
+                    </div>
+                    <label htmlFor={`bobot-${f}`} className="sr-only">
+                      Tingkat kepentingan {NAMA_FAKTOR[f].toLowerCase()}
+                    </label>
+                    <input
+                      id={`bobot-${f}`}
+                      type="range"
+                      min={0}
+                      max={100}
+                      step={1}
+                      value={slider[f]}
+                      onChange={(e) => setSlider({ ...slider, [f]: Number(e.target.value) })}
+                      aria-describedby={`definisi-${f}`}
+                      aria-valuetext={`${persenBobot(bobot[f])}${berubah ? `, aturan resmi ${persenBobot(bobotResmi[f])}` : ''}`}
+                      className="slider w-full"
+                    />
+                    <p id={`definisi-${f}`} className="sr-only">
+                      {DEFINISI_FAKTOR[f]}
+                    </p>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+
+          {totalSlider === 0 && (
+            <p role="alert" className="goyang mt-3 rounded-kontrol bg-merah-muda px-3 py-2 text-kecil font-semibold text-merah-tua">
+              Kalau semuanya 0, tidak ada yang bisa dihitung. Naikkan minimal satu hal. Sementara ini urutan memakai aturan
+              resmi.
+            </p>
+          )}
+
+          <div className="mt-5 grid gap-2">
+            <Tombol varian="garis" onClick={() => setSlider(keSlider(bobotResmi))} disabled={!disimulasikan && totalSlider > 0}>
+              Kembali ke aturan resmi
+            </Tombol>
+            <Tombol varian="kedua" onClick={salinTautan}>
+              <Ikon nama="tautan" className="size-4" />
+              Bagikan percobaan ini
+            </Tombol>
+          </div>
+
+          {perencana && <SimpanBobot bobot={bobot} aktif={disimulasikan} onTersimpan={() => router.refresh()} />}
+        </div>
+      </section>
     </div>
   );
 }
@@ -416,18 +510,20 @@ function SimpanBobot({ bobot, aktif, onTersimpan }: { bobot: Bobot; aktif: boole
       return;
     }
     setAlasan('');
-    umumkan('Bobot acuan tersimpan dan tercatat di riwayat keputusan.');
+    umumkan('Aturan resmi tersimpan dan tercatat di riwayat perubahan aturan.');
     onTersimpan();
   }
 
   return (
     <form onSubmit={simpan} className="mt-5 grid gap-3 rounded-kontrol border border-biru/30 bg-biru-pudar p-4">
       <p className="flex items-center gap-2 text-badan font-bold">
-        <Ikon nama="kunci" className="size-4" /> Mode Perencana
+        <Ikon nama="kunci" className="size-4" /> Khusus petugas perencana kota
       </p>
       <label htmlFor="alasan-bobot" className="text-kecil font-semibold">
         Alasan perubahan <span className="text-merah">*</span>
-        <span className="block font-normal text-lembut">Wajib, minimal 10 karakter, tampil publik di riwayat keputusan.</span>
+        <span className="block font-normal text-lembut">
+          Wajib, minimal 10 huruf. Alasan ini tampil untuk umum di riwayat perubahan aturan.
+        </span>
       </label>
       <textarea
         id="alasan-bobot"
@@ -442,9 +538,9 @@ function SimpanBobot({ bobot, aktif, onTersimpan }: { bobot: Bobot; aktif: boole
       />
       <Tombol type="submit" disabled={!aktif || pendek || memuat}>
         {memuat && <Ikon nama="muat" className="putar size-4" />}
-        {memuat ? 'Menyimpan…' : 'Simpan sebagai bobot acuan'}
+        {memuat ? 'Menyimpan…' : 'Simpan sebagai aturan resmi'}
       </Tombol>
-      {!aktif && <p className="text-kecil text-lembut">Ubah bobot dulu; bobot sekarang sama dengan bobot acuan.</p>}
+      {!aktif && <p className="text-kecil text-lembut">Ubah dulu tingkat kepentingannya. Saat ini masih sama dengan aturan resmi.</p>}
       {galat && (
         <p id="galat-bobot" role="alert" className="text-kecil font-semibold text-merah-tua">
           {galat}

@@ -4,13 +4,13 @@
 import { describe, expect, it } from 'vitest';
 import { KECAMATAN } from '@/lib/geo/kecamatan-svg';
 import contohPrioritas from '@/lib/mocks/contoh-prioritas.json';
-import { BOBOT_AWAL, FAKTOR, hitungSkor } from '@/lib/scoring';
+import { NAMA_FAKTOR } from '@/lib/konten';
+import { BOBOT_AWAL, FAKTOR, hitungSkor, PENAHAN_FAKTOR, penahanUtama } from '@/lib/scoring';
 import {
   ALASAN_AWAM,
   alasanUtama,
   kalimatIsu,
   kalimatKecamatan,
-  NAMA_AWAM,
   ringkasJakarta,
   tingkatDari,
 } from '@/lib/scoring/kecamatan';
@@ -62,7 +62,8 @@ describe('tingkatDari', () => {
 describe('kalimat awam', () => {
   it('setiap faktor punya nama dan alasan awam', () => {
     for (const f of FAKTOR) {
-      expect(NAMA_AWAM[f].length).toBeGreaterThan(5);
+      expect(NAMA_FAKTOR[f].length).toBeGreaterThan(5);
+      expect(PENAHAN_FAKTOR[f].length).toBeGreaterThan(5);
       expect(ALASAN_AWAM[f].length).toBeGreaterThan(5);
     }
   });
@@ -74,19 +75,28 @@ describe('kalimat awam', () => {
   });
 
   it('kalimat isu menyebut kategori, kecamatan, urutan, dan alasan', () => {
-    const k = kalimatIsu(skor[0], skor.length);
+    const k = kalimatIsu(skor[0], skor.length, BOBOT_AWAL);
     expect(k).toContain(skor[0].kategori);
     expect(k).toContain(skor[0].kecamatan);
-    expect(k).toContain(`urutan 1 dari ${skor.length}`);
+    expect(k).toContain(`urutan ke-1 dari ${skor.length}`);
     expect(k).toContain(ALASAN_AWAM[alasanUtama(skor[0])[0]]);
-    expect(k).not.toMatch(/poin|bobot|min-max|normalisasi/);
+    expect(k).not.toMatch(/poin|bobot|min-max|normalisasi|isu/);
+  });
+
+  it('masalah di sepertiga bawah dijelaskan dengan hal yang menahan, bukan yang menaikkan', () => {
+    const bawah = skor.at(-1)!;
+    const k = kalimatIsu(bawah, skor.length, BOBOT_AWAL);
+    expect(k).toContain('Belum didahulukan');
+    expect(k).toContain(PENAHAN_FAKTOR[penahanUtama(bawah, BOBOT_AWAL)]);
   });
 
   it('kalimat kecamatan membandingkan dengan median Jakarta', () => {
     const atas = ringkas.kecamatan.find((k) => k.urutan === 1)!;
-    expect(kalimatKecamatan(atas, ringkas)).toMatch(/urutan 1 dari \d+ kecamatan/);
-    expect(kalimatKecamatan(atas, ringkas)).toContain('di atas median Jakarta');
+    expect(kalimatKecamatan(atas, ringkas, BOBOT_AWAL)).toMatch(/urutan ke-1 dari \d+ kecamatan/);
+    expect(kalimatKecamatan(atas, ringkas, BOBOT_AWAL)).toContain('lebih tinggi dari kebanyakan kecamatan');
+    const terbawah = [...ringkas.kecamatan].filter((k) => k.urutan !== null).sort((a, b) => b.urutan! - a.urutan!)[0];
+    expect(kalimatKecamatan(terbawah, ringkas, BOBOT_AWAL)).toContain('Yang paling menahan');
     const tanpa = ringkas.kecamatan.find((k) => k.skor === null);
-    if (tanpa) expect(kalimatKecamatan(tanpa, ringkas)).toContain('tidak punya laporan aktif');
+    if (tanpa) expect(kalimatKecamatan(tanpa, ringkas, BOBOT_AWAL)).toContain('tidak punya laporan yang belum selesai');
   });
 });

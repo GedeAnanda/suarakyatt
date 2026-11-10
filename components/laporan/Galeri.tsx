@@ -25,7 +25,7 @@ function Label({ children }: { children: React.ReactNode }) {
 
 export default function Galeri({ laporan }: { laporan: Pick<LaporanPublik, 'foto' | 'foto_bukti' | 'status' | 'alasan_tolak' | 'is_simulated'> }) {
   if (laporan.alasan_tolak === 'konten_melanggar') {
-    return <Kosong teks="Isi dan foto laporan ini disembunyikan karena ditolak dengan alasan konten melanggar." />;
+    return <Kosong teks="Foto dan cerita laporan ini disembunyikan karena berisi hal yang tidak pantas atau data pribadi orang lain." />;
   }
   const selesai = laporan.status === 'selesai';
   const [utama, ...lain] = laporan.foto;
@@ -39,7 +39,7 @@ export default function Galeri({ laporan }: { laporan: Pick<LaporanPublik, 'foto
           <Kosong teks={laporan.is_simulated ? 'Laporan simulasi ini tidak punya foto.' : 'Foto tidak tersedia.'} />
         )}
         {/* Foto seed adalah foto ilustrasi berlisensi bebas, bukan foto lapangan (PRD 10: data simulasi selalu diberi label). */}
-        <Label>{laporan.is_simulated ? 'Lampiran simulasi · bukan foto lapangan' : selesai ? 'Sebelum · foto dari pelapor' : 'Foto dari pelapor'}</Label>
+        <Label>{laporan.is_simulated ? 'Foto ilustrasi (data buatan), bukan foto asli lokasi' : selesai ? 'Sebelum · foto dari pelapor' : 'Foto dari pelapor'}</Label>
         {lain.length > 0 && (
           <div className="mt-3 grid grid-cols-2 gap-3">
             {lain.map((src, i) => (

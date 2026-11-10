@@ -1,5 +1,5 @@
 // components/Sisi.tsx — menu samping berikon (pemilik: A)
-// Seperti menu kiri situs travel: kelompok halaman utama, lalu laporan, lalu halaman penjelas, lalu kanal
+// Seperti menu kiri situs travel: kelompok halaman utama, lalu laporan, lalu halaman penjelas, lalu aplikasi
 // pengaduan resmi. Layar lebar: deret ikon; tombol menu (TombolMenu) membuka panel lebar di atas halaman.
 // Layar kecil: laci. Panel dan laci tertutup sendiri begitu halaman dipilih, saat Esc ditekan, atau saat
 // pengguna mengklik di luarnya, supaya tidak menghalangi halaman yang dituju.
@@ -20,9 +20,9 @@ const MENU: { label: string; item: { href: string; label: string; ikon: NamaIkon
     label: 'Jelajahi',
     item: [
       { href: '/', label: 'Beranda', ikon: 'rumah' },
-      { href: '/prioritas', label: 'Dashboard prioritas', ikon: 'geser' },
+      { href: '/prioritas', label: 'Urutan prioritas', ikon: 'geser' },
       { href: '/kecamatan', label: 'Skor kecamatan', ikon: 'grafik' },
-      { href: '/rapor', label: 'Rapor instansi', ikon: 'lencana' },
+      { href: '/rapor', label: 'Rapor dinas', ikon: 'lencana' },
       { href: '/peta', label: 'Peta laporan', ikon: 'peta' },
     ],
   },
@@ -37,7 +37,9 @@ const MENU: { label: string; item: { href: string; label: string; ikon: NamaIkon
     label: 'Pelajari',
     item: [
       { href: '/tentang', label: 'Tentang SUARAKYAT', ikon: 'info' },
-      { href: '/rapor/cara-menilai', label: 'Cara menilai', ikon: 'buku' },
+      // Tautan berjangkar tidak pernah tersorot aktif (pathname tidak membawa #), jadi /prioritas tetap satu-satunya.
+      { href: '/prioritas#cara-hitung', label: 'Cara urutan dihitung', ikon: 'bantuan' },
+      { href: '/rapor/cara-menilai', label: 'Cara rapor dihitung', ikon: 'buku' },
       { href: '/sumber-data', label: 'Sumber data', ikon: 'data' },
     ],
   },
@@ -81,15 +83,15 @@ function IsiSisi({ aktif }: { aktif?: string }) {
           ))}
 
           <div className="mt-2 border-t border-garis pt-2">
-            <p className="px-3 pt-1 pb-1 text-mini font-semibold text-lembut rel:sr-only">Pengaduan resmi</p>
-            <ul aria-label="Kanal pengaduan resmi" className="grid gap-0.5">
+            <p className="px-3 pt-1 pb-1 text-mini font-semibold text-lembut rel:sr-only">Aplikasi pengaduan resmi</p>
+            <ul aria-label="Aplikasi pengaduan resmi" className="grid gap-0.5">
               {KANAL_RESMI.map((k) => (
                 <li key={k.nama}>
                   <a
                     href={k.url}
                     target="_blank"
                     rel="noreferrer"
-                    title={`${k.nama}, kanal resmi (tab baru)`}
+                    title={`${k.nama}, aplikasi pengaduan resmi (tab baru)`}
                     className="flex h-10 items-center gap-3 rounded-kontrol px-3 text-kecil font-semibold text-lembut transition-colors hover:bg-lapis hover:text-teks rel:justify-center rel:px-0 rel:text-[0.6875rem]"
                   >
                     <Ikon nama="luar" className="size-4.5 rel:hidden" />
@@ -103,8 +105,9 @@ function IsiSisi({ aktif }: { aktif?: string }) {
             </ul>
           </div>
 
-          <p className="mt-auto px-3 pt-8 pb-1 text-mini text-lembut rel:hidden">
-            Prototipe untuk lomba WIA MIA 2026. Sebagian besar data adalah data simulasi.
+          <p className="mt-auto px-3 pt-8 pb-1 text-kecil text-lembut rel:hidden">
+            Situs ini dibuat untuk lomba Web in Action 2026. Laporan, dinas, dan nilai rapor adalah data buatan; peta dan
+            batas kecamatan memakai data asli.
           </p>
         </KelompokCair>
       </nav>

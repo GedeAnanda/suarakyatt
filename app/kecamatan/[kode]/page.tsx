@@ -73,7 +73,7 @@ async function Isi({ params }: { params: PageProps<'/kecamatan/[kode]'>['params'
 
   return (
     <>
-      <BannerSimulasi sumber={data.sumber} keterangan="Skor dari bobot resmi · kerentanan dari data kemiskinan level kota" />
+      <BannerSimulasi sumber={data.sumber} keterangan="Skor dari aturan resmi · angka warga kurang mampu per kota" />
 
       {/* 1. Jawaban dalam satu kalimat */}
       <section aria-labelledby="judul-ringkas" className="kartu mt-6 grid gap-5 p-5 sm:p-7 lg:grid-cols-[minmax(0,1fr)_14rem] lg:items-center">
@@ -84,26 +84,30 @@ async function Isi({ params }: { params: PageProps<'/kecamatan/[kode]'>['params'
           {tingkat && (
             <span className={`inline-flex rounded-full px-3 py-1 text-kecil font-bold ${GAYA_TINGKAT[tingkat]}`}>{LABEL_TINGKAT[tingkat]}</span>
           )}
-          <p className="mt-3 max-w-[60ch] text-lead">{kalimatKecamatan(k, ringkas)}</p>
+          <p className="mt-3 max-w-[60ch] text-lead">{kalimatKecamatan(k, ringkas, bobot)}</p>
           <p className="mt-3 text-kecil text-lembut">
-            Urutan ini adalah urutan perhatian menurut model, bukan janji tanggal perbaikan. Skor kecamatan = skor masalah
-            tertingginya.{' '}
-            <Link href="/rapor/cara-menilai" className={kelasTautan}>
-              Cara menilai
+            Urutan ini menunjukkan masalah mana yang sebaiknya ditangani lebih dulu, bukan janji kapan diperbaiki. Skor
+            kecamatan diambil dari masalahnya yang paling didahulukan.{' '}
+            {/* Dulu menuju rumus rapor dinas (audit 10 Nov, D1). */}
+            <Link href="/prioritas#cara-hitung" className={kelasTautan}>
+              Bagaimana urutan ini dihitung?
             </Link>
           </p>
         </div>
         <dl className="grid grid-cols-2 gap-4 rounded-kontrol bg-latar p-4 lg:grid-cols-1">
           <div>
-            <dt className="text-kecil text-lembut">Skor tertinggi</dt>
+            <dt className="text-kecil text-lembut">Skor prioritas</dt>
             <dd className="angka text-[2.5rem] leading-none font-bold">
               {k.skor === null ? '–' : formatPoin(k.skor)}
-              <span className="text-kecil font-normal text-lembut"> / 100</span>
+              <span className="text-kecil font-normal text-lembut"> dari 100</span>
+            </dd>
+            <dd className="mt-1 text-mini text-lembut">
+              Makin tinggi, makin didahulukan. Ini perbandingan dengan masalah lain di Jakarta, bukan nilai baik-buruk.
             </dd>
           </div>
           <div>
             <dt className="text-kecil text-lembut">Urutan kecamatan</dt>
-            <dd className="angka text-lead font-bold">{k.urutan ? `${k.urutan} dari ${ringkas.dinilai}` : 'Tidak dinilai'}</dd>
+            <dd className="angka text-lead font-bold">{k.urutan ? `ke-${k.urutan} dari ${ringkas.dinilai} kecamatan` : 'Tidak dinilai'}</dd>
           </div>
         </dl>
       </section>
@@ -113,7 +117,10 @@ async function Isi({ params }: { params: PageProps<'/kecamatan/[kode]'>['params'
         <h2 id="judul-posisi" className="text-sub font-bold">
           Posisinya di antara {KECAMATAN.length} kecamatan
         </h2>
-        <p className="mt-1 text-kecil text-lembut">Satu batang = satu kecamatan, tingginya skor masalah tertinggi di sana.</p>
+        <p className="mt-1 text-kecil text-lembut">
+          Tiap batang satu kecamatan. Makin tinggi, makin didahulukan. Hitam = kecamatan ini; garis putus-putus = nilai tengah
+          Jakarta.
+        </p>
         <div className="mt-5">
           <GrafikPosisi ringkas={ringkas} kode={k.kode_wilayah} />
         </div>
@@ -125,7 +132,7 @@ async function Isi({ params }: { params: PageProps<'/kecamatan/[kode]'>['params'
           Masalah aktif di {k.kecamatan}
         </h2>
         {k.isu.length === 0 ? (
-          <p className="kartu mt-4 p-5 text-badan">Tidak ada laporan aktif yang dinilai di kecamatan ini.</p>
+          <p className="kartu mt-4 p-5 text-badan">Tidak ada laporan belum selesai yang dinilai di kecamatan ini.</p>
         ) : (
           <ul className="mt-4 grid gap-4 lg:grid-cols-2">
             {k.isu.map((i) => {
@@ -136,7 +143,7 @@ async function Isi({ params }: { params: PageProps<'/kecamatan/[kode]'>['params'
                     <div>
                       <h3 className="text-lead font-bold">{i.kategori}</h3>
                       <p className="text-kecil text-lembut">
-                        {i.laporan_aktif} laporan aktif · {i.laporan_terverifikasi} sudah diperiksa
+                        {i.laporan_aktif} laporan belum selesai · {i.laporan_terverifikasi} sudah diperiksa dinas
                       </p>
                     </div>
                     <span className={`rounded-full px-3 py-1 text-mini font-bold ${GAYA_TINGKAT[t]}`}>{LABEL_TINGKAT[t]}</span>
@@ -144,20 +151,20 @@ async function Isi({ params }: { params: PageProps<'/kecamatan/[kode]'>['params'
                   <div>
                     <div className="flex items-baseline justify-between text-kecil">
                       <span>
-                        Skor <strong className="angka text-lead font-bold">{formatPoin(i.skor)}</strong>
+                        Skor <strong className="angka text-lead font-bold">{formatPoin(i.skor)}</strong> dari 100
                       </span>
                       <span className="angka text-lembut">
-                        urutan {i.peringkat} dari {ringkas.totalIsu}
+                        urutan ke-{i.peringkat} dari {ringkas.totalIsu} masalah
                       </span>
                     </div>
                     <div className="relative mt-1.5 h-3 overflow-hidden rounded-full bg-lapis" aria-hidden="true">
                       <span className="absolute inset-y-0 left-0 rounded-full bg-biru" style={{ width: `${i.skor}%` }} />
                     </div>
                   </div>
-                  <p className="text-badan">{kalimatIsu(i, ringkas.totalIsu)}</p>
+                  <p className="text-badan">{kalimatIsu(i, ringkas.totalIsu, bobot)}</p>
                   <details className="group">
                     <summary className="inline-flex min-h-10 cursor-pointer list-none items-center gap-1.5 text-kecil font-semibold text-biru-tua [&::-webkit-details-marker]:hidden">
-                      Lihat enam faktornya
+                      Lihat rincian alasannya
                       <Ikon nama="turun" className="size-4 transition-transform group-open:rotate-180" />
                     </summary>
                     <div className="mt-3">
@@ -165,7 +172,7 @@ async function Isi({ params }: { params: PageProps<'/kecamatan/[kode]'>['params'
                     </div>
                   </details>
                   <Link href={`/prioritas?isu=${encodeURIComponent(i.id)}`} className={`${kelasTautan} text-kecil`}>
-                    Uji bobot lain untuk masalah ini
+                    Coba aturan penilaian lain untuk masalah ini
                   </Link>
                 </li>
               );
@@ -182,8 +189,8 @@ async function Isi({ params }: { params: PageProps<'/kecamatan/[kode]'>['params'
           </h2>
           <dl className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
             {[
-              { label: 'Aktif', nilai: hitung.aktif },
-              { label: 'Terlambat', nilai: hitung.terlambat, merah: hitung.terlambat > 0 },
+              { label: 'Belum selesai', nilai: hitung.aktif },
+              { label: 'Lewat batas waktu', nilai: hitung.terlambat, merah: hitung.terlambat > 0 },
               { label: 'Selesai', nilai: hitung.selesai },
               { label: 'Ditolak', nilai: hitung.ditolak },
             ].map((s) => (

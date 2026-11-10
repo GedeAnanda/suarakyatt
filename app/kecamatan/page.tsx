@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { Suspense } from 'react';
 import BannerSimulasi from '@/components/BannerSimulasi';
 import KepalaHalaman from '@/components/KepalaHalaman';
+import CariKecamatan from '@/components/kecamatan/CariKecamatan';
 import PetaPilihKecamatan from '@/components/kecamatan/PetaPilihKecamatan';
 import { KeteranganKelas } from '@/components/PetaKecamatan';
 import Ikon from '@/components/ui/Ikon';
@@ -16,6 +17,13 @@ import { ambilDataPrioritas } from '@/lib/data/prioritas';
 import { KECAMATAN } from '@/lib/geo/kecamatan-svg';
 import { formatPoin, hitungSkor } from '@/lib/scoring';
 import { ALASAN_AWAM, alasanUtama, LABEL_TINGKAT, ringkasJakarta, tingkatDari } from '@/lib/scoring/kecamatan';
+
+const GAYA_TINGKAT = {
+  paling: 'bg-biru text-white',
+  tinggi: 'bg-biru-muda text-biru-tua',
+  sedang: 'bg-lapis text-teks',
+  rendah: 'bg-latar text-lembut',
+} as const;
 
 export const metadata: Metadata = {
   title: 'Skor kecamatan',
@@ -39,13 +47,16 @@ async function Isi() {
 
   return (
     <>
-      <BannerSimulasi sumber={data.sumber} keterangan="Skor dari bobot resmi · kerentanan dari data kemiskinan level kota" />
+      <BannerSimulasi sumber={data.sumber} keterangan="Skor dari aturan resmi · angka warga kurang mampu per kota" />
+      <div className="mt-6">
+        <CariKecamatan daftar={KECAMATAN} />
+      </div>
       <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:items-start">
         <section aria-labelledby="judul-peta" className="kartu p-3 sm:p-5 lg:sticky lg:top-20">
           <h2 id="judul-peta" className="px-2 pt-1 text-lead font-bold">
             Pilih kecamatan di peta
           </h2>
-          <p className="px-2 text-kecil text-lembut">Makin gelap birunya, makin didahulukan masalah di sana.</p>
+          <p className="px-2 text-kecil text-lembut">Makin gelap warnanya, makin didahulukan masalah terberat di sana.</p>
           <div className="mt-3">
             <PetaPilihKecamatan skor={skor} keterangan={keterangan} />
           </div>
@@ -54,10 +65,11 @@ async function Isi() {
 
         <section aria-labelledby="judul-daftar">
           <h2 id="judul-daftar" className="judul-seksi">
-            Urutan {ringkas.dinilai} kecamatan yang punya laporan aktif
+            Urutan {ringkas.dinilai} kecamatan yang punya laporan belum selesai
           </h2>
           <p className="mt-1 text-kecil text-lembut">
-            Garis tipis di tiap bar = median Jakarta ({formatPoin(ringkas.median)}).
+            Skor 0–100: makin tinggi, makin didahulukan. Garis hitam di tiap batang = nilai tengah Jakarta (
+            {formatPoin(ringkas.median)}): separuh kecamatan di atasnya, separuh di bawahnya.
           </p>
           <ol className="kartu mt-4 divide-y divide-garis">
             {urut.map((k) => {
@@ -71,20 +83,26 @@ async function Isi() {
                   >
                     <span className="angka text-right text-kecil font-bold text-lembut">{k.urutan ?? '–'}</span>
                     <span className="min-w-0">
-                      <span className="block truncate font-bold">{k.kecamatan}</span>
-                      <span className="block truncate text-mini text-lembut">
+                      <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                        <span className="font-bold">{k.kecamatan}</span>
+                        {t && <span className={`rounded-full px-2 py-0.5 text-mini font-bold ${GAYA_TINGKAT[t]}`}>{LABEL_TINGKAT[t]}</span>}
+                      </span>
+                      {/* Tanpa truncate: alasannya justru informasi terpenting (audit 10 Nov, D13). */}
+                      <span className="mt-0.5 block text-kecil text-lembut">
                         {k.kota}
                         {k.isu[0]
                           ? ` · ${k.isu[0].kategori.toLowerCase()}${alasan.length ? `: ${alasan.join(' dan ')}` : ''}`
-                          : ' · tidak ada laporan aktif'}
+                          : ' · tidak ada laporan belum selesai'}
                       </span>
                     </span>
-                    <span className="angka text-right text-badan font-bold">{k.skor === null ? '–' : formatPoin(k.skor)}</span>
-                    <span aria-hidden="true" className="relative col-start-2 col-end-4 h-1.5 overflow-hidden rounded-full bg-lapis">
+                    <span className="angka text-right text-badan font-bold">
+                      {k.skor === null ? '–' : formatPoin(k.skor)}
+                      {k.skor !== null && <span className="text-mini font-normal text-lembut">/100</span>}
+                    </span>
+                    <span aria-hidden="true" className="relative col-start-2 col-end-4 h-2.5 overflow-hidden rounded-full bg-lapis">
                       {k.skor !== null && <span className="absolute inset-y-0 left-0 rounded-full bg-biru" style={{ width: `${k.skor}%` }} />}
                       <span className="absolute inset-y-0 w-0.5 bg-teks" style={{ left: `${ringkas.median}%` }} />
                     </span>
-                    {t && <span className="sr-only">{LABEL_TINGKAT[t]}</span>}
                   </Link>
                 </li>
               );
@@ -104,7 +122,7 @@ export default function DaftarKecamatanPage() {
         aksi={
           <Link href="/prioritas" className={kelasTombol('garis', 'text-kecil')}>
             <Ikon nama="geser" className="size-4" />
-            Uji bobot sendiri
+            Atur urutannya sendiri
           </Link>
         }
       >

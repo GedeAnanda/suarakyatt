@@ -12,7 +12,7 @@ import { ambilLaporanAdmin } from '@/lib/data/admin';
 import { ambilSesi } from '@/lib/data/sesi';
 import { KATEGORI } from '@/lib/konten';
 
-export const metadata: Metadata = { title: 'Laporan instansi' };
+export const metadata: Metadata = { title: 'Laporan dinas' };
 
 async function Isi() {
   const [{ sumber, laporan, sekarang }, sesi] = await Promise.all([ambilLaporanAdmin(), ambilSesi()]);
@@ -44,8 +44,8 @@ async function Isi() {
       {sumber === 'contoh' && (
         <p className="mt-4 flex gap-2 rounded-kartu bg-oranye-muda p-4 text-kecil text-st-menunggu">
           <Ikon nama="info" className="mt-0.5 size-4 shrink-0" />
-          Database belum berisi laporan, jadi halaman ini menampilkan laporan contoh Dinas Bina Jalan (simulasi) sebagai
-          pratinjau. Ubah status aktif setelah data seed dimuat.
+          Laporan sungguhan belum tersedia, jadi halaman ini menampilkan laporan contoh Dinas Bina Jalan sebagai pratinjau.
+          Status belum bisa diubah sampai data laporan dimuat.
         </p>
       )}
       <dl className="mt-5 flex flex-wrap items-baseline gap-x-7 gap-y-2">
@@ -60,7 +60,7 @@ async function Isi() {
       </dl>
       <div className="mt-6">
         {laporan.length === 0 ? (
-          <p className="kartu p-5 text-badan">Belum ada laporan untuk instansi Anda.</p>
+          <p className="kartu p-5 text-badan">Belum ada laporan untuk dinasmu.</p>
         ) : (
           <TabelLaporanAdmin laporan={laporan} sekarang={sekarang} />
         )}
@@ -72,9 +72,9 @@ async function Isi() {
 export default function AdminLaporanPage() {
   return (
     <div className="bingkai pt-6 pb-4 sm:pt-8">
-      <KepalaHalaman judul="Laporan instansi">
-        Laporan untuk instansi Anda. Yang melewati batas waktu ada di urutan teratas. Setiap perubahan status tercatat publik
-        di halaman lacak, lengkap dengan nama instansi dan catatannya.
+      <KepalaHalaman judul="Laporan dinas">
+        Laporan untuk dinasmu. Yang lewat batas waktu ada paling atas. Setiap perubahan status dan kendala tampil untuk publik
+        di halaman lacak, lengkap dengan nama dinas dan catatannya.
       </KepalaHalaman>
       <div className="mt-6">
         <Suspense fallback={<div aria-hidden="true" className="kerangka h-[30rem]" />}>

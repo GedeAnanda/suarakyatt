@@ -4,7 +4,7 @@ Jalankan dari root aplikasi. Rahasia dibaca dari `.env.local`; jangan commit fil
 
 ## Demo fungsional
 
-1. Terapkan migrasi `supabase/migrations/0001` sampai `0010` berurutan pada proyek Supabase.
+1. Terapkan migrasi `supabase/migrations/0001` sampai `0011` berurutan pada proyek Supabase.
 2. Siapkan akun demo warga dan admin, beserta profil `is_demo = true`. Admin demo menangani instansi 1. Isi variabel `DEMO_*` di `.env.local`.
 3. Isi `DATABASE_URL`, kemudian jalankan:
 

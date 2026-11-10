@@ -1,12 +1,19 @@
-// components/beranda/AlurLapor.tsx — dari mana datanya: lapor, dinas menjawab, warga menilai (pemilik: A)
+// components/beranda/AlurLapor.tsx — 3 langkah: warga melapor, dinas menjawab, warga menilai (pemilik: A)
 // Tiga kartu langkah, masing-masing dengan potongan antarmuka asli aplikasi (badge, riwayat, rapor),
-// supaya pengunjung langsung melihat seperti apa layarnya.
+// supaya pengunjung langsung melihat seperti apa layarnya. Rapor di langkah 3 adalah data buatan dan diberi label.
 
 import type { ReactNode } from 'react';
+import type { Sumber } from '@/lib/data/laporan';
 import { desimal, persen } from '@/lib/format';
+import { ARTI_HURUF } from '@/lib/kamus';
 import type { RaporInstansi } from '@/lib/types';
 import BadgeStatus from '../BadgeStatus';
 import Ikon from '../ui/Ikon';
+import LabelSumber from '../ui/LabelSumber';
+
+/** Satu kalimat yang sama di tiga tempat Beranda: tab Rapor dinas, spanduk rapor, dan langkah 3 di sini. */
+export const KALIMAT_TOLAK =
+  'Di samping nilai ada persen laporan yang ditolak. Dinas yang banyak menolak laporan tidak bisa dapat nilai bagus.';
 
 function Langkah({ n, judul, isi, children }: { n: number; judul: string; isi: string; children: ReactNode }) {
   return (
@@ -26,30 +33,38 @@ function Langkah({ n, judul, isi, children }: { n: number; judul: string; isi: s
   );
 }
 
-// Satu baris rapor seperti di kertas rapor: huruf tebal biru tanpa kotak, nama dan
-// tingkat penolakan di tengah, nilai rata kanan supaya bisa dibandingkan sekilas.
+// Satu baris rapor seperti di kertas rapor: huruf tebal biru tanpa kotak, nama, arti huruf, dan persen laporan yang
+// ditolak di tengah, nilai rata kanan supaya bisa dibandingkan sekilas.
 function BarisRapor({ i }: { i: RaporInstansi }) {
-  const tertahan = i.huruf !== i.huruf_asli;
   return (
     <li className="grid grid-cols-[2.25rem_minmax(0,1fr)_auto] items-center gap-x-2 py-3 first:pt-0 last:pb-0">
       <span className={`text-center text-[1.75rem] leading-none font-bold ${i.huruf ? 'text-biru' : 'text-lembut'}`}>{i.huruf ?? '?'}</span>
       <div className="text-kecil leading-snug">
         <p className="truncate font-bold">{i.nama.replace(' (simulasi)', '')}</p>
+        <p className="text-lembut">{i.huruf ? ARTI_HURUF[i.huruf] : 'Belum cukup laporan'}</p>
         <p className={i.peringatan_penolakan ? 'text-merah-tua' : 'text-lembut'}>
-          ditolak <span className="angka">{persen(i.tingkat_penolakan)}</span>
-          {i.peringatan_penolakan && ' · huruf ditahan'}
-          {tertahan && `, setara ${i.huruf_asli}`}
+          <span className="angka">{persen(i.tingkat_penolakan)}</span> laporan ditolak
+          {i.peringatan_penolakan && ' · nilai paling tinggi C karena terlalu banyak menolak'}
         </p>
       </div>
       <p className="angka self-start text-kecil font-bold whitespace-nowrap">
         {desimal(i.nilai)}
-        <span className="font-normal text-lembut"> /100</span>
+        <span className="font-normal text-lembut"> dari 100</span>
       </p>
     </li>
   );
 }
 
-export default function AlurLapor({ rapor, kodeContoh }: { rapor: RaporInstansi[]; kodeContoh: string }) {
+export default function AlurLapor({
+  rapor,
+  sumber,
+  kodeContoh,
+}: {
+  rapor: RaporInstansi[];
+  sumber: Sumber;
+  /** Kode yang jelas contoh (SR-ABC234), bukan kode yang seolah laporan sungguhan. */
+  kodeContoh: string;
+}) {
   const baik = rapor.find((r) => !r.peringatan_penolakan && r.huruf === 'A') ?? rapor[0];
   const tertahan = rapor.find((r) => r.peringatan_penolakan) ?? rapor[1];
 
@@ -72,14 +87,14 @@ export default function AlurLapor({ rapor, kodeContoh }: { rapor: RaporInstansi[
         </div>
         <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-kontrol border border-garis p-3">
           <div>
-            <p className="text-mini text-lembut">Kode lacak</p>
+            <p className="text-kecil text-lembut">Kode laporan (contoh)</p>
             <p className="font-kode angka text-lead font-bold tracking-wide text-biru-tua">{kodeContoh}</p>
           </div>
           <BadgeStatus status="menunggu" />
         </div>
       </Langkah>
 
-      <Langkah n={2} judul="Dinas menjawab terbuka" isi="Setiap perubahan status tercatat publik. Laporan yang ditolak tetap tampil, lengkap dengan alasannya.">
+      <Langkah n={2} judul="Dinas menjawab, semua bisa melihat" isi="Setiap perubahan status tercatat dan bisa dilihat siapa saja. Laporan yang ditolak tetap tampil, lengkap dengan alasannya.">
         <ol className="grid rounded-kontrol bg-latar p-4">
           {[
             { status: 'menunggu' as const, waktu: 'Senin 08.12', siapa: 'Pelapor' },
@@ -106,11 +121,11 @@ export default function AlurLapor({ rapor, kodeContoh }: { rapor: RaporInstansi[
         </ol>
         <p className="mt-3 flex items-center gap-2 border-t border-garis pt-3 text-kecil text-lembut">
           <Ikon nama="jam" className="size-4 shrink-0" />
-          Sisa 4 hari menuju batas waktu selesai
+          Harus selesai dalam 4 hari lagi
         </p>
       </Langkah>
 
-      <Langkah n={3} judul="Warga menilai, rapor berubah" isi="Rating, ketepatan waktu, dan tingkat penolakan menjadi Rapor Instansi A sampai E.">
+      <Langkah n={3} judul="Warga menilai, rapor berubah" isi="Bintang dari warga, ketepatan waktu, dan laporan yang ditolak menjadi nilai rapor dinas, A sampai E.">
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-kontrol bg-latar p-3">
           <span role="img" className="flex gap-0.5 text-oranye" aria-label="4 dari 5 bintang">
             {[1, 2, 3, 4, 5].map((n) => (
@@ -123,6 +138,8 @@ export default function AlurLapor({ rapor, kodeContoh }: { rapor: RaporInstansi[
           <BarisRapor i={baik} />
           <BarisRapor i={tertahan} />
         </ul>
+        <p className="mt-4 border-t border-garis pt-3 text-kecil text-lembut">{KALIMAT_TOLAK}</p>
+        <LabelSumber sumber={sumber} ringkas className="mt-3" />
       </Langkah>
     </ol>
     </div>
