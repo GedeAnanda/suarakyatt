@@ -258,9 +258,15 @@ export default function HeroCari({ panelRapor }: { panelRapor: ReactNode }) {
             <p className="mt-3 text-kecil text-lembut">
               Kode dikirim saat laporan terkirim. Halaman lacak menampilkan status, riwayat, batas waktu, dan posisi isunya
               di daftar prioritas.{' '}
-              <Link href="/contoh" className="font-semibold text-biru-tua hover:underline">
-                Belum punya kode? Buka laporan contoh
+              Belum punya kode? Coba laporan{' '}
+              <Link href="/contoh?jenis=terlambat" className="font-semibold text-biru-tua hover:underline">
+                yang terlambat
+              </Link>{' '}
+              atau{' '}
+              <Link href="/contoh?jenis=ditolak" className="font-semibold text-biru-tua hover:underline">
+                yang ditolak
               </Link>
+              .
             </p>
           </div>
 

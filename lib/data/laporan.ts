@@ -47,6 +47,8 @@ const dataContoh = cache(async () => {
     resolved_at: geser(l.resolved_at, ms),
     batas_respons: geser(l.batas_respons, ms)!,
     batas_selesai: geser(l.batas_selesai, ms)!,
+    // Tanggal (YYYY-MM-DD) dari kendala di data contoh, ikut digeser.
+    perkiraan_selesai: l.perkiraan_selesai && geser(l.perkiraan_selesai, ms)!.slice(0, 10),
   }));
   const timeline = (contoh.timeline as TimelineItem[]).map((t) => ({ ...t, created_at: geser(t.created_at, ms)! }));
   return { laporan, timeline, sekarang: Date.now() };
@@ -82,13 +84,66 @@ export const ambilTitikLaporan = cache(async (): Promise<{ sumber: Sumber; lapor
   };
 });
 
-/** Pilih contoh dari sumber yang sedang tampil; tidak ada kode laporan fiktif di antarmuka. */
-export const ambilContohLaporan = cache(async () => {
-  const { laporan } = await ambilTitikLaporan();
-  const pilihan = laporan.find((l) => l.kategori === 'Jalan rusak' && l.status === 'diverifikasi')
-    ?? laporan.find((l) => l.status === 'diproses')
-    ?? laporan.find((l) => AKTIF.includes(l.status))
-    ?? laporan[0];
+/** Skenario untuk /contoh?jenis=… (revisi FDS 10 Nov, 1.6 dan matriks skenario 3.2). */
+export const JENIS_CONTOH = ['terlambat', 'ditolak', 'duplikat', 'melanggar', 'selesai'] as const;
+export type JenisContoh = (typeof JENIS_CONTOH)[number];
+
+/** Kode laporan dengan kendala (alasan tunda) yang statusnya belum berubah sejak kendala itu dicatat. */
+async function kodeBerkendala(sumber: Sumber): Promise<Set<string>> {
+  let baris: Pick<TimelineItem, 'kode' | 'status_baru' | 'alasan_tunda'>[] = [];
+  if (sumber === 'db') {
+    try {
+      const supabase = await createClient();
+      const { data } = await supabase.from('v_timeline_publik').select('kode,status_baru,alasan_tunda').not('alasan_tunda', 'is', null).limit(1000);
+      baris = (data ?? []) as typeof baris;
+    } catch {
+      baris = [];
+    }
+  } else {
+    baris = (await dataContoh()).timeline.filter((t) => t.alasan_tunda);
+  }
+  return new Set(baris.map((b) => `${b.kode}|${b.status_baru}`));
+}
+
+/** Alasan penolakan per kode untuk laporan ditolak (v_laporan_publik punya kolom alasan_tolak). */
+async function alasanTolak(sumber: Sumber): Promise<Map<string, string | null>> {
+  if (sumber === 'db') {
+    try {
+      const supabase = await createClient();
+      const { data } = await supabase.from('v_laporan_publik').select('kode,alasan_tolak').eq('status', 'ditolak').limit(1000);
+      return new Map((data ?? []).map((d) => [d.kode as string, d.alasan_tolak as string | null]));
+    } catch {
+      return new Map();
+    }
+  }
+  return new Map((await dataContoh()).laporan.filter((l) => l.status === 'ditolak').map((l) => [l.kode, l.alasan_tolak]));
+}
+
+/**
+ * Pilih contoh dari sumber yang sedang tampil; tidak ada kode laporan fiktif di antarmuka.
+ * Tanpa jenis: laporan Jalan rusak yang sudah diverifikasi (alur presentasi). Pilihan diurutkan menurut kode supaya
+ * tautan yang sama membuka laporan yang sama setiap kali (data demo dipulihkan tiap malam dengan kode yang sama).
+ */
+export const ambilContohLaporan = cache(async (jenis?: JenisContoh) => {
+  const { laporan, sumber, sekarang } = await ambilTitikLaporan();
+  const urut = [...laporan].sort((a, b) => a.kode.localeCompare(b.kode));
+  let pilihan: TitikLaporan | undefined;
+  if (jenis === 'terlambat') {
+    const berkendala = await kodeBerkendala(sumber);
+    pilihan = urut.find((l) => terlambat(l, sekarang) && berkendala.has(`${l.kode}|${l.status}`))
+      ?? urut.find((l) => terlambat(l, sekarang));
+  } else if (jenis === 'ditolak' || jenis === 'duplikat' || jenis === 'melanggar') {
+    const alasan = await alasanTolak(sumber);
+    const dicari = { ditolak: 'tidak_valid', duplikat: 'duplikat', melanggar: 'konten_melanggar' }[jenis];
+    pilihan = urut.find((l) => l.status === 'ditolak' && alasan.get(l.kode) === dicari);
+  } else if (jenis === 'selesai') {
+    pilihan = urut.find((l) => l.status === 'selesai');
+  } else {
+    pilihan = laporan.find((l) => l.kategori === 'Jalan rusak' && l.status === 'diverifikasi')
+      ?? laporan.find((l) => l.status === 'diproses')
+      ?? laporan.find((l) => AKTIF.includes(l.status))
+      ?? laporan[0];
+  }
   return pilihan ? ambilDetailLaporan(pilihan.kode) : null;
 });
 

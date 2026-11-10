@@ -84,6 +84,15 @@ async function LaporanAnda() {
   );
 }
 
+// Skenario contoh (revisi FDS 10 Nov, 1.6): satu ketukan ke tiap keadaan yang biasa ditanyakan warga.
+const SKENARIO = [
+  { href: '/contoh', label: 'Masih ditangani', titik: 'bg-st-diproses' },
+  { href: '/contoh?jenis=terlambat', label: 'Terlambat, ada kendala', titik: 'bg-st-menunggu' },
+  { href: '/contoh?jenis=ditolak', label: 'Ditolak', titik: 'bg-st-ditolak-bg' },
+  { href: '/contoh?jenis=duplikat', label: 'Ditolak karena duplikat', titik: 'bg-st-ditolak-bg' },
+  { href: '/contoh?jenis=selesai', label: 'Selesai', titik: 'bg-st-selesai' },
+];
+
 // Yang tampil di halaman detail setelah kode dimasukkan.
 const ISI_LACAK: { judul: string; isi: string; ikon: NamaIkon }[] = [
   { judul: 'Status sekarang', isi: 'Menunggu, diverifikasi, diproses, selesai, atau ditolak beserta alasannya.', ikon: 'info' },
@@ -104,13 +113,19 @@ export default function LacakPage({ searchParams }: PageProps<'/lacak'>) {
         <Suspense fallback={<CariKode id="kode-lacak" />}>
           <Isi searchParams={searchParams} />
         </Suspense>
-        <p className="mt-4 text-kecil text-lembut">
-          Belum punya kode?{' '}
-          <Link href="/contoh" className="font-bold text-biru-tua hover:underline">
-            Buka laporan contoh
-          </Link>{' '}
-          untuk mencoba alurnya.
-        </p>
+        <div className="mt-5 border-t border-garis pt-4">
+          <p className="text-kecil text-lembut">Belum punya kode? Coba lacak laporan contoh:</p>
+          <ul className="mt-2.5 flex flex-wrap gap-2">
+            {SKENARIO.map((k) => (
+              <li key={k.href}>
+                <Link href={k.href} className="chip text-kecil">
+                  <span aria-hidden="true" className={`size-2 rounded-full ${k.titik}`} />
+                  {k.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
 
       <Suspense fallback={null}>

@@ -1,11 +1,13 @@
 // app/admin/laporan/[kode]/page.tsx — Detail dan Ubah Status (SDD 9), pemilik: A.
 // Hanya untuk pengguna login (proxy.ts).
-// Operasi SDD 6: Q2 v_laporan_publik + v_timeline_publik, S1 unggah foto bukti, R6 update_report_status.
+// Operasi SDD 6: Q2 v_laporan_publik + v_timeline_publik, S1 unggah foto bukti, R6 update_report_status,
+// R12 catat_kendala (migrasi 0010).
 
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
+import FormKendala from '@/components/admin/FormKendala';
 import FormUbahStatus from '@/components/admin/FormUbahStatus';
 import BadgeStatus, { WARNA_TITIK } from '@/components/BadgeStatus';
 import IndikatorSLA from '@/components/IndikatorSLA';
@@ -87,6 +89,10 @@ async function Isi({ params }: { params: PageProps<'/admin/laporan/[kode]'>['par
         )}
         {/* key: status baru (setelah router.refresh) memasang ulang form, jadi transisi berikutnya langsung tersedia. */}
         <FormUbahStatus key={l.status} kode={l.kode} status={l.status} aktif={milikInstansi} />
+        {/* Kendala (migrasi 0010): alasan tunda tanpa mengubah status, untuk laporan yang sudah diterima. */}
+        {(l.status === 'diverifikasi' || l.status === 'diproses') && (
+          <FormKendala key={`kendala-${l.status}`} kode={l.kode} aktif={milikInstansi} />
+        )}
         <p className="text-kecil">
           <Link href={`/laporan/${l.kode}`} className={kelasTautan}>
             Lihat halaman publik laporan ini

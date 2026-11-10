@@ -50,9 +50,27 @@ try {
   await c.query("select set_config('request.jwt.claim.sub',$1,true)",[admin]);
   await c.query("select update_report_status($1,'diverifikasi')",[dibuat.kode]);
   await c.query("select update_report_status($1,'diproses')",[dibuat.kode]);
+  // Migrasi 0010: kendala tanpa perubahan status, lalu tiga alasan tolak pada laporan lain di titik yang sama.
+  const kendala=(await c.query("select catat_kendala($1,'menunggu_material','Uji rollback: material belum datang.') data",[dibuat.kode])).rows[0].data;
+  await c.query("select set_config('request.jwt.claim.sub',$1,true)",[warga]);
+  const tolak=[];
+  for(let i=0;i<3;i++) tolak.push((await c.query("select create_report(1::smallint,'Uji penolakan yang selalu di-rollback',array[$3],$1,$2) data",[region.lat,region.lng,urlFoto])).rows[0].data.kode);
+  await c.query("select set_config('request.jwt.claim.sub',$1,true)",[admin]);
+  await c.query("select update_report_status($1,'ditolak','Uji: titik tidak sesuai foto.',null,'tidak_valid')",[tolak[0]]);
+  await c.query("select update_report_status($1,'ditolak','Uji: kata kasar.',null,'konten_melanggar')",[tolak[1]]);
+  await c.query("select update_report_status($1,'ditolak',null,null,'duplikat',$2)",[tolak[2],dibuat.kode]);
   await c.query('reset role');
   const report=(await c.query('select status,is_simulated from reports where kode=$1',[dibuat.kode])).rows[0];
   cek(report,{status:'diproses',is_simulated:true},'Admin menindaklanjuti laporan demo; label simulasi otomatis');
+  cek(kendala.status,'diproses','Kendala dicatat tanpa mengubah status');
+  await c.query('set local role anon');
+  const publik=(await c.query("select kode,deskripsi is null tersembunyi,cardinality(foto) foto from v_laporan_publik where kode=any($1) order by array_position($1,kode)",[tolak])).rows;
+  const riwayat=(await c.query(`select kode,alasan_tolak::text tolak,alasan_tunda::text tunda,duplikat_dari_kode asli from v_timeline_publik
+    where kode=any($1) and (alasan_tolak is not null or alasan_tunda is not null) order by array_position($1,kode)`,[[...tolak,dibuat.kode]])).rows;
+  await c.query('reset role');
+  cek(publik.map(p=>[p.tersembunyi,p.foto]),[[false,1],[true,0],[false,1]],'Tamu: isi dan foto laporan konten melanggar disembunyikan');
+  cek(riwayat.map(r=>[r.tolak,r.tunda,r.asli]),[['tidak_valid',null,null],['konten_melanggar',null,null],['duplikat',null,dibuat.kode],[null,'menunggu_material',null]],
+    'Tamu: riwayat memuat tiga alasan tolak, kode laporan asli, dan alasan tunda');
   await c.query('set local role anon');
   cek((await c.query("select jsonb_array_length(priority_factors()->'isu')>0 ok")).rows[0].ok,true,'Agregasi prioritas dapat dibaca pengunjung');
   await c.query('reset role');
@@ -60,5 +78,5 @@ try {
   const reset=(await c.query('select reset_demo_data() data')).rows[0].data;
   cek(reset.disalin,jumlahSeed,'Reset demo dapat memulihkan snapshot seed');
   console.log(`${checks} pemeriksaan integrasi lulus; semua perubahan uji dibatalkan.`);
-} catch(e){ console.error('Verifikasi gagal:',e.code??e.message);process.exitCode=1; }
+} catch(e){ console.error("Verifikasi gagal:",e.code??e.message, e.code==="ERR_ASSERTION"?JSON.stringify({aktual:e.actual,harapan:e.expected,pesan:e.message.split("\n")[0]}):"");process.exitCode=1; }
 finally {await c.query('rollback').catch(()=>{});await c.end();}

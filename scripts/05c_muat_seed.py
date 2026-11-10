@@ -4,11 +4,12 @@ MENULIS KE DATABASE BERSAMA. Selalu jalankan --dry-run dulu.
 
 Semua dalam SATU transaksi:
   1. seed.sql: isi ulang seed.* + app_config 'seed_anchor' (cek jumlah baris di akhir file)
-  2. select reset_demo_data(): salin seed.* ke tabel public (FK & check public ikut diuji)
-  3. ringkasan laporan simulasi di public
-  4. cek: 0 titik di luar poligon, rapor 4 instansi dengan huruf A/D/B/C, priority_factors punya isu
+  2. select isi_kendala_simulasi(): alasan tunda untuk laporan simulasi aktif (migrasi 0010)
+  3. select reset_demo_data(): salin seed.* ke tabel public (FK & check public ikut diuji)
+  4. ringkasan laporan simulasi di public
+  5. cek: 0 titik di luar poligon, rapor 4 instansi dengan huruf A/D/B/C, priority_factors punya isu
 --dry-run: semua langkah dijalankan lalu ROLLBACK -> tidak ada yang berubah.
-Kalau langkah 4 gagal: ROLLBACK juga (tidak pernah COMMIT data yang salah).
+Kalau langkah 5 gagal: ROLLBACK juga (tidak pernah COMMIT data yang salah).
 Tanpa flag: minta ketik MUAT, lalu COMMIT.
 
 Jalankan dari folder root repo:
@@ -68,6 +69,8 @@ def main() -> None:
             cur.execute(SEED_SQL.read_text(encoding="utf-8"))  # tanpa parameter: banyak statement sekaligus
             cur.execute("select count(*) from seed.reports")
             n_seed = cur.fetchone()[0]
+            # Migrasi 0010: kendala (alasan tunda) untuk laporan simulasi aktif, ditulis ke seed.* sebelum disalin.
+            cur.execute("select public.isi_kendala_simulasi()")
             cur.execute("select public.reset_demo_data()")
             hasil_reset = cur.fetchone()[0]
             cur.execute(RINGKASAN)

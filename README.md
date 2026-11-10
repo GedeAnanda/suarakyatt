@@ -6,7 +6,7 @@ Platform web transparansi keputusan publik: warga melapor masalah kota, melacak 
 
 - **Frontend:** Next.js (App Router), TypeScript, Tailwind CSS
 - **Backend dan database:** Supabase (Postgres + PostGIS, Auth, Storage, RPC)
-- **Peta dan grafik:** Leaflet + OpenStreetMap, Recharts
+- **Peta dan grafik:** Leaflet + OpenStreetMap, grafik SVG/CSS buatan sendiri (paket Recharts terpasang tetapi belum dipakai)
 - **Hosting:** Vercel (termasuk Vercel Cron)
 - **Skrip data:** Python (pandas, geopandas)
 
@@ -31,7 +31,7 @@ Tes modul skor: `npm test`.
 
 ## Fitur dan pemeriksaan
 
-Beranda interaktif, login/daftar, peta publik, formulir laporan, pelacakan, tindak lanjut admin, rapor instansi, simulator prioritas, dan panel “Kenapa belum?” sudah tersedia. Pengaturan bobot, kategori, dan isu terpilih bisa dibagikan lewat URL. Tautan `/contoh` memilih laporan yang tersedia dari sumber data aktif.
+Beranda interaktif, login/daftar, peta publik, formulir laporan, pelacakan, tindak lanjut admin, rapor instansi, simulator prioritas, panel “Kenapa belum?”, dan skor 42 kecamatan dalam bahasa sehari-hari (`/kecamatan`) sudah tersedia. Halaman lacak menampilkan “Status sekarang” di atas peta: alasan tunda dari instansi, alasan penolakan, dan tautan ke laporan asli untuk duplikat. Pengaturan bobot, kategori, dan isu terpilih bisa dibagikan lewat URL. Tautan `/contoh` memilih laporan yang tersedia dari sumber data aktif; `/contoh?jenis=terlambat|ditolak|duplikat|melanggar|selesai` membuka tiap skenario.
 
 ```bash
 npm run lint
@@ -46,10 +46,11 @@ Database demo dapat diisi dengan `npm run demo:setup -- --apply` setelah migrasi
 
 1. Buka Beranda. Ubah pilihan di “Satu isu, dua urutan” dan jelaskan perubahan peringkat.
 2. Buka perhitungan lengkap. Pilih kategori dan isu, ubah bobot, lalu bagikan URL skenarionya.
-3. Buka `/contoh`. Bandingkan penjelasan model dengan riwayat penanganan; peringkat bukan janji tanggal perbaikan.
-4. Masuk sebagai warga demo untuk melapor atau mendukung laporan yang sudah ada.
-5. Masuk sebagai admin demo untuk memverifikasi dan memproses laporan kategori Jalan rusak.
-6. Buka rapor: tunjukkan denominator laporan terlambat dan pembatasan huruf ketika tingkat penolakan tinggi.
+3. Buka `/lacak`, lalu coba skenario “Terlambat, ada kendala” dan “Ditolak karena duplikat”. Di HP, alasan tunda dan alasan tolak langsung terlihat di kotak “Status sekarang”; panel “Kenapa belum?” menjelaskan posisi model. Peringkat bukan janji tanggal perbaikan.
+4. Buka `/kecamatan`, pilih satu kecamatan, dan baca kalimat serta grafik posisinya di antara 42 kecamatan.
+5. Masuk sebagai warga demo untuk melapor atau mendukung laporan yang sudah ada.
+6. Masuk sebagai admin demo untuk memverifikasi dan memproses laporan kategori Jalan rusak, lalu catat kendalanya (“Belum bisa diselesaikan? Catat kendalanya”).
+7. Buka rapor: tunjukkan denominator laporan terlambat dan pembatasan huruf ketika tingkat penolakan tinggi.
 
 Fokus subtema: **Data-Driven Decision Support** dan **Civic Reporting & Accountability**, didukung **Public Service Tracking**. Data BPS/CRM belum terintegrasi. Laporan, demografi perhitungan, dan kinerja instansi adalah simulasi; batas wilayah dan angka konteks Musrenbang memiliki sumber publik terpisah.
 
@@ -66,6 +67,7 @@ Fokus subtema: **Data-Driven Decision Support** dan **Civic Reporting & Accounta
 - `docs/suaRAkyat_PRD_v0.3.pdf`: kebutuhan produk (apa dan kenapa)
 - `docs/suaRAkyat_SDD_v1.0.pdf`: desain teknis (bagaimana)
 - `CONTRIBUTING.md`: aturan kerja tim
+- `docs/revisi-fds-2026-11-10.md`: catatan mentor First Draft Submission dan hasil revisinya
 
 Versi terbaru kedua dokumen ada di link dokumen online tim; PDF di folder `docs/` adalah salinan.
 

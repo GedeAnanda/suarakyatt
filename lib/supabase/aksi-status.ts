@@ -7,7 +7,7 @@
 
 'use server';
 
-import type { AlasanTolak, StatusLaporan } from '@/lib/types';
+import type { AlasanTolak, AlasanTunda, StatusLaporan } from '@/lib/types';
 import { createAdminClient } from './admin';
 import { createClient } from './server';
 
@@ -39,6 +39,18 @@ export async function ubahStatusLaporan(input: InputUbahStatus): Promise<HasilUb
     }
   }
   return { ok: true };
+}
+
+/** R12 catat_kendala (migrasi 0010): alasan tunda tanpa mengubah status. Hak akses dan aturan di RPC. */
+export async function catatKendala(input: {
+  p_kode: string;
+  p_alasan: AlasanTunda;
+  p_catatan: string | null;
+  p_perkiraan: string | null;
+}): Promise<HasilUbahStatus> {
+  const supabase = await createClient();
+  const { error } = await supabase.rpc('catat_kendala', input);
+  return error ? { error: error.message } : { ok: true };
 }
 
 /** Pindahkan semua foto laporan dari foto-laporan ke karantina (path sama). Hanya setelah RPC berhasil. */

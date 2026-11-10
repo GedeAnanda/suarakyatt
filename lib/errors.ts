@@ -20,6 +20,9 @@ export const PESAN_ERROR: Record<string, string> = {
   BOBOT_TIDAK_VALID: 'Bobot harus 0 sampai 1 dan tidak boleh semuanya nol.',
   ALASAN_TERLALU_PENDEK: 'Alasan minimal 10 karakter.',
   DEMO_TERBATAS: 'Akun demo hanya bisa mengubah laporan simulasi.',
+  KENDALA_TIDAK_BERLAKU: 'Kendala hanya bisa dicatat untuk laporan yang sudah diverifikasi atau sedang diproses.',
+  ALASAN_TUNDA_WAJIB: 'Pilih alasan tunda. Untuk "Alasan lain", isi juga catatannya.',
+  TANGGAL_LEWAT: 'Perkiraan tanggal selesai tidak boleh sebelum hari ini.',
 
   // Auth dan unggah foto (lib/supabase/aksi-auth.ts, lib/supabase/unggah.ts)
   KREDENSIAL_SALAH: 'Email atau password salah. Lupa password? Minta tautan untuk menggantinya.',

@@ -7,6 +7,7 @@
 
 'use client';
 
+import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { ubahParameter } from '@/lib/pilihan-url';
@@ -326,7 +327,10 @@ export default function Simulator({
                 {terpilih.kategori} di {terpilih.kecamatan}
               </h2>
               <p className="text-kecil text-lembut">
-                {terpilih.kota} · {terpilih.laporan_aktif} laporan aktif, {terpilih.laporan_terverifikasi} terverifikasi
+                {terpilih.kota} · {terpilih.laporan_aktif} laporan aktif, {terpilih.laporan_terverifikasi} terverifikasi ·{' '}
+                <Link href={`/kecamatan/${terpilih.kode_wilayah}`} className="font-semibold text-biru-tua hover:underline">
+                  penjelasan Kecamatan {terpilih.kecamatan}
+                </Link>
               </p>
               <p className="mt-4 rounded-kontrol bg-latar p-3 text-kecil font-semibold">{terpilih.penjelasan}</p>
               </div>

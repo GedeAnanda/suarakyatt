@@ -16,10 +16,13 @@ export default function PanelKenapaBelum({
   data,
   isu,
   idIsu,
+  bukaAwal = false,
 }: {
   data: KenapaBelum | null;
   isu: { kategori: string; kecamatan: string };
   idIsu: string | null;
+  /** Terbuka sejak awal, misalnya untuk laporan yang sudah lewat batas waktu. */
+  bukaAwal?: boolean;
 }) {
   // Tautan ke #kenapa-belum (misalnya dari Beranda) langsung membuka panel.
   const dariTautan = useSyncExternalStore(
@@ -31,7 +34,7 @@ export default function PanelKenapaBelum({
     () => false,
   );
   const [pilihan, setBuka] = useState<boolean | null>(null);
-  const buka = pilihan ?? dariTautan;
+  const buka = pilihan ?? (dariTautan || bukaAwal);
 
   return (
     <section id="kenapa-belum" aria-labelledby="judul-kenapa-belum" className="kartu scroll-mt-24 overflow-hidden">

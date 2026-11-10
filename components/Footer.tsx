@@ -11,6 +11,7 @@ const KOLOM = [
     judul: 'Keputusan',
     tautan: [
       { href: '/prioritas', label: 'Dashboard prioritas' },
+      { href: '/kecamatan', label: 'Skor kecamatan' },
       { href: '/rapor', label: 'Rapor instansi' },
       { href: '/rapor/cara-menilai', label: 'Cara menilai' },
     ],

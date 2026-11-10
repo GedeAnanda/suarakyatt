@@ -21,6 +21,7 @@ const MENU: { label: string; item: { href: string; label: string; ikon: NamaIkon
     item: [
       { href: '/', label: 'Beranda', ikon: 'rumah' },
       { href: '/prioritas', label: 'Dashboard prioritas', ikon: 'geser' },
+      { href: '/kecamatan', label: 'Skor kecamatan', ikon: 'grafik' },
       { href: '/rapor', label: 'Rapor instansi', ikon: 'lencana' },
       { href: '/peta', label: 'Peta laporan', ikon: 'peta' },
     ],

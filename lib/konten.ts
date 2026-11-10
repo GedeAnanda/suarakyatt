@@ -1,6 +1,6 @@
 // lib/konten.ts — teks dan data statis yang dipakai di beberapa halaman (pemilik: A)
 
-import type { AlasanTolak, Faktor, StatusLaporan } from './types';
+import type { AlasanTolak, AlasanTunda, Faktor, StatusLaporan } from './types';
 
 export const KOTA = ['Jakarta Pusat', 'Jakarta Utara', 'Jakarta Barat', 'Jakarta Selatan', 'Jakarta Timur'] as const;
 
@@ -21,6 +21,25 @@ export const LABEL_ALASAN: Record<AlasanTolak, string> = {
   duplikat: 'Duplikat',
   tidak_valid: 'Tidak valid',
   konten_melanggar: 'Konten melanggar',
+};
+
+/** Alasan tunda dari instansi (migrasi 0010). Label untuk publik, keterangan untuk form admin. */
+export const LABEL_TUNDA: Record<AlasanTunda, string> = {
+  antre_jadwal: 'Antre jadwal petugas',
+  menunggu_anggaran: 'Menunggu anggaran',
+  menunggu_material: 'Menunggu material',
+  koordinasi_instansi: 'Perlu koordinasi instansi lain',
+  cuaca: 'Terkendala cuaca',
+  lainnya: 'Alasan lain',
+};
+
+export const KETERANGAN_TUNDA: Record<AlasanTunda, string> = {
+  antre_jadwal: 'Tim lapangan atau alat sedang dipakai di lokasi lain yang didahulukan.',
+  menunggu_anggaran: 'Perbaikan lebih besar dari pemeliharaan rutin dan perlu anggaran tersendiri.',
+  menunggu_material: 'Material, suku cadang, atau lampu pengganti belum tersedia.',
+  koordinasi_instansi: 'Lokasi atau asetnya milik instansi lain (misalnya PLN atau dinas lain).',
+  cuaca: 'Hujan atau debit air membuat pekerjaan belum bisa dilakukan dengan aman.',
+  lainnya: 'Alasan lain. Wajib dijelaskan di catatan.',
 };
 
 /** Nama faktor untuk judul dan slider (huruf kapital di awal); LABEL_FAKTOR di lib/scoring untuk kalimat. */

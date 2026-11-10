@@ -1,6 +1,6 @@
 /** Bootstrap database demo KOSONG. Tidak menghapus laporan atau mengubah akun/peran.
  * npm run demo:setup          pemeriksaan saja
- * npm run demo:setup -- --apply  migrasi agregasi + wilayah + seed dalam satu transaksi
+ * npm run demo:setup -- --apply  wilayah + seed dalam satu transaksi (migrasi 0001–0010 sudah diterapkan)
  */
 import { readFileSync } from 'node:fs';
 import { randomUUID } from 'node:crypto';
@@ -25,7 +25,10 @@ try {
   console.log(`Rencana: ${geo.features.length} wilayah, ${contoh.laporan.length} laporan simulasi, agregasi prioritas dan rapor. Angka demografi adalah asumsi, bukan BPS.`);
   if(!process.argv.includes('--apply')) {await c.query('rollback');console.log('Pemeriksaan selesai. Gunakan --apply untuk mengisi.');}
   else {
-    await c.query(readFileSync('supabase/migrations/0007_agregasi_demo.sql','utf8'));
+    // Migrasi 0001–0010 harus sudah diterapkan lebih dulu. Dulu skrip ini menjalankan ulang 0007, yang akan
+    // mengembalikan agency_report_card ke versi sebelum 0008 dan membuang kolom v_timeline_publik dari 0010.
+    const siap=(await c.query("select exists(select 1 from information_schema.columns where table_schema='public' and table_name='report_updates' and column_name='alasan_tunda') ok")).rows[0].ok;
+    if(!siap) throw new Error('Terapkan migrasi 0001 sampai 0010 lebih dulu.');
     const regions=geo.features.map(f=>{
       const semua=f.geometry.coordinates.flat(2),xs=semua.map(p=>p[0]),ys=semua.map(p=>p[1]);
       const luas=Math.max(0.1,Math.round((Math.max(...xs)-Math.min(...xs))*110.6*(Math.max(...ys)-Math.min(...ys))*110.6*.62*10)/10);
@@ -39,17 +42,20 @@ try {
     const sekarang=new Date(),geser=+sekarang-Date.parse(contoh.jangkar);
     const waktu=d=>d?new Date(Date.parse(d)+geser).toISOString():null;
     const laporan=contoh.laporan.map(l=>({id:randomUUID(),kode:l.kode,user_id:owner,category_id:l.category_id,
-      region_id:ids.find(g=>g.kode_wilayah===l.kode_wilayah).id,deskripsi:l.deskripsi,foto:['/demo/lampiran-simulasi.svg'],
-      lokasi:`SRID=4326;POINT(${l.lng} ${l.lat})`,status:l.status,perkiraan_selesai:null,kategori_diubah:false,
+      region_id:ids.find(g=>g.kode_wilayah===l.kode_wilayah).id,
+      // Contoh konten_melanggar menyembunyikan deskripsi di publik; tabel tetap butuh isi 20–500 karakter.
+      deskripsi:l.deskripsi??'Isi asli disembunyikan karena melanggar aturan konten (simulasi).',foto:['/demo/lampiran-simulasi.svg'],
+      lokasi:`SRID=4326;POINT(${l.lng} ${l.lat})`,status:l.status,perkiraan_selesai:l.perkiraan_selesai?new Date(Date.parse(l.perkiraan_selesai)+geser).toISOString().slice(0,10):null,kategori_diubah:false,
       created_at:waktu(l.created_at),responded_at:waktu(l.responded_at),resolved_at:waktu(l.resolved_at),is_simulated:true}));
     await c.query('insert into reports select * from jsonb_populate_recordset(null::public.reports,$1::jsonb)',[JSON.stringify(laporan)]);
-    // Contoh offline tidak memuat referensi duplikat; gunakan alasan tidak_valid secara eksplisit.
-    const updates=contoh.timeline.map(t=>({report_id:laporan.find(l=>l.kode===t.kode).id,status_baru:t.status_baru,
-      alasan_tolak:t.alasan_tolak==='duplikat'?'tidak_valid':t.alasan_tolak,
-      catatan:t.alasan_tolak==='duplikat'?'Simulasi: informasi lokasi belum cukup untuk diverifikasi.':t.catatan,
+    // Duplikat merujuk laporan asli lewat kodenya; kendala (alasan_tunda, migrasi 0010) ikut dari data contoh.
+    const idKode=new Map(laporan.map(l=>[l.kode,l.id]));
+    const updates=contoh.timeline.map(t=>({report_id:idKode.get(t.kode),status_baru:t.status_baru,
+      alasan_tolak:t.alasan_tolak,duplikat_dari:t.duplikat_dari_kode?idKode.get(t.duplikat_dari_kode):null,
+      alasan_tunda:t.alasan_tunda??null,catatan:t.catatan,
       bukti_url:t.status_baru==='selesai'?'/demo/lampiran-simulasi.svg':null,created_at:waktu(t.created_at)}));
-    await c.query(`insert into report_updates(report_id,status_baru,alasan_tolak,catatan,bukti_url,created_at)
-      select report_id,status_baru,alasan_tolak,catatan,bukti_url,created_at from jsonb_populate_recordset(null::public.report_updates,$1::jsonb)`,[JSON.stringify(updates)]);
+    await c.query(`insert into report_updates(report_id,status_baru,alasan_tolak,duplikat_dari,alasan_tunda,catatan,bukti_url,created_at)
+      select report_id,status_baru,alasan_tolak,duplikat_dari,alasan_tunda,catatan,bukti_url,created_at from jsonb_populate_recordset(null::public.report_updates,$1::jsonb)`,[JSON.stringify(updates)]);
     const ratings=laporan.filter((l,i)=>l.status==='selesai'&&i%3!==0).map((l,i)=>({report_id:l.id,user_id:owner,nilai:l.category_id===2?(i%3)+2:(i%2)+4,komentar:'Rating contoh untuk simulasi.',created_at:l.resolved_at}));
     await c.query('insert into ratings select * from jsonb_populate_recordset(null::public.ratings,$1::jsonb)',[JSON.stringify(ratings)]);
     await c.query('insert into seed.reports select * from reports');

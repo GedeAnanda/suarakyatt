@@ -9,6 +9,14 @@ export type StatusLaporan =
   | 'ditolak'
   | 'dibatalkan';
 export type AlasanTolak = 'duplikat' | 'tidak_valid' | 'konten_melanggar';
+/** Kenapa laporan aktif belum selesai, dicatat instansi tanpa mengubah status (migrasi 0010, RPC catat_kendala). */
+export type AlasanTunda =
+  | 'antre_jadwal'
+  | 'menunggu_anggaran'
+  | 'menunggu_material'
+  | 'koordinasi_instansi'
+  | 'cuaca'
+  | 'lainnya';
 export type Faktor = 'urgensi' | 'volume' | 'dukungan' | 'umur' | 'kerentanan' | 'kepadatan';
 export type Bobot = Record<Faktor, number>;
 export type Huruf = 'A' | 'B' | 'C' | 'D' | 'E';
@@ -45,6 +53,10 @@ export interface TimelineItem {
   bukti_url: string | null;
   pelaku: string; // "Pelapor" atau "Admin · <instansi>"
   created_at: string;
+  /** Diisi pada baris kendala: status_baru sama dengan status sebelumnya (migrasi 0010). */
+  alasan_tunda: AlasanTunda | null;
+  /** Kode laporan asli untuk penolakan duplikat; null jika laporan asli dibatalkan. */
+  duplikat_dari_kode: string | null;
 }
 
 export interface RaporInstansi {

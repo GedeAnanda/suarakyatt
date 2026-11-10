@@ -135,13 +135,14 @@ export default function SorotKecamatan({
           <span className="font-semibold text-teks">Isu wilayah dinilai di 42 kecamatan: </span>
           {NAMA_URUT.map((k, i) => (
             <span key={k.kode_wilayah}>
-              <span
-                className={`transition-colors duration-[400ms] ${
+              <Link
+                href={`/kecamatan/${k.kode_wilayah}`}
+                className={`transition-colors duration-[400ms] hover:text-biru-tua hover:underline ${
                   k.kode_wilayah === nyala?.kode_wilayah ? 'rounded-[0.25rem] bg-biru-muda px-1 font-bold text-biru-tua' : ''
                 }`}
               >
                 {k.kecamatan}
-              </span>
+              </Link>
               {i < NAMA_URUT.length - 1 ? ', ' : '.'}
             </span>
           ))}
@@ -202,7 +203,19 @@ export default function SorotKecamatan({
           </div>
         )}
 
+        {fokus && nyala && (
+          <p className="mt-6 text-kecil">
+            <Link href={`/kecamatan/${nyala.kode_wilayah}`} className="font-semibold text-biru-tua underline underline-offset-4">
+              Penjelasan lengkap Kecamatan {nyala.kecamatan} dalam bahasa sehari-hari
+            </Link>
+          </p>
+        )}
         <KeteranganKelas className="mt-8" />
+        <p className="mt-3 text-kecil">
+          <Link href="/kecamatan" className="font-semibold text-biru-tua underline underline-offset-4">
+            Cari kecamatanmu di daftar skor 42 kecamatan
+          </Link>
+        </p>
       </div>
 
       <figure>
