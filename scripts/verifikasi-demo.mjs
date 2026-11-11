@@ -59,6 +59,16 @@ try {
   await c.query("select update_report_status($1,'ditolak','Uji: titik tidak sesuai foto.',null,'tidak_valid')",[tolak[0]]);
   await c.query("select update_report_status($1,'ditolak','Uji: kata kasar.',null,'konten_melanggar')",[tolak[1]]);
   await c.query("select update_report_status($1,'ditolak',null,null,'duplikat',$2)",[tolak[2],dibuat.kode]);
+  // Percobaan ulang karantina memakai TRANSISI_TIDAK_VALID sebagai tanda hak admin sudah diperiksa.
+  await c.query('savepoint ulang_karantina');
+  const ulangAdmin=await c.query("select update_report_status($1,'ditolak',null,null,'konten_melanggar')",[tolak[1]]).then(()=>null,e=>e.message);
+  await c.query('rollback to savepoint ulang_karantina');
+  cek(ulangAdmin,'TRANSISI_TIDAK_VALID','Admin berwenang mencapai pemeriksaan transisi pada laporan yang sudah ditolak');
+  await c.query("select set_config('request.jwt.claim.sub',$1,true)",[warga]);
+  await c.query('savepoint warga_karantina');
+  const ulangWarga=await c.query("select update_report_status($1,'ditolak',null,null,'konten_melanggar')",[tolak[1]]).then(()=>null,e=>e.message);
+  await c.query('rollback to savepoint warga_karantina');
+  cek(ulangWarga,'BUKAN_INSTANSI','Warga ditolak sebelum pemeriksaan transisi; tidak bisa memicu karantina');
   await c.query('reset role');
   const report=(await c.query('select status,is_simulated from reports where kode=$1',[dibuat.kode])).rows[0];
   cek(report,{status:'diproses',is_simulated:true},'Admin menindaklanjuti laporan demo; label simulasi otomatis');

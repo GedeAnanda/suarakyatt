@@ -67,7 +67,7 @@ function Pengendali({ titik, onPilih }: { titik: Titik | null; onPilih: (t: Titi
 export default function PetaPinLeaflet({ titik, onPilih }: { titik: Titik | null; onPilih: (t: Titik) => void }) {
   return (
     <div className="group relative">
-      <PetaDasarLeaflet className="h-[min(60svh,30rem)] min-h-80 cursor-crosshair" zoomGulir>
+      <PetaDasarLeaflet className="h-[min(45svh,30rem)] min-h-72 cursor-crosshair sm:h-[min(60svh,30rem)] sm:min-h-80" zoomGulir>
         <Pengendali titik={titik} onPilih={onPilih} />
       </PetaDasarLeaflet>
       {/* Hanya saat peta difokus dengan keyboard: tanda + di tengah dan petunjuk tombol. */}

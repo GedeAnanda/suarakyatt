@@ -94,8 +94,8 @@
 
   --text-mini: 0.8125rem;
   --text-mini--line-height: 1.35;
-  --text-kecil: 0.875rem;
-  --text-kecil--line-height: 1.45;
+  --text-kecil: 0.9375rem;
+  --text-kecil--line-height: 1.5;
   --text-badan: 1rem;
   --text-badan--line-height: 1.55;
   --text-lead: 1.125rem;
@@ -461,13 +461,17 @@ html[data-laci="buka"] .tirai {
   html[data-laci="buka"] body {
     overflow: hidden;
   }
+  /* Tombol melayang (ke atas, bantuan) tidak tergambar di atas tirai saat laci menu terbuka. */
+  html[data-laci="buka"] .melayang {
+    visibility: hidden;
+  }
 }
 @media (min-width: 64rem) {
   .sisi {
     position: sticky;
     z-index: 900;
     flex-shrink: 0;
-    width: 4.75rem;
+    width: 6.25rem;
     height: calc(100dvh - var(--tinggi-kepala));
     transform: none;
     visibility: visible;
@@ -914,7 +918,10 @@ input[type="range"].slider::-moz-range-thumb {
   box-shadow: var(--shadow-kartu) !important;
   overflow: hidden;
 }
-.peta .leaflet-bar a {
+/* `.leaflet-touch` ikut di selektor: aturan bawaan Leaflet untuk layar sentuh (30 px) dimuat belakangan dan menimpa
+   ukuran ini. Di layar sentuh tombol zoom 44 px (audit 11 Nov, UX11). */
+.peta .leaflet-bar a,
+.peta .leaflet-touch .leaflet-bar a {
   background: var(--color-permukaan);
   color: var(--color-teks);
   width: 2.5rem;
@@ -922,6 +929,13 @@ input[type="range"].slider::-moz-range-thumb {
   line-height: 2.5rem;
   font-size: 1.25rem;
   border-radius: 0 !important;
+}
+@media (pointer: coarse) {
+  .peta .leaflet-touch .leaflet-bar a {
+    width: 2.75rem;
+    height: 2.75rem;
+    line-height: 2.75rem;
+  }
 }
 .peta .leaflet-bar a:hover {
   background: var(--color-biru-muda);

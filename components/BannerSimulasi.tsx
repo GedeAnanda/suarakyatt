@@ -9,10 +9,10 @@ import Ikon from './ui/Ikon';
 import { kelasTautan } from './ui/Tombol';
 
 export default function BannerSimulasi({
+  sumber,
   keterangan,
   className = '',
 }: {
-  /** Dipertahankan supaya pemanggil lama tetap jalan; db dan contoh sama-sama "Data buatan". */
   sumber?: Sumber;
   keterangan?: string;
   className?: string;
@@ -31,6 +31,11 @@ export default function BannerSimulasi({
             Lihat data apa yang asli
           </Link>
         </p>
+        {sumber === 'contoh' && (
+          <p className="mt-2 font-semibold">
+            Koneksi data belum tersedia. Ini contoh tersimpan; laporan dan perubahan terbaru mungkin belum terlihat.
+          </p>
+        )}
         {keterangan && <p className="mt-0.5 text-lembut">{keterangan}</p>}
       </div>
     </aside>

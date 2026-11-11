@@ -178,8 +178,9 @@ const TANYA: { tanya: string; jawab: ReactNode }[] = [
     tanya: 'Apakah angka di situs ini data sungguhan?',
     jawab: (
       <>
-        Yang asli: batas kecamatan dan peta. Yang buatan: laporan, dinas, rapor, dan untuk sementara angka penduduk serta
-        kemiskinan. Skor prioritas dihitung dari keduanya, jadi ikut berstatus buatan. Data buatan dibuat program komputer
+        Yang asli: batas kecamatan dan peta. Yang buatan: laporan, dinas, dan rapornya. Data demografi beratribusi BPS
+        sudah dimuat ke database tim; verifikasi publikasi asal masih berlangsung. Skor prioritas tetap memakai laporan
+        simulasi. Data buatan dibuat program komputer
         dengan aturan tetap, jadi hasilnya selalu sama tiap diulang. Setiap halaman memberi label &ldquo;Data
         buatan&rdquo;. Rinciannya ada di{' '}
         <Link href="/sumber-data" className={kelasTautan}>

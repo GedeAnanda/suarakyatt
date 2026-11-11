@@ -138,6 +138,25 @@ export default function Simulator({
     ubahParameter({ bobot: acuan ? null : FAKTOR.map((f) => nilai[f]).join(',') });
   }
 
+  // Bagian ini baru hadir setelah data selesai di-stream; navigasi hash awal bisa mendahuluinya.
+  // #cara-hitung ada di bawah isi ini: browser sudah menggulir ke sana saat isi masih berupa kerangka pendek, lalu isi
+  // yang datang mendorongnya ±4.700 px ke bawah (audit 11 Nov, P1-4). Jadi gulir ulang setelah isi tampil.
+  useLayoutEffect(() => {
+    const hash = window.location.hash;
+    if (hash !== '#coba-atur' && hash !== '#cara-hitung') return;
+    const tujuan = document.getElementById(hash.slice(1));
+    if (!tujuan) return;
+    const gulir = () => tujuan.scrollIntoView({ behavior: 'instant', block: 'start' });
+    gulir();
+    // Guliran halus bawaan browser ke #fragmen bisa masih berjalan dan sisanya ikut tertambah ke guliran di atas
+    // (meleset 100–290 px di HP). Ulangi sekali setelah dua frame supaya posisinya pasti.
+    let f = requestAnimationFrame(() => {
+      f = requestAnimationFrame(gulir);
+    });
+    if (hash === '#coba-atur') tujuan.focus({ preventScroll: true });
+    return () => cancelAnimationFrame(f);
+  }, []);
+
   // FLIP: setiap baris meluncur dari posisi lamanya ke posisi barunya, jadi perubahan urutan terlihat.
   useLayoutEffect(() => {
     const ol = daftar.current;
@@ -371,7 +390,7 @@ export default function Simulator({
       </div>
 
       {/* COBA ATUR SENDIRI — di DOM sesudah hasil; di layar lebar kolom kiri dan menempel saat digulir. */}
-      <section id="coba-atur" aria-labelledby="judul-atur" className="scroll-mt-24 lg:col-start-1 lg:row-start-1">
+      <section id="coba-atur" tabIndex={-1} aria-labelledby="judul-atur" className="scroll-mt-24 lg:col-start-1 lg:row-start-1">
         <div className="kartu p-5 lg:sticky lg:top-20">
           <div className="flex items-center justify-between gap-4">
             <h2 id="judul-atur" className="flex items-center gap-2 text-lead font-bold">
@@ -435,7 +454,7 @@ export default function Simulator({
                     <div className="flex items-baseline justify-between gap-3">
                       <span className="flex items-center gap-2 text-kecil font-semibold">
                         <span aria-hidden="true" className="size-2.5 shrink-0 rounded-full" style={{ background: WARNA_FAKTOR[f] }} />
-                        <Istilah id={`istilah-bobot-${f}`} judul={NAMA_FAKTOR[f]} definisi={DEFINISI_FAKTOR[f]}>
+                        <Istilah id={`istilah-bobot-${f}`} judul={NAMA_FAKTOR[f]} definisi={DEFINISI_FAKTOR[f]} className="min-h-8 py-1 pointer-coarse:min-h-11">
                           {NAMA_FAKTOR[f]}
                         </Istilah>
                       </span>

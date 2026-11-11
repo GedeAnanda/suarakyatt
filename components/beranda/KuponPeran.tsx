@@ -15,21 +15,21 @@ const PERAN: { judul: string; ikon: NamaIkon; isi: string; href: string; aksi: s
   {
     judul: 'Warga',
     ikon: 'warga',
-    isi: 'Lihat urutan masalah di kecamatanmu di antara semua masalah, apa yang paling menaikkan dan paling menahannya, lalu lacak laporanmu dengan kodenya.',
+    isi: 'Lacak laporan dan pahami prioritas di kecamatanmu.',
     href: '/prioritas',
     aksi: 'Lihat urutan prioritas',
   },
   {
     judul: 'Petugas perencana kota',
     ikon: 'geser',
-    isi: 'Petugas perencana kota mengatur seberapa penting tiap hal yang dinilai. Setiap perubahan wajib diberi alasan dan tercatat terbuka: siapa, kapan, dan dari berapa ke berapa.',
+    isi: 'Atur prioritas dengan alasan dan riwayat perubahan yang terbuka.',
     href: '/prioritas#judul-riwayat',
     aksi: 'Buka riwayat perubahan',
   },
   {
     judul: 'Pengawas',
     ikon: 'mata',
-    isi: 'Jurnalis, DPRD, dan komunitas membaca rapor dinas A sampai E. Di sampingnya selalu ada persen laporan yang ditolak, jumlah laporan yang dinilai, dan rentang waktunya.',
+    isi: 'Bandingkan kinerja dinas, termasuk laporan yang ditolak.',
     href: '/rapor',
     aksi: 'Baca rapor dinas',
   },
@@ -49,12 +49,10 @@ export default function KuponPeran() {
   return (
     <section aria-labelledby="judul-peran" className="bingkai mt-12 sm:mt-14">
       <h2 id="judul-peran" className="judul-seksi">
-        Yang selama ini tidak bisa dilihat warga
+        Coba dari sudut pandangmu
       </h2>
       <p className="mt-2 max-w-[78ch] text-badan text-lembut">
-        Warga Jakarta sudah bisa melapor dan melacak laporannya di aplikasi pengaduan resmi (JAKI, LAPOR!). Yang belum
-        bisa dilihat: kenapa satu jalan diperbaiki lebih dulu, dinas mana yang lambat, dan apa yang berubah kalau yang
-        diutamakan diganti.{' '}
+        Jelajahi peran warga, perencana, atau pengawas.{' '}
         <Link href="/tentang#beda" className="font-semibold text-biru-tua hover:underline">
           Lihat bedanya dengan aplikasi resmi
         </Link>

@@ -2,13 +2,14 @@
 // Dibuka dengan ringkasan 3 poin: yang asli, yang buatan, kenapa dibuat. Lalu daftar data yang dipakai, cara data
 // buatan dibuat (FR-G3, SDD 10), batas waktu, dan kredit foto. Istilah teknis (nama dataset, skrip, WebAPI, seed) ada di
 // <details> "Untuk juri dan pengembang" di akhir.
-// C: perbarui baris "Menyusul" saat data BPS dan dataset pengaduan DKI sudah dimuat.
+// Status demografi: CSV sudah dimuat di database tim; verifikasi publikasi BPS asal masih berlangsung.
 
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import KepalaHalaman from '@/components/KepalaHalaman';
 import Ikon, { type NamaIkon } from '@/components/ui/Ikon';
 import { FOTO, KATEGORI } from '@/lib/konten';
+import { SUMBER_MUSRENBANG } from '@/lib/sumber';
 
 export const metadata: Metadata = {
   title: 'Sumber data',
@@ -25,7 +26,7 @@ const RINGKAS: { judul: string; ikon: NamaIkon; isi: string; warna: string }[] =
   {
     judul: 'Yang buatan',
     ikon: 'info',
-    isi: 'Laporan, dinas, rapor, dan untuk sementara angka penduduk serta kemiskinan. Skor prioritas dihitung dari keduanya, jadi ikut berstatus buatan.',
+    isi: 'Laporan, dinas, dan kinerjanya adalah simulasi. Skor prioritas memakai laporan tersebut serta data demografi yang sudah dimuat; verifikasi publikasi BPS asalnya masih berlangsung.',
     warna: 'bg-oranye-muda text-st-menunggu',
   },
   {
@@ -56,18 +57,18 @@ const DATA_TERBUKA = [
   {
     nama: 'Penduduk dan luas kecamatan',
     dipakai: 'Banyaknya laporan, dukungan warga, dan kepadatan penduduk (dibanding jumlah warga)',
-    sumber: 'BPS, buku "Dalam Angka" tingkat kota dan kecamatan (tahun terbaru yang tersedia)',
+    sumber: 'CSV beratribusi Dukcapil melalui BPS Kota Dalam Angka 2026; publikasi asal sedang diverifikasi',
     lisensi: 'Ketentuan penggunaan data BPS',
     url: 'https://jakarta.bps.go.id',
-    status: 'Menyusul',
+    status: 'Dimuat',
   },
   {
     nama: 'Persen penduduk miskin per kota',
     dipakai: 'Warga kurang mampu (satu angka per kota, ditulis terbuka di penjelasan skor)',
-    sumber: 'BPS, tabel di bps.go.id',
+    sumber: 'CSV beratribusi BPS DKI, Maret 2025, Tabel 13.10; publikasi asal sedang diverifikasi',
     lisensi: 'Ketentuan penggunaan data BPS',
     url: 'https://www.bps.go.id',
-    status: 'Menyusul',
+    status: 'Dimuat',
   },
   {
     nama: 'Pengaduan masyarakat DKI Jakarta',
@@ -80,7 +81,7 @@ const DATA_TERBUKA = [
   {
     nama: 'Angka e-Musrenbang di Beranda',
     dipakai: '18.221 usulan (2019), 254 dikerjakan; 61.174 usulan untuk rencana pembangunan 2027',
-    sumber: 'Jurnal Universitas Diponegoro tentang e-Musrenbang DKI; Metro TV, April 2026',
+    sumber: 'Studi e-Musrenbang DKI (data 2019) dan siaran pers Pemprov DKI, 16 April 2026; tautan di bawah tabel',
     lisensi: 'Kutipan dengan sumber',
     url: null,
     status: 'Dipakai',
@@ -90,6 +91,7 @@ const DATA_TERBUKA = [
 /** Label status dalam bahasa sehari-hari; kuncinya tetap supaya C mudah memperbarui. */
 const LABEL_STATUS_DATA: Record<string, string> = {
   Dipakai: 'Sudah dipakai',
+  Dimuat: 'Dimuat, sumber ditinjau',
   Menyusul: 'Belum dipakai, sementara buatan',
   'Sedang dicek': 'Sedang dicek',
 };
@@ -110,6 +112,7 @@ const PROFIL = [
 
 const warnaStatus: Record<string, string> = {
   Dipakai: 'bg-st-selesai-bg text-st-selesai',
+  Dimuat: 'bg-st-menunggu-bg text-st-menunggu',
   Menyusul: 'bg-st-menunggu-bg text-st-menunggu',
   'Sedang dicek': 'bg-st-diverifikasi-bg text-st-diverifikasi',
 };
@@ -117,7 +120,7 @@ const warnaStatus: Record<string, string> = {
 /** 24 jam ditulis jam; 48 jam ke atas yang pas harian ditulis hari. */
 const waktu = (jam: number) => (jam % 24 === 0 && jam >= 48 ? `${jam / 24} hari` : `${jam} jam`);
 
-const kelasTag = 'inline-block rounded-[0.375rem] px-2 py-0.5 text-kecil font-bold whitespace-nowrap';
+const kelasTag = 'inline-block max-w-full rounded-[0.375rem] px-2 py-0.5 text-kecil font-bold sm:whitespace-nowrap';
 const kelasKepalaTabel = 'bg-latar text-kecil text-lembut';
 
 export default function SumberDataPage() {
@@ -160,10 +163,10 @@ export default function SumberDataPage() {
         <h2 id="judul-terbuka" className="judul-seksi">
           Data yang dipakai
         </h2>
-        <ul className="mt-4 grid gap-3 sm:hidden">
+        <ul className="mt-4 grid min-w-0 gap-3 sm:hidden">
           {DATA_TERBUKA.map((d) => (
-            <li key={d.nama} className="kartu grid gap-2 p-4">
-              <div className="flex items-start justify-between gap-3">
+            <li key={d.nama} className="kartu grid min-w-0 gap-2 p-4">
+              <div className="flex flex-wrap items-start justify-between gap-2">
                 <p className="font-bold">{d.nama}</p>
                 <span className={`${kelasTag} ${warnaStatus[d.status]}`}>{LABEL_STATUS_DATA[d.status]}</span>
               </div>
@@ -181,7 +184,7 @@ export default function SumberDataPage() {
             </li>
           ))}
         </ul>
-        <div className="kartu relative mt-4 hidden overflow-x-auto sm:block">
+        <div role="region" aria-labelledby="judul-terbuka" tabIndex={0} className="kartu relative mt-4 hidden overflow-x-auto sm:block">
           <table className="w-full min-w-[56rem] text-left text-badan">
             <thead className={kelasKepalaTabel}>
               <tr>
@@ -216,7 +219,17 @@ export default function SumberDataPage() {
           </table>
         </div>
         <p className="mt-3 max-w-[80ch] text-kecil text-lembut">
-          Selama data BPS belum dimuat, angka penduduk, luas, dan persen warga miskin adalah angka buatan.
+          Pada 11 November 2026, 42 baris demografi di database tim sudah dicocokkan dengan CSV olahan lokal.
+          Kesesuaian dengan publikasi BPS asal masih diperiksa. Data cadangan tersimpan tetap memakai demografi simulasi.
+        </p>
+        <p className="mt-3 max-w-[80ch] text-kecil text-lembut">
+          Sumber angka Musrenbang:{' '}
+          <a href={SUMBER_MUSRENBANG.studi2019.url} target="_blank" rel="noreferrer" className="text-biru-tua underline underline-offset-4">
+            {SUMBER_MUSRENBANG.studi2019.label}
+          </a>{' '}dan{' '}
+          <a href={SUMBER_MUSRENBANG.rkpd2027.url} target="_blank" rel="noreferrer" className="text-biru-tua underline underline-offset-4">
+            {SUMBER_MUSRENBANG.rkpd2027.label}
+          </a>. Angka 61.174 mencakup Musrenbang, usulan langsung, dan hasil reses DPRD.
         </p>
       </section>
 
@@ -257,7 +270,7 @@ export default function SumberDataPage() {
             </li>
           ))}
         </ul>
-        <div className="kartu relative mt-5 hidden overflow-x-auto sm:block">
+        <div role="region" aria-labelledby="judul-simulasi" tabIndex={0} className="kartu relative mt-5 hidden overflow-x-auto sm:block">
           <table className="w-full min-w-[48rem] text-left text-badan">
             <thead className={kelasKepalaTabel}>
               <tr>
@@ -314,7 +327,7 @@ export default function SumberDataPage() {
             </li>
           ))}
         </ul>
-        <div className="kartu relative mt-5 hidden overflow-x-auto sm:block">
+        <div role="region" aria-labelledby="judul-batas" tabIndex={0} className="kartu relative mt-5 hidden overflow-x-auto sm:block">
           <table className="w-full min-w-[40rem] text-left text-badan">
             <thead className={kelasKepalaTabel}>
               <tr>
@@ -393,9 +406,10 @@ export default function SumberDataPage() {
             <strong className="text-teks">Peta dasar.</strong> Ubin peta (tile) OpenStreetMap lewat Leaflet.
           </p>
           <p>
-            <strong className="text-teks">Data BPS.</strong> Persen penduduk miskin diambil dari WebAPI atau tabel
-            bps.go.id. Data wilayah digabung memakai kode wilayah, bukan nama, dan salinan lokal setiap dataset disimpan di
-            repositori (folder <code>data/</code>) karena portal bisa berubah.
+            <strong className="text-teks">Demografi.</strong> CSV lokal beratribusi BPS disimpan di{' '}
+            <code>data/raw/bps/</code>, digabung memakai kode wilayah oleh <code>scripts/02_bps.py</code>, lalu dimuat
+            melalui <code>scripts/03_muat_regions.py</code>. Publikasi asal dan transkripsinya masih perlu diverifikasi;
+            integrasi WebAPI BPS belum tersedia.
           </p>
           <p>
             <strong className="text-teks">Data buatan.</strong> Dibuat generator dengan random seed tetap; titik diambil acak
