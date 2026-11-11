@@ -25,7 +25,7 @@ import type { Titik } from './PetaPinLeaflet';
 
 const PetaPin = dynamic(() => import('./PetaPinLeaflet'), {
   ssr: false,
-  loading: () => <div className="kerangka h-[min(60svh,30rem)] min-h-80 w-full" />,
+  loading: () => <div className="kerangka h-[min(45svh,30rem)] min-h-72 w-full sm:h-[min(60svh,30rem)] sm:min-h-80" />,
 });
 
 const MIN_DESKRIPSI = 20;
@@ -465,7 +465,9 @@ export default function FormLaporan() {
                     /* eslint-disable-next-line @next/next/no-img-element -- URL foto dari Storage/seed, ukuran kecil */
                     <img src={s.foto} alt={`Foto laporan ${s.kode}`} className="size-16 shrink-0 rounded-kontrol object-cover" loading="lazy" />
                   )}
-                  <div className="min-w-0 flex-1">
+                  {/* min-w-40: tanpa lebar minimum, kolom ini tergencet sampai 3–55 px di HP dan teksnya satu kata per baris
+                      (audit 11 Nov, P1-3). Dengan batas ini tombol Dukung turun ke baris sendiri selebar kartu. */}
+                  <div className="min-w-40 flex-1">
                     <p className="flex flex-wrap items-center gap-3">
                       <Link href={`/laporan/${s.kode}`} target="_blank" className="font-kode angka font-bold text-biru-tua underline-offset-4 hover:underline">
                         {s.kode}
@@ -477,7 +479,7 @@ export default function FormLaporan() {
                       {s.jarak_m} m dari titikmu · {lalu(s.created_at, hasilSerupa?.waktu ?? Date.parse(s.created_at))} · {s.jumlah_upvote} dukungan
                     </p>
                   </div>
-                  <Tombol varian={sudah(s) ? 'kedua' : 'utama'} onClick={() => dukung(s.kode)} aria-pressed={sudah(s)}>
+                  <Tombol varian={sudah(s) ? 'kedua' : 'utama'} onClick={() => dukung(s.kode)} aria-pressed={sudah(s)} className="w-full sm:w-auto">
                     <Ikon nama="dukung" className="size-4" isi={sudah(s)} />
                     {sudah(s) ? 'Didukung' : 'Dukung'}
                   </Tombol>

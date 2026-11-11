@@ -6,6 +6,7 @@
 
 ## Ringkasan cepat
 
+- **Status sore:** keenam P1 sudah diperbaiki dan diuji di branch `fix/p1-hp` (belum di-commit). Rinciannya di [Hasil perbaikan P1](#hasil-perbaikan-p1-11-november-sore).
 - **Tidak ada yang merusak demo.** Hasil pengujian:
   - 25 rute × 3 lebar layar tanpa galat JavaScript, hydration error, permintaan gagal, atau halaman melebar;
   - 119 tautan internal semuanya berfungsi.
@@ -232,3 +233,24 @@ Diurutkan dari dampak terbesar terhadap juri dan video, dengan usaha terkecil.
 5. Moderasi sebelum tayang, blur wajah dan plat, titik publik dibulatkan.
 6. Hak jawab dinas dan masa uji rapor yang tertutup.
 7. Pilot satu kecamatan, dengan validasi bobot bersama warga dan Bappeda.
+
+## Hasil perbaikan P1 (11 November sore)
+
+Dikerjakan di branch `fix/p1-hp` (dari `dev` setelah PR #26, tanpa upstream). Semua diuji di build produksi lokal dengan Chrome headless, emulasi HP sentuh.
+
+| P1 | Perubahan | Berkas | Hasil uji |
+|---|---|---|---|
+| P1-1 tombol melayang | Wadah `pointer-events-none`; tombol dan panel Bantuan `pointer-events-auto`. Tombol disembunyikan saat laci menu terbuka. Footer di HP diberi ruang 4 rem di bawah. | `TombolMelayang.tsx`, `Footer.tsx`, `globals.css` | Ketukan di area "ke atas" yang tersembunyi kini sampai ke isi di bawahnya (kartu peta di `/peta`, tab di `/`). Tombol "?" tetap bisa diketuk. |
+| P1-2 peta menjebak gulir | Di HP peta setinggi 50svh (`/peta`) dan 45svh (`/lapor`); layar ≥640 px tetap seperti dulu. Tombol zoom 44 px di layar sentuh (aturan `.leaflet-touch` bawaan tidak lagi menimpa). | `PetaLaporan.tsx`, `PetaPinLeaflet.tsx`, `FormLaporan.tsx`, `app/peta/page.tsx`, `globals.css` | HP 390×844: peta 356×422 dan 316×380, jadi selalu ada ruang di luar peta untuk menggulir. Tombol zoom 44×44. |
+| P1-3 laporan serupa | Kolom teks `min-w-40`; tombol Dukung selebar kartu di HP. | `FormLaporan.tsx` | Lebar kolom teks 220 px (360) dan 166 px (390), sebelumnya 3–55 px. Kode tidak terpotong lagi. |
+| P1-4 `#cara-hitung` | Gulir ulang setelah isi Prioritas tampil, lalu sekali lagi dua frame kemudian. Guliran halus bawaan browser ke fragmen masih berjalan dan sisanya ikut tertambah, sehingga tanpa ulangan meleset 100–290 px. | `Simulator.tsx` | Dibuka langsung: 8 dari 8 percobaan mendarat tepat di y=176, termasuk saat server baru menyala. Lewat klik tautan: y=176 di HP dan desktop. Tombol hero `#coba-atur` tetap memfokuskan panel. |
+| P1-5 hero | Kalimat hero menyebut jenis masalah dan Jakarta. Ditambah satu baris pembeda: "JAKI dan LAPOR! menunjukkan laporanmu sampai mana. SUARAKYAT menjelaskan kenapa belum." | `HeroCari.tsx` | Keduanya terlihat di layar pertama HP 360. |
+| P1-6 label rapor | Kartu rapor di tab Beranda menampilkan "(dinas buatan)". | `app/page.tsx` | Keempat kartu memuat label itu, tetap rapi di 360 px. |
+
+**Pemeriksaan umum:**
+
+- 13 halaman di HP 360 px: lebar dokumen pas 360 px, tanpa galat JavaScript.
+- Lint, typecheck, 57 tes, dan build lulus.
+
+**Belum dicek:** P1-2 di HP fisik (gulir sungguhan di sekitar peta), dan Safari iOS.
+

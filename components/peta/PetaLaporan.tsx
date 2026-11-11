@@ -17,7 +17,7 @@ import { Tombol } from '../ui/Tombol';
 
 const KlasterLaporan = dynamic(() => import('./KlasterLaporan'), {
   ssr: false,
-  loading: () => <div className="kerangka h-[min(70svh,42rem)] min-h-96 w-full rounded-none" />,
+  loading: () => <div className="kerangka h-[min(50svh,42rem)] min-h-80 w-full rounded-none sm:h-[min(70svh,42rem)] sm:min-h-96" />,
 });
 
 const PER_HALAMAN = 12;
@@ -116,7 +116,9 @@ export default function PetaLaporan({
 
       <div className="kartu overflow-hidden">
         <div className="peta isolate overflow-hidden rounded-none bg-lapis" data-ui>
-          <KlasterLaporan laporan={tersaring} className="h-[min(70svh,42rem)] min-h-96" />
+          {/* Di HP peta setinggi separuh layar, supaya selalu ada ruang di luar peta untuk menggulir halaman ke daftar di bawahnya
+              (audit 11 Nov, P1-2: usapan di atas peta menggeser peta, bukan halaman). */}
+          <KlasterLaporan laporan={tersaring} className="h-[min(50svh,42rem)] min-h-80 sm:h-[min(70svh,42rem)] sm:min-h-96" />
         </div>
         <div className="flex flex-wrap items-start justify-between gap-x-8 gap-y-3 border-t border-garis px-4 py-3 sm:px-5">
           <ul aria-label="Arti warna titik" className="flex flex-wrap gap-x-4 gap-y-1.5 text-kecil">
