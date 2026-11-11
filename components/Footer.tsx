@@ -45,7 +45,7 @@ const TERBUKA = [
 
 export default function Footer() {
   return (
-    <footer className="mt-16 border-t border-garis bg-permukaan pb-[env(safe-area-inset-bottom)]">
+    <footer className="mt-16 border-t border-garis bg-permukaan pb-[calc(env(safe-area-inset-bottom)+4rem)] sm:pb-[env(safe-area-inset-bottom)]">
       <div className="bingkai grid gap-10 py-10 sm:grid-cols-3 sm:py-12 lg:grid-cols-[repeat(3,minmax(0,1fr))_minmax(0,1.6fr)]">
         {KOLOM.map((k) => (
           <div key={k.judul}>

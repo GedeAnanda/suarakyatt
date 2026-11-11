@@ -25,7 +25,7 @@ import { keTitikPeta, type TitikPeta } from '@/lib/geo/proyeksi';
 import { desimal, persen, ribuan } from '@/lib/format';
 import { ARTI_HURUF } from '@/lib/kamus';
 import { FOTO, KATEGORI } from '@/lib/konten';
-import { urutkanRapor } from '@/lib/konten-rapor';
+import { namaDinas, urutkanRapor } from '@/lib/konten-rapor';
 import { hitungSkor, PRESET } from '@/lib/scoring';
 import { SUMBER_MUSRENBANG } from '@/lib/sumber';
 import type { SkorIsu } from '@/lib/types';
@@ -57,7 +57,10 @@ async function PanelRapor() {
                 {i.huruf ?? '?'}
               </span>
               <span className="min-w-0 text-kecil leading-tight">
-                <span className="block truncate font-bold">{i.nama.replace(' (simulasi)', '')}</span>
+                {/* Label "dinas buatan" tetap tampil: tanpa itu nilai D bisa dikira penilaian dinas sungguhan (audit 11 Nov, P1-6). */}
+                <span className="block font-bold">
+                  {namaDinas(i.nama)} <span className="font-normal text-lembut">(dinas buatan)</span>
+                </span>
                 <span className="mt-0.5 block text-lembut">{i.huruf ? ARTI_HURUF[i.huruf] : 'Belum cukup laporan'}</span>
                 <span
                   className={`mt-0.5 flex items-center gap-1 ${i.peringatan_penolakan ? 'font-semibold text-merah-tua' : 'text-lembut'}`}

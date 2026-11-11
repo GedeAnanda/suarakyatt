@@ -139,11 +139,22 @@ export default function Simulator({
   }
 
   // Bagian ini baru hadir setelah data selesai di-stream; navigasi hash awal bisa mendahuluinya.
+  // #cara-hitung ada di bawah isi ini: browser sudah menggulir ke sana saat isi masih berupa kerangka pendek, lalu isi
+  // yang datang mendorongnya ±4.700 px ke bawah (audit 11 Nov, P1-4). Jadi gulir ulang setelah isi tampil.
   useLayoutEffect(() => {
-    if (window.location.hash !== '#coba-atur') return;
-    const panel = document.getElementById('coba-atur');
-    panel?.scrollIntoView({ behavior: 'instant', block: 'start' });
-    panel?.focus({ preventScroll: true });
+    const hash = window.location.hash;
+    if (hash !== '#coba-atur' && hash !== '#cara-hitung') return;
+    const tujuan = document.getElementById(hash.slice(1));
+    if (!tujuan) return;
+    const gulir = () => tujuan.scrollIntoView({ behavior: 'instant', block: 'start' });
+    gulir();
+    // Guliran halus bawaan browser ke #fragmen bisa masih berjalan dan sisanya ikut tertambah ke guliran di atas
+    // (meleset 100–290 px di HP). Ulangi sekali setelah dua frame supaya posisinya pasti.
+    let f = requestAnimationFrame(() => {
+      f = requestAnimationFrame(gulir);
+    });
+    if (hash === '#coba-atur') tujuan.focus({ preventScroll: true });
+    return () => cancelAnimationFrame(f);
   }, []);
 
   // FLIP: setiap baris meluncur dari posisi lamanya ke posisi barunya, jadi perubahan urutan terlihat.

@@ -44,7 +44,7 @@ export default function PetaPage({ searchParams }: PageProps<'/peta'>) {
           fallback={
             <div aria-hidden="true" className="grid gap-5">
               <div className="kerangka h-12 w-2/3" />
-              <div className="kerangka h-[min(72svh,44rem)]" />
+              <div className="kerangka h-[min(52svh,44rem)] sm:h-[min(72svh,44rem)]" />
             </div>
           }
         >

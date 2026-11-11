@@ -53,8 +53,10 @@ const TAB: { id: IdTab; label: string; foto: FotoTerbuka; posisi?: string }[] = 
   },
 ];
 
+// Satu kalimat yang menyebut untuk siapa dan masalah apa (audit 11 Nov, P1-5: layar pertama tidak menyebut warga,
+// Jakarta, atau contoh masalah; tugas T1 uji warga menanyakan persis itu).
 const SUBJUDUL =
-  'Lihat alasan suatu masalah didahulukan. Coba ubah prioritasnya.';
+  'Jalan rusak, saluran tersumbat, sampah, atau lampu mati di Jakarta: lihat kenapa ada yang didahulukan, lalu coba ubah urutannya.';
 
 const PRESET_URUT: NamaPreset[] = ['keselamatan', 'kerentanan', 'suara_warga'];
 const STATUS_PETA: StatusLaporan[] = ['menunggu', 'diverifikasi', 'diproses', 'selesai', 'ditolak'];
@@ -194,6 +196,10 @@ export default function HeroCari({ panelRapor }: { panelRapor: ReactNode }) {
             Cek kecamatanmu
             <Ikon nama="kanan" className="panah size-4" />
           </Link>
+          {/* Pembeda dengan kanal resmi, di layar pertama (audit 11 Nov, BZ2). */}
+          <p className="mt-4 max-w-[52ch] border-t border-white/20 pt-3 text-kecil text-white/80">
+            JAKI dan LAPOR! menunjukkan laporanmu sampai mana. SUARAKYAT menjelaskan kenapa belum.
+          </p>
 
         </div>
         <p className="di-gelap absolute top-3 right-4 hidden max-w-[40ch] text-right text-mini text-white/75 sm:block">

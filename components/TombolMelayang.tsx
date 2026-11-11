@@ -35,7 +35,9 @@ export default function TombolMelayang() {
   const tutup = () => panel.current?.hidePopover();
 
   return (
-    <div className="fixed right-[max(1rem,env(safe-area-inset-right))] bottom-[max(1rem,env(safe-area-inset-bottom))] z-900 flex flex-col items-center gap-2 sm:right-[max(1.5rem,env(safe-area-inset-right))] sm:bottom-6">
+    // Wadah tidak menerima ketukan (pointer-events-none): tanpanya, ruang tombol "ke atas" yang sedang tersembunyi
+    // menelan ketukan ke peta atau pilihan di bawahnya (audit 11 Nov, P1-1). Setiap tombol dan panel menyalakannya lagi.
+    <div className="melayang pointer-events-none fixed right-[max(1rem,env(safe-area-inset-right))] bottom-[max(1rem,env(safe-area-inset-bottom))] z-900 flex flex-col items-center gap-2 sm:right-[max(1.5rem,env(safe-area-inset-right))] sm:bottom-6">
       <button
         type="button"
         inert={!tampil}
@@ -43,11 +45,11 @@ export default function TombolMelayang() {
         onClick={() =>
           window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' })
         }
-        className={`${kelasBulat} ${tampil ? '' : 'pointer-events-none translate-y-3 opacity-0'}`}
+        className={`${kelasBulat} ${tampil ? 'pointer-events-auto' : 'pointer-events-none translate-y-3 opacity-0'}`}
       >
         <Ikon nama="atas" className="size-5" />
       </button>
-      <button type="button" popoverTarget="panel-bantuan" aria-label="Bantuan" title="Bantuan" className={kelasBulat}>
+      <button type="button" popoverTarget="panel-bantuan" aria-label="Bantuan" title="Bantuan" className={`${kelasBulat} pointer-events-auto`}>
         <Ikon nama="bantuan" className="size-5" />
       </button>
 
@@ -56,7 +58,7 @@ export default function TombolMelayang() {
         id="panel-bantuan"
         popover="auto"
         aria-label="Bantuan"
-        className="fixed inset-auto right-[max(1rem,env(safe-area-inset-right))] bottom-[calc(max(1rem,env(safe-area-inset-bottom))+3.5rem)] m-0 w-[min(18rem,calc(100vw-2rem))] rounded-kartu border border-garis bg-permukaan p-4 text-teks shadow-angkat sm:right-[max(1.5rem,env(safe-area-inset-right))] sm:bottom-[4.75rem]"
+        className="pointer-events-auto fixed inset-auto right-[max(1rem,env(safe-area-inset-right))] bottom-[calc(max(1rem,env(safe-area-inset-bottom))+3.5rem)] m-0 w-[min(18rem,calc(100vw-2rem))] rounded-kartu border border-garis bg-permukaan p-4 text-teks shadow-angkat sm:right-[max(1.5rem,env(safe-area-inset-right))] sm:bottom-[4.75rem]"
       >
         <p className="text-badan font-bold">Butuh bantuan?</p>
         <ul className="mt-2 grid gap-0.5">
