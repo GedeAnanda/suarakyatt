@@ -9,6 +9,7 @@ import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 import FormKendala from '@/components/admin/FormKendala';
 import FormUbahStatus from '@/components/admin/FormUbahStatus';
+import UlangKarantinaFoto from '@/components/admin/UlangKarantinaFoto';
 import BadgeStatus, { WARNA_TITIK } from '@/components/BadgeStatus';
 import IndikatorSLA from '@/components/IndikatorSLA';
 import Galeri from '@/components/laporan/Galeri';
@@ -89,6 +90,9 @@ async function Isi({ params }: { params: PageProps<'/admin/laporan/[kode]'>['par
         )}
         {/* key: status baru (setelah router.refresh) memasang ulang form, jadi transisi berikutnya langsung tersedia. */}
         <FormUbahStatus key={l.status} kode={l.kode} status={l.status} aktif={milikInstansi} />
+        {l.status === 'ditolak' && l.alasan_tolak === 'konten_melanggar' && (
+          <UlangKarantinaFoto kode={l.kode} aktif={milikInstansi && sumber === 'db'} />
+        )}
         {/* Kendala (migrasi 0010): alasan tunda tanpa mengubah status, untuk laporan yang sudah diterima. */}
         {(l.status === 'diverifikasi' || l.status === 'diproses') && (
           <FormKendala key={`kendala-${l.status}`} kode={l.kode} aktif={milikInstansi} />

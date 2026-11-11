@@ -8,6 +8,8 @@ import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import { formatPoin, hitungSkor, kenapaBelum, LABEL_FAKTOR, LABEL_PRESET, PENAHAN_FAKTOR, PRESET, type NamaPreset } from '@/lib/scoring';
 import type { Bobot, FaktorIsu } from '@/lib/types';
+import type { Sumber } from '@/lib/data/laporan';
+import LabelSumber from '../ui/LabelSumber';
 import AngkaGulir from '../ui/AngkaGulir';
 import Ikon from '../ui/Ikon';
 import KelompokCair from '../ui/KelompokCair';
@@ -19,11 +21,13 @@ export default function PerbandinganPeringkat({
   bobotResmi,
   idIsu,
   kodeLaporan,
+  sumber,
 }: {
   isu: FaktorIsu[];
   bobotResmi: Bobot;
   idIsu: string;
   kodeLaporan: string | null;
+  sumber: Sumber;
 }) {
   const [preset, setPreset] = useState<NamaPreset>('keselamatan');
   const jelas = useMemo(() => kenapaBelum(idIsu, isu, bobotResmi, 'diverifikasi'), [idIsu, isu, bobotResmi]);
@@ -35,13 +39,14 @@ export default function PerbandinganPeringkat({
   const posisi = (p: number) => (jelas.total > 1 ? ((p - 1) / (jelas.total - 1)) * 100 : 0);
 
   return (
-    <section aria-labelledby="judul-dua-urutan" className="bingkai mt-12 sm:mt-14">
+    <section id="bandingkan-prioritas" aria-labelledby="judul-dua-urutan" className="bingkai mt-12 scroll-mt-24 sm:mt-14">
       <div className="kartu muncul p-5 sm:p-8">
         <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)] lg:gap-12">
           <div>
             <h2 id="judul-dua-urutan" className="judul-seksi">
-              Urutan bisa berubah, tergantung apa yang diutamakan
+              Coba ubah prioritas
             </h2>
+            <LabelSumber sumber={sumber} ringkas className="mt-3" />
             <div className="mt-3 grid gap-2 text-badan text-lembut">
               <p>
                 <strong className="font-bold text-teks">
@@ -49,15 +54,17 @@ export default function PerbandinganPeringkat({
                 </strong>{' '}
                 sekarang di urutan ke-{jelas.peringkat} dari {jelas.total} masalah.
               </p>
-              <p>
-                Paling menaikkan: {LABEL_FAKTOR[jelas.pendorong.faktor]} ({formatPoin(jelas.pendorong.poin)} poin). Paling
-                menahan: {PENAHAN_FAKTOR[jelas.penahan.faktor]} (baru {formatPoin(jelas.penahan.poin)} dari{' '}
-                {formatPoin(jelas.penahan.maksimal)} poin yang mungkin).
-              </p>
-              <p>Urutan ini tergantung apa yang diutamakan. Coba ganti di bawah.</p>
+              <details className="text-kecil">
+                <summary className="py-2 font-medium text-biru-tua">Kenapa di urutan ini?</summary>
+                <p className="mt-2 leading-relaxed">
+                  Paling menaikkan: {LABEL_FAKTOR[jelas.pendorong.faktor]} ({formatPoin(jelas.pendorong.poin)} poin).
+                  Paling menahan: {PENAHAN_FAKTOR[jelas.penahan.faktor]} (baru {formatPoin(jelas.penahan.poin)} dari{' '}
+                  {formatPoin(jelas.penahan.maksimal)} poin).
+                </p>
+              </details>
             </div>
             <fieldset className="mt-6">
-              <legend className="text-badan font-semibold">Bandingkan dengan aturan lain:</legend>
+              <legend className="text-badan font-semibold">Mau dahulukan apa?</legend>
               <KelompokCair className="mt-2 flex flex-wrap gap-2">
                 {URUTAN_PRESET.map((p) => (
                   <button key={p} type="button" aria-pressed={preset === p} onClick={() => setPreset(p)} className="chip">
@@ -71,7 +78,7 @@ export default function PerbandinganPeringkat({
           <div>
             <div className="grid grid-cols-2 gap-3">
               <figure className="rounded-kartu bg-latar p-4 sm:p-6">
-                <figcaption className="text-kecil font-semibold text-lembut">Urutan dengan aturan resmi</figcaption>
+                <figcaption className="text-kecil font-semibold text-lembut">Aturan resmi</figcaption>
                 <p aria-hidden="true" className="angka mt-2 text-[clamp(3.5rem,2rem+6vw,6.5rem)] leading-none font-bold tracking-[-0.04em]">
                   <AngkaGulir nilai={String(jelas.peringkat)} minDigit={digitTotal} />
                 </p>
@@ -135,11 +142,11 @@ export default function PerbandinganPeringkat({
             href={`/prioritas?isu=${encodeURIComponent(idIsu)}`}
             className="inline-flex min-h-11 items-center gap-1 font-bold text-biru-tua hover:underline"
           >
-            Atur sendiri apa yang diutamakan
+            Atur prioritas sendiri
             <Ikon nama="kanan" className="panah size-4" />
           </Link>
           <Link href="/prioritas#cara-hitung" className="inline-flex min-h-11 items-center gap-1 font-bold text-biru-tua hover:underline">
-            Bagaimana urutan ini dihitung?
+            Cara menghitung
             <Ikon nama="kanan" className="panah size-4" />
           </Link>
           {kodeLaporan && (
@@ -147,7 +154,7 @@ export default function PerbandinganPeringkat({
               href={`/laporan/${kodeLaporan}#kenapa-belum`}
               className="inline-flex min-h-11 items-center gap-1 font-bold text-biru-tua hover:underline"
             >
-              Buka laporan {kodeLaporan} dan tekan &ldquo;Kenapa belum?&rdquo;
+              Lihat contoh laporan
               <Ikon nama="kanan" className="panah size-4" />
             </Link>
           )}

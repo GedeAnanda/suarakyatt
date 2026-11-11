@@ -121,11 +121,17 @@ def main() -> None:
             lain = [k for (k,) in cur.fetchall()]
 
             hasil_uji = []
+            gagal = False
             for label, lat, lon, harap in UJI_TITIK:
                 cur.execute(CARI_TITIK, (lon, lat))
                 dapat = [n for (n,) in cur.fetchall()]
                 lulus = dapat == ([harap] if harap else [])
+                gagal = gagal or not lulus
                 hasil_uji.append(f"{'LULUS' if lulus else 'GAGAL'}: {label} -> {dapat or 'tidak ada'} (harap {harap or 'tidak ada'})")
+
+        if gagal:
+            conn.rollback()
+            sys.exit("BERHENTI, uji titik gagal; semua perubahan dibatalkan:\n  - " + "\n  - ".join(hasil_uji))
 
         if args.dry_run:
             conn.rollback()

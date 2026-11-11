@@ -94,8 +94,8 @@
 
   --text-mini: 0.8125rem;
   --text-mini--line-height: 1.35;
-  --text-kecil: 0.875rem;
-  --text-kecil--line-height: 1.45;
+  --text-kecil: 0.9375rem;
+  --text-kecil--line-height: 1.5;
   --text-badan: 1rem;
   --text-badan--line-height: 1.55;
   --text-lead: 1.125rem;
@@ -467,7 +467,7 @@ html[data-laci="buka"] .tirai {
     position: sticky;
     z-index: 900;
     flex-shrink: 0;
-    width: 4.75rem;
+    width: 6.25rem;
     height: calc(100dvh - var(--tinggi-kepala));
     transform: none;
     visibility: visible;
