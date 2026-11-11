@@ -15,7 +15,7 @@ export default function Galat({ reset }: { error: Error & { digest?: string }; r
         </span>
         <h1 className="mt-4 text-judul font-bold">Halaman ini gagal dimuat</h1>
         <p className="mx-auto mt-2 max-w-[52ch] text-badan text-lembut">
-          Ada gangguan di sisi kami, bukan kesalahan Anda. Coba muat ulang. Kalau masih gagal, kembali ke Beranda dan ulangi
+          Ada gangguan di sisi kami, bukan kesalahanmu. Coba muat ulang. Kalau masih gagal, kembali ke Beranda dan coba lagi
           sebentar lagi.
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-3">

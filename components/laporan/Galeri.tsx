@@ -25,7 +25,7 @@ function Label({ children }: { children: React.ReactNode }) {
 
 export default function Galeri({ laporan }: { laporan: Pick<LaporanPublik, 'foto' | 'foto_bukti' | 'status' | 'alasan_tolak' | 'is_simulated'> }) {
   if (laporan.alasan_tolak === 'konten_melanggar') {
-    return <Kosong teks="Isi dan foto laporan ini disembunyikan karena ditolak dengan alasan konten melanggar." />;
+    return <Kosong teks="Foto dan cerita laporan ini disembunyikan karena berisi hal yang tidak pantas atau data pribadi orang lain." />;
   }
   const selesai = laporan.status === 'selesai';
   const [utama, ...lain] = laporan.foto;
@@ -34,16 +34,16 @@ export default function Galeri({ laporan }: { laporan: Pick<LaporanPublik, 'foto
     <div className={`grid gap-3 ${selesai ? 'sm:grid-cols-2' : ''}`}>
       <figure>
         {utama ? (
-          <Image src={utama} loading="eager" fetchPriority="high" alt={laporan.is_simulated ? 'Lampiran ilustrasi simulasi, bukan foto lapangan' : 'Foto dari pelapor'} width={960} height={720} className="aspect-4/3 w-full rounded-kartu bg-lapis object-cover" />
+          <Image src={utama} loading="eager" fetchPriority="high" sizes="(min-width: 1024px) 50vw, 100vw" alt={laporan.is_simulated ? 'Foto ilustrasi (data buatan), bukan foto asli lokasi' : 'Foto dari pelapor'} width={960} height={720} className="aspect-4/3 w-full rounded-kartu bg-lapis object-cover" />
         ) : (
           <Kosong teks={laporan.is_simulated ? 'Laporan simulasi ini tidak punya foto.' : 'Foto tidak tersedia.'} />
         )}
         {/* Foto seed adalah foto ilustrasi berlisensi bebas, bukan foto lapangan (PRD 10: data simulasi selalu diberi label). */}
-        <Label>{laporan.is_simulated ? 'Lampiran simulasi · bukan foto lapangan' : selesai ? 'Sebelum · foto dari pelapor' : 'Foto dari pelapor'}</Label>
+        <Label>{laporan.is_simulated ? 'Foto ilustrasi (data buatan), bukan foto asli lokasi' : selesai ? 'Sebelum · foto dari pelapor' : 'Foto dari pelapor'}</Label>
         {lain.length > 0 && (
           <div className="mt-3 grid grid-cols-2 gap-3">
             {lain.map((src, i) => (
-              <Image key={src} src={src} alt={`Foto tambahan ${i + 2} dari pelapor`} width={480} height={360} className="aspect-4/3 w-full rounded-kartu bg-lapis object-cover" />
+              <Image key={src} src={src} sizes="(min-width: 1024px) 25vw, 50vw" alt={`Foto tambahan ${i + 2} dari pelapor`} width={480} height={360} className="aspect-4/3 w-full rounded-kartu bg-lapis object-cover" />
             ))}
           </div>
         )}
@@ -51,7 +51,7 @@ export default function Galeri({ laporan }: { laporan: Pick<LaporanPublik, 'foto
       {selesai && (
         <figure>
           {laporan.foto_bukti ? (
-            <Image src={laporan.foto_bukti} alt={laporan.is_simulated ? 'Lampiran contoh, bukan bukti penyelesaian' : 'Foto bukti penyelesaian dari dinas'} width={960} height={720} className="aspect-4/3 w-full rounded-kartu bg-lapis object-cover" />
+            <Image src={laporan.foto_bukti} sizes="(min-width: 1024px) 50vw, 100vw" alt={laporan.is_simulated ? 'Foto contoh (data buatan), bukan bukti asli' : 'Foto bukti penyelesaian dari dinas'} width={960} height={720} className="aspect-4/3 w-full rounded-kartu bg-lapis object-cover" />
           ) : (
             <Kosong teks={laporan.is_simulated ? 'Laporan simulasi ini tidak punya foto bukti.' : 'Foto bukti tidak tersedia.'} />
           )}

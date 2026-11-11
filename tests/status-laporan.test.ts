@@ -15,7 +15,7 @@ describe('hitungSLA', () => {
   it('menunggu: menghitung batas respons', () => {
     const sla = hitungSLA({ ...dasar, status: 'menunggu' }, t0 + 6 * JAM)!;
     expect(sla.terlambat).toBe(false);
-    expect(sla.keterangan).toContain('respons');
+    expect(sla.teks).toContain('ditanggapi');
   });
 
   it('menunggu lewat batas respons: terlambat', () => {
@@ -25,8 +25,18 @@ describe('hitungSLA', () => {
   it('diproses: menghitung batas selesai, bukan batas respons', () => {
     const sla = hitungSLA({ ...dasar, status: 'diproses', responded_at: iso(t0 + JAM) }, t0 + 30 * JAM)!;
     expect(sla.terlambat).toBe(false);
-    expect(sla.keterangan).toContain('selesai');
+    expect(sla.teks).toContain('untuk selesai');
     expect(hitungSLA({ ...dasar, status: 'diproses' }, t0 + 121 * JAM)!.terlambat).toBe(true);
+  });
+
+  it('laporan warga asli yang Menunggu tidak ditandai terlambat (tidak ada dinas sungguhan)', () => {
+    const sla = hitungSLA({ ...dasar, status: 'menunggu', is_simulated: false }, t0 + 300 * JAM)!;
+    expect(sla.terlambat).toBe(false);
+    expect(sla.teks).toBe('Belum ditanggapi');
+  });
+
+  it('selesai tanpa waktu selesai tidak ditebak terlambat (bug daftar peta W1)', () => {
+    expect(hitungSLA({ ...dasar, status: 'selesai' }, t0 + 500 * JAM)).toMatchObject({ terlambat: false, teks: 'Selesai' });
   });
 
   it('selesai terlambat dan selesai tepat waktu', () => {

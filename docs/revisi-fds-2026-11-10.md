@@ -2,7 +2,7 @@
 
 > Versi .md dari lembar penilaian mentor `[FDS] WIA_abis ini ke wdp.pdf` (2 halaman), lalu dipetakan ke kode di branch `add-ui-2-animation` (commit `267ac8e`).
 >
-> **Status 10 Nov (malam):** semua usulan di bawah dikerjakan di `feat/revisi-fds` (commit `1e9544b`) dan sudah di-merge ke `dev` lewat PR #19. Migrasi `0009` dan `0010` sudah diterapkan ke Supabase. Rinciannya di [Hasil pengerjaan](#6-hasil-pengerjaan-10-november). Yang masih terbuka: uji ke orang awam (2.6), Lighthouse dengan throttling (3.5), keputusan Recharts (2.5), dan rilis `dev` → `main`.
+> **Status 10 Nov (malam):** semua usulan di bawah dikerjakan di `feat/revisi-fds` (commit `1e9544b`), di-merge ke `dev` lewat PR #19, lalu dirilis ke `main` lewat PR #21 (`c37176f`). Situs produksi **https://suarakyatt.vercel.app** sudah memuat revisi ini: tes CI lulus, deploy Vercel sukses, dan skenario duplikat serta terlambat sudah dicek di tampilan HP. Migrasi `0009` dan `0010` sudah diterapkan ke Supabase. Rinciannya di [Hasil pengerjaan](#6-hasil-pengerjaan-10-november). Yang masih terbuka: uji ke orang awam (2.6), Lighthouse dengan throttling (3.5), keputusan Recharts (2.5), dan rilis `dev` → `main`.
 
 ## Ringkasan cepat
 
@@ -17,7 +17,7 @@
   - **Skor dinilai per isu (kecamatan × kategori), bukan per kecamatan.** Belum ada tampilan "kecamatanku bagaimana?" dengan bahasa awam.
   - **Data contoh untuk penolakan terlalu seragam.** Hanya ada 2 teks catatan penolakan, tidak ada kasus `konten_melanggar`, dan `duplikat_dari` tidak ditautkan di UI. Belum ada tes untuk tampilan penolakan, SLA, atau timeline.
 - **Temuan di luar saran:**
-  - `https://suarakyat.vercel.app` mengembalikan **404 NOT_FOUND** (dicek 10 Nov). Deployment-nya sendiri hidup, karena cron reset demo tetap berjalan (reset terakhir 9 Nov 19:40 UTC). Jadi yang 404 hanya domain itu. Pastikan tautan demo untuk juri benar.
+  - ~~Tautan demo 404~~ **Koreksi:** yang dicek waktu itu `suarakyat.vercel.app` (satu t), domain yang bukan milik tim. Domain produksi yang benar adalah **https://suarakyatt.vercel.app** (dua t, sesuai `CONTRIBUTING.md`), dan situs itu hidup.
   - Branch `dev` terakhir diperbarui 29 Okt; 20 commit UI di `add-ui-2-animation` belum masuk ke `dev`.
   - **Migrasi `0009_foto_dan_dukungan.sql` (30 Okt) ternyata belum diterapkan ke Supabase**, padahal kode di branch UI sudah memanggil `sudah_dukung` dan karantina foto. Sudah diterapkan 10 Nov malam. Lihat [Migrasi 0009](#migrasi-0009-diterapkan-10-november).
 
@@ -157,7 +157,7 @@ Skala: 1 = belum terlihat · 2 = masih perlu banyak perbaikan · 3 = cukup untuk
 
 Hal yang perlu dibereskan dulu:
 
-- **Hidupkan lagi tautan demo.** `suarakyat.vercel.app` 404.
+- ~~Hidupkan lagi tautan demo.~~ Tidak perlu: produksi ada di https://suarakyatt.vercel.app dan hidup. Yang 404 hanya `suarakyat.vercel.app` (satu t), domain yang salah ketik.
 - **Gabungkan branch UI ke `dev`.** Sekarang `add-ui-2-animation` 20 commit di depan `dev`. Buat branch kerja baru dari situ dengan `--no-track`.
 - **Lengkapi tabel Tim di README.** Masih "(isi)", dan aspek README hanya dapat nilai 4.
 
@@ -254,9 +254,23 @@ Sesudah diterapkan: fungsi `foto_sah` dan `sudah_dukung` ada; bucket `bukti` (pu
 
 ### Masih terbuka
 
-1. **2.6:** uji ke 3–5 orang awam.
-2. **3.5:** Lighthouse mobile dengan 4G di HP/Chrome sungguhan, untuk `/`, `/laporan/[kode]`, `/peta`, `/prioritas`, dan `/kecamatan`. Catat hasilnya di sini.
+1. **2.6:** uji ke 3–5 orang awam. Kit siap di [uji-warga-2026-11-10.md](uji-warga-2026-11-10.md); tinggal dijalankan tim.
+2. **3.5:** Lighthouse sudah dijalankan (10 Nov malam, simulasi 4G lambat).
+   - Aksesibilitas 100.
+   - Setelah perbaikan LCP (putaran 3):
+     - performa 82–97;
+     - FCP ±1 detik;
+     - LCP 2,6–3,6 detik di 4 halaman;
+     - Detail laporan 5,0 detik dan Kecamatan 4,1 detik.
+   - Target 2,5 detik belum tercapai.
+   - Bug lebar 1209 px di Beranda HP sudah diperbaiki.
+   - Fungsi Vercel dipindah ke Tokyo, dekat database; perlu diukur ulang setelah deploy.
+
+   Rincian di [audit-awam-2026-11-10.md](audit-awam-2026-11-10.md#putaran-3-lcp-dan-lebar-halaman-di-hp-10-november-malam).
 3. **2.5:** hapus paket `recharts` atau pakai.
-4. **Tautan demo** `suarakyat.vercel.app` 404; cek domain deployment yang benar.
-5. **Rilis `dev` → `main`.** Sudah dicek: merge bersih tanpa konflik, hasilnya sama persis dengan `dev`, dan tes CI lulus. Tidak ada env baru yang perlu ditambah.
-6. Batas waktu final submission tidak tercantum di lembar FDS.
+4. Batas waktu final submission tidak tercantum di lembar FDS.
+
+Sudah beres sejak daftar ini ditulis:
+
+- **Rilis `dev` → `main`:** PR #21, `c37176f`. Tes CI lulus, deploy Vercel sukses.
+- **Tautan demo:** tidak bermasalah. Produksi ada di https://suarakyatt.vercel.app; catatan "404" sebelumnya keliru karena domainnya salah ketik.

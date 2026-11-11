@@ -39,6 +39,14 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: LayoutProps<'/'>) {
   return (
     <html lang="id" className={`${satoshi.variable} antialiased`} data-scroll-behavior="smooth" suppressHydrationWarning>
+      <head>
+        {/* Pasang pilihan "Huruf besar" sebelum halaman tergambar, supaya tidak berkedip dari kecil ke besar. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: "try{if(localStorage.getItem('suarakyat-huruf')==='besar')document.documentElement.dataset.huruf='besar'}catch(e){}",
+          }}
+        />
+      </head>
       <body suppressHydrationWarning>
         {/* Efek air untuk semua tombol pilihan (filter SVG, cahaya kursor, riak tekan). */}
         <EfekCair />

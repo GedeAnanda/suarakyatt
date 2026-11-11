@@ -1,6 +1,6 @@
 # suaRAkyat — Software Design Document (SDD) v1.0
 
-> Versi Markdown dari `suaRAkyat_SDD_v1.0.pdf` (25 Okt 2026, @nand). Isi sama dengan PDF; tabel dan kode disusun ulang agar mudah dibaca. Diagram arsitektur dan relasi hanya ada di PDF — halamannya disebut di tempatnya. Ini rancangan awal; kode nyata bisa sudah bergeser (migrasi sekarang sampai `0010`), jadi cek repo kalau ada beda. Tambahan revisi FDS 10 Nov (alasan tunda, `catat_kendala`, halaman kecamatan) ditandai **[0010]** dan dijelaskan lengkap di [revisi-fds-2026-11-10.md](revisi-fds-2026-11-10.md).
+> Versi Markdown dari `suaRAkyat_SDD_v1.0.pdf` (25 Okt 2026, @nand). Isi sama dengan PDF; tabel dan kode disusun ulang agar mudah dibaca. Diagram arsitektur dan relasi hanya ada di PDF — halamannya disebut di tempatnya. Ini rancangan awal; kode nyata bisa sudah bergeser (migrasi sekarang sampai `0011`), jadi cek repo kalau ada beda. Tambahan revisi FDS 10 Nov (alasan tunda, `catat_kendala`, halaman kecamatan) ditandai **[0010]** dan dijelaskan lengkap di [revisi-fds-2026-11-10.md](revisi-fds-2026-11-10.md). Migrasi `0011_umur_laporan_aktif.sql` merapikan umur laporan aktif simulasi (`rapikan_umur_aktif_simulasi()`, service role). Audit bahasa awam 10 Nov mengganti nama halaman dan istilah di antarmuka: Urutan prioritas, Rapor dinas, status "Sudah diperiksa"/"Sedang dikerjakan", 6 hal yang dinilai. Nama di dokumen ini tetap nama teknis; padanannya ada di [audit-awam-2026-11-10.md](audit-awam-2026-11-10.md#kamus-baku).
 
 ## Ringkasan cepat
 

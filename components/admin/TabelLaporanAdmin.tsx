@@ -39,14 +39,14 @@ function cocok(l: LaporanAdmin, saring: IdSaring) {
  *  seberapa jauh waktu sudah terpakai dari laporan masuk sampai batasnya. */
 function BatasWaktu({ l, sekarang }: { l: LaporanAdmin; sekarang: number }) {
   const sla = hitungSLA(l, sekarang);
-  if (!sla) return <span className="text-kecil text-lembut">Tidak dihitung</span>;
+  if (!sla) return <span className="text-kecil text-lembut">Tidak ada batas waktu (ditolak/dibatalkan)</span>;
   const aktif = AKTIF.includes(l.status);
   const mulai = Date.parse(l.created_at);
   const batas = Date.parse(l.status === 'menunggu' ? l.batas_respons : l.batas_selesai);
   const terpakai = Math.min(1, Math.max(0.04, (sekarang - mulai) / Math.max(1, batas - mulai)));
   const warnaBar = sekarang > batas ? 'bg-merah' : terpakai > 0.75 ? 'bg-oranye' : 'bg-biru';
   return (
-    <span className="block" title="Batas waktu layanan (SLA) per kategori. Angkanya ilustrasi dan tercantum di halaman Sumber Data.">
+    <span className="block">
       <span className={`block text-kecil font-semibold whitespace-nowrap ${sla.terlambat ? 'text-merah-tua' : sla.selesai ? 'text-hijau' : ''}`}>
         {sla.teks}
       </span>
@@ -116,7 +116,7 @@ export default function TabelLaporanAdmin({ laporan, sekarang }: { laporan: Lapo
               type="button"
               aria-pressed={saring === s.id}
               onClick={() => setSaring(s.id)}
-              className="min-h-9 rounded-[0.4rem] px-3 text-kecil font-semibold whitespace-nowrap text-lembut transition-colors hover:text-teks aria-pressed:bg-biru aria-pressed:text-white"
+              className="min-h-11 rounded-[0.4rem] px-3 text-kecil font-semibold whitespace-nowrap text-lembut transition-colors hover:text-teks aria-pressed:bg-biru aria-pressed:text-white"
             >
               {s.label}
             </button>
@@ -136,7 +136,7 @@ export default function TabelLaporanAdmin({ laporan, sekarang }: { laporan: Lapo
 
       <div className="kartu relative mt-4 overflow-x-auto">
         <table className="w-full min-w-[56rem] text-left text-badan">
-          <caption className="sr-only">Laporan instansi, terlambat paling atas</caption>
+          <caption className="sr-only">Laporan dinas, yang lewat batas waktu paling atas</caption>
           <thead className="bg-latar text-kecil text-lembut">
             <tr>
               <th scope="col" className="px-4 py-3 font-semibold">Laporan</th>
@@ -175,7 +175,7 @@ export default function TabelLaporanAdmin({ laporan, sekarang }: { laporan: Lapo
                   <Link
                     href={`/admin/laporan/${l.kode}`}
                     aria-label={`Buka laporan ${l.kode}`}
-                    className="inline-flex min-h-9 items-center gap-1 rounded-kontrol bg-biru px-3 text-kecil font-bold whitespace-nowrap text-white transition-colors hover:bg-biru-tua"
+                    className="inline-flex min-h-11 items-center gap-1 rounded-kontrol bg-biru px-3 text-kecil font-bold whitespace-nowrap text-white transition-colors hover:bg-biru-tua"
                   >
                     Buka
                     <Ikon nama="kanan" className="panah size-4" />

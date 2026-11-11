@@ -25,9 +25,9 @@ const TRANSISI: Partial<Record<StatusLaporan, StatusLaporan[]>> = {
 };
 
 const KETERANGAN_ALASAN: Record<AlasanTolak, string> = {
-  duplikat: 'Wajib menautkan kode laporan lain yang masih aktif, sekategori, dan berjarak paling jauh 100 m. Dukungan dipindahkan ke laporan itu. Tidak masuk tingkat penolakan.',
-  tidak_valid: 'Misalnya spam atau masalah tidak ditemukan di lokasi. Wajib catatan. Masuk tingkat penolakan.',
-  konten_melanggar: 'Kata kasar, foto tidak pantas, atau data pribadi orang lain. Isi dan foto disembunyikan dari publik. Wajib catatan. Masuk tingkat penolakan.',
+  duplikat: 'Wajib menautkan kode laporan asli yang belum selesai, jenis masalahnya sama, dan berjarak paling jauh 100 m. Dukungan dipindah ke laporan itu. Tidak dihitung sebagai penolakan di Rapor dinas.',
+  tidak_valid: 'Misalnya iseng atau masalah tidak ditemukan di lokasi. Wajib catatan. Dihitung sebagai penolakan di Rapor dinas (batas wajar 25%; lewat batas → nilai paling tinggi C).',
+  konten_melanggar: 'Kata kasar, foto tidak pantas, atau data pribadi orang lain. Isi dan foto disembunyikan dari publik. Wajib catatan. Dihitung sebagai penolakan di Rapor dinas.',
 };
 
 const kelasIsian = 'w-full px-4 py-3 text-badan font-normal';

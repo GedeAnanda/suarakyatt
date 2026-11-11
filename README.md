@@ -1,6 +1,22 @@
-# suaRAkyat
+# SUARAKYAT
 
-Platform web transparansi keputusan publik: warga melapor masalah kota, melacak penanganannya, dan bisa melihat serta menguji kenapa sebuah masalah didahulukan. Dibuat untuk lomba Web in Action (WIA) MIA 2026.
+**Coba langsung: https://suarakyatt.vercel.app**
+
+Warga Jakarta bisa melaporkan masalah kota (jalan rusak, saluran tersumbat, sampah, lampu jalan mati), melacak penanganannya dengan kode laporan, dan melihat **kenapa satu masalah ditangani lebih dulu dari yang lain**, dalam bahasa sehari-hari. Dibuat untuk lomba Web in Action (WIA) MIA 2026, tema *Designing Digital Futures*.
+
+## Latar belakang dan tujuan
+
+- **Masalahnya:**
+  - Aplikasi pengaduan resmi (JAKI, LAPOR!) sudah bisa melacak status laporan, tetapi warga tidak bisa melihat **dasar urutan perbaikan**: kenapa jalan di satu tempat diperbaiki lebih dulu.
+  - Dinas mana yang lambat juga tidak terlihat.
+  - Hanya ±1,4% usulan Musrenbang yang benar-benar dikerjakan.
+- **Tujuannya:** membuka alasan di balik urutan itu, supaya warga bisa memeriksa dan mengusulkan perubahan dengan data.
+  - Skor prioritas per masalah per kecamatan dari 6 hal yang dinilai, semuanya terbuka dan bisa dicoba aturannya sendiri.
+  - Rapor dinas A–E yang selalu tampil bersama persen laporan yang ditolak.
+- **Untuk siapa:** semua warga, termasuk yang tidak terbiasa membaca angka.
+  - Seluruh teks memakai satu kamus istilah sehari-hari (`lib/kamus.ts`).
+  - Ada tombol "Perbesar huruf".
+  - Aksesibilitas diuji dengan axe-core dan Lighthouse.
 
 ## Tech stack
 
@@ -31,7 +47,7 @@ Tes modul skor: `npm test`.
 
 ## Fitur dan pemeriksaan
 
-Beranda interaktif, login/daftar, peta publik, formulir laporan, pelacakan, tindak lanjut admin, rapor instansi, simulator prioritas, panel “Kenapa belum?”, dan skor 42 kecamatan dalam bahasa sehari-hari (`/kecamatan`) sudah tersedia. Halaman lacak menampilkan “Status sekarang” di atas peta: alasan tunda dari instansi, alasan penolakan, dan tautan ke laporan asli untuk duplikat. Pengaturan bobot, kategori, dan isu terpilih bisa dibagikan lewat URL. Tautan `/contoh` memilih laporan yang tersedia dari sumber data aktif; `/contoh?jenis=terlambat|ditolak|duplikat|melanggar|selesai` membuka tiap skenario.
+Beranda interaktif, login/daftar, peta publik, formulir laporan, pelacakan, tindak lanjut dinas (admin), rapor dinas, urutan prioritas dengan “Coba atur sendiri”, panel “Kenapa belum?”, dan skor 42 kecamatan (`/kecamatan`) sudah tersedia. Seluruh teks memakai bahasa sehari-hari dengan satu kamus istilah (`lib/kamus.ts`, lihat `docs/audit-awam-2026-11-10.md`). Halaman lacak menampilkan “Status sekarang” di atas peta: alasan tunda dari dinas, alasan penolakan, dan tautan ke laporan asli untuk duplikat. Percobaan aturan, jenis masalah, dan masalah terpilih bisa dibagikan lewat URL. Tautan `/contoh` memilih laporan yang tersedia dari sumber data aktif; `/contoh?jenis=terlambat|ditolak|duplikat|melanggar|selesai` membuka tiap skenario.
 
 ```bash
 npm run lint
@@ -44,8 +60,8 @@ Database demo dapat diisi dengan `npm run demo:setup -- --apply` setelah migrasi
 
 ## Alur presentasi lomba
 
-1. Buka Beranda. Ubah pilihan di “Satu isu, dua urutan” dan jelaskan perubahan peringkat.
-2. Buka perhitungan lengkap. Pilih kategori dan isu, ubah bobot, lalu bagikan URL skenarionya.
+1. Buka Beranda. Ubah pilihan di “Urutan bisa berubah, tergantung apa yang diutamakan” dan jelaskan perubahan urutannya.
+2. Buka Urutan prioritas. Pilih jenis masalah dan masalahnya, coba pilihan cepat atau atur sendiri, lalu bagikan URL percobaannya.
 3. Buka `/lacak`, lalu coba skenario “Terlambat, ada kendala” dan “Ditolak karena duplikat”. Di HP, alasan tunda dan alasan tolak langsung terlihat di kotak “Status sekarang”; panel “Kenapa belum?” menjelaskan posisi model. Peringkat bukan janji tanggal perbaikan.
 4. Buka `/kecamatan`, pilih satu kecamatan, dan baca kalimat serta grafik posisinya di antara 42 kecamatan.
 5. Masuk sebagai warga demo untuk melapor atau mendukung laporan yang sudah ada.
@@ -54,13 +70,57 @@ Database demo dapat diisi dengan `npm run demo:setup -- --apply` setelah migrasi
 
 Fokus subtema: **Data-Driven Decision Support** dan **Civic Reporting & Accountability**, didukung **Public Service Tracking**. Data BPS/CRM belum terintegrasi. Laporan, demografi perhitungan, dan kinerja instansi adalah simulasi; batas wilayah dan angka konteks Musrenbang memiliki sumber publik terpisah.
 
+## Peta halaman (sitemap)
+
+```mermaid
+flowchart TD
+  B["Beranda /"] --> LP["Lapor masalah /lapor"]
+  B --> LC["Lacak laporan /lacak"]
+  B --> KC["Skor kecamatan /kecamatan"]
+  B --> UP["Urutan prioritas /prioritas"]
+  B --> RP["Rapor dinas /rapor"]
+  B --> PT["Peta laporan /peta"]
+  LP -->|"kode SR-…"| DL["Detail laporan /laporan/[kode]"]
+  LC --> DL
+  PT --> DL
+  LC -->|"contoh skenario"| CT["/contoh?jenis=terlambat|ditolak|duplikat|melanggar|selesai"]
+  CT --> DL
+  DL -->|"Kenapa belum?"| UP
+  DL --> KD["Kecamatan /kecamatan/[kode]"]
+  KC --> KD
+  UP -->|"Bagaimana urutan dihitung?"| CH["/prioritas#cara-hitung"]
+  RP --> CR["Cara rapor dihitung /rapor/cara-menilai"]
+  B --> MS["Masuk / daftar /masuk"]
+  MS --> AD["Admin dinas /admin/laporan"]
+  AD --> AU["Ubah status + catat kendala /admin/laporan/[kode]"]
+  B --> TS["Tentang /tentang"]
+  B --> SD["Sumber data /sumber-data"]
+```
+
+## Progres
+
+| Bagian | Status |
+| --- | --- |
+| Lapor (foto, titik, laporan serupa, draf tersimpan) | ✅ selesai |
+| Lacak + detail laporan (status, alasan tolak/tunda, riwayat, "Kenapa belum?") | ✅ selesai |
+| Peta laporan (saring jenis dan status) | ✅ selesai |
+| Urutan prioritas + "Coba atur sendiri" + cara hitung | ✅ selesai |
+| Skor kecamatan (42 kecamatan, kalimat awam, grafik posisi) | ✅ selesai |
+| Rapor dinas A–E + cara rapor dihitung | ✅ selesai |
+| Admin dinas: ubah status, tolak beralasan, catat kendala | ✅ selesai |
+| Bahasa awam di semua halaman (135 temuan audit) | ✅ selesai, lihat `docs/audit-awam-2026-11-10.md` |
+| Aksesibilitas | ✅ axe-core WCAG 2.2 A/AA: 0 pelanggaran di 13 halaman; Lighthouse aksesibilitas 100 |
+| Performa HP (Lighthouse, simulasi 4G lambat) | 🟡 skor 82–97; tampil pertama ±1 detik; bagian terbesar tampil dalam 2,6–3,6 detik di 4 halaman, Detail laporan 5,0 dan Kecamatan 4,1 detik (target 2,5); server dipindah ke Tokyo, dekat database |
+| Uji ke 5 warga beragam | 🟡 kit siap (`docs/uji-warga-2026-11-10.md`), belum dijalankan |
+| Integrasi data BPS/CRM sungguhan | ⏳ belum; laporan dan dinas masih data buatan |
+
 ## Tim
 
 | Nama | Peran |
 | --- | --- |
-| (isi) | A · Frontend & Desain |
-| (isi) | B · Backend & Integrasi (ketua) |
-| (isi) | C · Data & Skor |
+| Wildan (@wildanpanjii) | A · Frontend & Desain |
+| Gede Ananda (@GedeAnanda) | B · Backend & Integrasi (ketua) |
+| Fatih Akram Wicaksono | C · Data & Skor |
 
 ## Dokumen
 
@@ -68,9 +128,11 @@ Fokus subtema: **Data-Driven Decision Support** dan **Civic Reporting & Accounta
 - `docs/suaRAkyat_SDD_v1.0.pdf`: desain teknis (bagaimana)
 - `CONTRIBUTING.md`: aturan kerja tim
 - `docs/revisi-fds-2026-11-10.md`: catatan mentor First Draft Submission dan hasil revisinya
+- `docs/audit-awam-2026-11-10.md`: audit bahasa awam, alur UX di HP, dan data, beserta kamus istilah
+- `docs/uji-warga-2026-11-10.md`: kit uji ke 5 warga beragam (tugas, batas waktu, lembar catat)
 
 Versi terbaru kedua dokumen ada di link dokumen online tim; PDF di folder `docs/` adalah salinan.
 
 ## Data
 
-Sebagian data di aplikasi ini adalah **data simulasi** dan diberi label di setiap halaman. Sumber dan lisensi data nyata tercantum di halaman Sumber Data aplikasi.
+Laporan, dinas, dan nilai rapor di aplikasi ini adalah **data buatan** untuk lomba dan diberi label "Data buatan" di setiap halaman. Batas kecamatan dan peta memakai data asli. Sumber dan lisensinya tercantum di halaman Sumber data.

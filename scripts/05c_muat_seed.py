@@ -4,7 +4,7 @@ MENULIS KE DATABASE BERSAMA. Selalu jalankan --dry-run dulu.
 
 Semua dalam SATU transaksi:
   1. seed.sql: isi ulang seed.* + app_config 'seed_anchor' (cek jumlah baris di akhir file)
-  2. select isi_kendala_simulasi(): alasan tunda untuk laporan simulasi aktif (migrasi 0010)
+  2. select rapikan_umur_aktif_simulasi() (0011) lalu isi_kendala_simulasi() (0010): umur dan alasan tunda laporan aktif
   3. select reset_demo_data(): salin seed.* ke tabel public (FK & check public ikut diuji)
   4. ringkasan laporan simulasi di public
   5. cek: 0 titik di luar poligon, rapor 4 instansi dengan huruf A/D/B/C, priority_factors punya isu
@@ -69,6 +69,8 @@ def main() -> None:
             cur.execute(SEED_SQL.read_text(encoding="utf-8"))  # tanpa parameter: banyak statement sekaligus
             cur.execute("select count(*) from seed.reports")
             n_seed = cur.fetchone()[0]
+            # Migrasi 0011: umur laporan aktif simulasi dibuat masuk akal (sebelum kendala dibuat).
+            cur.execute("select public.rapikan_umur_aktif_simulasi()")
             # Migrasi 0010: kendala (alasan tunda) untuk laporan simulasi aktif, ditulis ke seed.* sebelum disalin.
             cur.execute("select public.isi_kendala_simulasi()")
             cur.execute("select public.reset_demo_data()")

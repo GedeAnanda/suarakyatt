@@ -11,7 +11,8 @@ export default function TidakDitemukan() {
         <p className="angka text-[clamp(4.5rem,3rem+6vw,8rem)] leading-none font-bold tracking-[-0.04em] text-biru">404</p>
         <h1 className="mt-3 text-judul font-bold">Halaman ini tidak ada</h1>
         <p className="mx-auto mt-2 max-w-[52ch] text-badan text-lembut">
-          Tautannya mungkin salah ketik atau sudah dipindah. Kalau Anda mencari laporan, masukkan kodenya di bawah.
+          Tautannya mungkin salah ketik atau halamannya sudah dipindah. Kalau kamu mencari laporan, masukkan kodenya di
+          bawah.
         </p>
         <CariKode id="kode-404" className="mt-6 text-left" />
         <div className="mt-5 flex flex-wrap justify-center gap-3">
@@ -19,8 +20,9 @@ export default function TidakDitemukan() {
             <Ikon nama="rumah" className="size-4" />
             Ke Beranda
           </TautanTombol>
-          <TautanTombol href="/prioritas" varian="garis">
-            Dashboard prioritas
+          <TautanTombol href="/lapor" varian="garis">
+            <Ikon nama="tambah" className="size-4" />
+            Lapor masalah
           </TautanTombol>
         </div>
       </div>

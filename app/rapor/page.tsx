@@ -1,7 +1,9 @@
-// app/rapor/page.tsx — Rapor Instansi (SDD 9), pemilik: A
+// app/rapor/page.tsx — Rapor dinas (SDD 9), pemilik: A
 // Operasi SDD 6: R8 agency_report_card. Sampai fungsi itu ada di database, data diambil dari
-// lib/mocks/rapor.json (bentuknya sama dengan RaporResponse) dan ditandai "Data contoh".
-// Satu daftar berperingkat: satu instansi satu blok selebar halaman, dipisah garis (components/rapor/KartuRapor.tsx).
+// lib/mocks/rapor.json (bentuknya sama dengan RaporResponse) dan ditandai data buatan.
+// Urutan di HP (audit bahasa awam D4): satu baris cara membaca huruf → banner data → ringkasan terbaik dan
+// terburuk → daftar berperingkat, satu dinas satu blok selebar halaman (components/rapor/KartuRapor.tsx).
+// Rumus lengkap hanya di /rapor/cara-menilai.
 
 import type { Metadata } from 'next';
 import Link from 'next/link';
@@ -9,34 +11,66 @@ import { Suspense } from 'react';
 import BannerSimulasi from '@/components/BannerSimulasi';
 import KepalaHalaman from '@/components/KepalaHalaman';
 import KartuRapor from '@/components/rapor/KartuRapor';
-import Ikon from '@/components/ui/Ikon';
-import { kelasTombol } from '@/components/ui/Tombol';
+import { kelasTautan } from '@/components/ui/Tombol';
 import { ambilRapor } from '@/lib/data/prioritas';
 import { tanggal } from '@/lib/format';
+import { DATA_BUATAN } from '@/lib/kamus';
 import { KATEGORI } from '@/lib/konten';
-import { DEFINISI_RAPOR, INFO_KOMPONEN, KOMPONEN, urutkanRapor } from '@/lib/konten-rapor';
+import {
+  CARA_BACA_RAPOR,
+  hurufDanArti,
+  namaDinas,
+  pembandingRapor,
+  ringkasanRapor,
+  urutkanRapor,
+} from '@/lib/konten-rapor';
 
 export const metadata: Metadata = {
-  title: 'Rapor instansi',
+  title: 'Rapor dinas',
   description:
-    'Nilai A sampai E tiap instansi dalam merespons dan menyelesaikan laporan warga, selalu bersama tingkat penolakannya.',
+    'Huruf A sampai E tiap dinas dalam menanggapi dan menyelesaikan laporan warga, selalu bersama persen laporan yang ditolak.',
 };
 
 async function Isi() {
   const { sumber, rapor } = await ambilRapor();
   const urut = urutkanRapor(rapor.instansi);
+  const ringkas = ringkasanRapor(urut);
   return (
     <>
       <BannerSimulasi
         sumber={sumber}
-        keterangan={`Periode ${tanggal(rapor.periode.dari)} sampai ${tanggal(rapor.periode.sampai)} · semua laporan kecuali yang dibatalkan`}
+        keterangan={`Laporan ${tanggal(rapor.periode.dari)} sampai ${tanggal(rapor.periode.sampai)}, kecuali yang dibatalkan pelapor`}
       />
-      {/* data-muncul di <ol>, bukan di section: tiap instansi muncul sendiri. Di section, seluruh daftar (±1.200 px)
+      {ringkas && (
+        <p className="mt-5 text-badan">
+          <strong className="font-bold">Paling baik:</strong>{' '}
+          <a href={`#instansi-${ringkas.baik.id}`} className={kelasTautan}>
+            {namaDinas(ringkas.baik.nama)}
+          </a>{' '}
+          ({hurufDanArti(ringkas.baik.huruf)}).
+          {ringkas.buruk && (
+            <>
+              {' '}
+              <strong className="font-bold">Paling perlu diperbaiki:</strong>{' '}
+              <a href={`#instansi-${ringkas.buruk.id}`} className={kelasTautan}>
+                {namaDinas(ringkas.buruk.nama)}
+              </a>{' '}
+              ({hurufDanArti(ringkas.buruk.huruf)}).
+            </>
+          )}
+        </p>
+      )}
+      {/* data-muncul di <ol>, bukan di section: tiap dinas muncul sendiri. Di section, seluruh daftar (±1.200 px)
           menjadi satu elemen yang masih pudar sampai hampir setengahnya tergulir. */}
-      <section aria-label="Rapor tiap instansi" className="kartu mt-6 px-4 sm:px-7">
+      <section aria-label="Rapor tiap dinas" className="kartu mt-4 px-4 sm:px-7">
         <ol data-muncul>
           {urut.map((i) => (
-            <KartuRapor key={i.id} i={i} kategoriId={KATEGORI.find((k) => k.instansi === i.nama)?.id} />
+            <KartuRapor
+              key={i.id}
+              i={i}
+              kategoriId={KATEGORI.find((k) => k.instansi === i.nama)?.id}
+              pembanding={pembandingRapor(urut, i.id)}
+            />
           ))}
         </ol>
       </section>
@@ -47,38 +81,20 @@ async function Isi() {
 export default function RaporPage() {
   return (
     <div className="bingkai pt-6 pb-4 sm:pt-8">
-      <KepalaHalaman
-        judul="Rapor instansi"
-        aksi={
-          <Link href="/rapor/cara-menilai" className={kelasTombol('garis', 'text-kecil')}>
-            <Ikon nama="buku" className="size-4" />
-            Cara menilai
-          </Link>
-        }
-      >
-        Nilai tiap instansi dalam merespons dan menyelesaikan laporan warga. Laporan yang diabaikan ikut dihitung, dan huruf
-        selalu tampil bersama tingkat penolakannya: nilai bagus hasil membuang laporan langsung terlihat.
+      <KepalaHalaman judul="Rapor dinas">
+        Rapor ini menunjukkan seberapa baik tiap dinas menanggapi dan menyelesaikan laporan warga. Persen laporan yang
+        ditolak selalu tampil, jadi nilai bagus hasil menolak laporan langsung ketahuan.
       </KepalaHalaman>
 
-      {/* Cara membaca nilai: empat komponen dengan bobotnya, rumus, lalu batas tiap huruf. */}
-      <div className="mt-4 max-w-[80ch] text-kecil text-lembut">
-        <p>Nilai rapor (0 sampai 100) dihitung dari empat komponen. Setiap komponen bernilai 0 sampai 1:</p>
-        <ul className="mt-2 grid gap-x-8 gap-y-1 sm:grid-cols-2">
-          {KOMPONEN.map((k) => (
-            <li key={k}>
-              <span className="font-bold text-teks">{k}</span> · {INFO_KOMPONEN[k].nama}, bobot{' '}
-              <span className="angka">{Math.round(INFO_KOMPONEN[k].bobot * 100)}%</span>
-            </li>
-          ))}
-        </ul>
-        <p className="mt-2">
-          Rumusnya{' '}
-          <span className="angka font-semibold whitespace-nowrap text-teks">Nilai = 100 × (0,3 R + 0,3 S + 0,2 P + 0,2 K)</span>.
-          Nilai itu lalu diubah menjadi huruf A sampai E: {DEFINISI_RAPOR.huruf}
-        </p>
-      </div>
+      {/* Satu baris cara membaca huruf; rumus lengkap di halaman Cara menilai. */}
+      <p className="mt-3 max-w-[80ch] text-kecil text-lembut">
+        {CARA_BACA_RAPOR}{' '}
+        <Link href="/rapor/cara-menilai" className={`${kelasTautan} inline-flex min-h-11 items-center`}>
+          Cara rapor dihitung
+        </Link>
+      </p>
 
-      <div className="mt-6">
+      <div className="mt-3">
         <Suspense
           fallback={
             <div aria-hidden="true" className="grid gap-3">
@@ -95,9 +111,8 @@ export default function RaporPage() {
       </div>
 
       <p className="mt-8 max-w-[80ch] text-kecil text-lembut">
-        Batas waktu tiap kategori adalah asumsi simulasi dan beban kerja tiap dinas berbeda, jadi rapor ini tidak mengklaim
-        mengukur kualitas instansi secara menyeluruh. Rapor tidak pernah memakai data nyata: prototipe ini memperagakan
-        mekanisme penilaian, bukan menilai dinas sungguhan.
+        Batas waktu tiap kategori ditentukan tim, dan beban kerja tiap dinas berbeda. Jadi rapor ini tidak mengukur mutu
+        dinas secara menyeluruh. {DATA_BUATAN}
       </p>
     </div>
   );

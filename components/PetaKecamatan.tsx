@@ -1,8 +1,8 @@
 // components/PetaKecamatan.tsx — choropleth 42 kecamatan sebagai SVG (PRD 9, SDD 9.1), pemilik: A
 // Lima kelas tetap (bukan kuantil), jadi warna hanya berubah kalau skornya memang berubah.
-// Kecamatan tanpa laporan aktif digambar dengan arsiran dan keterangan "Tidak ada laporan aktif".
+// Kecamatan tanpa laporan aktif digambar dengan arsiran dan keterangan "Tidak ada laporan yang belum selesai".
 // Kalau onPilih diberikan: setiap kecamatan bisa disorot kursor atau Tab (muncul keterangan) dan dipilih
-// dengan klik, Enter, atau Spasi.
+// dengan ketuk, klik, Enter, atau Spasi. Teks memakai bahasa warga (audit 10 Nov): "masalah terberat", bukan "skor tertinggi".
 
 'use client';
 
@@ -49,7 +49,7 @@ export default function PetaKecamatan({
   /** Titik laporan di kecamatan terpilih, hanya untuk efek "fokus". */
   titik?: TitikPeta[];
   onPilih?: (kodeWilayah: string) => void;
-  /** Baris tambahan di keterangan melayang, misalnya kategori isu teratasnya. */
+  /** Baris tambahan di keterangan melayang, misalnya jenis masalah teratasnya. */
   keterangan?: Record<string, string>;
   judul: string;
   className?: string;
@@ -100,7 +100,7 @@ export default function PetaKecamatan({
         {KECAMATAN.map((k) => {
           const nilai = skor[k.kode_wilayah];
           const label = `${k.kecamatan}, ${k.kota}: ${
-            nilai === undefined ? 'tidak ada laporan aktif' : `skor tertinggi ${formatPoin(nilai)}`
+            nilai === undefined ? 'tidak ada laporan yang belum selesai' : `skor masalah terberat ${formatPoin(nilai)} dari 100`
           }${keterangan?.[k.kode_wilayah] ? `, ${keterangan[k.kode_wilayah]}` : ''}`;
           return (
             <path
@@ -114,7 +114,7 @@ export default function PetaKecamatan({
               {...(interaktif ? {
                 role: 'button',
                 tabIndex: 0,
-                'aria-label': `${label}. Pilih untuk melihat rinciannya.`,
+                'aria-label': `${label}. Pilih untuk melihat masalah teratasnya.`,
                 'aria-pressed': sorot === k.kode_wilayah,
                 onClick: () => onPilih!(k.kode_wilayah),
                 onKeyDown: (e: React.KeyboardEvent) => {
@@ -186,7 +186,9 @@ export default function PetaKecamatan({
         >
           <p className="font-bold">{kecamatanAktif.kecamatan}</p>
           <p className="opacity-90">
-            {skor[aktif.kode] === undefined ? 'Tidak ada laporan aktif' : `Skor tertinggi ${formatPoin(skor[aktif.kode])}`}
+            {skor[aktif.kode] === undefined
+              ? 'Tidak ada laporan yang belum selesai'
+              : `Skor masalah terberat: ${formatPoin(skor[aktif.kode])} dari 100`}
           </p>
           {keterangan?.[aktif.kode] && <p className="opacity-90">{keterangan[aktif.kode]}</p>}
         </div>
@@ -195,25 +197,38 @@ export default function PetaKecamatan({
   );
 }
 
+/** Legenda lima kelas: dari "rendah" (kiri) sampai "paling didahulukan" (kanan), plus arsiran untuk kecamatan kosong. */
 export function KeteranganKelas({ className = '' }: { className?: string }) {
+  const terakhir = KELAS.length - 1;
   return (
     <div className={`text-kecil ${className}`}>
-      <p className="mb-2 font-semibold">Skor prioritas tertinggi di kecamatan</p>
-      <ul className="flex flex-wrap gap-x-4 gap-y-2 text-lembut">
-        {KELAS.map((k) => (
-          <li key={k.dari} className="angka flex items-center gap-1.5">
-            <span aria-hidden="true" className="size-3.5 rounded-[0.2rem]" style={{ background: k.warna }} />
-            {k.dari} sampai {k.sampai}
-          </li>
-        ))}
-        <li className="flex items-center gap-1.5">
-          <svg aria-hidden="true" className="size-3.5 rounded-[0.2rem]" viewBox="0 0 14 14">
-            <rect width="14" height="14" fill="var(--color-latar)" />
-            <path d="M-2 6 6 -2M0 14 14 0M8 16 16 8" stroke="var(--color-lapis-2)" strokeWidth="2.5" />
-          </svg>
-          Tidak ada laporan aktif
-        </li>
-      </ul>
+      <p className="mb-2 font-semibold">Seberapa didahulukan masalah terberat di kecamatan itu</p>
+      <div className="max-w-sm">
+        <ul className="grid grid-cols-5 gap-1">
+          {KELAS.map((k, i) => (
+            <li key={k.dari} className="grid gap-1 text-center">
+              <span aria-hidden="true" className="h-3.5 rounded-[0.2rem]" style={{ background: k.warna }} />
+              <span className="angka text-lembut">
+                <span className="sr-only">skor </span>
+                {k.dari}–{k.sampai}
+                {i === 0 && <span className="sr-only"> (rendah)</span>}
+                {i === terakhir && <span className="sr-only"> (paling didahulukan)</span>}
+              </span>
+            </li>
+          ))}
+        </ul>
+        <p aria-hidden="true" className="mt-1 flex justify-between gap-4 font-semibold text-lembut">
+          <span>rendah</span>
+          <span>paling didahulukan</span>
+        </p>
+      </div>
+      <p className="mt-2 flex items-center gap-1.5 text-lembut">
+        <svg aria-hidden="true" className="size-3.5 shrink-0 rounded-[0.2rem]" viewBox="0 0 14 14">
+          <rect width="14" height="14" fill="var(--color-latar)" />
+          <path d="M-2 6 6 -2M0 14 14 0M8 16 16 8" stroke="var(--color-lapis-2)" strokeWidth="2.5" />
+        </svg>
+        Tidak ada laporan yang belum selesai
+      </p>
     </div>
   );
 }

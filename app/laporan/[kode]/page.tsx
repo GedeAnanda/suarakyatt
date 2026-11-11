@@ -19,7 +19,7 @@ import HapusParamBaru from '@/components/laporan/HapusParamBaru';
 import SalinKode from '@/components/laporan/SalinKode';
 import PanelKenapaBelum from '@/components/laporan/PanelKenapaBelum';
 import RingkasanStatus from '@/components/laporan/RingkasanStatus';
-import Timeline from '@/components/laporan/Timeline';
+import Timeline, { namaPelaku } from '@/components/laporan/Timeline';
 import TitikTunggal from '@/components/peta/TitikTunggal';
 import TombolKembali from '@/components/TombolKembali';
 import Ikon from '@/components/ui/Ikon';
@@ -29,7 +29,8 @@ import { ambilDetailLaporan, ambilHubungan } from '@/lib/data/laporan';
 import { ambilDataPrioritas } from '@/lib/data/prioritas';
 import { tanggalJam } from '@/lib/format';
 import { KECAMATAN } from '@/lib/geo/kecamatan-svg';
-import { KANAL_RESMI, LABEL_ALASAN, STATUS_AKTIF } from '@/lib/konten';
+import { ARTI_ALASAN, BUKAN_KANAL_RESMI, KARENA_ALASAN } from '@/lib/kamus';
+import { KANAL_RESMI, STATUS_AKTIF } from '@/lib/konten';
 import { kenapaBelum } from '@/lib/scoring';
 import type { KenapaBelum } from '@/lib/types';
 
@@ -45,15 +46,16 @@ export async function generateMetadata({ params }: PageProps<'/laporan/[kode]'>)
 async function Isi({ params, searchParams }: Pick<PageProps<'/laporan/[kode]'>, 'params' | 'searchParams'>) {
   const [{ kode: mentah }, sp] = await Promise.all([params, searchParams]);
   const kode = decodeURIComponent(mentah).toUpperCase();
-  const detail = await ambilDetailLaporan(kode);
+  // Ketiganya dimulai bersamaan, tidak berurutan (ukur LCP 10 Nov). Hubungan dan prioritas tidak melempar error
+  // (masing-masing punya cadangan), dan hasilnya hanya dipakai bila perlu: hubungan untuk data asli, prioritas untuk
+  // laporan yang belum selesai.
+  const [detail, hubunganDb, dataPrioritas] = await Promise.all([ambilDetailLaporan(kode), ambilHubungan(kode), ambilDataPrioritas()]);
   if (!detail) notFound();
 
   const { laporan: l, timeline, sekarang, sumber } = detail;
   const aktif = STATUS_AKTIF.includes(l.status);
-  const [hubungan, prioritas] = await Promise.all([
-    sumber === 'db' ? ambilHubungan(kode) : Promise.resolve({ login: false, pemilik: false, sudahRating: false, sudahDukung: false }),
-    aktif ? ambilDataPrioritas() : Promise.resolve(null),
-  ]);
+  const hubungan = sumber === 'db' ? hubunganDb : { login: false, pemilik: false, sudahRating: false, sudahDukung: false };
+  const prioritas = aktif ? dataPrioritas : null;
 
   let jelas: KenapaBelum | null = null;
   let idIsu: string | null = null;
@@ -97,20 +99,31 @@ async function Isi({ params, searchParams }: Pick<PageProps<'/laporan/[kode]'>, 
           <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-hijau text-white">
             <Ikon nama="centang" className="size-5" />
           </span>
-          <div>
-            <p className="text-lead font-bold text-hijau">Laporan terkirim. Simpan kode {l.kode} untuk melacaknya.</p>
-            <p className="mt-1 max-w-[75ch] text-kecil">
-              Laporan di SUARAKYAT tidak diteruskan ke instansi. Untuk pengaduan resmi, kirim juga lewat{' '}
-              {KANAL_RESMI.map((k, i) => (
-                <span key={k.nama}>
-                  {i > 0 && ' atau '}
-                  <a href={k.url} target="_blank" rel="noreferrer" className="font-bold text-biru-tua underline">
-                    {k.nama}
-                  </a>
-                </span>
-              ))}
-              .
-            </p>
+          {/* Audit bahasa awam 10 Nov (W3): "tersimpan", bukan "terkirim"; langkah berikutnya jelas; tidak ada notifikasi. */}
+          <div className="min-w-0">
+            <p className="text-lead font-bold text-hijau">Laporanmu tersimpan. Kodenya {l.kode}.</p>
+            <ol className="mt-2 grid max-w-[70ch] list-decimal gap-1 pl-5 text-kecil">
+              <li>
+                Salin dan simpan kode ini. Kami tidak mengirim pemberitahuan, jadi cek sendiri perkembangannya di menu{' '}
+                <Link href="/lacak#laporan-saya" className="font-bold text-biru-tua underline">
+                  Lacak laporan
+                </Link>
+                .
+              </li>
+              <li>Selama statusnya masih Menunggu, laporan ini masih bisa kamu batalkan.</li>
+              <li>
+                {BUKAN_KANAL_RESMI} Agar ditindaklanjuti pemerintah, laporkan juga lewat{' '}
+                {KANAL_RESMI.map((k, i) => (
+                  <span key={k.nama}>
+                    {i > 0 && ' atau '}
+                    <a href={k.url} target="_blank" rel="noreferrer" className="font-bold text-biru-tua underline">
+                      {k.nama}
+                    </a>
+                  </span>
+                ))}
+                .
+              </li>
+            </ol>
           </div>
         </div>
       )}
@@ -119,7 +132,7 @@ async function Isi({ params, searchParams }: Pick<PageProps<'/laporan/[kode]'>, 
         <div className="p-5 sm:p-7">
           <div className="flex flex-wrap items-center gap-2">
             <BadgeStatus status={l.status} besar />
-            {(l.is_simulated || sumber === 'contoh') && <LabelSumber sumber={sumber} />}
+            {(l.is_simulated || sumber === 'contoh') && <LabelSumber sumber={sumber} ringkas />}
           </div>
           <h1 className="font-kode angka mt-4 text-[clamp(2.25rem,1.5rem+3vw,3.75rem)] leading-none font-bold tracking-[-0.01em] text-teks">
             {l.kode}
@@ -139,7 +152,9 @@ async function Isi({ params, searchParams }: Pick<PageProps<'/laporan/[kode]'>, 
             , {l.kota}
           </p>
           <p className="mt-1 text-kecil text-lembut">
-            Dilaporkan {tanggalJam(l.created_at)} oleh {l.inisial_pelapor || 'warga'} · ditangani {l.instansi}
+            Dilaporkan {tanggalJam(l.created_at)} oleh {l.inisial_pelapor || 'warga'} · dinas yang bertanggung jawab:{' '}
+            {l.instansi.replace(' (simulasi)', '')}
+            {l.is_simulated && ' (dinas buatan)'}
           </p>
           <RingkasanStatus laporan={l} timeline={timeline} sekarang={sekarang} aktif={aktif} />
         </div>
@@ -153,9 +168,9 @@ async function Isi({ params, searchParams }: Pick<PageProps<'/laporan/[kode]'>, 
         <section aria-labelledby="judul-tolak" className="di-gelap mt-5 scroll-mt-28 rounded-kartu bg-navy p-5 text-white sm:p-6">
           <h2 id="judul-tolak" className="flex items-center gap-2 text-lead font-bold">
             <Ikon nama="peringatan" className="size-5" />
-            Ditolak · {penolakan.alasan_tolak ? LABEL_ALASAN[penolakan.alasan_tolak] : 'tanpa alasan tercatat'}
+            Ditolak karena {penolakan.alasan_tolak ? KARENA_ALASAN[penolakan.alasan_tolak] : 'alasan yang tidak tercatat'}
           </h2>
-          {penolakan.catatan && <p className="mt-2 max-w-[70ch] text-badan">&ldquo;{penolakan.catatan}&rdquo; · {penolakan.pelaku}</p>}
+          {penolakan.catatan && <p className="mt-2 max-w-[70ch] text-badan">&ldquo;{penolakan.catatan}&rdquo; · {namaPelaku(penolakan.pelaku)}</p>}
           {penolakan.duplikat_dari_kode && (
             <p className="mt-3">
               <Link
@@ -168,8 +183,13 @@ async function Isi({ params, searchParams }: Pick<PageProps<'/laporan/[kode]'>, 
             </p>
           )}
           <p className="mt-3 text-kecil text-white/80">
-            Laporan yang ditolak tetap tampil publik. Penolakan &ldquo;Tidak valid&rdquo; dan &ldquo;Konten melanggar&rdquo;
-            dihitung di tingkat penolakan instansi pada Rapor Instansi.
+            {penolakan.alasan_tolak && `${ARTI_ALASAN[penolakan.alasan_tolak]} `}
+            Laporan yang ditolak tetap tampil supaya siapa pun bisa menilai apakah penolakannya wajar. Penolakan juga dicatat
+            di{' '}
+            <Link href="/rapor" className="font-semibold underline underline-offset-4">
+              Rapor dinas
+            </Link>
+            .
           </p>
         </section>
       )}
@@ -180,7 +200,7 @@ async function Isi({ params, searchParams }: Pick<PageProps<'/laporan/[kode]'>, 
       <div className="mt-5 grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] lg:grid-rows-[auto_1fr] lg:items-start">
         {aktif && (
           <div className="lg:col-start-2 lg:row-start-1">
-            <PanelKenapaBelum data={jelas} isu={{ kategori: l.kategori, kecamatan: l.kecamatan }} idIsu={idIsu} bukaAwal={terlambat} />
+            <PanelKenapaBelum data={jelas} isu={{ kategori: l.kategori, kecamatan: l.kecamatan }} idIsu={idIsu} kodeKecamatan={kodeKecamatan} bukaAwal={terlambat} />
           </div>
         )}
         <section aria-labelledby="judul-isi" className="kartu scroll-mt-28 p-5 sm:p-6 lg:col-start-1 lg:row-span-2 lg:row-start-1">
@@ -209,17 +229,18 @@ async function Isi({ params, searchParams }: Pick<PageProps<'/laporan/[kode]'>, 
           {sumber === 'contoh' && (
             <p className="flex gap-2 rounded-kartu bg-oranye-muda p-4 text-kecil text-st-menunggu">
               <Ikon nama="info" className="mt-0.5 size-4 shrink-0" />
-              Ini laporan dari data contoh. Tombol dukung, batal, dan rating aktif untuk laporan yang tersimpan di database.
+              Ini laporan contoh untuk peragaan. Tombol Dukung, Batalkan, dan Nilai hanya berfungsi di laporan yang tersimpan
+              sungguhan.
             </p>
           )}
           <div className="kartu p-5 text-kecil">
             <p className="flex items-center gap-2 font-bold">
               <Ikon nama="jam" className="size-4 text-biru" />
-              Batas waktu layanan untuk {l.kategori.toLowerCase()}
+              Batas waktu untuk {l.kategori.toLowerCase()}
             </p>
             <p className="mt-1.5 text-lembut">
-              Respons sampai {tanggalJam(l.batas_respons)}, selesai sampai {tanggalJam(l.batas_selesai)}. Angka batas waktu
-              per kategori adalah ilustrasi; lihat{' '}
+              Dinas seharusnya menanggapi paling lambat {tanggalJam(l.batas_respons)} dan menyelesaikannya paling lambat{' '}
+              {tanggalJam(l.batas_selesai)}. Batas waktu ini contoh buatan tim, bukan aturan resmi; lihat{' '}
               <Link href="/sumber-data" className={kelasTautan}>
                 sumber data
               </Link>

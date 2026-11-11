@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { pesanError } from '@/lib/errors';
-import { createClient } from '@/lib/supabase/client';
+import { supabaseBrowser } from '@/lib/supabase/muat';
 import type { StatusLaporan } from '@/lib/types';
 import { umumkan } from '../Pengumuman';
 import AngkaGulir from '../ui/AngkaGulir';
@@ -45,13 +45,13 @@ export function TombolDukung({
   async function dukung() {
     setMemuat(true);
     setGalat(null);
-    const { data, error } = await createClient().rpc('toggle_upvote', { p_kode: kode });
+    const { data, error } = await (await supabaseBrowser()).rpc('toggle_upvote', { p_kode: kode });
     setMemuat(false);
     if (error) return setGalat(pesanError(error));
     const hasil = data as { upvoted: boolean; jumlah_upvote: number };
     setDidukung(hasil.upvoted);
     setJumlah(hasil.jumlah_upvote);
-    umumkan(hasil.upvoted ? 'Dukungan Anda tercatat.' : 'Dukungan dibatalkan.');
+    umumkan(hasil.upvoted ? 'Dukunganmu tercatat.' : 'Dukungan dibatalkan.');
     router.refresh();
   }
 
@@ -86,8 +86,8 @@ export function TombolDukung({
         )}
       </div>
       <p className="text-kecil text-lembut">
-        Satu akun satu dukungan. Di skor prioritas, maksimal 10 dukungan per laporan yang dihitung; jumlah aslinya tetap
-        ditampilkan.
+        Tekan Dukung kalau kamu juga terdampak masalah ini. Tiap akun bisa mendukung sekali. Dukungan membantu masalah ini
+        didahulukan (paling banyak 10 per laporan yang dihitung).
       </p>
       {galat && (
         <p role="alert" className="text-kecil font-semibold text-merah-tua">
@@ -107,7 +107,7 @@ export function TombolBatalkan({ kode }: { kode: string }) {
   async function batalkan() {
     setMemuat(true);
     setGalat(null);
-    const { error } = await createClient().rpc('cancel_report', { p_kode: kode });
+    const { error } = await (await supabaseBrowser()).rpc('cancel_report', { p_kode: kode });
     setMemuat(false);
     if (error) return setGalat(pesanError(error));
     // Laporan yang dibatalkan tidak tampil publik, jadi pemberitahuan ini satu-satunya konfirmasi.
@@ -118,10 +118,10 @@ export function TombolBatalkan({ kode }: { kode: string }) {
 
   return (
     <div className="kartu p-5">
-      <p className="text-badan font-bold">Laporan Anda masih menunggu verifikasi.</p>
+      <p className="text-badan font-bold">Laporanmu belum diperiksa dinas, jadi masih bisa dibatalkan.</p>
       <p className="mt-1 text-kecil text-lembut">
-        Selama status masih Menunggu, Anda bisa membatalkannya, misalnya karena salah kategori atau salah titik. Laporan
-        yang dibatalkan tidak dihitung di rapor maupun skor prioritas.
+        Misalnya karena salah jenis masalah atau salah titik. Laporan yang dibatalkan hilang dari peta, tidak dihitung di
+        rapor maupun urutan prioritas, dan tidak bisa dikembalikan.
       </p>
       {!konfirmasi ? (
         <Tombol varian="garis" className="mt-4" onClick={() => setKonfirmasi(true)}>
@@ -160,11 +160,11 @@ export function FormRating({ kode }: { kode: string }) {
     if (!nilai) return;
     setMemuat(true);
     setGalat(null);
-    const { error } = await createClient().rpc('rate_report', { p_kode: kode, p_nilai: nilai, p_komentar: komentar || null });
+    const { error } = await (await supabaseBrowser()).rpc('rate_report', { p_kode: kode, p_nilai: nilai, p_komentar: komentar || null });
     setMemuat(false);
     if (error) return setGalat(pesanError(error));
     setTerkirim(true);
-    umumkan('Rating terkirim.');
+    umumkan('Nilai bintangmu terkirim.');
     router.refresh();
   }
 
@@ -172,7 +172,7 @@ export function FormRating({ kode }: { kode: string }) {
     return (
       <p className="ganti flex gap-2 rounded-kartu bg-hijau-muda p-5 text-badan font-semibold text-hijau">
         <Ikon nama="centang" className="pop mt-0.5 size-5 shrink-0" />
-        Terima kasih. Rating Anda ikut menghitung nilai kepuasan di Rapor Instansi.
+        Terima kasih. Nilai bintangmu ikut dihitung di bagian &ldquo;Warga puas&rdquo; pada Rapor dinas.
       </p>
     );
   }
@@ -181,7 +181,7 @@ export function FormRating({ kode }: { kode: string }) {
     <form onSubmit={kirim} className="kartu grid gap-4 p-5">
       <fieldset>
         <legend className="text-badan font-bold">Seberapa baik penanganannya?</legend>
-        <p className="text-kecil text-lembut">Rating hanya bisa diberikan sekali, oleh pelapor, setelah laporan selesai.</p>
+        <p className="text-kecil text-lembut">Beri nilai bintang 1–5 untuk hasil perbaikannya. Hanya pelapor yang bisa menilai, sekali saja.</p>
         <div className="mt-3 flex gap-1">
           {[1, 2, 3, 4, 5].map((n) => (
             <label
@@ -208,7 +208,7 @@ export function FormRating({ kode }: { kode: string }) {
       </label>
       <Tombol type="submit" disabled={!nilai || memuat} className="justify-self-start">
         {memuat && <Ikon nama="muat" className="putar size-4" />}
-        {memuat ? 'Mengirim…' : 'Kirim rating'}
+        {memuat ? 'Mengirim…' : 'Kirim nilai'}
       </Tombol>
       {galat && (
         <p role="alert" className="text-kecil font-semibold text-merah-tua">

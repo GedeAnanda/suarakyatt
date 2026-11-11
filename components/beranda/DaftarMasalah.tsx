@@ -1,4 +1,4 @@
-// components/beranda/DaftarMasalah.tsx — empat kategori, instansi, dan batas waktunya (pemilik: A)
+// components/beranda/DaftarMasalah.tsx — 4 jenis masalah, dinasnya, dan batas waktunya (pemilik: A)
 // Seperti deret rekomendasi di situs travel: tab berbentuk pil, lalu satu kartu besar dengan foto dan rinciannya.
 // Foto menunjukkan dunia masalahnya, bukan laporan di aplikasi; kreditnya ada di bawah foto.
 
@@ -25,7 +25,7 @@ export default function DaftarMasalah() {
 
   return (
     <div>
-      <KelompokCair className="flex flex-wrap gap-2" role="group" aria-label="Pilih kategori laporan">
+      <KelompokCair className="flex flex-wrap gap-2" role="group" aria-label="Pilih jenis masalah">
         {KATEGORI.map((x, i) => (
           <button key={x.id} type="button" aria-pressed={i === pilih} onClick={() => setPilih(i)} className="chip">
             {x.nama}
@@ -69,29 +69,39 @@ export default function DaftarMasalah() {
                 k.urgensi === 'Tinggi' ? 'bg-merah-muda text-merah-tua' : 'bg-oranye-muda text-st-menunggu'
               }`}
             >
-              Urgensi {k.urgensi.toLowerCase()}
+              {k.urgensi === 'Tinggi' ? 'Paling mendesak' : 'Agak mendesak'}
             </span>
-            <span className="text-kecil text-lembut">ditentukan dari kategori, bukan dipilih pelapor</span>
+            <span className="text-kecil text-lembut">ditentukan dari jenis masalah, bukan dipilih pelapor</span>
           </div>
           <h3 className="mt-4 text-seksi font-bold">{k.nama}</h3>
           <p className="mt-1 flex items-center gap-2 text-badan text-lembut">
             <Ikon nama="gedung" className="size-4.5" />
-            {k.instansi}
+            {k.instansi.replace(' (simulasi)', '')}
+            <span className="text-kecil">(dinas buatan)</span>
           </p>
 
           <dl className="mt-6 grid grid-cols-2 gap-3">
             <div className="rounded-kontrol bg-latar p-3">
-              <dt className="text-kecil text-lembut">Batas respons</dt>
+              <dt className="text-kecil text-lembut">Harus ditanggapi dalam</dt>
               <dd className="angka text-sub font-bold">{hari(k.respons)}</dd>
             </div>
             <div className="rounded-kontrol bg-latar p-3">
-              <dt className="text-kecil text-lembut">Batas selesai</dt>
+              <dt className="text-kecil text-lembut">Harus selesai dalam</dt>
               <dd className="angka text-sub font-bold">{hari(k.selesai)}</dd>
             </div>
           </dl>
 
-          {/* Keempat kategori berdampingan: biru tua = respons, biru muda = sampai selesai. Lebar sebanding jam. */}
-          <ul className="mt-6 grid gap-2.5" aria-label="Batas waktu keempat kategori">
+          {/* Keempat jenis berdampingan: biru tua = harus ditanggapi, biru muda = harus selesai. Lebar sebanding jam.
+              Keterangan warnanya tampil di atas batang, bukan hanya untuk pembaca layar. */}
+          <p className="mt-6 flex flex-wrap gap-x-4 gap-y-1 text-kecil text-lembut" aria-hidden="true">
+            <span className="inline-flex items-center gap-1.5">
+              <span className="inline-block h-2 w-4 rounded-full bg-biru" /> harus ditanggapi dalam
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <span className="inline-block h-2 w-4 rounded-full bg-k2" /> harus selesai dalam
+            </span>
+          </p>
+          <ul className="mt-2.5 grid gap-2.5" aria-label="Batas waktu keempat jenis masalah">
             {KATEGORI.map((x, i) => (
               <li key={x.id} className={`grid grid-cols-[9rem_1fr] items-center gap-3 text-kecil ${i === pilih ? 'font-bold' : 'text-lembut'}`}>
                 <span className="truncate">{x.nama}</span>
@@ -106,13 +116,13 @@ export default function DaftarMasalah() {
                   />
                 </span>
                 <span className="sr-only">
-                  respons {hari(x.respons)}, selesai {hari(x.selesai)}
+                  harus ditanggapi dalam {hari(x.respons)}, harus selesai dalam {hari(x.selesai)}
                 </span>
               </li>
             ))}
           </ul>
-          <p className="mt-3 text-mini text-lembut">
-            Dihitung dalam jam kalender. Semua angka batas waktu adalah ilustrasi dan dinyatakan terbuka.
+          <p className="mt-3 text-kecil text-lembut">
+            Dihitung 24 jam sehari, termasuk hari libur. Batas waktu ini contoh buatan tim, bukan aturan resmi pemerintah.
           </p>
 
           <div className="mt-auto flex flex-wrap gap-2 pt-6">
@@ -122,7 +132,7 @@ export default function DaftarMasalah() {
             </Link>
             <Link href={`/prioritas?kategori=${k.id}`} className="chip">
               <Ikon nama="geser" className="size-4" />
-              Urutan prioritasnya
+              Lihat urutannya
             </Link>
           </div>
         </div>

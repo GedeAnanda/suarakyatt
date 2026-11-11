@@ -1,13 +1,12 @@
-// components/beranda/PerbandinganPeringkat.tsx — satu isu, dua urutan (pemilik: A)
-// Hal yang bisa dicoba di Beranda: pilih bobot lain, peringkat isu yang sama berubah di depan mata.
-// Dihitung di browser dengan lib/scoring, sama seperti simulator di Dashboard Prioritas.
+// components/beranda/PerbandinganPeringkat.tsx — urutan bisa berubah, tergantung apa yang diutamakan (pemilik: A)
+// Hal yang bisa dicoba di Beranda: pilih aturan lain, urutan masalah yang sama berubah di depan mata.
+// Dihitung di browser dengan lib/scoring, sama seperti di halaman Urutan prioritas.
 
 'use client';
 
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
-import { NAMA_FAKTOR } from '@/lib/konten';
-import { formatPoin, hitungSkor, kenapaBelum, LABEL_PRESET, PRESET, type NamaPreset } from '@/lib/scoring';
+import { formatPoin, hitungSkor, kenapaBelum, LABEL_FAKTOR, LABEL_PRESET, PENAHAN_FAKTOR, PRESET, type NamaPreset } from '@/lib/scoring';
 import type { Bobot, FaktorIsu } from '@/lib/types';
 import AngkaGulir from '../ui/AngkaGulir';
 import Ikon from '../ui/Ikon';
@@ -32,7 +31,7 @@ export default function PerbandinganPeringkat({
   const simulasi = useMemo(() => hitungSkor(isu, PRESET[preset]).find((s) => s.id === idIsu)!, [isu, preset, idIsu]);
   const geser = jelas.peringkat - simulasi.peringkat;
   const digitTotal = String(jelas.total).length;
-  // Posisi peringkat di jalur 1..N, dalam persen.
+  // Letak urutan di jalur 1..N, dalam persen.
   const posisi = (p: number) => (jelas.total > 1 ? ((p - 1) / (jelas.total - 1)) * 100 : 0);
 
   return (
@@ -41,17 +40,24 @@ export default function PerbandinganPeringkat({
         <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)] lg:gap-12">
           <div>
             <h2 id="judul-dua-urutan" className="judul-seksi">
-              Satu isu, dua urutan
+              Urutan bisa berubah, tergantung apa yang diutamakan
             </h2>
-            <p className="mt-3 text-badan text-lembut">
-              Isu {target.kategori.toLowerCase()} di Kecamatan {target.kecamatan} ada di peringkat {jelas.peringkat} dari{' '}
-              {jelas.total} isu wilayah dengan bobot resmi. Pendorong terbesarnya{' '}
-              {NAMA_FAKTOR[jelas.pendorong.faktor].toLowerCase()} ({formatPoin(jelas.pendorong.poin)} poin), penahan
-              terbesarnya {NAMA_FAKTOR[jelas.penahan.faktor].toLowerCase()} ({formatPoin(jelas.penahan.poin)} dari{' '}
-              {formatPoin(jelas.penahan.maksimal)} poin). Bobot bukan kebenaran; bobot adalah pilihan. Coba pilihan lain.
-            </p>
+            <div className="mt-3 grid gap-2 text-badan text-lembut">
+              <p>
+                <strong className="font-bold text-teks">
+                  {target.kategori} di Kecamatan {target.kecamatan}
+                </strong>{' '}
+                sekarang di urutan ke-{jelas.peringkat} dari {jelas.total} masalah.
+              </p>
+              <p>
+                Paling menaikkan: {LABEL_FAKTOR[jelas.pendorong.faktor]} ({formatPoin(jelas.pendorong.poin)} poin). Paling
+                menahan: {PENAHAN_FAKTOR[jelas.penahan.faktor]} (baru {formatPoin(jelas.penahan.poin)} dari{' '}
+                {formatPoin(jelas.penahan.maksimal)} poin yang mungkin).
+              </p>
+              <p>Urutan ini tergantung apa yang diutamakan. Coba ganti di bawah.</p>
+            </div>
             <fieldset className="mt-6">
-              <legend className="text-kecil font-semibold">Bandingkan bobot resmi dengan</legend>
+              <legend className="text-badan font-semibold">Bandingkan dengan aturan lain:</legend>
               <KelompokCair className="mt-2 flex flex-wrap gap-2">
                 {URUTAN_PRESET.map((p) => (
                   <button key={p} type="button" aria-pressed={preset === p} onClick={() => setPreset(p)} className="chip">
@@ -65,29 +71,29 @@ export default function PerbandinganPeringkat({
           <div>
             <div className="grid grid-cols-2 gap-3">
               <figure className="rounded-kartu bg-latar p-4 sm:p-6">
-                <figcaption className="text-kecil font-semibold text-lembut">Bobot resmi</figcaption>
+                <figcaption className="text-kecil font-semibold text-lembut">Urutan dengan aturan resmi</figcaption>
                 <p aria-hidden="true" className="angka mt-2 text-[clamp(3.5rem,2rem+6vw,6.5rem)] leading-none font-bold tracking-[-0.04em]">
                   <AngkaGulir nilai={String(jelas.peringkat)} minDigit={digitTotal} />
                 </p>
                 <p className="mt-3 text-kecil">
-                  Peringkat {jelas.peringkat} dari {jelas.total}
+                  Urutan ke-{jelas.peringkat} dari {jelas.total} masalah
                 </p>
               </figure>
               <figure className="di-gelap rounded-kartu bg-biru p-4 text-white sm:p-6">
                 <figcaption className="text-kecil font-semibold text-white/90">{LABEL_PRESET[preset]}</figcaption>
-                {/* Digit bergulir dari peringkat lama ke yang baru setiap preset diganti. */}
+                {/* Digit bergulir dari urutan lama ke yang baru setiap pilihan diganti. */}
                 <p aria-hidden="true" className="angka mt-2 text-[clamp(3.5rem,2rem+6vw,6.5rem)] leading-none font-bold tracking-[-0.04em]">
                   <AngkaGulir nilai={String(simulasi.peringkat)} minDigit={digitTotal} />
                 </p>
                 <p className="mt-3 flex items-center gap-1 text-kecil" aria-live="polite">
                   {geser !== 0 && <Ikon nama={geser > 0 ? 'naik' : 'turun'} className="size-4" />}
-                  Peringkat {simulasi.peringkat} dari {jelas.total}
-                  {geser > 0 ? `, naik ${geser}` : geser < 0 ? `, turun ${-geser}` : ', tidak bergeser'}
+                  Urutan ke-{simulasi.peringkat} dari {jelas.total}
+                  {geser > 0 ? `, naik ${geser}` : geser < 0 ? `, turun ${-geser}` : ', tidak berubah'}
                 </p>
               </figure>
             </div>
 
-            {/* Jalur peringkat 1 sampai N: dua penanda bergeser, ruas di antaranya menunjukkan jarak pergeseran. */}
+            {/* Jalur urutan 1 sampai N: dua penanda bergeser, ruas di antaranya menunjukkan jarak pergeseran. */}
             <div className="mt-6" aria-hidden="true">
               <div className="relative h-2 rounded-full bg-lapis-2">
                 <div
@@ -106,34 +112,40 @@ export default function PerbandinganPeringkat({
                   style={{ left: `${posisi(simulasi.peringkat)}%` }}
                 />
               </div>
-              <div className="mt-3 flex flex-wrap justify-between gap-x-6 gap-y-1 text-mini text-lembut sm:text-kecil">
-                <span>Peringkat 1, paling didahulukan</span>
+              <div className="mt-3 flex flex-wrap justify-between gap-x-6 gap-y-1 text-kecil text-lembut">
+                <span>1, paling didahulukan</span>
                 <span className="flex flex-wrap gap-x-4">
                   <span className="inline-flex items-center gap-1.5">
-                    <span className="inline-block size-3 rounded-full border-2 border-navy" /> bobot resmi
+                    <span className="inline-block size-3 rounded-full border-2 border-navy" /> aturan resmi
                   </span>
                   <span className="inline-flex items-center gap-1.5">
                     <span className="inline-block size-3 rounded-full bg-biru" /> {LABEL_PRESET[preset].toLowerCase()}
                   </span>
                 </span>
-                <span className="angka">{jelas.total}</span>
+                <span>
+                  <span className="angka">{jelas.total}</span>, paling akhir
+                </span>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="mt-8 flex flex-wrap gap-x-8 gap-y-2 border-t border-garis pt-5 text-kecil">
+        <div className="mt-8 flex flex-wrap gap-x-8 border-t border-garis pt-3 text-kecil">
           <Link
             href={`/prioritas?isu=${encodeURIComponent(idIsu)}`}
-            className="inline-flex items-center gap-1 font-bold text-biru-tua hover:underline"
+            className="inline-flex min-h-11 items-center gap-1 font-bold text-biru-tua hover:underline"
           >
-            Geser sendiri keenam bobotnya
+            Atur sendiri apa yang diutamakan
+            <Ikon nama="kanan" className="panah size-4" />
+          </Link>
+          <Link href="/prioritas#cara-hitung" className="inline-flex min-h-11 items-center gap-1 font-bold text-biru-tua hover:underline">
+            Bagaimana urutan ini dihitung?
             <Ikon nama="kanan" className="panah size-4" />
           </Link>
           {kodeLaporan && (
             <Link
               href={`/laporan/${kodeLaporan}#kenapa-belum`}
-              className="inline-flex items-center gap-1 font-bold text-biru-tua hover:underline"
+              className="inline-flex min-h-11 items-center gap-1 font-bold text-biru-tua hover:underline"
             >
               Buka laporan {kodeLaporan} dan tekan &ldquo;Kenapa belum?&rdquo;
               <Ikon nama="kanan" className="panah size-4" />

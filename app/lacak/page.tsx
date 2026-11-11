@@ -12,11 +12,12 @@ import KepalaHalaman from '@/components/KepalaHalaman';
 import Ikon, { type NamaIkon } from '@/components/ui/Ikon';
 import { kelasTautan } from '@/components/ui/Tombol';
 import { ambilLaporanSaya } from '@/lib/data/laporan';
+import { ARTI_STATUS } from '@/lib/kamus';
 import { normalisasiKode, tanggal } from '@/lib/format';
 
 export const metadata: Metadata = {
   title: 'Lacak laporan',
-  description: 'Lacak laporan dengan kode SR: status, riwayat penanganan, batas waktu, dan posisi isunya di daftar prioritas.',
+  description: 'Lacak laporan dengan kode SR: status, riwayat penanganan, batas waktu, dan urutan masalahnya di daftar prioritas.',
 };
 
 async function Isi({ searchParams }: { searchParams: PageProps<'/lacak'>['searchParams'] }) {
@@ -33,8 +34,8 @@ async function Isi({ searchParams }: { searchParams: PageProps<'/lacak'>['search
         <p role="alert" className="goyang mb-4 flex gap-3 rounded-kontrol bg-merah-muda px-4 py-3 text-kecil text-merah-tua sm:text-badan">
           <Ikon nama="peringatan" className="mt-0.5 size-5 shrink-0" />
           <span className="min-w-0 [overflow-wrap:anywhere]">
-            &ldquo;{kutipan}&rdquo; bukan kode laporan. Kode berbentuk SR- diikuti 6 huruf atau angka, tanpa huruf O dan I serta
-            angka 0 dan 1.
+            &ldquo;{kutipan}&rdquo; tidak dikenali sebagai kode laporan. Contoh kode: SR-ABC234. Lupa kodenya? Masuk, lalu
+            lihat daftar &ldquo;Laporanmu&rdquo; di halaman ini.
           </span>
         </p>
       )}
@@ -50,11 +51,11 @@ async function LaporanAnda() {
   return (
     <section id="laporan-saya" aria-labelledby="judul-laporan-saya" className="masuk mt-10 max-w-3xl scroll-mt-24">
       <h2 id="judul-laporan-saya" className="judul-seksi">
-        Laporan Anda
+        Laporanmu
       </h2>
       {daftar.length === 0 ? (
         <p className="kartu mt-4 p-5 text-badan">
-          Anda belum pernah melapor dari akun ini.{' '}
+          Kamu belum pernah melapor dari akun ini.{' '}
           <Link href="/lapor" className={kelasTautan}>
             Lapor masalah
           </Link>
@@ -95,18 +96,18 @@ const SKENARIO = [
 
 // Yang tampil di halaman detail setelah kode dimasukkan.
 const ISI_LACAK: { judul: string; isi: string; ikon: NamaIkon }[] = [
-  { judul: 'Status sekarang', isi: 'Menunggu, diverifikasi, diproses, selesai, atau ditolak beserta alasannya.', ikon: 'info' },
-  { judul: 'Riwayat dan batas waktu', isi: 'Setiap perubahan status tercatat dengan waktu dan instansinya.', ikon: 'jam' },
-  { judul: 'Posisi di daftar prioritas', isi: 'Peringkat isunya dan faktor yang mendorong atau menahannya.', ikon: 'geser' },
-  { judul: 'Dukungan warga', isi: 'Warga lain di sekitar lokasi bisa ikut mendukung laporan yang sama.', ikon: 'dukung' },
+  { judul: 'Status dan alasannya', isi: 'Status sekarang, alasan kalau ditolak, dan kendala dari dinas kalau tertunda.', ikon: 'info' },
+  { judul: 'Riwayat dan batas waktu', isi: 'Setiap perubahan tercatat dengan waktu dan dinasnya, plus batas waktu jenis masalahnya.', ikon: 'jam' },
+  { judul: 'Urutan prioritasnya', isi: 'Seberapa didahulukan masalah ini dibanding masalah lain di Jakarta, dan alasannya.', ikon: 'geser' },
+  { judul: 'Dukungan warga', isi: 'Warga lain yang juga terdampak bisa ikut mendukung laporan yang sama.', ikon: 'dukung' },
 ];
 
 export default function LacakPage({ searchParams }: PageProps<'/lacak'>) {
   return (
     <div className="bingkai pt-6 pb-4 sm:pt-8">
       <KepalaHalaman judul="Lacak laporan">
-        Masukkan kode yang Anda terima saat laporan terkirim. Halaman lacak terbuka untuk siapa saja: status, riwayat
-        penanganan, batas waktu, dan posisi isunya di daftar prioritas.
+        Masukkan kode yang kamu dapat setelah melapor. Siapa pun bisa melacak tanpa akun: status, alasan, riwayat, batas
+        waktu, dan urutan masalahnya.
       </KepalaHalaman>
 
       <div className="kartu mt-6 max-w-3xl p-5 shadow-kartu sm:p-7">
@@ -134,7 +135,7 @@ export default function LacakPage({ searchParams }: PageProps<'/lacak'>) {
 
       <section aria-labelledby="judul-isi-lacak" className="mt-10">
         <h2 id="judul-isi-lacak" className="judul-seksi">
-          Yang Anda lihat setelah melacak
+          Yang kamu lihat setelah melacak
         </h2>
         <dl className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4" data-muncul>
           {ISI_LACAK.map((b) => (
@@ -146,6 +147,23 @@ export default function LacakPage({ searchParams }: PageProps<'/lacak'>) {
                 {b.judul}
               </dt>
               <dd className="mt-3 text-kecil text-lembut">{b.isi}</dd>
+            </div>
+          ))}
+        </dl>
+      </section>
+
+      {/* Arti tiap status (audit 10 Nov, W34 + lampiran B): warga tidak perlu menebak arti "Sudah diperiksa" dst. */}
+      <section aria-labelledby="judul-arti-status" className="mt-10">
+        <h2 id="judul-arti-status" className="judul-seksi">
+          Arti status laporan
+        </h2>
+        <dl className="kartu mt-5 divide-y divide-garis">
+          {(['menunggu', 'diverifikasi', 'diproses', 'selesai', 'ditolak'] as const).map((s) => (
+            <div key={s} className="grid gap-1 px-5 py-3.5 sm:grid-cols-[12rem_1fr] sm:gap-4">
+              <dt>
+                <BadgeStatus status={s} besar />
+              </dt>
+              <dd className="text-kecil">{ARTI_STATUS[s]}</dd>
             </div>
           ))}
         </dl>

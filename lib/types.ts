@@ -115,7 +115,7 @@ export interface SkorIsu extends FaktorIsu {
 export interface KenapaBelum {
   peringkat: number;
   total: number;
-  pendorong: { faktor: Faktor; poin: number };
+  pendorong: { faktor: Faktor; poin: number; maksimal: number };
   penahan: { faktor: Faktor; poin: number; maksimal: number };
   per_preset: { preset: string; peringkat: number }[];
   catatan: string | null;

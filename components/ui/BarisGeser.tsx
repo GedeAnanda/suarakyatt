@@ -55,7 +55,9 @@ export default function BarisGeser({
       <ul
         ref={jalur}
         aria-label={label}
-        className="tanpa-batang -mx-1 flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-px-1 px-1 py-1"
+        // `relative`: elemen absolute di dalam kartu (misalnya teks sr-only) ikut terpotong jalur geser. Tanpanya,
+        // kartu yang masih di luar layar membuat halaman di HP melebar sampai 1209 px dan bisa digeser ke samping (10 Nov).
+        className="tanpa-batang relative -mx-1 flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-px-1 px-1 py-1"
       >
         {children}
       </ul>

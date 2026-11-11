@@ -10,12 +10,12 @@ import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useId, useRef, useState } from 'react';
-import { pesanError } from '@/lib/errors';
+import { PESAN_ERROR, pesanError } from '@/lib/errors';
 import { kompresFoto, TIPE_FOTO, UKURAN_MAKS } from '@/lib/foto';
 import { lalu } from '@/lib/format';
 import { cariKecamatan, muatKecamatan, type FiturKecamatan } from '@/lib/geo/titik';
 import { KATEGORI } from '@/lib/konten';
-import { createClient } from '@/lib/supabase/client';
+import { supabaseBrowser } from '@/lib/supabase/muat';
 import { unggahFoto } from '@/lib/supabase/unggah';
 import type { StatusLaporan } from '@/lib/types';
 import BadgeStatus from '../BadgeStatus';
@@ -71,7 +71,7 @@ interface Serupa {
 }
 
 const PESAN_FOTO: Record<string, string> = {
-  TIPE_FOTO: 'Pilih foto JPG, PNG, atau WebP.',
+  TIPE_FOTO: 'Jenis file ini tidak bisa dipakai. Pilih foto biasa dari kamera atau galeri.',
   UKURAN_FOTO: 'Ukuran tiap foto maksimal 20 MB.',
   KOMPRES_GAGAL: 'Foto tidak bisa diproses di perangkat ini. Coba foto lain.',
 };
@@ -205,7 +205,7 @@ export default function FormLaporan() {
   }
 
   useEffect(() => {
-    muatKecamatan().then(setBatas, () => { setBatas([]); setLokasiGalat('Batas wilayah gagal dimuat. Muat ulang halaman untuk mencoba lagi.'); });
+    muatKecamatan().then(setBatas, () => { setBatas([]); setLokasiGalat('Peta wilayah gagal dimuat. Muat ulang halaman ini; isianmu tetap tersimpan, kecuali foto.'); });
   }, []);
 
   const wilayah = titik && batas && batas.length > 0 ? cariKecamatan(titik.lat, titik.lng, batas) : null;
@@ -220,7 +220,7 @@ export default function FormLaporan() {
     let batal = false;
     const t = window.setTimeout(async () => {
       try {
-      const { data, error } = await createClient().rpc('similar_reports', {
+      const { data, error } = await (await supabaseBrowser()).rpc('similar_reports', {
         p_category_id: kategori,
         p_lat: titik.lat,
         p_lng: titik.lng,
@@ -292,7 +292,7 @@ export default function FormLaporan() {
 
   async function dukung(kode: string) {
     setGalatDukung(null);
-    const { data, error } = await createClient().rpc('toggle_upvote', { p_kode: kode });
+    const { data, error } = await (await supabaseBrowser()).rpc('toggle_upvote', { p_kode: kode });
     if (error) return setGalatDukung(pesanError(error));
     const hasil = data as { upvoted: boolean; jumlah_upvote: number };
     setDidukung((d) => ({ ...d, [kode]: hasil.upvoted }));
@@ -306,7 +306,7 @@ export default function FormLaporan() {
     { langkah: 1, teks: !kategori && 'Pilih salah satu kategori.' },
     { langkah: 2, teks: (!batas || batas.length === 0) && 'Tunggu peta wilayah selesai dimuat. Jika gagal, muat ulang halaman.' },
     { langkah: 2, teks: !titik && 'Ketuk peta untuk menaruh titik lokasi.' },
-    { langkah: 2, teks: diLuar && 'Titik berada di luar DKI Jakarta daratan; pindahkan ke wilayah layanan.' },
+    { langkah: 2, teks: diLuar && 'Titik ini di luar Jakarta. Geser titiknya ke dalam wilayah Jakarta.' },
     { langkah: 3, teks: foto.length === 0 && 'Tambahkan minimal satu foto.' },
     { langkah: 4, teks: panjang < MIN_DESKRIPSI && `Tulis minimal ${MIN_DESKRIPSI} karakter (sekarang ${panjang}).` },
     { langkah: 4, teks: panjang > MAKS_DESKRIPSI && `Persingkat menjadi maksimal ${MAKS_DESKRIPSI} karakter.` },
@@ -335,7 +335,7 @@ export default function FormLaporan() {
         urls.push(url);
       }
       setTahap('mengirim');
-      const { data, error } = await createClient().rpc('create_report', {
+      const { data, error } = await (await supabaseBrowser()).rpc('create_report', {
         p_category_id: kategori,
         p_deskripsi: deskripsi.trim(),
         p_foto: urls,
@@ -368,13 +368,20 @@ export default function FormLaporan() {
       {drafDipulihkan && (
         <div role="status" className="ganti flex flex-wrap items-center gap-x-4 gap-y-2 rounded-kontrol bg-biru-muda px-4 py-3 text-kecil text-biru-tua sm:text-badan">
           <Ikon nama="info" className="size-5 shrink-0" />
-          <span className="min-w-0 flex-1">Isian terakhir Anda dipulihkan. Foto perlu ditambahkan lagi.</span>
-          <button type="button" onClick={mulaiKosong} className="font-semibold underline underline-offset-2 hover:text-biru">
+          <span className="min-w-0 flex-1">Isian terakhirmu dipulihkan. Foto perlu ditambahkan lagi.</span>
+          {/* Konfirmasi dulu: tombol ini menghapus seluruh draf (audit 10 Nov, W45). */}
+          <button
+            type="button"
+            onClick={() => {
+              if (window.confirm('Hapus semua isian dan mulai dari kosong?')) mulaiKosong();
+            }}
+            className="inline-flex min-h-11 items-center font-semibold underline underline-offset-2 hover:text-biru"
+          >
             Mulai dari kosong
           </button>
         </div>
       )}
-      <Langkah n={1} selesai={lengkap.includes(1)} galat={galatLangkah(1)} judul="Masalahnya apa?" petunjuk="Urgensi dan dinas penanggung jawab ditentukan dari kategori, bukan dipilih pelapor.">
+      <Langkah n={1} selesai={lengkap.includes(1)} galat={galatLangkah(1)} judul="Masalahnya apa?" petunjuk="Pilih yang paling mirip. Dinas dan batas waktunya ditentukan otomatis. Masalah lain, misalnya banjir atau pohon tumbang? Laporkan lewat JAKI.">
         <fieldset>
           <legend className="sr-only">Kategori</legend>
           <div className="grid gap-3 sm:grid-cols-2">
@@ -389,7 +396,8 @@ export default function FormLaporan() {
                 </span>
                 <span className="text-lead font-bold">{k.nama}</span>
                 <span className="col-start-2 text-kecil text-lembut">
-                  {k.instansi} · urgensi {k.urgensi.toLowerCase()} · respons {k.respons} jam, selesai {k.selesai / 24} hari
+                  Ditangani {k.instansi.replace(' (simulasi)', '')} · ditanggapi paling lambat {k.respons} jam · selesai paling lambat{' '}
+                  {k.selesai / 24} hari
                 </span>
               </label>
             ))}
@@ -397,7 +405,12 @@ export default function FormLaporan() {
         </fieldset>
       </Langkah>
 
-      <Langkah n={2} selesai={lengkap.includes(2)} galat={galatLangkah(2)} judul="Di mana tepatnya?" petunjuk="Ketuk peta untuk menaruh titik, lalu geser titiknya kalau perlu. Kecamatan dan instansi ditentukan otomatis.">
+      <Langkah n={2} selesai={lengkap.includes(2)} galat={galatLangkah(2)} judul="Di mana tepatnya?" petunjuk="Paling mudah: tekan “Pakai lokasi saya”. Atau perbesar peta, lalu ketuk lokasi masalahnya. Kecamatan dan dinasnya ditentukan otomatis.">
+        {/* Di HP, cara termudah ada di atas peta, bukan tersembunyi di bawahnya (audit 10 Nov, W37). */}
+        <Tombol varian="garis" onClick={pakaiLokasiSaya} disabled={mencariLokasi} className="mb-3 w-full sm:w-auto">
+          <Ikon nama={mencariLokasi ? 'muat' : 'lokasi'} className={`size-4 ${mencariLokasi ? 'putar' : ''}`} />
+          {mencariLokasi ? 'Membaca lokasi…' : 'Pakai lokasi saya'}
+        </Tombol>
         <div className="peta isolate overflow-hidden bg-lapis" data-ui>
           <PetaPin titik={titik} onPilih={setTitik} />
         </div>
@@ -406,7 +419,9 @@ export default function FormLaporan() {
             {!titik ? (
               <span className="text-lembut">Belum ada titik.</span>
             ) : diLuar ? (
-              <span className="font-bold text-merah-tua">Titik ini di luar DKI Jakarta daratan. Pindahkan ke wilayah layanan.</span>
+              <span className="font-bold text-merah-tua">
+                Titik ini di luar Jakarta. Geser ke dalam wilayah Jakarta (Kepulauan Seribu belum bisa dilaporkan di sini).
+              </span>
             ) : wilayah ? (
               <span className="inline-flex items-center gap-1.5 font-semibold">
                 <Ikon nama="lokasi" className="size-4 text-biru" />
@@ -419,10 +434,6 @@ export default function FormLaporan() {
               <span className="sr-only"> Ada {serupa.length} laporan serupa dalam 100 meter, tercantum di bawah peta.</span>
             )}
           </p>
-          <Tombol varian="garis" onClick={pakaiLokasiSaya} disabled={mencariLokasi}>
-            <Ikon nama={mencariLokasi ? 'muat' : 'lokasi'} className={`size-4 ${mencariLokasi ? 'putar' : ''}`} />
-            {mencariLokasi ? 'Membaca lokasi…' : 'Pakai lokasi saya'}
-          </Tombol>
         </div>
         {lokasiGalat && (
           <p role="alert" className="mt-2 text-kecil font-semibold text-merah-tua">
@@ -435,15 +446,25 @@ export default function FormLaporan() {
           <section aria-labelledby="judul-serupa" className="ganti mt-4 rounded-kontrol bg-biru-pudar p-4 sm:p-5">
             <h3 id="judul-serupa" className="flex items-center gap-2 text-badan font-bold text-biru-tua">
               <Ikon nama="info" className="size-5" />
-              Sudah ada {serupa.length} laporan serupa dalam 100 meter
+              Mungkin masalah ini sudah dilaporkan ({serupa.length} laporan dalam 100 meter)
             </h3>
-            <p className="mt-1.5 max-w-[60ch] text-kecil text-lembut">
-              Dukung laporan yang sudah ada supaya suaranya terkumpul di satu tempat. Kalau masalahnya memang berbeda, tetap
-              lanjutkan laporan baru.
+            <p className="mt-1.5 max-w-[60ch] text-kecil">
+              Kalau sama, cukup tekan <strong>Dukung</strong>; kamu tidak perlu melapor lagi, dan laporan ganda bisa ditolak.
+              Kalau masalahnya berbeda, lanjutkan laporanmu.
             </p>
+            {serupa.some(sudah) && (
+              <p role="status" className="mt-2 rounded-kontrol bg-hijau-muda px-3 py-2 text-kecil font-semibold text-hijau">
+                Dukunganmu tercatat. Kamu bisa berhenti di sini, atau lanjutkan kalau masalahmu berbeda.
+              </p>
+            )}
             <ul className="mt-4 grid gap-2">
               {serupa.map((s) => (
                 <li key={s.kode} className="flex flex-wrap items-center gap-x-5 gap-y-3 rounded-kontrol border border-garis bg-permukaan p-4">
+                  {/* Foto kecil supaya warga bisa menilai sama atau beda (audit 10 Nov, W9). */}
+                  {s.foto && (
+                    /* eslint-disable-next-line @next/next/no-img-element -- URL foto dari Storage/seed, ukuran kecil */
+                    <img src={s.foto} alt={`Foto laporan ${s.kode}`} className="size-16 shrink-0 rounded-kontrol object-cover" loading="lazy" />
+                  )}
                   <div className="min-w-0 flex-1">
                     <p className="flex flex-wrap items-center gap-3">
                       <Link href={`/laporan/${s.kode}`} target="_blank" className="font-kode angka font-bold text-biru-tua underline-offset-4 hover:underline">
@@ -453,7 +474,7 @@ export default function FormLaporan() {
                       <BadgeStatus status={s.status} />
                     </p>
                     <p className="mt-1 text-kecil text-lembut">
-                      {s.jarak_m} m dari titik Anda · {lalu(s.created_at, hasilSerupa?.waktu ?? Date.parse(s.created_at))} · {s.jumlah_upvote} dukungan
+                      {s.jarak_m} m dari titikmu · {lalu(s.created_at, hasilSerupa?.waktu ?? Date.parse(s.created_at))} · {s.jumlah_upvote} dukungan
                     </p>
                   </div>
                   <Tombol varian={sudah(s) ? 'kedua' : 'utama'} onClick={() => dukung(s.kode)} aria-pressed={sudah(s)}>
@@ -472,7 +493,7 @@ export default function FormLaporan() {
         )}
       </Langkah>
 
-      <Langkah n={3} selesai={lengkap.includes(3)} galat={galatLangkah(3)} judul="Foto masalahnya" petunjuk="1 sampai 3 foto JPG, PNG, atau WebP, maksimal 20 MB per foto. Foto dikecilkan dan data lokasi di dalam file dibuang sebelum diunggah.">
+      <Langkah n={3} selesai={lengkap.includes(3)} galat={galatLangkah(3)} judul="Foto masalahnya" petunjuk="Tambahkan 1–3 foto dari kamera atau galeri. Kami otomatis mengecilkan foto dan menghapus info lokasi tersembunyi di dalam file.">
         <p className="flex gap-2 rounded-kontrol bg-oranye-muda p-3 text-kecil text-st-menunggu">
           <Ikon nama="peringatan" className="mt-0.5 size-4 shrink-0" />
           Jangan memotret wajah atau plat nomor orang lain. Foto tampil publik.
@@ -608,11 +629,19 @@ export default function FormLaporan() {
               </div>
             ) : galat ? (
               <p role="alert" className="rounded-kontrol bg-merah-muda p-3 text-kecil font-bold text-merah-tua">
-                {galat} Isian Anda masih tersimpan; tekan tombol kirim untuk mencoba lagi.
+                {galat}{' '}
+                {galat === PESAN_ERROR.TIDAK_LOGIN ? (
+                  <Link href="/masuk?lanjut=/lapor" className="underline underline-offset-4">
+                    Masuk lagi
+                  </Link>
+                ) : (
+                  'Isianmu masih tersimpan; tekan tombol kirim untuk mencoba lagi.'
+                )}
               </p>
             ) : (
               <p className="text-kecil text-lembut">
-                Setelah terkirim Anda mendapat kode SR untuk melacak laporan. Status awalnya Menunggu sampai dinas merespons.
+                Setelah dikirim, kamu dapat kode (misalnya SR-ABC234) untuk memantau laporanmu. Laporan tampil di peta umum,
+                tetapi tidak dikirim ke dinas sungguhan.
               </p>
             )}
           </div>

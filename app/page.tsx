@@ -1,15 +1,17 @@
 // app/page.tsx — Beranda (SDD 9), pemilik: A
-// Susunan seperti beranda situs travel: hero foto dengan kotak cari bertab → deret kupon peran →
-// "Satu isu, dua urutan" → spanduk besar + deret spanduk → di mana masalahnya menumpuk → empat masalah →
-// pita angka Musrenbang → dari mana datanya → laporan terbaru (tab + kartu, seperti bagian rekomendasi).
+// Urutan bagian (audit bahasa awam 10 Nov): pita "Data buatan" → hero dengan kotak cari bertab → 3 langkah (dari
+// laporan sampai rapor) → jenis masalah dan batas waktunya → spanduk + di mana masalah menumpuk → kenapa urutan bisa
+// berubah → laporan terbaru → Musrenbang → untuk siapa + akun demo (deret kupon).
+// Penanda data: satu pita satu kalimat di atas, label "Data buatan" di blok angka buatan, "Data asli" di blok Musrenbang.
 // Operasi SDD 6: R1 stats_beranda, R9 priority_factors + L1 lib/scoring, R8 agency_report_card,
 // Q1 v_laporan_publik (laporan terbaru), A1 POST /api/demo-login (TombolDemo, di deret kupon).
 
 import Image from 'next/image';
 import Link from 'next/link';
 import { Suspense } from 'react';
+import BannerSimulasi from '@/components/BannerSimulasi';
 import { hitungSLA } from '@/components/IndikatorSLA';
-import AlurLapor from '@/components/beranda/AlurLapor';
+import AlurLapor, { KALIMAT_TOLAK } from '@/components/beranda/AlurLapor';
 import DaftarMasalah from '@/components/beranda/DaftarMasalah';
 import HeroCari from '@/components/beranda/HeroCari';
 import KuponPeran from '@/components/beranda/KuponPeran';
@@ -24,12 +26,13 @@ import { kodeLaporanUntukIsu, ambilStatistik, ambilTitikLaporan, type TitikLapor
 import { ambilDataPrioritas, ambilRapor } from '@/lib/data/prioritas';
 import { keTitikPeta, type TitikPeta } from '@/lib/geo/proyeksi';
 import { desimal, persen, ribuan } from '@/lib/format';
+import { ARTI_HURUF } from '@/lib/kamus';
 import { FOTO, KATEGORI } from '@/lib/konten';
 import { urutkanRapor } from '@/lib/konten-rapor';
 import { hitungSkor, PRESET } from '@/lib/scoring';
 import type { SkorIsu } from '@/lib/types';
 
-/** Isu untuk contoh "satu isu, dua urutan": jalan rusak di tengah peringkat yang paling naik saat keselamatan diutamakan. */
+/** Masalah untuk contoh "urutan bisa berubah": jalan rusak di tengah urutan yang paling naik saat keselamatan diutamakan. */
 function pilihIsuContoh(resmi: SkorIsu[], keselamatan: SkorIsu[]): SkorIsu {
   const posisi = new Map(keselamatan.map((s) => [s.id, s.peringkat]));
   const naik = (s: SkorIsu) => s.peringkat - (posisi.get(s.id) ?? s.peringkat);
@@ -38,11 +41,12 @@ function pilihIsuContoh(resmi: SkorIsu[], keselamatan: SkorIsu[]): SkorIsu {
   return kandidat.find((s) => s.category_id === 1 && naik(s) > 0) ?? kandidat[0] ?? resmi[0];
 }
 
-/** Isi tab "Rapor instansi" di kotak cari: empat instansi, huruf dan tingkat penolakannya. */
+/** Isi tab "Rapor dinas" di kotak cari: empat dinas, huruf, artinya, dan persen laporan yang ditolak. */
 async function PanelRapor() {
-  const { rapor } = await ambilRapor();
+  const { sumber, rapor } = await ambilRapor();
   return (
     <div>
+      <LabelSumber sumber={sumber} ringkas className="mb-3" />
       <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
         {urutkanRapor(rapor.instansi).map((i) => (
           <li key={i.id}>
@@ -56,11 +60,12 @@ async function PanelRapor() {
               </span>
               <span className="min-w-0 text-kecil leading-tight">
                 <span className="block truncate font-bold">{i.nama.replace(' (simulasi)', '')}</span>
+                <span className="mt-0.5 block text-lembut">{i.huruf ? ARTI_HURUF[i.huruf] : 'Belum cukup laporan'}</span>
                 <span
-                  className={`mt-1 flex items-center gap-1 ${i.peringatan_penolakan ? 'font-semibold text-merah-tua' : 'text-lembut'}`}
+                  className={`mt-0.5 flex items-center gap-1 ${i.peringatan_penolakan ? 'font-semibold text-merah-tua' : 'text-lembut'}`}
                 >
                   {i.peringatan_penolakan && <Ikon nama="peringatan" className="size-3.5" />}
-                  ditolak {persen(i.tingkat_penolakan)}
+                  {persen(i.tingkat_penolakan)} laporan ditolak
                 </span>
               </span>
             </Link>
@@ -68,9 +73,9 @@ async function PanelRapor() {
         ))}
       </ul>
       <p className="mt-3 text-kecil text-lembut">
-        Huruf selalu tampil bersama tingkat penolakannya: nilai bagus hasil membuang laporan langsung terlihat.{' '}
+        {KALIMAT_TOLAK}{' '}
         <Link href="/rapor/cara-menilai" className="font-semibold text-biru-tua hover:underline">
-          Cara menilai
+          Cara rapor dihitung
         </Link>
       </p>
     </div>
@@ -78,7 +83,7 @@ async function PanelRapor() {
 }
 
 async function BagianPrioritas() {
-  const [data, { sumber: sumberStat, statistik }, { laporan, sekarang }] = await Promise.all([
+  const [data, { statistik }, { laporan, sekarang }] = await Promise.all([
     ambilDataPrioritas(),
     ambilStatistik(),
     ambilTitikLaporan(),
@@ -126,8 +131,6 @@ async function BagianPrioritas() {
 
   return (
     <>
-      <PerbandinganPeringkat isu={data.faktor.isu} bobotResmi={data.bobotResmi} idIsu={contoh.id} kodeLaporan={kode} />
-
       {/* Spanduk besar (foto arsip) lalu deret spanduk fitur, seperti spanduk promo di situs travel. */}
       <section aria-label="Sorotan" className="bingkai mt-12 sm:mt-14">
       <figure className="muncul">
@@ -147,7 +150,7 @@ async function BagianPrioritas() {
           <figcaption className="absolute inset-y-0 left-0 flex max-w-[36rem] flex-col justify-center p-6 sm:p-10">
             <p className="text-kecil font-semibold text-white/85">Banjir di Batavia, awal abad ke-20</p>
             <p className="mt-2 text-sub font-bold sm:text-seksi">
-              Masalahnya sudah tua; alasan urutan penanganannya yang jarang dibuka.
+              Banjir dan jalan rusak sudah ada sejak dulu. Yang jarang dijelaskan: kenapa satu tempat diperbaiki lebih dulu.
             </p>
             <p className="mt-3 text-mini text-white/80">
               Foto: {FOTO.banjirBatavia.judul}. {FOTO.banjirBatavia.pembuat},{' '}
@@ -165,45 +168,47 @@ async function BagianPrioritas() {
       <section aria-labelledby="judul-kecamatan" className="bingkai mt-12 sm:mt-14">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <h2 id="judul-kecamatan" className="judul-seksi">
-            Di mana masalahnya menumpuk
+            Di mana masalah menumpuk
           </h2>
-          <LabelSumber sumber={data.sumber} />
+          <LabelSumber sumber={data.sumber} ringkas />
         </div>
         <div className="kartu muncul mt-5 p-5 sm:p-7">
           <dl className="grid grid-cols-3 gap-2 sm:gap-3">
             {[
               { nilai: ribuan(statistik.total_laporan), label: 'laporan masuk' },
               { nilai: `${desimal(statistik.persen_selesai, 0)}%`, label: 'laporan selesai' },
-              { nilai: ribuan(statistik.terlambat_aktif), label: 'laporan aktif terlambat' },
+              { nilai: ribuan(statistik.terlambat_aktif), label: 'belum selesai dan lewat batas waktu' },
             ].map((s) => (
               // justify-end: di flex-col-reverse isi jadi rata atas, jadi angka di ketiga kotak sejajar walau labelnya
               // turun ke baris yang berbeda jumlahnya.
               <div key={s.label} className="flex flex-col-reverse justify-end rounded-kontrol bg-latar p-3 sm:p-4">
-                <dt className="mt-1 text-mini text-lembut sm:text-kecil">{s.label}</dt>
+                <dt className="mt-1 text-kecil text-lembut">{s.label}</dt>
                 <dd className="angka text-sub font-bold sm:text-judul">
                   <AngkaGulir nilai={s.nilai} />
                 </dd>
               </div>
             ))}
           </dl>
-          <p className="mt-2 text-mini text-lembut">
-            {sumberStat === 'contoh' ? 'Data contoh' : 'Data simulasi'}, dihitung dari semua laporan kecuali yang dibatalkan.
+          <p className="mt-2 text-kecil text-lembut">
+            Angka di atas dihitung dari semua laporan, kecuali yang dibatalkan pelapor.
           </p>
           <div className="mt-6 border-t border-garis pt-6">
-            <SorotKecamatan teratas={teratas} skorPerKecamatan={skorPerKecamatan} titik={titikIsu} />
+            <SorotKecamatan teratas={teratas} total={resmi.length} skorPerKecamatan={skorPerKecamatan} titik={titikIsu} />
           </div>
         </div>
       </section>
+
+      <PerbandinganPeringkat isu={data.faktor.isu} bobotResmi={data.bobotResmi} idIsu={contoh.id} kodeLaporan={kode} />
     </>
   );
 }
 
 function AngkaMusrenbang() {
   const ANGKA = [
-    { nilai: '18.221', label: 'usulan langsung warga lewat e-Musrenbang DKI Jakarta, 2019' },
-    { nilai: '254', label: 'usulan dari jumlah itu yang akhirnya terealisasi' },
-    { nilai: '1,4%', label: 'yang terealisasi; sisanya tidak pernah tahu kenapa tidak terpilih' },
-    { nilai: '61.174', label: 'usulan aspirasi diterima untuk Musrenbang RKPD 2027' },
+    { nilai: '18.221', label: 'usulan langsung dari warga lewat e-Musrenbang DKI Jakarta (2019)' },
+    { nilai: '254', label: 'dari usulan itu yang akhirnya dikerjakan' },
+    { nilai: '1,4%', label: 'hanya segini yang benar-benar dikerjakan' },
+    { nilai: '61.174', label: 'usulan warga untuk rencana pembangunan 2027 (hasilnya belum diumumkan)' },
   ];
   return (
     <section aria-labelledby="judul-musrenbang" className="bingkai mt-12 sm:mt-14">
@@ -212,25 +217,28 @@ function AngkaMusrenbang() {
         <span aria-hidden="true" className="pointer-events-none absolute -top-28 -left-28 -z-10 size-80 rounded-full bg-white/45" />
         <span aria-hidden="true" className="pointer-events-none absolute -bottom-36 left-1/3 -z-10 size-72 rounded-full bg-biru/8" />
         <div className="p-6 sm:p-10">
-          <h2 id="judul-musrenbang" className="judul-seksi">
-            Usulan warga, nasibnya gelap
-          </h2>
-          <ul className="mt-3 flex flex-wrap gap-2">
-            {['Alasan urutan bisa diuji', 'Bahan berbasis data untuk Musrenbang'].map((t) => (
+          <div className="flex flex-wrap items-center gap-3">
+            <h2 id="judul-musrenbang" className="judul-seksi">
+              Banyak usulan warga, sedikit yang dikerjakan
+            </h2>
+            <LabelSumber sumber="terbuka" ringkas />
+          </div>
+          <p className="mt-3 max-w-[56ch] text-badan text-lembut">
+            Musrenbang adalah rapat tahunan warga dan pemerintah untuk memilih usulan pembangunan. Urutan masalah yang
+            alasannya bisa dicek bisa kamu bawa sebagai bahan usulan di rapat itu.
+          </p>
+          <ul className="mt-4 flex flex-wrap gap-2">
+            {['Alasan urutan bisa dicek', 'Bisa dibawa ke Musrenbang'].map((t) => (
               <li key={t} className="flex items-center gap-1.5 rounded-full bg-white px-3 py-1 text-kecil font-semibold text-biru-tua">
                 <Ikon nama="centang" className="size-4" />
                 {t}
               </li>
             ))}
           </ul>
-          <p className="mt-4 max-w-[56ch] text-badan text-lembut">
-            Masalah yang sama muncul di perencanaan tahunan. Peringkat prioritas yang bisa dijelaskan dapat menjadi bahan
-            berbasis data untuk Musrenbang.
-          </p>
           <dl className="mt-6 grid grid-cols-2 gap-3 xl:grid-cols-4" data-muncul>
             {ANGKA.map((a) => (
               <div key={a.label} className="flex flex-col-reverse justify-end rounded-kartu bg-white p-4">
-                <dt className="mt-1 text-mini text-lembut sm:text-kecil">{a.label}</dt>
+                <dt className="mt-1 text-kecil text-lembut">{a.label}</dt>
                 <dd className="angka text-seksi font-bold text-biru-tua">
                   <AngkaGulir nilai={a.nilai} />
                 </dd>
@@ -244,12 +252,12 @@ function AngkaMusrenbang() {
             </div>
             <figcaption className="mt-2 flex flex-wrap justify-between gap-x-6 gap-y-1 text-kecil text-lembut">
               <span>
-                <strong className="font-bold text-biru-tua">254</strong> usulan terealisasi
+                <strong className="font-bold text-biru-tua">254</strong> usulan dikerjakan
               </span>
               <span>dari 18.221 usulan langsung warga, e-Musrenbang DKI 2019</span>
             </figcaption>
           </figure>
-          <p className="mt-4 text-mini text-lembut">
+          <p className="mt-4 text-kecil text-lembut">
             Sumber: jurnal Universitas Diponegoro tentang e-Musrenbang DKI (data 2019); Metro TV, April 2026.
           </p>
         </div>
@@ -262,7 +270,7 @@ function AngkaMusrenbang() {
             className="object-cover"
           />
           <figcaption className="absolute inset-x-0 bottom-0 bg-[linear-gradient(0deg,rgb(15_42_51/0.85),transparent)] px-4 pt-10 pb-3 text-mini text-white">
-            Tanjung Duren, Grogol Petamburan, 1 Januari 2020: salah satu dari 42 kecamatan yang dinilai. Foto &ldquo;
+            Tanjung Duren, Grogol Petamburan, 1 Januari 2020: salah satu dari 42 kecamatan di SUARAKYAT. Foto &ldquo;
             {FOTO.banjirTanjungDuren.judul}&rdquo; oleh {FOTO.banjirTanjungDuren.pembuat},{' '}
             <a href={FOTO.banjirTanjungDuren.url} target="_blank" rel="noreferrer" className="underline">
               {FOTO.banjirTanjungDuren.lisensi}
@@ -276,8 +284,8 @@ function AngkaMusrenbang() {
 }
 
 async function BagianAlur() {
-  const { rapor } = await ambilRapor();
-  return <AlurLapor rapor={rapor.instansi} kodeContoh="SR-K7W3PA" />;
+  const { sumber, rapor } = await ambilRapor();
+  return <AlurLapor rapor={rapor.instansi} sumber={sumber} kodeContoh="SR-ABC234" />;
 }
 
 /** Enam laporan terbaru per tab (semua + tiap kategori), dipilih di server. */
@@ -291,13 +299,13 @@ async function BagianTerbaru() {
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h2 id="judul-terbaru" className="judul-seksi">
-            Laporan terbaru dari warga
+            Laporan terbaru
           </h2>
           <p className="mt-2 max-w-[70ch] text-badan text-lembut">
             Buka laporannya untuk melihat riwayat penanganan, batas waktu, dan jawaban &ldquo;Kenapa belum?&rdquo;.
           </p>
         </div>
-        <LabelSumber sumber={sumber} />
+        <LabelSumber sumber={sumber} ringkas />
       </div>
       <div className="muncul mt-5">
         <LaporanTerbaru per={per} sekarang={sekarang} />
@@ -317,6 +325,11 @@ function KerangkaBagian({ tinggi = 'h-[40rem]' }: { tinggi?: string }) {
 export default function BerandaPage() {
   return (
     <>
+      {/* Satu pita, satu kalimat untuk seluruh Beranda; blok angka buatan cukup diberi label "Data buatan". */}
+      <div className="bingkai pt-3 sm:pt-4">
+        <BannerSimulasi />
+      </div>
+
       <HeroCari
         panelRapor={
           <Suspense fallback={<div aria-hidden="true" className="kerangka h-20" />}>
@@ -325,41 +338,17 @@ export default function BerandaPage() {
         }
       />
 
-      <KuponPeran />
-
-      <Suspense fallback={<KerangkaBagian />}>
-        <BagianPrioritas />
-      </Suspense>
-
-      <section aria-labelledby="judul-masalah" className="bingkai mt-12 sm:mt-14">
-        <h2 id="judul-masalah" className="judul-seksi">
-          Empat masalah, empat batas waktu
-        </h2>
-        <p className="mt-2 max-w-[70ch] text-badan text-lembut">
-          Setiap kategori punya dinas penanggung jawab (simulasi), batas waktu respons, dan batas waktu selesai.
-        </p>
-        <div className="muncul mt-5">
-          <DaftarMasalah />
-        </div>
-      </section>
-
-      <AngkaMusrenbang />
-
       <section aria-labelledby="judul-alur" className="bingkai mt-12 sm:mt-14">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
             <h2 id="judul-alur" className="judul-seksi">
-              Dari mana datanya
+              Dari laporan sampai rapor, dalam 3 langkah
             </h2>
             <p className="mt-2 max-w-[70ch] text-badan text-lembut">
-              Semua angka di dashboard prioritas dan rapor instansi berasal dari tiga langkah ini. Setiap langkah tercatat
-              dan bisa dibuka siapa saja.
+              Semua angka di urutan prioritas dan rapor dinas berasal dari tiga langkah ini. Setiap langkah tercatat dan
+              bisa dilihat siapa saja.
             </p>
           </div>
-          <Link href="/sumber-data" className="chip">
-            <Ikon nama="data" className="size-4" />
-            Sumber data
-          </Link>
         </div>
         <div className="mt-5">
           <Suspense fallback={<div aria-hidden="true" className="kerangka h-[28rem]" />}>
@@ -368,12 +357,35 @@ export default function BerandaPage() {
         </div>
       </section>
 
-      {/* Bagian rekomendasi: tab pil + deretan kartu, paling akhir sebelum footer seperti di situs travel. */}
+      <section aria-labelledby="judul-masalah" className="bingkai mt-12 sm:mt-14">
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <h2 id="judul-masalah" className="judul-seksi">
+            4 jenis masalah dan batas waktunya
+          </h2>
+          <LabelSumber sumber="db" ringkas />
+        </div>
+        <p className="mt-2 max-w-[70ch] text-badan text-lembut">
+          Setiap jenis masalah punya dinas penanggung jawab, batas waktu untuk ditanggapi, dan batas waktu untuk selesai.
+        </p>
+        <div className="muncul mt-5">
+          <DaftarMasalah />
+        </div>
+      </section>
+
+      <Suspense fallback={<KerangkaBagian />}>
+        <BagianPrioritas />
+      </Suspense>
+
+      {/* Bagian rekomendasi: tab pil + deretan kartu, seperti di situs travel. */}
       <section aria-labelledby="judul-terbaru" className="bingkai mt-12 sm:mt-14">
         <Suspense fallback={<div aria-hidden="true" className="kerangka h-[24rem]" />}>
           <BagianTerbaru />
         </Suspense>
       </section>
+
+      <AngkaMusrenbang />
+
+      <KuponPeran />
     </>
   );
 }

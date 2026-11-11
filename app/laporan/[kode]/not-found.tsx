@@ -14,8 +14,8 @@ export default function LaporanTidakAda() {
         </span>
         <h1 className="mt-4 text-judul font-bold">Kode laporan tidak ditemukan</h1>
         <p className="mx-auto mt-2 max-w-[56ch] text-badan text-lembut">
-          Periksa kembali kodenya: SR- lalu 6 huruf atau angka. Kode tidak memakai huruf O dan I, juga angka 0 dan 1, supaya
-          tidak tertukar saat dibaca. Laporan yang dibatalkan pelapor juga tidak tampil.
+          Periksa lagi kodenya, misalnya SR-ABC234. Laporan yang dibatalkan pelapornya juga tidak tampil. Lupa kodenya? Masuk,
+          lalu buka Lacak laporan untuk melihat daftar laporanmu.
         </p>
         <CariKode id="kode-tidak-ada" className="mt-6 text-left" />
         <Link href="/peta" className={kelasTombol('garis', 'mt-5')}>
