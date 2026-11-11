@@ -138,6 +138,14 @@ export default function Simulator({
     ubahParameter({ bobot: acuan ? null : FAKTOR.map((f) => nilai[f]).join(',') });
   }
 
+  // Bagian ini baru hadir setelah data selesai di-stream; navigasi hash awal bisa mendahuluinya.
+  useLayoutEffect(() => {
+    if (window.location.hash !== '#coba-atur') return;
+    const panel = document.getElementById('coba-atur');
+    panel?.scrollIntoView({ behavior: 'instant', block: 'start' });
+    panel?.focus({ preventScroll: true });
+  }, []);
+
   // FLIP: setiap baris meluncur dari posisi lamanya ke posisi barunya, jadi perubahan urutan terlihat.
   useLayoutEffect(() => {
     const ol = daftar.current;
@@ -371,7 +379,7 @@ export default function Simulator({
       </div>
 
       {/* COBA ATUR SENDIRI — di DOM sesudah hasil; di layar lebar kolom kiri dan menempel saat digulir. */}
-      <section id="coba-atur" aria-labelledby="judul-atur" className="scroll-mt-24 lg:col-start-1 lg:row-start-1">
+      <section id="coba-atur" tabIndex={-1} aria-labelledby="judul-atur" className="scroll-mt-24 lg:col-start-1 lg:row-start-1">
         <div className="kartu p-5 lg:sticky lg:top-20">
           <div className="flex items-center justify-between gap-4">
             <h2 id="judul-atur" className="flex items-center gap-2 text-lead font-bold">
@@ -435,7 +443,7 @@ export default function Simulator({
                     <div className="flex items-baseline justify-between gap-3">
                       <span className="flex items-center gap-2 text-kecil font-semibold">
                         <span aria-hidden="true" className="size-2.5 shrink-0 rounded-full" style={{ background: WARNA_FAKTOR[f] }} />
-                        <Istilah id={`istilah-bobot-${f}`} judul={NAMA_FAKTOR[f]} definisi={DEFINISI_FAKTOR[f]}>
+                        <Istilah id={`istilah-bobot-${f}`} judul={NAMA_FAKTOR[f]} definisi={DEFINISI_FAKTOR[f]} className="min-h-8 py-1 pointer-coarse:min-h-11">
                           {NAMA_FAKTOR[f]}
                         </Istilah>
                       </span>

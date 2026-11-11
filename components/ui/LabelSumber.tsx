@@ -9,13 +9,13 @@ import { DATA_BUATAN } from '@/lib/kamus';
 
 const TEKS: Record<Sumber | 'terbuka', string> = {
   db: 'Data buatan',
-  contoh: 'Data buatan',
+  contoh: 'Data buatan · contoh tersimpan',
   terbuka: 'Data asli',
 };
 
 const PENJELASAN: Record<Sumber | 'terbuka', string> = {
   db: DATA_BUATAN,
-  contoh: DATA_BUATAN,
+  contoh: 'Koneksi data belum tersedia. Ini contoh tersimpan; laporan atau perubahan terbaru mungkin belum terlihat.',
   terbuka: 'Angka ini diambil dari sumber nyata yang disebutkan di halaman Sumber data.',
 };
 
@@ -46,9 +46,11 @@ export default function LabelSumber({
 
   if (ringkas) {
     return (
-      <Link href="/sumber-data" className={`inline-flex rounded-[0.375rem] transition-opacity hover:opacity-80 ${className}`}>
+      <Link href="/sumber-data" className={`inline-flex max-w-full flex-wrap items-center gap-x-2 rounded-[0.375rem] transition-opacity hover:opacity-80 ${className}`}>
         {label}
-        <span className="sr-only">. {PENJELASAN[sumber]} Lihat data apa yang asli.</span>
+        <span className={sumber === 'contoh' ? 'text-kecil text-lembut' : 'sr-only'}>
+          {sumber === 'contoh' ? 'Data terbaru belum tersedia.' : `. ${PENJELASAN[sumber]} Lihat data apa yang asli.`}
+        </span>
       </Link>
     );
   }

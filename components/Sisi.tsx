@@ -16,7 +16,7 @@ import { laciBuka, layarLebar, pantauSisi, sisiTerbuka, tutupMenu } from '@/lib/
 import Ikon, { type NamaIkon } from './ui/Ikon';
 import KelompokCair from './ui/KelompokCair';
 
-const MENU: { label: string; item: { href: string; label: string; ikon: NamaIkon }[] }[] = [
+const MENU: { label: string; item: { href: string; label: string; ringkas?: string; ikon: NamaIkon }[] }[] = [
   {
     label: 'Jelajahi',
     item: [
@@ -37,10 +37,10 @@ const MENU: { label: string; item: { href: string; label: string; ikon: NamaIkon
   {
     label: 'Pelajari',
     item: [
-      { href: '/tentang', label: 'Tentang SUARAKYAT', ikon: 'info' },
+      { href: '/tentang', label: 'Tentang SUARAKYAT', ringkas: 'Tentang', ikon: 'info' },
       // Tautan berjangkar tidak pernah tersorot aktif (pathname tidak membawa #), jadi /prioritas tetap satu-satunya.
-      { href: '/prioritas#cara-hitung', label: 'Cara urutan dihitung', ikon: 'bantuan' },
-      { href: '/rapor/cara-menilai', label: 'Cara rapor dihitung', ikon: 'buku' },
+      { href: '/prioritas#cara-hitung', label: 'Cara urutan dihitung', ringkas: 'Cara hitung', ikon: 'bantuan' },
+      { href: '/rapor/cara-menilai', label: 'Cara rapor dihitung', ringkas: 'Panduan rapor', ikon: 'buku' },
       { href: '/sumber-data', label: 'Sumber data', ikon: 'data' },
     ],
   },
@@ -71,12 +71,12 @@ function IsiSisi({ aktif }: { aktif?: string }) {
                     aria-current={aktif === it.href ? 'page' : undefined}
                     title={it.label}
                     onClick={tutupMenu}
-                    className={`flex h-11 items-center gap-3 rounded-kontrol px-3 text-badan transition-colors hover:bg-lapis aria-[current=page]:bg-biru-muda aria-[current=page]:text-biru-tua rel:justify-center rel:px-0 ${
+                    className={`flex h-11 items-center gap-3 rounded-kontrol px-3 text-badan transition-colors hover:bg-lapis aria-[current=page]:bg-biru-muda aria-[current=page]:text-biru-tua rel:h-auto rel:min-h-16 rel:flex-col rel:justify-center rel:gap-1 rel:px-1 rel:py-2 ${
                       i === 0 ? 'font-semibold' : 'font-medium'
                     }`}
                   >
                     <Ikon nama={it.ikon} className="size-5" />
-                    <span className="truncate rel:sr-only">{it.label}</span>
+                    <span className="truncate rel:w-full rel:whitespace-normal rel:text-center rel:text-[0.75rem] rel:leading-tight rel:font-medium"><span className="rel:hidden">{it.label}</span><span className="hidden rel:inline">{it.ringkas ?? it.label}</span></span>
                   </Link>
                 </li>
               ))}

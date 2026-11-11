@@ -19,15 +19,16 @@ function Langkah({ n, judul, isi, children }: { n: number; judul: string; isi: s
   return (
     <li className="flex">
       <article className="kartu flex min-w-0 flex-1 flex-col p-5">
-        <p className="angka text-[2.75rem] leading-none font-light text-biru">
-          <span className="sr-only">Langkah </span>
-          {String(n).padStart(2, '0')}
+        <p className="text-kecil font-medium text-lembut">
+          <span>Langkah </span>
+          {n}
         </p>
         <h3 className="mt-4 text-sub font-bold">{judul}</h3>
         <p className="mt-1.5 text-kecil text-lembut">{isi}</p>
-        <div className="mt-5 flex-1" data-ui>
-          {children}
-        </div>
+        <details className="mt-4" data-ui>
+          <summary className="py-2 text-kecil font-medium text-biru-tua">Lihat contoh {judul.toLowerCase()}</summary>
+          <div className="mt-3">{children}</div>
+        </details>
       </article>
     </li>
   );
@@ -94,7 +95,7 @@ export default function AlurLapor({
         </div>
       </Langkah>
 
-      <Langkah n={2} judul="Dinas menjawab, semua bisa melihat" isi="Setiap perubahan status tercatat dan bisa dilihat siapa saja. Laporan yang ditolak tetap tampil, lengkap dengan alasannya.">
+      <Langkah n={2} judul="Dinas menanggapi" isi="Pantau status, batas waktu, dan alasan penolakan secara terbuka.">
         <ol className="grid rounded-kontrol bg-latar p-4">
           {[
             { status: 'menunggu' as const, waktu: 'Senin 08.12', siapa: 'Pelapor' },
@@ -125,7 +126,7 @@ export default function AlurLapor({
         </p>
       </Langkah>
 
-      <Langkah n={3} judul="Warga menilai, rapor berubah" isi="Bintang dari warga, ketepatan waktu, dan laporan yang ditolak menjadi nilai rapor dinas, A sampai E.">
+      <Langkah n={3} judul="Warga menilai" isi="Penilaian warga dan kinerja penanganan membentuk rapor dinas.">
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-kontrol bg-latar p-3">
           <span role="img" className="flex gap-0.5 text-oranye" aria-label="4 dari 5 bintang">
             {[1, 2, 3, 4, 5].map((n) => (

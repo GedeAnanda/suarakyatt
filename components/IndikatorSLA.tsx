@@ -66,15 +66,15 @@ export default function IndikatorSLA({
   if (!sla) return null;
   return (
     <span
-      className="inline-flex flex-wrap items-center gap-x-2 gap-y-1"
+      className="inline-flex max-w-full flex-wrap items-center gap-x-2 gap-y-1"
     >
       <span
-        className={`inline-flex items-center gap-1.5 font-semibold whitespace-nowrap ${
+        className={`inline-flex max-w-full items-center gap-1.5 font-medium ${
           sla.terlambat ? 'rounded-[0.375rem] bg-merah-muda px-2 py-0.5 text-merah-tua' : sla.selesai ? 'text-hijau' : 'text-teks'
         } text-kecil`}
       >
         <Ikon nama={sla.terlambat ? 'peringatan' : sla.selesai ? 'centang' : 'jam'} className={ringkas ? 'size-3.5' : 'size-4'} />
-        {sla.teks}
+        <span>{sla.teks}</span>
       </span>
       {!ringkas && sla.keterangan && <span className="text-kecil text-lembut">{sla.keterangan}</span>}
     </span>

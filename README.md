@@ -9,7 +9,7 @@ Warga Jakarta bisa melaporkan masalah kota (jalan rusak, saluran tersumbat, samp
 - **Masalahnya:**
   - Aplikasi pengaduan resmi (JAKI, LAPOR!) sudah bisa melacak status laporan, tetapi warga tidak bisa melihat **dasar urutan perbaikan**: kenapa jalan di satu tempat diperbaiki lebih dulu.
   - Dinas mana yang lambat juga tidak terlihat.
-  - Hanya ±1,4% usulan Musrenbang yang benar-benar dikerjakan.
+  - Studi usulan langsung e-Musrenbang DKI tahun 2019 mencatat 254 dari 18.221 usulan terealisasi (±1,4%); angka ini bukan persentase seluruh Musrenbang lintas tahun.
 - **Tujuannya:** membuka alasan di balik urutan itu, supaya warga bisa memeriksa dan mengusulkan perubahan dengan data.
   - Skor prioritas per masalah per kecamatan dari 6 hal yang dinilai, semuanya terbuka dan bisa dicoba aturannya sendiri.
   - Rapor dinas A–E yang selalu tampil bersama persen laporan yang ditolak.
@@ -68,7 +68,7 @@ Database demo dapat diisi dengan `npm run demo:setup -- --apply` setelah migrasi
 6. Masuk sebagai admin demo untuk memverifikasi dan memproses laporan kategori Jalan rusak, lalu catat kendalanya (“Belum bisa diselesaikan? Catat kendalanya”).
 7. Buka rapor: tunjukkan denominator laporan terlambat dan pembatasan huruf ketika tingkat penolakan tinggi.
 
-Fokus subtema: **Data-Driven Decision Support** dan **Civic Reporting & Accountability**, didukung **Public Service Tracking**. Data BPS/CRM belum terintegrasi. Laporan, demografi perhitungan, dan kinerja instansi adalah simulasi; batas wilayah dan angka konteks Musrenbang memiliki sumber publik terpisah.
+Fokus subtema: **Data-Driven Decision Support** dan **Civic Reporting & Accountability**, didukung **Public Service Tracking**. Laporan dan kinerja instansi adalah simulasi. Sebanyak 42 baris demografi beratribusi BPS sudah dimuat ke database tim dan cocok dengan CSV lokal; verifikasi transkripsi terhadap publikasi BPS asal belum selesai. Cadangan frontend tetap memakai demografi simulasi. Data CRM belum terintegrasi; batas wilayah dan angka konteks Musrenbang memiliki sumber publik terpisah.
 
 ## Peta halaman (sitemap)
 
@@ -109,10 +109,11 @@ flowchart TD
 | Rapor dinas A–E + cara rapor dihitung | ✅ selesai |
 | Admin dinas: ubah status, tolak beralasan, catat kendala | ✅ selesai |
 | Bahasa awam di semua halaman (135 temuan audit) | ✅ selesai, lihat `docs/audit-awam-2026-11-10.md` |
-| Aksesibilitas | ✅ axe-core WCAG 2.2 A/AA: 0 pelanggaran di 13 halaman; Lighthouse aksesibilitas 100 |
-| Performa HP (Lighthouse, simulasi 4G lambat) | 🟡 skor 82–97; tampil pertama ±1 detik; bagian terbesar tampil dalam 2,6–3,6 detik di 4 halaman, Detail laporan 5,0 dan Kecamatan 4,1 detik (target 2,5); server dipindah ke Tokyo, dekat database |
+| Aksesibilitas | 🟡 Beranda, Prioritas, Sumber data: 0 temuan axe pada 320/360/390/768/1440 px; akses keyboard tabel diuji. Target peta dan uji manual masih terbuka |
+| Performa HP (baseline produksi 11 Nov, sebelum perbaikan audit) | 🟡 Lighthouse: Beranda 95 / LCP 2,8 dtk; Detail 95 / 2,4 dtk; Kecamatan 100 / 1,1 dtk. Target LCP 2,5 dtk; hasil sekali ukur, belum data pengguna nyata |
 | Uji ke 5 warga beragam | 🟡 kit siap (`docs/uji-warga-2026-11-10.md`), belum dijalankan |
-| Integrasi data BPS/CRM sungguhan | ⏳ belum; laporan dan dinas masih data buatan |
+| Demografi beratribusi BPS | 🟡 42 baris sudah dimuat dan cocok dengan CSV lokal; verifikasi publikasi asal belum selesai |
+| Integrasi CRM | ⏳ belum; laporan dan kinerja dinas tetap simulasi |
 
 ## Tim
 

@@ -1,7 +1,5 @@
 // app/page.tsx — Beranda (SDD 9), pemilik: A
-// Urutan bagian (audit bahasa awam 10 Nov): pita "Data buatan" → hero dengan kotak cari bertab → 3 langkah (dari
-// laporan sampai rapor) → jenis masalah dan batas waktunya → spanduk + di mana masalah menumpuk → kenapa urutan bisa
-// berubah → laporan terbaru → Musrenbang → untuk siapa + akun demo (deret kupon).
+// Pembeda tampil lebih awal: pita data → hero → perbandingan prioritas → alur lapor → kategori → peta → laporan.
 // Penanda data: satu pita satu kalimat di atas, label "Data buatan" di blok angka buatan, "Data asli" di blok Musrenbang.
 // Operasi SDD 6: R1 stats_beranda, R9 priority_factors + L1 lib/scoring, R8 agency_report_card,
 // Q1 v_laporan_publik (laporan terbaru), A1 POST /api/demo-login (TombolDemo, di deret kupon).
@@ -18,7 +16,6 @@ import KuponPeran from '@/components/beranda/KuponPeran';
 import LaporanTerbaru from '@/components/beranda/LaporanTerbaru';
 import PerbandinganPeringkat from '@/components/beranda/PerbandinganPeringkat';
 import SorotKecamatan, { type IsuTeratas } from '@/components/beranda/SorotKecamatan';
-import SpandukGeser from '@/components/beranda/SpandukGeser';
 import AngkaGulir from '@/components/ui/AngkaGulir';
 import Ikon from '@/components/ui/Ikon';
 import LabelSumber from '@/components/ui/LabelSumber';
@@ -30,6 +27,7 @@ import { ARTI_HURUF } from '@/lib/kamus';
 import { FOTO, KATEGORI } from '@/lib/konten';
 import { urutkanRapor } from '@/lib/konten-rapor';
 import { hitungSkor, PRESET } from '@/lib/scoring';
+import { SUMBER_MUSRENBANG } from '@/lib/sumber';
 import type { SkorIsu } from '@/lib/types';
 
 /** Masalah untuk contoh "urutan bisa berubah": jalan rusak di tengah urutan yang paling naik saat keselamatan diutamakan. */
@@ -82,6 +80,15 @@ async function PanelRapor() {
   );
 }
 
+async function PerbandinganPrioritas() {
+  const data = await ambilDataPrioritas();
+  const resmi = hitungSkor(data.faktor.isu, data.bobotResmi);
+  if (resmi.length === 0) return null;
+  const contoh = pilihIsuContoh(resmi, hitungSkor(data.faktor.isu, PRESET.keselamatan));
+  const kode = await kodeLaporanUntukIsu(data.sumber, contoh.kecamatan, contoh.kategori);
+  return <PerbandinganPeringkat isu={data.faktor.isu} bobotResmi={data.bobotResmi} idIsu={contoh.id} kodeLaporan={kode} sumber={data.sumber} />;
+}
+
 async function BagianPrioritas() {
   const [data, { statistik }, { laporan, sekarang }] = await Promise.all([
     ambilDataPrioritas(),
@@ -90,8 +97,6 @@ async function BagianPrioritas() {
   ]);
   const resmi = hitungSkor(data.faktor.isu, data.bobotResmi);
   if (resmi.length === 0) return null;
-  const contoh = pilihIsuContoh(resmi, hitungSkor(data.faktor.isu, PRESET.keselamatan));
-  const kode = await kodeLaporanUntukIsu(data.sumber, contoh.kecamatan, contoh.kategori);
 
   const skorPerKecamatan: Record<string, number> = {};
   for (const s of resmi) skorPerKecamatan[s.kode_wilayah] = Math.max(skorPerKecamatan[s.kode_wilayah] ?? 0, s.skor);
@@ -131,40 +136,6 @@ async function BagianPrioritas() {
 
   return (
     <>
-      {/* Spanduk besar (foto arsip) lalu deret spanduk fitur, seperti spanduk promo di situs travel. */}
-      <section aria-label="Sorotan" className="bingkai mt-12 sm:mt-14">
-      <figure className="muncul">
-        <div className="di-gelap relative overflow-hidden rounded-besar bg-navy text-white">
-          <Image
-            src={FOTO.banjirBatavia.src}
-            alt={FOTO.banjirBatavia.alt}
-            width={FOTO.banjirBatavia.lebar}
-            height={FOTO.banjirBatavia.tinggi}
-            sizes="(min-width: 1280px) 75rem, 100vw"
-            className="aspect-[4/3] w-full object-cover grayscale sm:aspect-[21/9] lg:aspect-[1536/400]"
-          />
-          <div
-            aria-hidden="true"
-            className="absolute inset-0 bg-[linear-gradient(90deg,rgb(15_42_51/0.88)_0%,rgb(15_42_51/0.55)_55%,rgb(15_42_51/0.1)_100%)]"
-          />
-          <figcaption className="absolute inset-y-0 left-0 flex max-w-[36rem] flex-col justify-center p-6 sm:p-10">
-            <p className="text-kecil font-semibold text-white/85">Banjir di Batavia, awal abad ke-20</p>
-            <p className="mt-2 text-sub font-bold sm:text-seksi">
-              Banjir dan jalan rusak sudah ada sejak dulu. Yang jarang dijelaskan: kenapa satu tempat diperbaiki lebih dulu.
-            </p>
-            <p className="mt-3 text-mini text-white/80">
-              Foto: {FOTO.banjirBatavia.judul}. {FOTO.banjirBatavia.pembuat},{' '}
-              <a href={FOTO.banjirBatavia.url} target="_blank" rel="noreferrer" className="underline">
-                {FOTO.banjirBatavia.lisensi}
-              </a>
-              .
-            </p>
-          </figcaption>
-        </div>
-      </figure>
-      <SpandukGeser className="muncul mt-4" />
-      </section>
-
       <section aria-labelledby="judul-kecamatan" className="bingkai mt-12 sm:mt-14">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <h2 id="judul-kecamatan" className="judul-seksi">
@@ -197,8 +168,6 @@ async function BagianPrioritas() {
           </div>
         </div>
       </section>
-
-      <PerbandinganPeringkat isu={data.faktor.isu} bobotResmi={data.bobotResmi} idIsu={contoh.id} kodeLaporan={kode} />
     </>
   );
 }
@@ -208,7 +177,7 @@ function AngkaMusrenbang() {
     { nilai: '18.221', label: 'usulan langsung dari warga lewat e-Musrenbang DKI Jakarta (2019)' },
     { nilai: '254', label: 'dari usulan itu yang akhirnya dikerjakan' },
     { nilai: '1,4%', label: 'hanya segini yang benar-benar dikerjakan' },
-    { nilai: '61.174', label: 'usulan warga untuk rencana pembangunan 2027 (hasilnya belum diumumkan)' },
+    { nilai: '61.174', label: 'aspirasi untuk rencana pembangunan 2027, melalui Musrenbang, usulan langsung, dan reses DPRD' },
   ];
   return (
     <section aria-labelledby="judul-musrenbang" className="bingkai mt-12 sm:mt-14">
@@ -219,22 +188,13 @@ function AngkaMusrenbang() {
         <div className="p-6 sm:p-10">
           <div className="flex flex-wrap items-center gap-3">
             <h2 id="judul-musrenbang" className="judul-seksi">
-              Banyak usulan warga, sedikit yang dikerjakan
+              Usulan perlu tindak lanjut
             </h2>
             <LabelSumber sumber="terbuka" ringkas />
           </div>
           <p className="mt-3 max-w-[56ch] text-badan text-lembut">
-            Musrenbang adalah rapat tahunan warga dan pemerintah untuk memilih usulan pembangunan. Urutan masalah yang
-            alasannya bisa dicek bisa kamu bawa sebagai bahan usulan di rapat itu.
+            Gunakan urutan prioritas sebagai bahan usulan dalam rapat pembangunan warga (Musrenbang).
           </p>
-          <ul className="mt-4 flex flex-wrap gap-2">
-            {['Alasan urutan bisa dicek', 'Bisa dibawa ke Musrenbang'].map((t) => (
-              <li key={t} className="flex items-center gap-1.5 rounded-full bg-white px-3 py-1 text-kecil font-semibold text-biru-tua">
-                <Ikon nama="centang" className="size-4" />
-                {t}
-              </li>
-            ))}
-          </ul>
           <dl className="mt-6 grid grid-cols-2 gap-3 xl:grid-cols-4" data-muncul>
             {ANGKA.map((a) => (
               <div key={a.label} className="flex flex-col-reverse justify-end rounded-kartu bg-white p-4">
@@ -258,7 +218,13 @@ function AngkaMusrenbang() {
             </figcaption>
           </figure>
           <p className="mt-4 text-kecil text-lembut">
-            Sumber: jurnal Universitas Diponegoro tentang e-Musrenbang DKI (data 2019); Metro TV, April 2026.
+            Sumber:{' '}
+            <a href={SUMBER_MUSRENBANG.studi2019.url} target="_blank" rel="noreferrer" className="underline underline-offset-4">
+              {SUMBER_MUSRENBANG.studi2019.label}
+            </a>{' '}dan{' '}
+            <a href={SUMBER_MUSRENBANG.rkpd2027.url} target="_blank" rel="noreferrer" className="underline underline-offset-4">
+              {SUMBER_MUSRENBANG.rkpd2027.label}
+            </a>.
           </p>
         </div>
         <figure className="relative min-h-72 lg:min-h-full">
@@ -302,7 +268,7 @@ async function BagianTerbaru() {
             Laporan terbaru
           </h2>
           <p className="mt-2 max-w-[70ch] text-badan text-lembut">
-            Buka laporannya untuk melihat riwayat penanganan, batas waktu, dan jawaban &ldquo;Kenapa belum?&rdquo;.
+            Pantau status dan alasan penanganannya.
           </p>
         </div>
         <LabelSumber sumber={sumber} ringkas />
@@ -338,15 +304,18 @@ export default function BerandaPage() {
         }
       />
 
+      <Suspense fallback={<KerangkaBagian tinggi="h-[32rem]" />}>
+        <PerbandinganPrioritas />
+      </Suspense>
+
       <section aria-labelledby="judul-alur" className="bingkai mt-12 sm:mt-14">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
             <h2 id="judul-alur" className="judul-seksi">
-              Dari laporan sampai rapor, dalam 3 langkah
+              Cara kerjanya
             </h2>
             <p className="mt-2 max-w-[70ch] text-badan text-lembut">
-              Semua angka di urutan prioritas dan rapor dinas berasal dari tiga langkah ini. Setiap langkah tercatat dan
-              bisa dilihat siapa saja.
+              Lapor, pantau, lalu nilai penanganannya.
             </p>
           </div>
         </div>
@@ -360,12 +329,12 @@ export default function BerandaPage() {
       <section aria-labelledby="judul-masalah" className="bingkai mt-12 sm:mt-14">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <h2 id="judul-masalah" className="judul-seksi">
-            4 jenis masalah dan batas waktunya
+            Masalah yang bisa dilaporkan
           </h2>
           <LabelSumber sumber="db" ringkas />
         </div>
         <p className="mt-2 max-w-[70ch] text-badan text-lembut">
-          Setiap jenis masalah punya dinas penanggung jawab, batas waktu untuk ditanggapi, dan batas waktu untuk selesai.
+          Pilih jenis masalah untuk melihat dinas dan batas waktu penanganan.
         </p>
         <div className="muncul mt-5">
           <DaftarMasalah />

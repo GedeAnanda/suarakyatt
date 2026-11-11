@@ -28,7 +28,18 @@ const AWALAN_FOTO = '/storage/v1/object/public/foto-laporan/';
 export async function ubahStatusLaporan(input: InputUbahStatus): Promise<HasilUbahStatus> {
   const supabase = await createClient();
   const { error } = await supabase.rpc('update_report_status', input);
-  if (error) return { error: error.message };
+  if (error) {
+    if (error.message !== 'TRANSISI_TIDAK_VALID' || input.p_status !== 'ditolak' || input.p_alasan !== 'konten_melanggar') {
+      return { error: error.message };
+    }
+    // RPC memeriksa login, instansi, dan batas akun demo SEBELUM transisi (0009).
+    // Hanya ulangi karantina untuk keputusan yang sama; jangan menambah riwayat penolakan lagi.
+    const { data: laporan, error: galat } = await supabase.from('v_laporan_publik')
+      .select('status,alasan_tolak').eq('kode', input.p_kode).maybeSingle();
+    if (galat || laporan?.status !== 'ditolak' || laporan.alasan_tolak !== 'konten_melanggar') {
+      return { error: error.message };
+    }
+  }
 
   if (input.p_status === 'ditolak' && input.p_alasan === 'konten_melanggar') {
     try {
